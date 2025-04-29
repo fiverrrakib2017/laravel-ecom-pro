@@ -20,8 +20,8 @@ return new class extends Migration
             $table->decimal('sub_total', 10, 0);
             $table->decimal('discount', 10, 0);
             $table->decimal('grand_total', 10, 0);
-            $table->decimal('due_amount');
-            $table->decimal('paid_amount');
+            $table->decimal('due_amount', 10, 0);
+            $table->decimal('paid_amount', 10, 0);
             $table->text('note')->nullable();
             $table->integer('status')->comment('0=Draf,1=Completed');
             $table->timestamps();

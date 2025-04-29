@@ -36,7 +36,7 @@ class InvoiceService{
 
             /*Create A logic for customer and supplier*/
             if (!empty($type) && isset($type) && $type === 'client') {
-                $invoice->customer_id = $request->client_id;
+                $invoice->client_id = $request->client_id;
             }else{
                 $invoice->supplier_id = $request->client_id;
             }
@@ -68,7 +68,7 @@ class InvoiceService{
 
             /*Create A logic for customer and supplier*/
             if (!empty($type) && isset($type) && $type === 'client') {
-                $invoice->customer_id = $request->client_id;
+                $invoice->client_id = $request->client_id;
             }else{
                 $invoice->supplier_id = $request->client_id;
             }

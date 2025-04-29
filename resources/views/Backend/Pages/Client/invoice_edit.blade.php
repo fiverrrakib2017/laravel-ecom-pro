@@ -13,7 +13,7 @@ button#submitButton {
 <!-- br-pageheader -->
 <div class="row">
     <div class="container-fluid">
-        <form id="form-data" action="{{ route('admin.customer.invoice.update_invoice') }}" method="post">
+        <form id="form-data" action="{{ route('admin.client.invoice.update_invoice') }}" method="post">
             @csrf
             <input type="text" value="{{ $invoice_data->id }}" name="id" class="d-none">
             <div class="row">
@@ -28,17 +28,17 @@ button#submitButton {
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="form-group mt-2">
+                                    <div class="form-group ">
                                         <label>Client Name</label>
                                         <div class="d-flex">
-                                        <select type="text" id="client_name" name="client_id" class="form-select select2">
+                                        <select type="text" id="client_name" name="client_id" class="form-select select2" style="width: 100%;">
                                             <option value="">---Select---</option>
                                             @php
-                                            $customers = \App\Models\Customer::latest()->get();
+                                            $customers = \App\Models\Client::latest()->get();
                                             @endphp
                                             @if($customers->isNotEmpty())
                                                 @foreach($customers as $item)
-                                                <option value="{{ $item->id }}" {{ $item->id == $invoice_data->customer_id ? 'selected' : '' }}>
+                                                <option value="{{ $item->id }}" {{ $item->id == $invoice_data->client_id ? 'selected' : '' }}>
                                                     {{ $item->fullname }}
                                                 </option>
                                                 @endforeach
@@ -168,7 +168,7 @@ button#submitButton {
         </form>
     </div>
 </div>
-@include('Backend.Modal.customer_modal')
+@include('Backend.Modal.Client.client_modal')
 @include('Backend.Modal.product_modal')
 @include('Backend.Modal.invoice_modal')
 @endsection

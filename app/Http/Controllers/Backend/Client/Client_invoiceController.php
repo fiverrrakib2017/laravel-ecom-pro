@@ -23,15 +23,7 @@ class Client_invoiceController extends Controller
     public function create_invoice(){
         return $this->invoiceService->createInvoice('client');
     }
-    public function search_product_data(Request $request){
-        if ($request->search=='') {
-            $products = Product::with('product_image')->latest()->get();
-            return response()->json(['success'=>true,'data' => $products]);
-            exit;
-        }
-        $products = Product::with('product_image')->where('title', 'like', "%$request->search%")->get();
-        return response()->json(['success'=>true,'data' => $products]);
-    }
+
     public function show_invoice(){
         return view('Backend.Pages.Client.invoice');
     }
@@ -40,12 +32,12 @@ class Client_invoiceController extends Controller
         return view('Backend.Pages.Client.invoice_view',compact('data'));
     }
     public function edit_invoice($id){
-        $invoice_data=  Supplier_Invoice::with('supplier','items.product')->find($id);
+        $invoice_data=  Client_invoice::with('client','items.product')->find($id);
        return view('Backend.Pages.Client.invoice_edit', compact('invoice_data'));
     }
     public function update_invoice(Request $request){
         /* 1= user id by default */
-        return response()->json($this->invoiceService->update_invoice($request,$request->id,1,'supplier'));
+        return response()->json($this->invoiceService->update_invoice($request,$request->id,1,'client'));
     }
     public function show_invoice_data(Request $request){
         $search = $request->search['value'];
@@ -58,7 +50,7 @@ class Client_invoiceController extends Controller
                   ->orWhere('paid_amount', 'like', "%$search%")
                   ->orWhere('due_amount', 'like', "%$search%")
                   ->orWhere('created_at', 'like', "%$search%")
-                  ->orWhereHas('supplier', function ($query) use ($search) {
+                  ->orWhereHas('client', function ($query) use ($search) {
                       $query->where('fullname', 'like', "%$search%")
                             ->orWhere('phone_number', 'like', "%$search%");
                   });

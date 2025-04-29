@@ -118,8 +118,8 @@
           {
             "data":"client.fullname",
             render:function(data,type,row){
-                var link ="{{ route('admin.client.view', ':id') }}".replace(':id', row.customer.id);
-                return '<a href="'+link+'">'+row.customer.fullname+'</a>';
+                var link ="{{ route('admin.client.view', ':id') }}".replace(':id', row.client.id);
+                return '<a href="'+link+'">'+row.client.fullname+'</a>';
             }
           },
           {

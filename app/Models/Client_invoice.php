@@ -10,6 +10,11 @@ class Client_invoice extends Model
     use HasFactory;
     public function client()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Client::class, 'client_id','id');
+    }
+
+    public function items()
+    {
+        return $this->hasMany(Client_invoice_details::class,'invoice_id','id');
     }
 }
