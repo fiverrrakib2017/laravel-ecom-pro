@@ -123,6 +123,51 @@
         </div>
     </div>
 
+
+
+
+
+    <!-- Modal for Send Message -->
+    <div class="modal fade bs-example-modal-lg" id="sendMessageModal" tabindex="-1" role="dialog"
+        aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content col-md-12">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLabel"><span class="mdi mdi-account-check mdi-18px"></span> &nbsp;Send Message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success" id="selectedCustomerCount"></div>
+                    <form id="paymentForm" method="POST">
+
+                        <div class="form-group mb-2">
+                            <label>Message Template </label>
+                            <select name="template_id" class="form-control" type="text" required style="width: 100%">
+                                <option value="">---Select---</option>
+                                @php
+                                    $data = \App\Models\Message_template::latest()->get();
+                                @endphp
+                                @foreach ($data as $item)
+                                    <option value="{{ $item->id }}"> {{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label>SMS </label>
+                            <textarea name="message" placeholder="Enter SMS" class="form-control" type="text" style="height: 158px;"></textarea>
+                        </div>
+                        <div class="modal-footer ">
+                            <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
+                            <button type="button" name="send_message_btn" class="btn btn-success">Send
+                                Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -205,6 +250,36 @@
                         button.attr('disabled', false);
                     }
                 });
+            });
+            $(document).on('click', '#send_message_btn', function(event) {
+                event.preventDefault();
+                var selectedCustomers = [];
+                $(".checkSingle:checked").each(function() {
+                    selectedCustomers.push($(this).val());
+                });
+                var countText = "You have selected " + selectedCustomers.length + " customers.";
+                $("#selectedCustomerCount").text(countText);
+                $('#sendMessageModal').modal('show');
+            });
+            /*Load Message Template*/
+            $("select[name='template_id']").on('change', function() {
+                var template_id = $(this).val();
+                if (template_id) {
+                    $.ajax({
+                        url: "{{ route('admin.sms.template_get', ':id') }}".replace(':id',
+                            template_id),
+                        type: "GET",
+                        dataType: "json",
+                        success: function(response) {
+                            $("textarea[name='message']").val(response.data.message);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log("Error:", error);
+                        }
+                    });
+                } else {
+                    $("textarea[name='message']").val('');
+                }
             });
     </script>
 
