@@ -378,59 +378,7 @@
 
 
 
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-info text-white">Recent Transactions</div>
-                <div class="card-body">
-                    <table id="recent_transaction" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Customer</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>$50</td>
-                                <td><span class="badge bg-success">Paid</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-warning text-white">Recent Tickets</div>
-                <div class="card-body">
-                    <table id="recent_tickets" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Customer</th>
-                                <th>Issue</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Jane Smith</td>
-                                <td>No Internet</td>
-                                <td><span class="badge bg-danger">Open</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+   
     @include('Backend.Modal.Pop.pop_modal')
     @include('Backend.Modal.Customer.customer_modal',['pop_id'=>$pop->id])
     @include('Backend.Modal.Customer.Package.branch_package_modal')
