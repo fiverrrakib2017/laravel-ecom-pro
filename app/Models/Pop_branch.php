@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Pop_branch extends Model
 {
     use HasFactory;
+    
 }

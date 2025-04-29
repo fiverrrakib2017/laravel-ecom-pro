@@ -23,28 +23,53 @@ class PopController extends Controller
     }
 
     public function get_all_data(Request $request)
-    {
-        $search = $request->search['value'];
-        $columnsForOrderBy = ['id', 'name', 'username', 'phone', 'status'];
-        $orderByColumn = $request->order[0]['column'];
-        $orderDirectection = $request->order[0]['dir'];
+{
+    $search = $request->search['value'];
+    $columnsForOrderBy = ['id', 'name', 'username', 'phone', 'status'];
+    $orderByColumn = $request->order[0]['column'];
+    $orderDirectection = $request->order[0]['dir'];
 
-        $object = Pop_branch::when($search, function ($query) use ($search) {
-            $query->where('name', 'like', "%$search%");
-            $query->where('username', 'like', "%$search%");
-            $query->where('phone', 'like', "%$search%");
-        })->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection);
+    $object = Pop_branch::when($search, function ($query) use ($search) {
+        $query->where(function($q) use ($search) {
+            $q->where('name', 'like', "%$search%")
+              ->orWhere('username', 'like', "%$search%")
+              ->orWhere('phone', 'like', "%$search%");
+        });
+    })->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection);
 
-        $total = $object->count();
-        $item = $object->skip($request->start)->take($request->length)->get();
+    $total = $object->count();
 
-        return response()->json([
-            'draw' => $request->draw,
-            'recordsTotal' => $total,
-            'recordsFiltered' => $total,
-            'data' => $item,
-        ]);
-    }
+    $item = $object->skip($request->start)->take($request->length)->get();
+
+    /*Get Branch Customer Details*/
+    $item->transform(function ($branch) {
+        $branch->active_customer =Customer::where('pop_id', $branch->id)
+            ->where('status', 'active')
+            ->count();
+
+        $branch->online = Customer::where('pop_id', $branch->id)
+            ->where('status', 'online')
+            ->count();
+
+        $branch->offline = Customer::where('pop_id', $branch->id)
+            ->where('status', 'offline')
+            ->count();
+
+        $branch->expired =Customer::where('pop_id', $branch->id)
+            ->where('status', 'expired')
+            ->count();
+
+        return $branch;
+    });
+
+    return response()->json([
+        'draw' => $request->draw,
+        'recordsTotal' => $total,
+        'recordsFiltered' => $total,
+        'data' => $item,
+    ]);
+}
+
     public function store(Request $request)
     {
         /* Validate the form data */
