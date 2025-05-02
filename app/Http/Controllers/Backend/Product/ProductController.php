@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Client_invoice_details;
 use App\Models\Customer_Invoice_Details;
 use App\Models\Product;
 use App\Models\Supplier_Invoice_Details;
@@ -123,7 +124,7 @@ class ProductController extends Controller
 
 
         /*Find the product Sales History*/
-        $sales_invoice_history = Customer_Invoice_Details::with('invoice.customer')->where('product_id','=',$id)->get();
+        $sales_invoice_history = Client_invoice_details::with('invoice.client')->where('product_id','=',$id)->get();
         $purchase_invoice_history = Supplier_Invoice_Details::with('invoice.supplier')->where('product_id','=',$id)->get();
         $data = Product::with('brand','category','unit','store')->find($id);
         return view('Backend.Pages.Product.view',compact('data','sales_invoice_history','purchase_invoice_history'));
@@ -206,7 +207,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255|unique:products,name',
             'brand' => 'required|integer|exists:product_brands,id',
             'category' => 'required|integer|exists:product_categories,id',
-          
+
             'unit_id' => 'required|integer|exists:units,id',
             'store' => 'required|integer|exists:stores,id',
         ];

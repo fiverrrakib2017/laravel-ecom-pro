@@ -65,31 +65,6 @@
                         <hr>
                         <div class="row">
                             <div class="col-sm-3">
-                                <h6 class="mb-0">Purchase Account No:</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary">
-                                @php
-                                   $sub_ledger= App\Models\Sub_ledger::find($data->purchase_ac);
-                                   echo  $sub_ledger->sub_ledger_name ?? '';
-                                @endphp
-                            </div>
-                        </div>
-                        <hr>
-
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <h6 class="mb-0">Sales Account:</h6>
-                            </div>
-                            <div class="col-sm-9 text-secondary">
-                                @php
-                                $sub_ledger= App\Models\Sub_ledger::find($data->sales_ac);
-                                echo $sub_ledger->sub_ledger_name ?? '';
-                             @endphp
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-3">
                                 <h6 class="mb-0">Purchase Price:</h6>
                             </div>
                             <div class="col-sm-9 text-secondary">
@@ -115,105 +90,102 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
-                            <div class="card">
-                                <div class="card-body">
-                                    <!-- Nav tabs -->
-                                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
-                                        <li class="nav-item">
-                                            <button class="nav-link active" data-bs-toggle="tab" href="#purchase_history"
-                                                role="tab">
-                                                <span class="d-none d-md-block">Purchase History</span><span
-                                                    class="d-block d-md-none">Purchase History</span>
-                                            </button>
-                                        </li>
-                                        <li class="nav-item">
-                                            <button class="nav-link" data-bs-toggle="tab" href="#sales_history"
-                                                role="tab">
-                                                <span class="d-none d-md-block">Sales History
-                                                </span><span class="d-block d-md-none">Sales History</span>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                    <!-- Tab panes -->
-                                    <div class="tab-content">
-                                        <div class="tab-pane p-3 tab-pane p-3 active" id="purchase_history" role="tabpanel">
-                                            <div class="table table-responsive">
-                                                <table id="purchase_history_table"
-                                                    class="table table-bordered dt-responsive nowrap"
-                                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Invoice id</th>
-                                                            <th>Supplier Name</th>
-                                                            <th>Quantity</th>
-                                                            <th>Invoice Date</th>
-                                                            <th>Create Date</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @if (!empty($purchase_invoice_history))
-                                                        @foreach ($purchase_invoice_history as $item)
-                                                            <tr>
-                                                                <td>{{ $item->invoice_id ?? '' }}</td>
-                                                                <td>{{ $item->invoice->supplier->fullname ?? '' }}</td>
-                                                                <td>{{ $item->qty ?? '' }}</td>
-                                                                <td>{{ $item->invoice->invoice_date ?? '' }}</td>
-                                                                <td>{{ $item->created_at ?? '' }}</td>
-                                                                <td>
-                                                                    <a href="{{ route('admin.supplier.invoice.view_invoice', $item->invoice_id) }}"
-                                                                        class="btn btn-primary btn-sm mr-3"><i
-                                                                            class="fa fa-eye"></i></a>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
-                                                    @endif
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="tab-pane p-3" id="sales_history" role="tabpanel">
-                                            <div class="table table-responsive">
-                                                <table id="sales_history_table"
-                                                class="table table-bordered dt-responsive nowrap"
-                                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Invoice id</th>
-                                                            <th>Customer Name</th>
-                                                            <th>Quantity</th>
-                                                            <th>Invoice Date</th>
-                                                            <th>Create Date</th>
-                                                            <th>Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @if (!empty($sales_invoice_history))
-                                                            @foreach ($sales_invoice_history as $item)
-                                                                <tr>
-                                                                    <td>{{ $item->invoice_id ?? '' }}</td>
-                                                                    <td>{{ $item->invoice->customer->fullname ?? '' }}</td>
-                                                                    <td>{{ $item->qty ?? '' }}</td>
-                                                                    <td>{{ $item->invoice->invoice_date ?? '' }}</td>
-                                                                    <td>{{ $item->created_at ?? '' }}</td>
-                                                                    <td>
-                                                                        <a href="{{ route('admin.customer.invoice.view_invoice', $item->invoice_id) }}"
-                                                                            class="btn btn-primary btn-sm mr-3"><i
-                                                                                class="fa fa-eye"></i></a>
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        @endif
-                                                    </tbody>
-                                                </table>
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header p-2">
+                                        <ul class="nav nav-pills" id="history-tabs">
+                                            <li class="nav-item"><a class="nav-link active" href="#purchase_history" data-toggle="tab">Purchase History</a></li>
+                                            <li class="nav-item"><a class="nav-link" href="#sales_history" data-toggle="tab">Sales History</a></li>
+                                        </ul>
+                                    </div><!-- /.card-header -->
 
+                                    <div class="card-body">
+                                        <div class="tab-content">
+                                            <!-- Purchase History Tab -->
+                                            <div class="active tab-pane" id="purchase_history">
+                                                <div class="table-responsive">
+                                                    <table id="purchase_table" class="table table-bordered table-striped table-hover">
+                                                        <thead >
+                                                            <tr>
+                                                                <th>Invoice ID</th>
+                                                                <th>Supplier Name</th>
+                                                                <th>Quantity</th>
+                                                                <th>Invoice Date</th>
+                                                                <th>Create Date</th>
+                                                                <th>Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($purchase_invoice_history))
+                                                                @foreach ($purchase_invoice_history as $item)
+                                                                    <tr>
+                                                                        <td>{{ $item->invoice_id ?? '-' }}</td>
+                                                                        <td>{{ $item->invoice->supplier->fullname ?? '-' }}</td>
+                                                                        <td>{{ $item->qty ?? '-' }}</td>
+                                                                        <td>{{ $item->invoice->invoice_date ?? '-' }}</td>
+                                                                        <td>{{ $item->created_at ?? '-' }}</td>
+                                                                        <td>
+                                                                            <a href="{{ route('admin.supplier.invoice.view_invoice', $item->invoice_id) }}"
+                                                                                class="btn btn-info btn-sm">
+                                                                                <i class="fas fa-eye"></i>
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @else
+                                                                <tr><td colspan="6" class="text-center text-muted">No data found.</td></tr>
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
+
+                                            <!-- Sales History Tab -->
+                                            <div class="tab-pane" id="sales_history">
+                                                <div class="table-responsive">
+                                                    <table id="sales_table" class="table table-bordered table-striped table-hover">
+                                                        <thead >
+                                                            <tr>
+                                                                <th>Invoice ID</th>
+                                                                <th>Customer Name</th>
+                                                                <th>Quantity</th>
+                                                                <th>Invoice Date</th>
+                                                                <th>Create Date</th>
+                                                                <th>Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (!empty($sales_invoice_history))
+                                                                @foreach ($sales_invoice_history as $item)
+                                                                    <tr>
+                                                                        <td>{{ $item->invoice_id ?? '-' }}</td>
+                                                                        <td>{{ $item->invoice->client->fullname ?? '-' }}</td>
+                                                                        <td>{{ $item->qty ?? '-' }}</td>
+                                                                        <td>{{ $item->invoice->invoice_date ?? '-' }}</td>
+                                                                        <td>{{ $item->created_at ?? '-' }}</td>
+                                                                        <td>
+                                                                            <a href="{{ route('admin.customer.invoice.view_invoice', $item->invoice_id) }}"
+                                                                                class="btn btn-info btn-sm">
+                                                                                <i class="fas fa-eye"></i>
+                                                                            </a>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @else
+                                                                <tr><td colspan="6" class="text-center text-muted">No data found.</td></tr>
+                                                            @endif
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div> <!-- /.tab-content -->
+                                    </div><!-- /.card-body -->
+                                </div><!-- /.card -->
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -229,8 +201,8 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
-        $("#purchase_history_table").DataTable();
-        $("#sales_history_table").DataTable();
+        $("#purchase_table").DataTable();
+        $("#sales_table").DataTable();
     })
 
 </script>

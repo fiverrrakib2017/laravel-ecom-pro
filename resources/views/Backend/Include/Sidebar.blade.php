@@ -497,7 +497,7 @@
 
                 <!-----------Invenotry Menu------------------->
                 @php
-                    $active_prefix = ['admin.category.index','admin.brand.index','admin.store.index','admin.unit.index','admin.supplier.index','admin.supplier.invoice.create_invoice','admin.supplier.invoice.show_invoice','admin.client.index','admin.client.invoice.create_invoice','admin.client.invoice.show_invoice'];
+                    $active_prefix = ['admin.category.index','admin.brand.index','admin.store.index','admin.unit.index','admin.supplier.index','admin.supplier.invoice.create_invoice','admin.supplier.invoice.show_invoice','admin.client.index','admin.client.invoice.create_invoice','admin.client.invoice.show_invoice', 'admin.product.index'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
 
@@ -558,7 +558,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="https://admin.futureictbd.com/admin/product/list" class="nav-link  "><i
+                            <a href="{{ route('admin.product.index') }}" class="nav-link  {{ Route::currentRouteName() == 'admin.product.index' ? 'active' : '' }}"><i
                                     class="far fa-circle nav-icon"></i>
                                 <p>Products</p>
                             </a>
