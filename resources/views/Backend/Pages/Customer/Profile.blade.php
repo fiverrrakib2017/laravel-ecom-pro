@@ -512,7 +512,7 @@
                             <!-- /.tab-content -->
                         </div><!-- /.card-body -->
                     </div>
-                    <div class="card mt-4">
+                    <div class="card mt-4 card-dark">
                         <div class="card-header">
                             Bandwidth Usage (Current Session)
                         </div>
@@ -520,6 +520,7 @@
                             <canvas id="liveBandwidthChart" height="100"></canvas>
                         </div>
                     </div>
+
                 </div>
 
             </div>
@@ -654,22 +655,53 @@
                 }
             });
         });
-        /************** Customer Bandwidth Graph **************************/
-        const ctx3 = document.getElementById('liveBandwidthChart').getContext('2d');
+        /************** Customer Bandwidth Graph Start **************************/
+        const ctx = document.getElementById('liveBandwidthChart').getContext('2d');
 
-        const bandwidthChart = new Chart(ctx3, {
-            type: 'bar',
+        const labels = Array.from({
+            length: 30
+        }, () => '');
+        const downloadData = Array(30).fill(0);
+        const uploadData = Array(30).fill(0);
+
+        const bandwidthChart = new Chart(ctx, {
+            type: 'line',
             data: {
-                labels: ['Download', 'Upload'],
+                labels: labels,
                 datasets: [{
-                    label: 'Speed (kbps)',
-                    data: [0, 0],
-                    backgroundColor: ['#36A2EB', '#FF6384']
-                }]
+                        label: 'Download (kbps)',
+                        data: downloadData,
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                    },
+                    {
+                        label: 'Upload (kbps)',
+                        data: uploadData,
+                        borderColor: '#FF6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                    }
+                ]
             },
+            options: {
+                responsive: true,
+                animation: false,
+                scales: {
+                    x: {
+                        display: false,
+                    },
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 1000,
+                    }
+                }
+            }
         });
 
-        function fetch_live_bandwith_data() {
+        function fetch_live_bandwidth_data() {
             $.ajax({
                 url: "{{ route('admin.customer.live_bandwith_update', ':id') }}".replace(':id',
                     "{{ $data->id }}"),
@@ -680,26 +712,30 @@
                         const uploadSpeed = response.tx_mb;
                         const user_uptime = response.uptime;
                         const user_interface_name = response.interface_name;
-                        bandwidthChart.data.datasets[0].data = [downloadSpeed, uploadSpeed];
-                        /*Update Client Data*/
+
+                        // Update graph data with new point (slide effect)
+                        downloadData.push(downloadSpeed);
+                        downloadData.shift();
+
+                        uploadData.push(uploadSpeed);
+                        uploadData.shift();
+
+                        bandwidthChart.update();
+
+                        // Update Client Data
                         $("#customer_upload_speed").html(uploadSpeed);
                         $("#customer_download_speed").html(downloadSpeed);
-
                         $("#customer_uptime").html(user_uptime);
-                        $("#customer_interface").html(
-                                $('<div>').text(user_interface_name).html()
-                            );
-                        /** Update the chart */
-                        bandwidthChart.update();
+                        $("#customer_interface").html($('<div>').text(user_interface_name).html());
                     }
                 }
             });
         }
-        fetch_live_bandwith_data();
-        setInterval(fetch_live_bandwith_data, 1000);
 
+        fetch_live_bandwidth_data();
+        setInterval(fetch_live_bandwidth_data, 1000);
 
-
+        /************** Customer Bandwidth Graph End **************************/
         $.ajax({
             url: "{{ route('admin.customer.get_onu_info') }}",
             type: "POST",
@@ -711,7 +747,7 @@
                 console.log(response);
             },
             error: function() {
-                toastr.error("Something went wrong!");
+                console.error("Something went wrong!");
             },
         });
     </script>
