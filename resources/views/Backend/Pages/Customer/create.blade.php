@@ -238,7 +238,8 @@
                             location.reload();
                         }, 500);
                     }
-                    if(success == false){
+                    if(response.success == false){
+                        form.find(':input').prop('disabled', false);
                         toastr.error(response.message);
                         submitBtn.html(originalBtnText);
                         submitBtn.prop('disabled', false);
