@@ -53,23 +53,23 @@
                             <div class="tm_grid_row tm_col_2  tm_col_2_sm tm_invoice_table tm_round_border">
 
                                 <div>
-                                    <p class="tm_m0">Customer ID:</p>
-                                    <b class="tm_primary_color">{{$data->customer->id}}</b>
+                                    <p class="tm_m0">Client ID:</p>
+                                    <b class="tm_primary_color">{{$data->client->id}}</b>
                                 </div>
                                 <div>
-                                    <p class="tm_m0">Customer Name:</p>
-                                    <b class="tm_primary_color">{{$data->customer->fullname}}</b>
+                                    <p class="tm_m0">Client Name:</p>
+                                    <b class="tm_primary_color">{{$data->client->fullname}}</b>
                                 </div>
                                 <div>
                                     <p class="tm_m0">Phone Number:</p>
-                                    <b class="tm_primary_color">{{$data->customer->phone_number}}</b>
+                                    <b class="tm_primary_color">{{$data->client->phone_number}}</b>
                                 </div>
 
 
                                 <div>
-                                    <p class="tm_m0">Customer Create Date</p>
+                                    <p class="tm_m0">Client Create Date</p>
                                     <b class="tm_primary_color">
-                                    {{ \Carbon\Carbon::parse($data->customer->created_at)->format('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($data->client->created_at)->format('d M Y') }}
 
                                     </b>
                                 </div>
@@ -80,7 +80,7 @@
                                 <div>
                                     <p class="tm_m0">Address</p>
                                     <b class="tm_primary_color">
-                                        {{$data->customer->address}}
+                                        {{$data->client->address}}
                                     </b>
                                 </div>
 
@@ -151,7 +151,7 @@
                     </div>
                     <div class="tm_note tm_text_center tm_m0_md">
                         <p class="tm_m0" align=""><br> <br>Authorization signature and seal. &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
-                            Prepared By:Rakib Mahmud
+                            Prepared By:  {{ Auth::guard('admin')->user()->name ?? 'N/A' }}
                         </p>
                     </div><!-- .tm_note -->
                 </div>
