@@ -1,4 +1,3 @@
-
 @extends('Backend.Layout.App')
 @section('title','Dashboard | Admin Panel')
 @section('style')
@@ -74,7 +73,6 @@
     </div>
       <!-- Buttons -->
     <div class="col-md-12 d-flex flex-wrap gap-2">
-        {{-- <button class="btn btn-primary m-1"><i class="fas fa-user-clock"></i> New Request</button> --}}
         <button class="btn btn-success m-1" data-toggle="modal" data-target="#addCustomerModal" type="button"><i class="fas fa-user-plus"></i> Add Customer</button>
         <button type="button" data-toggle="modal" data-target="#ticketModal" class="btn btn-info m-1"><i class="fas fa-ticket-alt"></i> Add Ticket</button>
         <button type="button" data-toggle="modal" data-target="#addSendMessageModal" class="btn btn-primary text-white m-1"><i class="fas fa-envelope"></i> SMS Notification</button>
@@ -89,13 +87,58 @@
             <a class="dropdown-item" href="{{ route('admin.customer.log.index') }}">
                 <i class="fas fa-file-alt text-danger"></i> Customer Logs Report
             </a>
-            
-          
+
+
         </div>
-        {{-- <button class="btn btn-dark m-1"><i class="fas fa-user-shield"></i> Admin Panel</button>
-         <button class="btn btn-secondary m-1"><i class="fas fa-cogs"></i> Settings</button>
-        <button class="btn btn-primary m-1"><i class="fas fa-user-cog"></i> User Management</button> --}}
+
           <button id="resetOrderBtn" class="btn btn-danger m-1"><i class="fas fa-undo"></i> Reset Card</button>
+            @php
+                $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+            @endphp
+
+        @if(!empty($branch_user_id))
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <!-- Top Up Button -->
+                <button type="button" data-toggle="modal" data-target="#smsTopUpModal" class="btn btn-success m-1">
+                    <i class="fas fa-plus-circle"></i> Top Up
+                </button>
+
+                <!-- Available SMS -->
+                <div class="d-flex align-items-center bg-light p-2 rounded m-1">
+                    <i class="fas fa-comment-dots text-info me-2"></i>
+                    <span class="text-dark">
+                        <strong>Available SMS:</strong>
+                        <strong class="text-danger fw-bold">
+                            {{-- Replace 520 with dynamic SMS count --}}
+                            {{ $available_sms ?? 520 }}
+                        </strong>
+                    </span>
+                </div>
+
+                <!-- Remaining Account Balance -->
+                <div class="d-flex align-items-center bg-light p-2 rounded m-1">
+                    <i class="fas fa-money text-success me-2"></i>
+                    <span class="text-dark">
+                        <strong>Remaining Balance TK:</strong>
+                        <strong class="text-danger fw-bold">
+                            @php
+                                /*Branch Transaction Current Balance*/
+                                $customer_recharge_total = App\Models\Customer_recharge::where('pop_id', $branch_user_id)->where('transaction_type', '!=', 'due_paid')->sum('amount');
+
+                                $branch_transaction_total = App\Models\Branch_transaction::where('pop_id', $branch_user_id)->where('transaction_type', '!=', 'due_paid')->sum('amount');
+
+                                $current_balance = $branch_transaction_total - $customer_recharge_total;
+                            @endphp
+                            {{ $current_balance ?? 00 }}
+                        </strong>
+                    </span>
+                </div>
+
+            </div>
+        @endif
+
+
+
     </div>
 </div>
 
@@ -245,6 +288,7 @@
 @include('Backend.Modal.Customer.customer_modal')
 @include('Backend.Modal.Tickets.ticket_modal')
 @include('Backend.Modal.Sms.send_modal')
+@include('Backend.Modal.Sms.topup_modal')
 @endsection
 
 @section('script')
