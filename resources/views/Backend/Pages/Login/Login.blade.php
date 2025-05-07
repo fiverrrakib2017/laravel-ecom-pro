@@ -35,13 +35,15 @@
         }
     </style>
 </head>
+@php
+    use Illuminate\Support\Facades\File;
+    $images = File::files(public_path('Backend/images/Login'));
+    $randomImage = asset('Backend/images/Login/' . $images[array_rand($images)]->getFilename());
+@endphp
 
-<body class="hold-transition register-page">
+<body class="hold-transition register-page" style="background-image: url('{{ $randomImage }}'); background-size: cover; background-position: center;">
+
     <div class="register-box">
-        <!-- <div class="register-logo">
-   <img  width="90px" src="http://103.146.16.154/profileImages/avatar.png">
-  </div> -->
-
         <div class="card">
             @if ($errors->any())
             <div class="card-header">
@@ -63,7 +65,7 @@
                 <div class="register-logo">
                     <img width="90px" src="{{asset('Backend/images/it-fast.png')}}">
                 </div>
-                <p class="login-box-msg">Welcome Back</p>
+                <p class="login-box-msg"><strong class="text-success">Welcome Back</strong></p>
 
 
                 <form action="{{ route('login.functionality') }}" method="post">
@@ -115,9 +117,9 @@
     <!-- jQuery -->
     <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap 4 -->
-    <script src="https://adminlte.io/themes/v3/"></script>
-    <script src="{{ asset('Backend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('Backend/dist/js/adminlte.min.js?v=3.2.0') }}"></script>
+    {{-- <script src="https://adminlte.io/themes/v3/"></script> --}}
+    {{-- <script src="{{ asset('Backend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('Backend/dist/js/adminlte.min.js?v=3.2.0') }}"></script> --}}
 
 </body>
 
