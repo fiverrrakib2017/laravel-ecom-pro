@@ -122,6 +122,18 @@
                                         placeholder="Enter Router Name" required>
                                 </div>
                                 <div class="form-group mb-3">
+                                    <label for="">POP/Branch</label>
+                                    <select type="text" class="form-control" id="pop_id" name="pop_id" required>
+                                        <option value="">---Select---</option>
+                                        @php
+                                            $pop = App\Models\Pop_branch::latest()->get();
+                                        @endphp
+                                        @foreach ($pop as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }} </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
                                     <label for="ip_address">IP Address</label>
                                     <input type="text" class="form-control" id="ip_address" name="ip_address"
                                         placeholder="Enter IP Address" required>

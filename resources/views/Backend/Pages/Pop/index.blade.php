@@ -18,7 +18,6 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Full Name</th>
-                                    <th>Username</th>
                                     <th>Mobile</th>
                                     <th>Active Customer</th>
                                     <th>Online</th>
@@ -65,11 +64,12 @@
                         "data": "id"
                     },
                     {
-                        "data": "name"
+                        "data": "name",
+                        render: function(data, type, row) {
+                            return `<a href="{{ route('admin.pop.view', '') }}/${row.id}">${row.name}</a>`;
+                        }
                     },
-                    {
-                        "data": "username"
-                    },
+
                     {
                         "data": "phone"
                     },

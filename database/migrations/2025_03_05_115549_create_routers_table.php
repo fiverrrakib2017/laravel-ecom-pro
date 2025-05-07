@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('routers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('pop_id');
             $table->string('name');
             $table->string('ip_address');
             $table->string('username');
@@ -20,9 +21,11 @@ return new class extends Migration
             $table->string('port')->default('8728');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('api_version')->nullable();
-            $table->string('location')->nullable();     
+            $table->string('location')->nullable();
             $table->text('remarks')->nullable();
             $table->timestamps();
+
+            $table->foreign('pop_id')->references('id')->on('pop_branches')->onDelete('cascade');
         });
     }
 

@@ -221,7 +221,7 @@
                     <a href="#"
                         class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-map-marker-alt"></i>
-                        <p>POP Area <i class="right fas fa-angle-left"></i></p>
+                        <p>POP/Branch <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
