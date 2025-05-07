@@ -680,32 +680,53 @@ class CustomerController extends Controller
     {
         $object = Customer_recharge::find($id);
 
-        /*Update Customer Table Expire date*/
-        $recharge_months = explode(',', $object->recharge_month);
-        $months_count = count($recharge_months);
-        $new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime($object->paid_until)));
-        $customer = Customer::find($object->customer_id);
-        $customer->expire_date = $new_paid_until;
-        $customer->update();
+        if(empty($object)){
+            return response()->json(['success' => false, 'message' => 'Not found.']);
+            exit;
+        }
 
+        if($object->transaction_type!=='due_paid'){
+            /*Update Customer Table Expire date*/
+            $recharge_months = explode(',', $object->recharge_month);
+            $months_count = count($recharge_months);
+            $new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime($object->paid_until)));
+            $customer = Customer::find($object->customer_id);
+            $customer->expire_date = $new_paid_until;
+            $customer->update();
+        }
         if ($object) {
             $object->delete();
-            customer_log($customer->id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Undo!');
+            customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Undo!');
             return response()->json(['success' => true, 'message' => 'Successfully!']);
             exit();
         } else {
-            return response()->json(['success' => false, 'message' => 'Not found.']);
+            return response()->json(['success' => false, 'message' => 'Something went wrong.']);
         }
     }
     public function customer_recharge_print($recharge_id)
     {
         $data = Customer_recharge::find($recharge_id);
         if (!$data) {
-            return redirect()->back();
-            exit();
+            return response()->json(['success' => false, 'message' => 'Not found.']);
+            exit;
         }
-        return view('Backend.Pages.Customer.print', compact('data'));
-        exit();
+        $html = '
+        <div style="font-family: monospace; font-size: 12px; text-align: center;">
+            <strong>ISP Billing System</strong><br>
+            -----------------------------<br>
+            Customer Name: ' . $data->customer->fullname . '<br>
+            Customer ID: ' . $data->customer->id . '<br>
+            Date: ' . \Carbon\Carbon::parse($data->created_at)->format('d M Y') . '<br>
+            Months: ' . $data->recharge_month . '<br>
+            Type: ' . ucfirst($data->transaction_type) . '<br>
+            Amount: ' . number_format($data->amount, 2) . ' BDT<br>
+            Paid Until: ' . \Carbon\Carbon::parse($data->paid_until)->format('d M Y') . '<br>
+            Remarks: ' . ucfirst($data->note??'-') . '<br>
+            -----------------------------<br>
+            Thank You!
+        </div>';
+
+       return response()->json(['success' => true, 'html' => $html]);
     }
 
     public function customer_payment_history()

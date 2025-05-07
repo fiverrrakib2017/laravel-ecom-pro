@@ -617,14 +617,48 @@
                 var button = $(this);
                 var row = button.closest('tr');
                 var originalContent = button.html();
-                button.html('<i class="fas fa-spinner fa-spin"></i> Loading...').prop('disabled', true);
-                setTimeout(() => {
-                    window.open("{{ route('admin.customer.recharge.print', ':id') }}".replace(
-                        ':id', id));
-                }, 1000);
-                button.html(originalContent).prop('disabled', false);
 
+                /* Show loading*/
+                button.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+
+                /* Wait for 1 second before making the Ajax call*/
+                setTimeout(() => {
+                    var url = "{{ route('admin.customer.recharge.print', ':id') }}".replace(':id',
+                        id);
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        success: function(response) {
+                            if (response.success == false) {
+                                toastr.error(response.message);
+                                return;
+                            }
+                            if (response.success == true) {
+                                var myWindow = window.open('', 'PrintWindow',
+                                    'height=500,width=400');
+                                myWindow.document.write(
+                                    '<html><head><title>Print Slip</title>');
+                                myWindow.document.write('<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">');
+                                myWindow.document.write('<style>body { font-family: "Poppins", sans-serif; font-size: 12px; text-align: center; }</style>');
+                                myWindow.document.write('</head><body>');
+                                myWindow.document.write(response.html);
+                                myWindow.document.write('</body></html>');
+                                myWindow.document.close();
+                                myWindow.focus();
+                                myWindow.print();
+                                myWindow.close();
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Could not load print slip.');
+                        },
+                        complete: function() {
+                            button.html(originalContent).prop('disabled', false);
+                        }
+                    });
+                }, 1000);
             });
+
             /** Customer Re-connect button click **/
             $(document).on('click', 'button[name="customer_re_connect_btn"]', function() {
                 if (confirm('Are you sure you want to undo this action?')) {
@@ -707,6 +741,7 @@
                     "{{ $data->id }}"),
                 method: 'GET',
                 success: function(response) {
+                    // console.log(response);
                     if (response.success) {
                         const downloadSpeed = response.rx_mb;
                         const uploadSpeed = response.tx_mb;
