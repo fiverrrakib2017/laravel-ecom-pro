@@ -655,6 +655,10 @@ class CustomerController extends Controller
                     $enableQuery = new Query('/ppp/secret/enable');
                     $enableQuery->equal('numbers', $customer->username);
                     $client->query($enableQuery)->read();
+                    /*Update Customer Status After Completed Recharge*/
+                    $customer = Customer::find($request->customer_id);
+                    $customer->status = 'online';
+                    $customer->update();
                 }
                 return response()->json([
                     'success' => true,
