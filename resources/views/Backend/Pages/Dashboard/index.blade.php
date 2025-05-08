@@ -549,7 +549,7 @@
         });
         /************************** Card Move Another Place*****************************************/
         /************************** Server Information Start*****************************************/
-        function loadServerStats() {
+        function __load_server_stats() {
             fetch('/server-information')
                 .then(response => response.json())
                 .then(data => {
@@ -560,8 +560,8 @@
                 .catch(error => console.error('Error fetching server stats:', error));
         }
 
-        setInterval(loadServerStats, 5000);
-        loadServerStats(); // প্রথমবার কল
+        setInterval(__load_server_stats, 1000);
+        __load_server_stats();
         /************************** Server Information End*****************************************/
     </script>
 @endsection
