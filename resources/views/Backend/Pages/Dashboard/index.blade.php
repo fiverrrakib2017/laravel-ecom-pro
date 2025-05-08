@@ -251,6 +251,39 @@
         @endforeach
     </div>
 
+    @if ($branch_user_id == null)
+    <div class="row">
+        <div class="col-lg-3 col-12">
+            <div class="info-box bg-info">
+                <span class="info-box-icon"><i class="fas fa-memory"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">RAM Usage</span>
+                    <span class="info-box-number" id="ram-usage">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-12">
+            <div class="info-box bg-warning">
+                <span class="info-box-icon"><i class="fas fa-microchip"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">CPU Usage</span>
+                    <span class="info-box-number" id="cpu-usage">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-12">
+            <div class="info-box bg-success">
+                <span class="info-box-icon"><i class="fas fa-hdd"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Disk Usage</span>
+                    <span class="info-box-number" id="disk-usage">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+
     <div class="row mt-4">
         <div class="col-md-6">
             <div class="card">
@@ -383,6 +416,7 @@
 @section('script')
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+
     <script type="text/javascript">
         $("#branch_recharge_datatable").DataTable();
         /*GET Recevied Controller Data with json formate for script file*/
@@ -514,5 +548,20 @@
             resetOrder();
         });
         /************************** Card Move Another Place*****************************************/
+        /************************** Server Information Start*****************************************/
+        function loadServerStats() {
+            fetch('/server-information')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('ram-usage').textContent = data.ram;
+                    document.getElementById('cpu-usage').textContent = data.cpu;
+                    document.getElementById('disk-usage').textContent = data.disk;
+                })
+                .catch(error => console.error('Error fetching server stats:', error));
+        }
+
+        setInterval(loadServerStats, 5000);
+        loadServerStats(); // প্রথমবার কল
+        /************************** Server Information End*****************************************/
     </script>
 @endsection

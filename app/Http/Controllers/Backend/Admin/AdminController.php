@@ -117,7 +117,7 @@ class AdminController extends Controller
             $tickets=Ticket::where('pop_id',$branch_user_id)->latest()->count();
             $ticket_completed=Ticket::where('pop_id',$branch_user_id)->where('status','1')->count();
             $ticket_pending=Ticket::where('pop_id',$branch_user_id)->where('status','0')->count();
-    
+
             /*Customer Details*/
             $online_customer=Customer::where('pop_id',$branch_user_id)->where('status','online')->count();
             $active_customer=Customer::where('pop_id',$branch_user_id)->where('status','active')->count();
@@ -129,17 +129,17 @@ class AdminController extends Controller
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount')?? 0;
-    
+
             $totalPaid = Customer_recharge::where('pop_id',$branch_user_id)->where('transaction_type', '!=', 'credit')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount')?? 0;
-    
+
             $get_total_due = Customer_recharge::where('pop_id',$branch_user_id)->where('transaction_type', 'credit')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount') ?? 0;
-    
+
             $duePaid = Customer_recharge::where('pop_id',$branch_user_id)->where('transaction_type', 'due_paid')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
@@ -150,7 +150,7 @@ class AdminController extends Controller
             $tickets=Ticket::latest()->count();
             $ticket_completed=Ticket::where('status','1')->count();
             $ticket_pending=Ticket::where('status','0')->count();
-    
+
             /*Customer Details*/
             $online_customer=Customer::where('status','online')->count();
             $active_customer=Customer::where('status','active')->count();
@@ -162,27 +162,39 @@ class AdminController extends Controller
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount')?? 0;
-    
+
             $totalPaid = Customer_recharge::where('transaction_type', '!=', 'credit')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount')?? 0;
-    
+
             $get_total_due = Customer_recharge::where('transaction_type', 'credit')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount') ?? 0;
-    
+
             $duePaid = Customer_recharge::where('transaction_type', 'due_paid')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount') ?? 0;
         }
-       
+
 
         $totalDue=$get_total_due-$duePaid;
         return view('Backend.Pages.Dashboard.index',compact('total_area','tickets','ticket_completed','ticket_pending','online_customer','active_customer','expire_customer','offline_customer','disable_customer','total_recharged','totalPaid','totalDue','duePaid'));
     }
+     /*Server Information*/
+     public function server_info(){
+        $ramUsage = shell_exec("free -m | awk 'NR==2{printf \"%.2f\", $3*100/$2 }'");
+        $cpuUsage = shell_exec("top -bn1 | grep 'Cpu(s)' | awk '{print 100 - $8}'");
+        $diskUsage = shell_exec("df -h / | awk 'NR==2{print $5}'");
+
+        return response()->json([
+            'ram' => trim($ramUsage) . '%',
+            'cpu' => trim($cpuUsage) . '%',
+            'disk' => trim($diskUsage),
+        ]);
+     }
 
     public function logout(){
         Auth::guard('admin')->logout();

@@ -52,6 +52,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
     Route::post('/admin/get_dashboard_data', [AdminController::class, 'get_data'])->name('admin.dashboard_get_all_data');
+    Route::get('/server-information', [AdminController::class, 'server_info'])->name('admin.server_info');
 
     /** Tickets  Route **/
     Route::prefix('admin/ticket')->group(function () {
