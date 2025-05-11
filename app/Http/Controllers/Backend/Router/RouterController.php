@@ -68,6 +68,7 @@ class RouterController extends Controller
         /* Create a new Supplier*/
         $object = new Router();
         $object->name = $request->name;
+        $object->pop_id = $request->pop_id;
         $object->ip_address = $request->ip_address;
         $object->username = $request->username;
         $object->password = $request->password;
@@ -182,6 +183,7 @@ class RouterController extends Controller
 
         $object = Router::findOrFail($id);
         $object->name = $request->name;
+        $object->pop_id = $request->pop_id;
         $object->ip_address = $request->ip_address;
         $object->username = $request->username;
         $object->password = $request->password;
