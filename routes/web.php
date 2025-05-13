@@ -31,6 +31,7 @@ use App\Http\Controllers\Backend\Router\RouterController;
 use App\Http\Controllers\Backend\Settings\Others\SettingsController;
 use App\Http\Controllers\Backend\Sms\SmsController;
 use App\Http\Controllers\Backend\Client\ClientController;
+use App\Http\Controllers\Backend\Hrm\department_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
 use App\Http\Controllers\Backend\Teacher\TeacherController;
@@ -470,7 +471,7 @@ Route::group(['middleware' => 'admin'], function () {
     /* HR & Admin Management Route */
     Route::prefix('admin/hr-management')->group(function () {
         /* Shift Route */
-       Route::prefix('shift')->group(function(){
+        Route::prefix('shift')->group(function(){
             Route::controller(Shift_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.hr.shift.index');
                  Route::get('/all_data','all_data')->name('admin.hr.shift.all_data');
@@ -478,6 +479,16 @@ Route::group(['middleware' => 'admin'], function () {
                  Route::post('/update','update')->name('admin.hr.shift.update');
                  Route::post('/delete','delete')->name('admin.hr.shift.delete');
                  Route::get('/get_shift/{id}','get_shift')->name('admin.hr.shift.get_shift');
+            });
+        });
+        Route::prefix('department')->group(function(){
+            Route::controller(department_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.hr.department.index');
+                 Route::get('/all_data','all_data')->name('admin.hr.department.all_data');
+                 Route::post('/store','store')->name('admin.hr.department.store');
+                 Route::post('/update','update')->name('admin.hr.department.update');
+                 Route::post('/delete','delete')->name('admin.hr.department.delete');
+                 Route::get('/get_department/{id}','get_department')->name('admin.hr.department.get_department');
             });
         });
     });

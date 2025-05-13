@@ -15,9 +15,8 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Shift Name</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
+                                <th>Department Name</th>
+                                <th>Designation Name</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -36,7 +35,7 @@
             <div class="modal-content col-md-12">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><span
-                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;New Shift</h5>
+                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;New Designation</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                           </button>
@@ -45,16 +44,9 @@
                     <form action="{{route('admin.hr.shift.store')}}" method="POST" enctype="multipart/form-data">@csrf
                         <div class="form-group mb-2">
                             <label>Shift Name</label>
-                            <input name="shift_name" placeholder="Enter Shift Name" class="form-control" type="text" >
+                            <input name="shift_name" placeholder="Enter Designation Name" class="form-control" type="text" >
                         </div>
-                        <div class="form-group mb-2">
-                            <label>Start TIme</label>
-                            <input name="start_time" class="form-control" type="time" >
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>End TIme</label>
-                            <input name="end_time" class="form-control" type="time" >
-                        </div>
+
                         <div class="modal-footer ">
                             <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
                             <button type="submit" class="btn btn-success">Save Changes</button>
@@ -73,7 +65,7 @@
             <div class="modal-content col-md-12">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><span
-                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;Update Shift</h5>
+                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;Designation Shift</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                           </button>
@@ -85,14 +77,7 @@
                             <input type="text" class="d-none" name="id">
                             <input name="shift_name" placeholder="Enter Shift Name" class="form-control" type="text" >
                         </div>
-                        <div class="form-group mb-2">
-                            <label>Start TIme</label>
-                            <input name="start_time" class="form-control" type="time" >
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>End TIme</label>
-                            <input name="end_time" class="form-control" type="time" >
-                        </div>
+
                         <div class="modal-footer ">
                             <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
                             <button type="submit" class="btn btn-success">Save Changes</button>
@@ -140,7 +125,7 @@
       "responsive": true,
       "serverSide":true,
       ajax: {
-            url: "{{ route('admin.hr.shift.all_data') }}",
+            url: "{{ route('admin.hr.designation.all_data') }}",
             type: 'GET',
             data: function(d) {
               d.class_id = $('#search_class_id').val();
@@ -254,7 +239,7 @@
     /* Edit button click handler*/
     $(document).on("click", "button[name='edit_button']", function() {
         var _id = $(this).data("id");
-        var editUrl = '{{ route("admin.hr.shift.get_shift", ":id") }}';
+        var editUrl = '{{ route("admin.hr.designation.get_shift", ":id") }}';
         var url = editUrl.replace(':id', _id);
         $.ajax({
           url: url,
