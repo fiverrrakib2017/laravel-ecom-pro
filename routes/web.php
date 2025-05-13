@@ -37,6 +37,7 @@ use App\Http\Controllers\Backend\Teacher\TeacherController;
 use App\Http\Controllers\Backend\Teacher\Transaction\TeacherTransaction_controller;
 use App\Http\Controllers\Backend\Tickets\Assign_controller;
 use App\Http\Controllers\Backend\Tickets\Complain_typeController;
+use App\Http\Controllers\Backend\Hrm\Shift_controller;
 use App\Http\Controllers\Backend\Tickets\Ticket_controller;
 use App\Models\Product_Category;
 use App\Models\Router;
@@ -466,6 +467,21 @@ Route::group(['middleware' => 'admin'], function () {
             });
         });
     });
+    /* HR & Admin Management Route */
+    Route::prefix('admin/hr-management')->group(function () {
+        /* Shift Route */
+       Route::prefix('shift')->group(function(){
+            Route::controller(Shift_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.hr.shift.index');
+                 Route::get('/all_data','all_data')->name('admin.hr.shift.all_data');
+                 Route::post('/store','store')->name('admin.hr.shift.store');
+                 Route::post('/update','update')->name('admin.hr.shift.update');
+                 Route::post('/delete','delete')->name('admin.hr.shift.delete');
+                 Route::get('/get_shift/{id}','get_shift')->name('admin.hr.shift.get_shift');
+            });
+        });
+    });
+
     /** Settings Management  Route **/
     Route::prefix('admin/settings/')->group(function () {
         Route::controller(SettingsController::class)->group(function () {

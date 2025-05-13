@@ -399,13 +399,16 @@
                     </ul>
                 </li>
                 <!-- HR Management -->
+                 @php
+                    $active_prefix = ['admin.hr.shift.index'];
+                @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <p>HR Management <i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <!-- Employee Management -->
                         <li class="nav-item">
                             <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
@@ -461,7 +464,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.hr.shift.index') }}" class="nav-link {{ $route == 'admin.hr.shift.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Shift Management</p>
                             </a>
                         </li>
