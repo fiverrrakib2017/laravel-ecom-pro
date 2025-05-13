@@ -33,6 +33,7 @@ use App\Http\Controllers\Backend\Sms\SmsController;
 use App\Http\Controllers\Backend\Client\ClientController;
 use App\Http\Controllers\Backend\Hrm\Department_controller;
 use App\Http\Controllers\Backend\Hrm\Designation_controller;
+use App\Http\Controllers\Backend\Hrm\Employee_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
 use App\Http\Controllers\Backend\Teacher\TeacherController;
@@ -500,6 +501,17 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/update','update')->name('admin.hr.designation.update');
                 Route::post('/delete','delete')->name('admin.hr.designation.delete');
                 Route::get('/get_designation/{id}','get_designation')->name('admin.hr.designation.get_designation');
+            });
+        });
+        Route::prefix('employee')->group(function(){
+            Route::controller(Employee_controller::class)->group(function(){
+                Route::get('/create','create')->name('admin.hr.employee.create');
+                Route::get('/index','index')->name('admin.hr.employee.index');
+                Route::get('/all_data','all_data')->name('admin.hr.employee.all_data');
+                Route::post('/store','store')->name('admin.hr.employee.store');
+                Route::post('/update','update')->name('admin.hr.employee.update');
+                Route::post('/delete','delete')->name('admin.hr.employee.delete');
+                Route::get('/get_employee/{id}','get_employee')->name('admin.hr.employee.get_employee');
             });
         });
     });
