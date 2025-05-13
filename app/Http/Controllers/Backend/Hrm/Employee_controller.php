@@ -179,6 +179,7 @@ class Employee_controller extends Controller
         $designation = Designation::latest()->get();
         return view('Backend.Pages.Hrm.Employee.edit', compact('department','designation', 'data'));
     }
+
     public function update(Request $request)
     {
         /* Validate the form data */
@@ -268,6 +269,14 @@ class Employee_controller extends Controller
             'success' => true,
             'message' => 'Updated Successfully',
         ]);
+    }
+
+    public function view($id)
+    {
+        $data = Employee::find($id);
+        $department = Department::latest()->get();
+        $designation = Designation::latest()->get();
+        return view('Backend.Pages.Hrm.Employee.view', compact('department','designation', 'data'));
     }
 
     public function delete(Request $request)

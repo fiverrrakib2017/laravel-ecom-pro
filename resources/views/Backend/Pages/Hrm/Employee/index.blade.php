@@ -56,10 +56,12 @@
                                         </td>
                                         <td>
                                             <div class="d-flex gap-1">
+                                                <button type="button" class="btn btn-sm btn-danger ml-1 delete-btn"><i class="fas fa-trash"></i></button>
                                                 <a href="{{ route('admin.hr.employee.edit', $employee->id) }}"
-                                                    class="btn btn-sm btn-primary ml-1">Edit</a>
-                                                <a href="{{ route('admin.hr.employee.edit', $employee->id) }}"
-                                                    class="btn btn-sm btn-info ml-1">View</a>
+                                                    class="btn btn-sm btn-primary ml-1"><i class="fas fa-edit"></i></a>
+                                                <a href="{{ route('admin.hr.employee.view', $employee->id) }}"
+                                                    class="btn btn-sm btn-success ml-1"><i class="fas fa-eye"></i></a>
+
                                             </div>
                                         </td>
 
@@ -182,7 +184,6 @@
                     success: function(response) {
                         if (response.success) {
                             toastr.success(response.message);
-                            table.ajax.reload(null, false);
                             $('#deleteModal').modal('hide');
                         }
                     },
