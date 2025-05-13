@@ -511,6 +511,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/store','store')->name('admin.hr.employee.store');
                 Route::post('/update','update')->name('admin.hr.employee.update');
                 Route::post('/delete','delete')->name('admin.hr.employee.delete');
+                Route::get('/edit/{id}','edit')->name('admin.hr.employee.edit');
                 Route::get('/get_employee/{id}','get_employee')->name('admin.hr.employee.get_employee');
             });
         });

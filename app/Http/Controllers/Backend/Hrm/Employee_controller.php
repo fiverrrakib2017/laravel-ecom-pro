@@ -20,7 +20,8 @@ class Employee_controller extends Controller
     }
     public function index()
     {
-        return view('Backend.Pages.Hrm.Employee.index');
+        $employees=Employee::with('department', 'designation')->latest()->get();
+        return view('Backend.Pages.Hrm.Employee.index', compact('employees'));
     }
     public function all_data(Request $request)
     {
@@ -163,20 +164,44 @@ class Employee_controller extends Controller
             'message' => 'Added Successfully',
         ]);
     }
-    public function get_designation($id)
+    public function get_employee($id)
     {
-        $data = Designation::with('department')->find($id);
+        $data = Employee::with('department', 'designation')->find($id);
         return response()->json([
             'success' => true,
             'data' => $data,
         ]);
     }
+    public function edit($id)
+    {
+        $data = Employee::find($id);
+        $department = Department::latest()->get();
+        $designation = Designation::latest()->get();
+        return view('Backend.Pages.Hrm.Employee.create', compact('department','designation', 'data'));
+    }
     public function update(Request $request)
     {
         /* Validate the form data */
+        /* Validate the form data*/
         $rules = [
-            'department_id' => 'required|integer',
-            'designation_name' => 'required|string|max:255',
+        'name'                  => 'required|string|max:255',
+        'email'                 => 'required|email|unique:employees,email',
+        'phone'                 => 'required',
+        'hire_date'             => 'required|date',
+        'address'               => 'required|string',
+        'father_name'           => 'required|string',
+        'mother_name'           => 'required|string',
+        'gender'                => 'required',
+        'birth_date'            => 'required|date',
+        'national_id'           => 'required|unique:employees,national_id',
+        'religion'              => 'required|string',
+        'highest_education'     => 'required|string',
+        'department_id'         => 'required|exists:departments,id',
+        'designation_id'        => 'required|exists:designations,id',
+        'salary'                => 'required|numeric',
+        'emergency_contact_name'=> 'required|string',
+        'emergency_contact_phone'=> 'required|string',
+        'status'                => 'required|in:active,inactive,resigned',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -190,9 +215,10 @@ class Employee_controller extends Controller
             );
         }
 
+
         /* Find the existing instance */
-        $object = Designation::find($request->id);
-        if (!$object) {
+        $employee = Employee::find($request->id);
+        if (!$employee) {
             return response()->json(
                 [
                     'success' => false,
@@ -200,14 +226,35 @@ class Employee_controller extends Controller
                 ],
                 404,
             );
+            exit;
         }
 
         /* Update the Instance */
-        $object->department_id = $request->department_id;
-        $object->name = $request->designation_name;
+        $employee->name                     = $request->name;
+        $employee->email                    = $request->email;
+        $employee->phone                    = $request->phone;
+        $employee->phone_2                  = $request->phone_2;
+        $employee->hire_date                = $request->hire_date;
+        $employee->address                  = $request->address;
+        $employee->father_name              = $request->father_name;
+        $employee->mother_name              = $request->mother_name;
+        $employee->gender                   = $request->gender;
+        $employee->birth_date               = $request->birth_date;
+        $employee->national_id              = $request->national_id;
+        $employee->religion                 = $request->religion;
+        $employee->blood_group              = $request->blood_group;
+        $employee->highest_education        = $request->highest_education;
+        $employee->previous_school          = $request->previous_school;
+        $employee->department_id            = $request->department_id;
+        $employee->designation_id           = $request->designation_id;
+        $employee->salary                   = $request->salary;
+        $employee->emergency_contact_name   = $request->emergency_contact_name;
+        $employee->emergency_contact_phone  = $request->emergency_contact_phone;
+        $employee->remarks                  = $request->remarks;
+        $employee->status                   = $request->status;
 
         /* Save the changes to the database table */
-        $object->update();
+        $employee->update();
 
         return response()->json([
             'success' => true,
@@ -217,7 +264,7 @@ class Employee_controller extends Controller
 
     public function delete(Request $request)
     {
-        $object = Designation::find($request->id);
+        $object = Employee::find($request->id);
         $object->delete();
         return response()->json([
             'success' => true,
