@@ -5,10 +5,10 @@
 <div class="row justify-content-center">
     <div class="col-lg-9">
         <div class="card">
-            <form action="{{ route('admin.hr.employee.update', $data->id) }}" method="POST" enctype="multipart/form-data" id="addEmployeeForm">
+            <form action="{{ route('admin.hr.employee.update') }}" method="POST" enctype="multipart/form-data" id="addEmployeeForm">
                 @csrf
                 <div class="card-body">
-
+                    <input type="hidden" name="id" value="{{ $data->id}}">
                     <!-- 1. Personal Information -->
                     <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
                         <legend class="w-auto px-3 text-primary fw-bold">Personal Information</legend>
@@ -43,8 +43,13 @@
                                 <input type="text" name="address" class="form-control"  placeholder="Enter Address" value="{{ $data->address ?? '' }}"  required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <img id="preview" class="img-fluid" src="{{ asset('uploads/photos/',$data->photo) }}" alt="Image Preview" style=" max-width: 100px; max-height: 100px;" />
+                                @if(!empty($data->photo))
+                                    <img id="preview" class="img-fluid" src="{{ asset('uploads/photos/' . $data->photo) }}" alt="Image Preview" style="max-width: 100px; max-height: 100px;" />
+                                @else
+                                    <img id="preview" class="img-fluid" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />
+                                @endif
                             </div>
+
                         </div>
                     </fieldset>
 
@@ -124,7 +129,7 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label>Salary <span class="text-danger">*</span></label>
-                                <input type="number" name="salary" class="form-control" step="0.01" placeholder="Enter Salary" value="{{ $data->salary?? '' }}">
+                                <input type="number" name="salary" class="form-control" step="0.01" placeholder="Enter Salary" value="{{ intval($data->salary) ?? '' }}">
                             </div>
                         </div>
                     </fieldset>

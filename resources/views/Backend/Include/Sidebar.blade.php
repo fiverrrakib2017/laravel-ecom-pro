@@ -400,7 +400,7 @@
                 </li>
                 <!-- HR Management -->
                  @php
-                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index'];
+                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
@@ -411,7 +411,7 @@
                     <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <!-- Employee Management -->
                         <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.index') }}" class="nav-link {{ $route=='admin.hr.employee.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.hr.employee.index') }}" class="nav-link {{ $route=='admin.hr.employee.index' || $route=='admin.hr.employee.update' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Employee List</p>
                             </a>
                         </li>

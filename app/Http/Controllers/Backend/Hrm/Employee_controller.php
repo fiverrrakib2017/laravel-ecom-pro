@@ -177,32 +177,32 @@ class Employee_controller extends Controller
         $data = Employee::find($id);
         $department = Department::latest()->get();
         $designation = Designation::latest()->get();
-        return view('Backend.Pages.Hrm.Employee.create', compact('department','designation', 'data'));
+        return view('Backend.Pages.Hrm.Employee.edit', compact('department','designation', 'data'));
     }
     public function update(Request $request)
     {
         /* Validate the form data */
-        /* Validate the form data*/
         $rules = [
-        'name'                  => 'required|string|max:255',
-        'email'                 => 'required|email|unique:employees,email',
-        'phone'                 => 'required',
-        'hire_date'             => 'required|date',
-        'address'               => 'required|string',
-        'father_name'           => 'required|string',
-        'mother_name'           => 'required|string',
-        'gender'                => 'required',
-        'birth_date'            => 'required|date',
-        'national_id'           => 'required|unique:employees,national_id',
-        'religion'              => 'required|string',
-        'highest_education'     => 'required|string',
-        'department_id'         => 'required|exists:departments,id',
-        'designation_id'        => 'required|exists:designations,id',
-        'salary'                => 'required|numeric',
-        'emergency_contact_name'=> 'required|string',
-        'emergency_contact_phone'=> 'required|string',
-        'status'                => 'required|in:active,inactive,resigned',
+            'name'                      => 'required|string|max:255',
+            'email'                     => 'required|email|unique:employees,email,' . $request->id,
+            'phone'                     => 'required',
+            'hire_date'                 => 'required|date',
+            'address'                   => 'required|string',
+            'father_name'               => 'required|string',
+            'mother_name'               => 'required|string',
+            'gender'                    => 'required',
+            'birth_date'                => 'required|date',
+            'national_id'               => 'required|unique:employees,national_id,' . $request->id,
+            'religion'                  => 'required|string',
+            'highest_education'         => 'required|string',
+            'department_id'             => 'required|exists:departments,id',
+            'designation_id'            => 'required|exists:designations,id',
+            'salary'                    => 'required|numeric',
+            'emergency_contact_name'    => 'required|string',
+            'emergency_contact_phone'   => 'required|string',
+            'status'                    => 'required|in:active,inactive,resigned',
         ];
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -252,6 +252,14 @@ class Employee_controller extends Controller
         $employee->emergency_contact_phone  = $request->emergency_contact_phone;
         $employee->remarks                  = $request->remarks;
         $employee->status                   = $request->status;
+
+        /* Handle photo upload if available*/
+        if ($request->hasFile('photo')) {
+            $file       = $request->file('photo');
+            $filename   = time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/photos'), $filename);
+            $employee->photo= $filename;
+        }
 
         /* Save the changes to the database table */
         $employee->update();
