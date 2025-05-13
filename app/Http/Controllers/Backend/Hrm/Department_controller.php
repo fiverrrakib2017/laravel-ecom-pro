@@ -7,7 +7,7 @@ use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class department_controller extends Controller
+class Department_controller extends Controller
 {
     public function index()
     {
@@ -26,7 +26,12 @@ class department_controller extends Controller
         /*Apply the search filter*/
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%$search%");
+                $q->where('name', 'like', "%$search%")
+
+                  //   ->orWhereHas('student', function($q) use ($search) {
+                //       $q->where('name', 'like', "%$search%");
+                //   });
+                ;
             });
         }
 

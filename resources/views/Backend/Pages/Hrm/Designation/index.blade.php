@@ -7,7 +7,7 @@
         <div class="card">
         <div class="card-header">
           <button data-toggle="modal" data-target="#addModal"  class="btn btn-success "><i class="mdi mdi-account-plus"></i>
-          Add New Shift</button>
+          Add New Designation</button>
           </div>
             <div class="card-body">
                 <div class="table-responsive" id="tableStyle">
@@ -41,10 +41,19 @@
                           </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{route('admin.hr.shift.store')}}" method="POST" enctype="multipart/form-data">@csrf
+                    <form action="{{route('admin.hr.designation.store')}}" method="POST" enctype="multipart/form-data">@csrf
                         <div class="form-group mb-2">
-                            <label>Shift Name</label>
-                            <input name="shift_name" placeholder="Enter Designation Name" class="form-control" type="text" >
+                            <label>Department Name</label>
+                            <select name="department_id" class="form-control" type="text">
+                                <option value="">---Select---</option>
+                                @foreach ($department as  $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label>Designation Name</label>
+                            <input name="designation_name" placeholder="Enter Designation Name" class="form-control" type="text" >
                         </div>
 
                         <div class="modal-footer ">
@@ -65,17 +74,26 @@
             <div class="modal-content col-md-12">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><span
-                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;Designation Shift</h5>
+                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;Designation Update</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                           </button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ route('admin.hr.shift.update') }}" method="POST" enctype="multipart/form-data">@csrf
+                    <form action="{{ route('admin.hr.designation.update') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                          <input type="text" class="d-none" name="id">
+                        <label>Department Name</label>
+                        <select name="department_id" class="form-control" type="text">
+                            <option value="">---Select---</option>
+                            @foreach ($department as  $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
                         <div class="form-group mb-2">
-                            <label>Shift Name</label>
+                            <label>Designation Name</label>
                             <input type="text" class="d-none" name="id">
-                            <input name="shift_name" placeholder="Enter Shift Name" class="form-control" type="text" >
+                            <input name="designation_name" placeholder="Enter Designation Name" class="form-control" type="text" >
                         </div>
 
                         <div class="modal-footer ">
@@ -90,7 +108,7 @@
 
 <div id="deleteModal" class="modal fade">
     <div class="modal-dialog modal-confirm">
-        <form action="{{route('admin.hr.shift.delete')}}" method="post" enctype="multipart/form-data">
+        <form action="{{route('admin.hr.designation.delete')}}" method="post" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
             <div class="modal-header flex-column">
@@ -142,17 +160,10 @@
       "columns":[
         {"data":"id"},
         {
+          "data": "department.name",
+        },
+        {
           "data": "name",
-        },
-        {"data":"start_time",
-        "render": function(data, type, row) {
-            return moment(data, 'HH:mm:ss').format('hh:mm A');
-          }
-        },
-        {"data":"end_time",
-        "render": function(data, type, row) {
-            return moment(data, 'HH:mm:ss').format('hh:mm A');
-          }
         },
         {
           "data":null,
@@ -239,7 +250,7 @@
     /* Edit button click handler*/
     $(document).on("click", "button[name='edit_button']", function() {
         var _id = $(this).data("id");
-        var editUrl = '{{ route("admin.hr.designation.get_shift", ":id") }}';
+        var editUrl = '{{ route("admin.hr.designation.get_designation", ":id") }}';
         var url = editUrl.replace(':id', _id);
         $.ajax({
           url: url,
@@ -250,11 +261,8 @@
                 //var data = response.data;
                 $('#editModal').modal('show');
                 $('#editModal input[name="id"]').val(response.data.id);
-                $('#editModal input[name="shift_name"]').val(response.data.name);
-                $('#editModal input[name="start_time"]').val(response.data.start_time);
-                $('#editModal input[name="end_time"]').val(response.data.end_time);
-              } else {
-                  toastr.error("Error fetching data for edit: " + response.message);
+                $('#editModal select[name="department_id"]').val(response.data.department_id).trigger('change');
+                $('#editModal input[name="designation_name"]').val(response.data.name);
               }
           },
           error: function(xhr) {

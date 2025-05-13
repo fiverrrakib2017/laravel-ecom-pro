@@ -31,7 +31,8 @@ use App\Http\Controllers\Backend\Router\RouterController;
 use App\Http\Controllers\Backend\Settings\Others\SettingsController;
 use App\Http\Controllers\Backend\Sms\SmsController;
 use App\Http\Controllers\Backend\Client\ClientController;
-use App\Http\Controllers\Backend\Hrm\department_controller;
+use App\Http\Controllers\Backend\Hrm\Department_controller;
+use App\Http\Controllers\Backend\Hrm\Designation_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
 use App\Http\Controllers\Backend\Teacher\TeacherController;
@@ -482,13 +483,23 @@ Route::group(['middleware' => 'admin'], function () {
             });
         });
         Route::prefix('department')->group(function(){
-            Route::controller(department_controller::class)->group(function(){
+            Route::controller(Department_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.hr.department.index');
                  Route::get('/all_data','all_data')->name('admin.hr.department.all_data');
                  Route::post('/store','store')->name('admin.hr.department.store');
                  Route::post('/update','update')->name('admin.hr.department.update');
                  Route::post('/delete','delete')->name('admin.hr.department.delete');
                  Route::get('/get_department/{id}','get_department')->name('admin.hr.department.get_department');
+            });
+        });
+        Route::prefix('designation')->group(function(){
+            Route::controller(Designation_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.hr.designation.index');
+                Route::get('/all_data','all_data')->name('admin.hr.designation.all_data');
+                Route::post('/store','store')->name('admin.hr.designation.store');
+                Route::post('/update','update')->name('admin.hr.designation.update');
+                Route::post('/delete','delete')->name('admin.hr.designation.delete');
+                Route::get('/get_designation/{id}','get_designation')->name('admin.hr.designation.get_designation');
             });
         });
     });
