@@ -7,20 +7,27 @@
         <div class="card">
         <div class="card-header">
           <button type="button" data-toggle="modal" data-target="#addModal"  class="btn btn-success "><i class="mdi mdi-account-plus"></i>
-          Add New Leave</button>
+          Create Employee Salary</button>
           </div>
             <div class="card-body">
                 <div class="table-responsive" id="tableStyle">
-                    <table id="datatable1" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                    <table id="datatable1" class="table table-bordered dt-responsive nowrap"
+                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Photo</th>
                                 <th>Employee Name</th>
-                                <th>Leave Type</th>
-                                <th>Leave Reason</th>
+                                <th>Department Name</th>
+                                <th>Designation Name</th>
+                                <th>Basic Salary</th>
+                                <th>House Allowance</th>
+                                <th>Medical Allowance</th>
+                                <th>Other Allowance</th>
+                                <th>Tax</th>
+                                <th>Net Salary</th>
+                                <th>Effective From</th>
                                 <th>Status</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -190,6 +197,11 @@
 @endsection
 
 @section('script')
+<script>
+    const basePhotoUrl = "{{ asset('uploads/photos') }}";
+    const defaultAvatar = "{{ asset('Backend/images/avatar.png') }}";
+</script>
+
 <script type="text/javascript">
   $(document).ready(function(){
     var table = $("#datatable1").DataTable({
@@ -197,7 +209,7 @@
       "responsive": true,
       "serverSide":true,
       ajax: {
-            url: "{{ route('admin.hr.employee.leave.all_data') }}",
+            url: "{{ route('admin.hr.employee.salary.all_data') }}",
             type: 'GET',
             data: function(d) {
               d.class_id = $('#search_class_id').val();
@@ -213,46 +225,58 @@
       },
       "columns":[
         {"data":"id"},
-        {
-          "data": "employee.name",
-        },
-        {
-          "data": "leave_type",
-        },
-        {
-          "data": "leave_reason",
-          "render":function(data,type,row){
-            if(data.length > 50){
-                return data.substring(0, 30) + '...';
-            }else{
-                return data
-            }
-          }
-        },
-        {
-          "data": "leave_status",
-            "render":function(data, type, row){
-                if(data=='pending'){
-                    return '<span class="badge bg-warning">Pending</span>';
-                }
-                if(data=='approved'){
-                    return '<span class="badge bg-success">Approved</span>';
-                }
-                if(data=='rejected'){
-                    return '<span class="badge bg-danger">Rejected</span>';
-                }
 
+        {
+        data: null,
+            render: function(data, type, row, meta) {
+                if (data.employee && data.employee.photo !== null) {
+                return `<img src="${basePhotoUrl}/${data.employee.photo}" width="40" height="40" class="rounded-circle">`;
+                } else {
+                return `<img src="${defaultAvatar}" width="40" height="40" class="rounded-circle">`;
+                }
             }
         },
-        {"data":"start_date",
-        "render": function(data, type, row) {
+        {"data":"employee.name"},
+        {
+          "data": "employee.department.name",
+        },
+        {
+          "data": "employee.designation.name",
+        },
+        {
+          "data": "basic_salary",
+        },
+        {
+          "data": "house_allowance",
+        },
+        {
+          "data": "medical_allowance",
+        },
+        {
+          "data": "other_allowance",
+        },
+        {
+          "data": "tax",
+        },
+        {
+          "data": "net_salary",
+        },
+        {
+          "data": "effective_from",
+          "render": function(data, type, row) {
             return formatDate(data);
           }
         },
-        {"data":"end_date",
-        "render": function(data, type, row) {
-            return formatDate(data);
-        }
+        {
+          "data": "is_current",
+          "render":function(data,type,row){
+            if(data=='1'){
+                    return '<span class="badge bg-success">New</span>';
+                }
+                else{
+                     return '<span class="badge bg-primary">Old</span>';
+                }
+          }
         },
         {
           "data":null,

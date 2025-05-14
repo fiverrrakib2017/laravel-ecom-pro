@@ -400,7 +400,7 @@
                 </li>
                 <!-- HR Management -->
                  @php
-                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index'];
+                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
@@ -437,7 +437,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.hr.employee.salary.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Salary</p>
                             </a>
                         </li>
@@ -580,12 +580,12 @@
                                 <p>Client</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="https://admin.futureictbd.com/admin/customer/ticket/list" class="nav-link "><i
                                     class="far fa-circle nav-icon"></i>
                                 <p>Client Ticket</p>
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
 

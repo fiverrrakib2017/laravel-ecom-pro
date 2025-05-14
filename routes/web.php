@@ -31,10 +31,12 @@ use App\Http\Controllers\Backend\Router\RouterController;
 use App\Http\Controllers\Backend\Settings\Others\SettingsController;
 use App\Http\Controllers\Backend\Sms\SmsController;
 use App\Http\Controllers\Backend\Client\ClientController;
+use App\Http\Controllers\Backend\Hrm\Attendance_controller;
 use App\Http\Controllers\Backend\Hrm\Department_controller;
 use App\Http\Controllers\Backend\Hrm\Designation_controller;
 use App\Http\Controllers\Backend\Hrm\Employee_controller;
 use App\Http\Controllers\Backend\Hrm\Leave_controller;
+use App\Http\Controllers\Backend\Hrm\Salary_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
 use App\Http\Controllers\Backend\Teacher\TeacherController;
@@ -484,6 +486,7 @@ Route::group(['middleware' => 'admin'], function () {
                  Route::get('/get_shift/{id}','get_shift')->name('admin.hr.shift.get_shift');
             });
         });
+        /* Department Route */
         Route::prefix('department')->group(function(){
             Route::controller(Department_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.hr.department.index');
@@ -494,6 +497,7 @@ Route::group(['middleware' => 'admin'], function () {
                  Route::get('/get_department/{id}','get_department')->name('admin.hr.department.get_department');
             });
         });
+        /* Designation Route */
         Route::prefix('designation')->group(function(){
             Route::controller(Designation_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.hr.designation.index');
@@ -504,6 +508,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/get_designation/{id}','get_designation')->name('admin.hr.designation.get_designation');
             });
         });
+        /* Employee Route */
         Route::prefix('employee')->group(function(){
             Route::controller(Employee_controller::class)->group(function(){
                 Route::get('/create','create')->name('admin.hr.employee.create');
@@ -528,18 +533,31 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/get_leave/{id}','get_leave')->name('admin.hr.employee.leave.get_leave');
             });
         });
-        // /*Student Attendence */
-        // Route::prefix('attendence')->group(function(){
-        //     Route::controller(Attendance_controller::class)->group(function(){
-        //         Route::get('/index','index')->name('admin.student.attendence.index');
-        //         Route::post('/store','store')->name('admin.student.attendence.store');
-        //         Route::post('/update','update')->name('admin.student.attendence.update');
-        //         Route::post('/delete','delete')->name('admin.student.attendence.delete');
-        //         Route::get('/get_attendance/{id}','get_attendance')->name('admin.student.attendence.get_attendance');
-        //         Route::get('/log','attendance_log')->name('admin.student.attendence.log');
-        //         Route::post('/report','attendance_report')->name('admin.student.attendence.report');
-        //     });
-        // });
+        /*Employee Attendence */
+        Route::prefix('attendence')->group(function(){
+            Route::controller(Attendance_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.student.attendence.index');
+                Route::post('/store','store')->name('admin.student.attendence.store');
+                Route::post('/update','update')->name('admin.student.attendence.update');
+                Route::post('/delete','delete')->name('admin.student.attendence.delete');
+                Route::get('/get_attendance/{id}','get_attendance')->name('admin.student.attendence.get_attendance');
+                Route::get('/log','attendance_log')->name('admin.student.attendence.log');
+                Route::post('/report','attendance_report')->name('admin.student.attendence.report');
+            });
+        });
+        /*Employee Attendence */
+        Route::prefix('employee-salary')->group(function(){
+            Route::controller(Salary_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.hr.employee.salary.index');
+                   Route::get('/all_data','all_data')->name('admin.hr.employee.salary.all_data');
+                // Route::post('/store','store')->name('admin.hr.employee.attendence.store');
+                // Route::post('/update','update')->name('admin.hr.employee.attendence.update');
+                // Route::post('/delete','delete')->name('admin.hr.employee.attendence.delete');
+                // Route::get('/get_attendance/{id}','get_attendance')->name('admin.hr.employee.attendence.get_attendance');
+                // Route::get('/log','attendance_log')->name('admin.hr.employee.attendence.log');
+                // Route::post('/report','attendance_report')->name('admin.hr.employee.attendence.report');
+            });
+        });
     });
 
     /** Settings Management  Route **/
