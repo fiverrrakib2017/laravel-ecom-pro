@@ -34,6 +34,7 @@ use App\Http\Controllers\Backend\Client\ClientController;
 use App\Http\Controllers\Backend\Hrm\Department_controller;
 use App\Http\Controllers\Backend\Hrm\Designation_controller;
 use App\Http\Controllers\Backend\Hrm\Employee_controller;
+use App\Http\Controllers\Backend\Hrm\Leave_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
 use App\Http\Controllers\Backend\Teacher\TeacherController;
@@ -516,6 +517,29 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/get_employee/{id}','get_employee')->name('admin.hr.employee.get_employee');
             });
         });
+        /*Employee Leave */
+        Route::prefix('leave')->group(function(){
+            Route::controller(Leave_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.hr.employee.leave.index');
+                Route::get('/all_data','all_data')->name('admin.hr.employee.leave.all_data');
+                Route::post('/store','store')->name('admin.hr.employee.leave.store');
+                Route::post('/update','update')->name('admin.hr.employee.leave.update');
+                Route::post('/delete','delete')->name('admin.hr.employee.leave.delete');
+                Route::get('/get_leave/{id}','get_leave')->name('admin.hr.employee.leave.get_leave');
+            });
+        });
+        // /*Student Attendence */
+        // Route::prefix('attendence')->group(function(){
+        //     Route::controller(Attendance_controller::class)->group(function(){
+        //         Route::get('/index','index')->name('admin.student.attendence.index');
+        //         Route::post('/store','store')->name('admin.student.attendence.store');
+        //         Route::post('/update','update')->name('admin.student.attendence.update');
+        //         Route::post('/delete','delete')->name('admin.student.attendence.delete');
+        //         Route::get('/get_attendance/{id}','get_attendance')->name('admin.student.attendence.get_attendance');
+        //         Route::get('/log','attendance_log')->name('admin.student.attendence.log');
+        //         Route::post('/report','attendance_report')->name('admin.student.attendence.report');
+        //     });
+        // });
     });
 
     /** Settings Management  Route **/
