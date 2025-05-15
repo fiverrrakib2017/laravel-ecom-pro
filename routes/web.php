@@ -521,7 +521,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/view/{id}','view')->name('admin.hr.employee.view');
                 Route::get('/get_employee/{id}','get_employee')->name('admin.hr.employee.get_employee');
                 Route::get('/id_card-print/{employee_ids?}','id_card_print')->name('admin.hr.employee.card.print');
-                
+
             });
         });
         /*Employee Leave */
@@ -553,6 +553,19 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/index','index')->name('admin.hr.employee.salary.index');
                    Route::get('/all_data','all_data')->name('admin.hr.employee.salary.all_data');
                 // Route::post('/store','store')->name('admin.hr.employee.attendence.store');
+                // Route::post('/update','update')->name('admin.hr.employee.attendence.update');
+                // Route::post('/delete','delete')->name('admin.hr.employee.attendence.delete');
+                // Route::get('/get_attendance/{id}','get_attendance')->name('admin.hr.employee.attendence.get_attendance');
+                // Route::get('/log','attendance_log')->name('admin.hr.employee.attendence.log');
+                // Route::post('/report','attendance_report')->name('admin.hr.employee.attendence.report');
+            });
+        });
+        /*Employee Attendence */
+        Route::prefix('employee-salary-advance')->group(function(){
+            Route::controller(Salary_controller::class)->group(function(){
+                Route::get('/advance_salary','advance_salary')->name('admin.hr.employee.salary.advance.index');
+                Route::get('/advance_salary_all_data','advance_salary_all_data')->name('admin.hr.employee.advance.salary.all_data');
+                Route::post('/store','advance_salary_store')->name('admin.hr.employee.salary.advance.store');
                 // Route::post('/update','update')->name('admin.hr.employee.attendence.update');
                 // Route::post('/delete','delete')->name('admin.hr.employee.attendence.delete');
                 // Route::get('/get_attendance/{id}','get_attendance')->name('admin.hr.employee.attendence.get_attendance');
