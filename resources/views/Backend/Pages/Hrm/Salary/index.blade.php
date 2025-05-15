@@ -6,8 +6,8 @@
     <div class="col-md-12 ">
         <div class="card">
         <div class="card-header">
-          <button type="button" data-toggle="modal" data-target="#addModal"  class="btn btn-success "><i class="mdi mdi-account-plus"></i>
-          Create Employee Salary</button>
+          {{-- <button type="button" data-toggle="modal" data-target="#addModal"  class="btn btn-success "><i class="mdi mdi-account-plus"></i>
+           Employee Prom</button> --}}
           </div>
             <div class="card-body">
                 <div class="table-responsive" id="tableStyle">

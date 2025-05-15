@@ -8,13 +8,17 @@
                 <div class="card-header">
                     <a href="{{ route('admin.hr.employee.create') }}" class="btn btn-success "><i class="fas fa-users"></i>
                         Add New Employee</a>
+                        <button type="button" id="printBtn" class="btn btn-primary "><i class="fas fa-print"></i>
+                            Generate ID Card</button>
                 </div>
                 <div class="card-body">
+
                     <div class="table-responsive" id="tableStyle">
                         <table id="datatable1" class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
+                                    <th><input type="checkbox" class="" id="employee_select_all"/></th>
                                     <th>Photo</th>
                                     <th>Name</th>
                                     <th>Email</th>
@@ -29,6 +33,7 @@
                             <tbody>
                                 @foreach ($employees as $employee)
                                     <tr>
+                                          <td><input type="checkbox" class="employee-checkbox" value="{{ $employee->id }}" name="employee_ids[]"/></td>
                                         <td>
 
                                             @if (!empty($employee->photo))
@@ -111,9 +116,48 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready(function() {
+            $(document).on('change','#employee_select_all',function(){
+                if ($(this).is(':checked')) {
+                    $(".employee-checkbox").prop('checked', true);
+                } else {
+                    $(".employee-checkbox").prop('checked', false);
+                }
+            });
+            $(document).on('click', '#printBtn', function() {
+            /*keep reference*/
+            let print_button = $(this);
+
+            /* Show spinner & disable button*/
+            print_button.html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...`
+            );
+            print_button.prop('disabled', true);
+
+            /* Delay spinner for 1s*/
+            setTimeout(() => {
+                var selectedIds = [];
+                $(".employee-checkbox:checked").each(function() {
+                    selectedIds.push($(this).val());
+                });
+
+                if (selectedIds.length > 0) {
+                    var url = "{{ route('admin.hr.employee.card.print', [ 'employee_ids' => ':employee_ids']) }}";
+                    var employee_ids = selectedIds.join(',');
+                    url = url.replace(':employee_ids', employee_ids);
+
+                    window.open(url, '_blank');
+                } else {
+                    toastr.error("Please select at least one Employee.");
+                }
+
+                /* Restore button after task done*/
+                print_button.html(`<i class="fas fa-print"></i> Generate ID Card`);
+                /* Enable button*/
+                print_button.prop('disabled', false);
+
+            }, 1000);
+        });
             var table = $("#datatable1").DataTable();
-
-
             /* General form submission handler*/
             function handleFormSubmit(modalId, form) {
                 $(modalId + ' form').submit(function(e) {

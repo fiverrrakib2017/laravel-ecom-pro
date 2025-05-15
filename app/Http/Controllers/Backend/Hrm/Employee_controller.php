@@ -278,6 +278,14 @@ class Employee_controller extends Controller
         $designation = Designation::latest()->get();
         return view('Backend.Pages.Hrm.Employee.view', compact('department','designation', 'data'));
     }
+    public function id_card_print($employee_ids){
+        $employee_ids = explode(',', $employee_ids);
+        $employees = Employee::with(['department', 'designation'])
+                        ->whereIn('id', $employee_ids)
+                        ->get();
+        return view('Backend.Pages.Hrm.Employee.card', compact('employees'));
+
+    }
 
     public function delete(Request $request)
     {

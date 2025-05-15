@@ -520,6 +520,8 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/edit/{id}','edit')->name('admin.hr.employee.edit');
                 Route::get('/view/{id}','view')->name('admin.hr.employee.view');
                 Route::get('/get_employee/{id}','get_employee')->name('admin.hr.employee.get_employee');
+                Route::get('/id_card-print/{employee_ids?}','id_card_print')->name('admin.hr.employee.card.print');
+                
             });
         });
         /*Employee Leave */
