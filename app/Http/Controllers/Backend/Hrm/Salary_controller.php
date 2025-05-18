@@ -54,6 +54,8 @@ class Salary_controller extends Controller
             'data' => $items,
         ]);
     }
+
+    /*************************** Advance Salary  Start *************************************************/
     public function advance_salary(){
          $employee=Employee::latest()->get();
         return view('Backend.Pages.Hrm.Salary.advance_salary',compact('employee'));
@@ -117,13 +119,66 @@ class Salary_controller extends Controller
         $object->employee_id = $request->employee_id;
         $object->amount = $request->amount;
         $object->advance_date = $request->advance_date;
-        $object->description = $request->shift_name;
+        $object->description = $request->description;
         /*Save to the database table*/
         $object->save();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Added Successfully'
         ]);
     }
+    public function get_advance_salary($request_id){
+        if(empty($request_id)){
+            return response()->json(['success'=>false, 'message'=>'ID Not Provide']);
+            exit;
+        }
+       $data= Employee_advance::find($request_id);
+       return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+    public function update_advance_salary(Request $request){
+        /* Validate the form data */
+        $rules = [
+            'employee_id' => 'required|exists:employees,id',
+            'amount' => 'required|numeric|min:1',
+            'advance_date' => 'required|date',
+            'description' => 'nullable|string'
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        /* Find the existing instance */
+        $object = Employee_advance::find($request->id);
+        if (!$object) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Not found'
+            ], 404);
+        }
+
+        /* Update the Instance */
+        $object->employee_id = $request->employee_id;
+         $object->amount = $request->amount;
+        $object->advance_date = $request->advance_date;
+        $object->description = $request->description;
+
+        /* Save the changes to the database table */
+        $object->update();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Updated Successfully'
+        ]);
+    }
+
+    /*************************** Advance Salary  END *************************************************/
 }

@@ -73,7 +73,7 @@
                             <input name="advance_date" class="form-control" type="date" required></input>
                         </div>
                         <div class="form-group mb-2">
-                            <label>Leave Status</label>
+                            <label>Status</label>
                             <select name="status" class="form-control" type="text" required>
                                 <option >---Select---</option>
                                 <option value="Pending">Pending</option>
@@ -102,13 +102,13 @@
             <div class="modal-content col-md-12">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><span
-                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;Update Leave</h5>
+                        class="mdi mdi-account-check mdi-18px"></span> &nbsp;Update Advance Salary</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                           </button>
                 </div>
                 <div class="modal-body">
-                <form action="{{route('admin.hr.employee.leave.update')}}" method="POST" enctype="multipart/form-data">
+                <form action="{{route('admin.hr.employee.advance.advance_salary')}}" method="POST" enctype="multipart/form-data">
                     @csrf
                          <div class="form-group mb-2">
                             <label>Employee Name</label>
@@ -133,7 +133,7 @@
                             <input name="advance_date" class="form-control" type="text" required></input>
                         </div>
                         <div class="form-group mb-2">
-                            <label>Leave Status</label>
+                            <label>Status</label>
                             <select name="status" class="form-control" type="text" required>
                                 <option >---Select---</option>
                                 <option value="Pending">Pending</option>
@@ -143,7 +143,7 @@
                         </div>
                         <div class="form-group mb-2">
                             <label>Approved Date</label>
-                            <input name="approved_date" class="form-control" type="date"  required>
+                            <input name="approved_date" class="form-control" type="date"  >
                         </div>
                         <div class="modal-footer ">
                             <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
@@ -361,7 +361,7 @@
     /* Edit button click handler*/
     $(document).on("click", "button[name='edit_button']", function() {
         var _id = $(this).data("id");
-        var editUrl = '{{ route("admin.hr.employee.leave.get_leave", ":id") }}';
+        var editUrl = '{{ route("admin.hr.employee.advance.get_advance_salary", ":id") }}';
         var url = editUrl.replace(':id', _id);
         $.ajax({
           url: url,
@@ -372,12 +372,12 @@
                 //var data = response.data;
                 $('#editModal').modal('show');
                 $('#editModal input[name="id"]').val(response.data.id);
-                $('#editModal select[name="employee_id"]').val(response.data.employee_id);
-                $('#editModal select[name="leave_type"]').val(response.data.leave_type);
-                $('#editModal textarea[name="leave_reason"]').val(response.data.leave_reason);
-                $('#editModal select[name="leave_status"]').val(response.data.leave_status).trigger('change');
-                $('#editModal input[name="start_date"]').val(response.data.start_date);
-                $('#editModal input[name="end_date"]').val(response.data.end_date);
+                $('#editModal select[name="employee_id"]').val(response.data.employee_id).trigger('change');
+                $('#editModal input[name="amount"]').val(response.data.amount);
+                $('#editModal textarea[name="description"]').val(response.data.description);
+                $('#editModal input[name="advance_date"]').val(response.data.advance_date).trigger('change');
+                $('#editModal select[name="status"]').val(response.data.status).trigger('change');
+                $('#editModal input[name="approved_date"]').val(response.data.approved_date);
               } else {
                   toastr.error("Error fetching data for edit: " + response.message);
               }

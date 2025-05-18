@@ -566,7 +566,8 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/advance_salary','advance_salary')->name('admin.hr.employee.salary.advance.index');
                 Route::get('/advance_salary_all_data','advance_salary_all_data')->name('admin.hr.employee.advance.salary.all_data');
                 Route::post('/store','advance_salary_store')->name('admin.hr.employee.salary.advance.store');
-                // Route::post('/update','update')->name('admin.hr.employee.attendence.update');
+                Route::get('/get_advance_salary/{id}','get_advance_salary')->name('admin.hr.employee.advance.get_advance_salary');
+                Route::post('/update','update_advance_salary')->name('admin.hr.employee.advance.advance_salary');
                 // Route::post('/delete','delete')->name('admin.hr.employee.attendence.delete');
                 // Route::get('/get_attendance/{id}','get_attendance')->name('admin.hr.employee.attendence.get_attendance');
                 // Route::get('/log','attendance_log')->name('admin.hr.employee.attendence.log');
