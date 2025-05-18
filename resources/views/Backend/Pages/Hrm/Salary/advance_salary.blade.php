@@ -157,7 +157,7 @@
 
 <div id="deleteModal" class="modal fade">
     <div class="modal-dialog modal-confirm">
-        <form action="{{route('admin.hr.employee.leave.delete')}}" method="post" enctype="multipart/form-data">
+        <form action="{{route('admin.hr.employee.advance.delete')}}" method="post" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
             <div class="modal-header flex-column">

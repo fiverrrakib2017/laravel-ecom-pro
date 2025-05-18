@@ -181,4 +181,13 @@ class Salary_controller extends Controller
     }
 
     /*************************** Advance Salary  END *************************************************/
+
+    public function delete(Request $request){
+        $object = Employee_advance::find($request->id);
+        $object->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Delete Successfully'
+        ]);
+    }
 }
