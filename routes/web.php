@@ -569,6 +569,9 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/get_advance_salary/{id}','get_advance_salary')->name('admin.hr.employee.advance.get_advance_salary');
                 Route::post('/update','update_advance_salary')->name('admin.hr.employee.advance.advance_salary');
                 Route::post('/delete','delete')->name('admin.hr.employee.advance.delete');
+                //Advance Salary Report
+                Route::get('/report','advance_salary_report')->name('admin.hr.employee.salary.advance.report');
+                Route::post('/fetch_report','fetch_advance_salary_report_data')->name('admin.hr.employee.salary.advance.fetch.report');
             });
         });
     });

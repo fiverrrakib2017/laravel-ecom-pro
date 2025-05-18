@@ -400,7 +400,7 @@
                 </li>
                 <!-- HR Management -->
                  @php
-                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index','admin.hr.employee.salary.advance.index'];
+                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index','admin.hr.employee.salary.advance.index', 'admin.hr.employee.salary.advance.report'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
@@ -444,6 +444,11 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.hr.employee.salary.advance.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Advance Salary</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hr.employee.salary.advance.report') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.report' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                <p>Advance Salary Report</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -580,12 +585,6 @@
                                 <p>Client</p>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
-                            <a href="https://admin.futureictbd.com/admin/customer/ticket/list" class="nav-link "><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Client Ticket</p>
-                            </a>
-                        </li> --}}
                     </ul>
                 </li>
 
