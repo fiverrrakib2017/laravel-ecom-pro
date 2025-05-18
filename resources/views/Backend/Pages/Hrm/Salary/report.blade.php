@@ -1,6 +1,17 @@
 @extends('Backend.Layout.App')
 @section('title', 'Dashboard | Advance Salary Report | Admin Panel')
 @section('style')
+<style>
+    @media print {
+        button, .btn, .form-group, .card-header, #search_box {
+            display: none !important;
+        }
+
+        table {
+            font-size: 12px;
+        }
+    }
+</style>
 @endsection
 @section('content')
     <div class="row">
@@ -37,7 +48,7 @@
                         </div>
                     </form>
                 </div>
-                <div class="card-body" id="print_area">
+                <div class="card-body d-none" id="print_area">
 
                     <div class="row">
                         <div class="col-md-12 text-right">
@@ -47,8 +58,7 @@
 
                     <div class="table-responsive responsive-table">
 
-                        <table id="datatable1" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <table id="datatable1" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
                                     <th class="">No.</th>
@@ -115,6 +125,19 @@
                         button.attr('disabled', false);
                     }
                 });
+            });
+
+               $('#print_button').click(function () {
+                var printContents = document.getElementById('print_area').innerHTML;
+                var originalContents = document.body.innerHTML;
+
+                document.body.innerHTML = printContents;
+
+                window.print();
+
+                document.body.innerHTML = originalContents;
+
+                location.reload();
             });
     </script>
 
