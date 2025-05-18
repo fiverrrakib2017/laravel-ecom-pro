@@ -52,6 +52,25 @@ class Salary_controller extends Controller
             'data' => $items,
         ]);
     }
+    public function get_employee_salary(Request $request){
+        $salary = Employee_salaries::where('employee_id', $request->employee_id)->where('is_current', true)->first();
+
+        if(empty($salary)){
+            return response()->json([
+                'success'=>false,
+                'message'=>'Not Found',
+            ]);
+            exit; 
+        }
+
+        return response()->json([
+            'basic_salary' => $salary->basic_salary,
+            'house_allowance' => $salary->house_allowance,
+            'medical_allowance' => $salary->medical_allowance,
+            'other_allowance' => $salary->other_allowance,
+            'tax' => $salary->tax,
+        ]);
+    }
 
     /*************************** Advance Salary  Start *************************************************/
     public function advance_salary()

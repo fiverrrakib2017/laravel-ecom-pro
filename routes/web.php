@@ -36,6 +36,7 @@ use App\Http\Controllers\Backend\Hrm\Department_controller;
 use App\Http\Controllers\Backend\Hrm\Designation_controller;
 use App\Http\Controllers\Backend\Hrm\Employee_controller;
 use App\Http\Controllers\Backend\Hrm\Leave_controller;
+use App\Http\Controllers\Backend\Hrm\Payroll_controller;
 use App\Http\Controllers\Backend\Hrm\Salary_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
 use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
@@ -551,16 +552,11 @@ Route::group(['middleware' => 'admin'], function () {
         Route::prefix('employee-salary')->group(function(){
             Route::controller(Salary_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.hr.employee.salary.index');
-                   Route::get('/all_data','all_data')->name('admin.hr.employee.salary.all_data');
-                // Route::post('/store','store')->name('admin.hr.employee.attendence.store');
-                // Route::post('/update','update')->name('admin.hr.employee.attendence.update');
-                // Route::post('/delete','delete')->name('admin.hr.employee.attendence.delete');
-                // Route::get('/get_attendance/{id}','get_attendance')->name('admin.hr.employee.attendence.get_attendance');
-                // Route::get('/log','attendance_log')->name('admin.hr.employee.attendence.log');
-                // Route::post('/report','attendance_report')->name('admin.hr.employee.attendence.report');
+                Route::get('/all_data','all_data')->name('admin.hr.employee.salary.all_data');
+                Route::post('/get-salary', 'get_employee_salary')->name('admin.hr.employee.salary.get_employee_salary');
             });
         });
-        /*Employee Attendence */
+        /*Employee Advance Salary */
         Route::prefix('employee-salary-advance')->group(function(){
             Route::controller(Salary_controller::class)->group(function(){
                 Route::get('/advance_salary','advance_salary')->name('admin.hr.employee.salary.advance.index');
@@ -572,6 +568,12 @@ Route::group(['middleware' => 'admin'], function () {
                 //Advance Salary Report
                 Route::get('/report','advance_salary_report')->name('admin.hr.employee.salary.advance.report');
                 Route::post('/fetch_report','fetch_advance_salary_report_data')->name('admin.hr.employee.salary.advance.fetch.report');
+            });
+        });
+        /*Employee Payroll Management */
+        Route::prefix('employee-payroll-management')->group(function(){
+            Route::controller(Payroll_controller::class)->group(function(){
+                 Route::get('/create','create')->name('admin.hr.employee.payroll.create');
             });
         });
     });
