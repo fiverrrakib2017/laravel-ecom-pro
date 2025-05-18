@@ -563,11 +563,14 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/advance_salary_all_data','advance_salary_all_data')->name('admin.hr.employee.advance.salary.all_data');
                 Route::post('/store','advance_salary_store')->name('admin.hr.employee.salary.advance.store');
                 Route::get('/get_advance_salary/{id}','get_advance_salary')->name('admin.hr.employee.advance.get_advance_salary');
+
                 Route::post('/update','update_advance_salary')->name('admin.hr.employee.advance.advance_salary');
                 Route::post('/delete','delete')->name('admin.hr.employee.advance.delete');
+
                 //Advance Salary Report
                 Route::get('/report','advance_salary_report')->name('admin.hr.employee.salary.advance.report');
                 Route::post('/fetch_report','fetch_advance_salary_report_data')->name('admin.hr.employee.salary.advance.fetch.report');
+                Route::post('/get_advance_salary_by_month','get_advance_salary_by_month')->name('admin.hr.employee.advance.get_advance_salary_by_month');
             });
         });
         /*Employee Payroll Management */

@@ -55,20 +55,39 @@ class Salary_controller extends Controller
     public function get_employee_salary(Request $request){
         $salary = Employee_salaries::where('employee_id', $request->employee_id)->where('is_current', true)->first();
 
-        if(empty($salary)){
+        if(!empty($salary)){
             return response()->json([
-                'success'=>false,
-                'message'=>'Not Found',
+                'basic_salary' =>intval($salary->basic_salary),
+                'advance_salary' => 0,
+                'loan' => 0,
+                'total_allowance' => intval($salary->house_allowance) + intval($salary->medical_allowance)+ intval($salary->other_allowance),
+                'tax' => intval($salary->tax),
             ]);
-            exit; 
+
         }
+        return response()->json([
+           'basic_salary' => 0,
+            'total_allowance' => 0,
+            'tax' => 0,
+        ]);
+        exit;
+    }
+    public function get_advance_salary_by_month(Request $request){
+         $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'month_year' => 'required|date_format:Y-m',
+        ]);
+
+        $month = date('m', strtotime($request->month_year));
+        $year = date('Y', strtotime($request->month_year));
+
+        $totalAdvance = Employee_advance::where('employee_id', $request->employee_id)
+            ->whereMonth('advance_date', $month)
+            ->whereYear('advance_date', $year)
+            ->sum('amount');
 
         return response()->json([
-            'basic_salary' => $salary->basic_salary,
-            'house_allowance' => $salary->house_allowance,
-            'medical_allowance' => $salary->medical_allowance,
-            'other_allowance' => $salary->other_allowance,
-            'tax' => $salary->tax,
+            'total_advance' => $totalAdvance
         ]);
     }
 
