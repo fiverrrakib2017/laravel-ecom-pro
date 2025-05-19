@@ -5,6 +5,7 @@ use App\Http\Controllers\Backend\Accounts\Ledger\LedgerController;
 use App\Http\Controllers\Backend\Accounts\Master_Ledger\MasterLedgerController;
 use App\Http\Controllers\Backend\Accounts\Sub_Ledger\SubLedgerController;
 use App\Http\Controllers\Backend\Accounts\Transaction\TransactionController;
+use App\Http\Controllers\Backend\Accounts\Transaction_controller;
 use App\Http\Controllers\Backend\Admin\AdminController;
 use App\Http\Controllers\Backend\Client\Client_invoiceController;
 use App\Http\Controllers\Backend\Customer\CustomerController;
@@ -543,6 +544,17 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/edit/{id}', 'get_account')->name('admin.account.edit');
                 Route::post('/update','update')->name('admin.account.update');
                 Route::post('/delete','delete')->name('admin.account.delete');
+            });
+        });
+        /* Account Transaction Route */
+        Route::prefix('account-transaction')->group(function(){
+            Route::controller(Transaction_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.account.transaction.index');
+                Route::get('/all_data','all_data')->name('admin.account.transaction.all_data');
+                Route::post('/store','store')->name('admin.account.transaction.store');
+                Route::get('/edit/{id}', 'get_transaction')->name('admin.account.transaction.edit');
+                Route::post('/update','update')->name('admin.account.transaction.update');
+                Route::post('/delete','delete')->name('admin.account.transaction.delete');
             });
         });
     });
