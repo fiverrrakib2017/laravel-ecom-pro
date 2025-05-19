@@ -587,20 +587,22 @@
                         </li>
                     </ul>
                 </li>
-
                 @endif
 
                 <!-----------------Accounts--------------------->
+                @php
+                    $active_prefix = ['admin.account.index'];
+                @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ in_array($route, $active_prefix) ? ' active' : '' }}">
                         <i class="nav-icon fas fa-calculator"></i>
                         <p>Accounts <i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <!-- Account List -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.account.index') }}" class="nav-link {{ $route == 'admin.account.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Account List</p>
                             </a>
                         </li>

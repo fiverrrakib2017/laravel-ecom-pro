@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('account_transactions', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('account_id'); // debit manage
             $table->unsignedBigInteger('related_account_id');//credit manage
             $table->decimal('amount', 15, 2);
