@@ -186,6 +186,33 @@ class CustomerController extends Controller
         ]);
 
     }
+    public function yearly_customer_chart(Request $request){
+
+        $year = now()->year;
+        $query = DB::table('customers')
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+            ->whereYear('created_at', $year);
+
+        if ($request->pop_id) {
+            $query->where('pop_id', $request->pop_id);
+        }
+
+        if ($request->area_id) {
+            $query->where('area_id', $request->area_id);
+        }
+
+        $monthly_customers = $query
+            ->groupByRaw('MONTH(created_at)')
+            ->orderByRaw('MONTH(created_at)')
+            ->pluck('total', 'month');
+
+        $data = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $data[] = $monthly_customers[$i] ?? 0;
+        }
+
+        return response()->json($data);
+    }
 
     public function store(Request $request)
     {

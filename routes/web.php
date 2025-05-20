@@ -113,6 +113,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/store', 'store')->name('admin.customer.store');
             Route::post('/update/{id}', 'update')->name('admin.customer.update');
             Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');
+            Route::post('/yearly_static', 'yearly_customer_chart')->name('admin.customer.yearly_static');
 
             /***** Customer Recharge *******/
             Route::post('/recharge/store', 'customer_recharge')->name('admin.customer.recharge.store');

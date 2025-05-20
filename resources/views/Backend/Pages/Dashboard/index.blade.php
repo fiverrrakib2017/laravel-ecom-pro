@@ -174,6 +174,7 @@
                     'value' => $online_customer,
                     'bg' => 'success',
                     'icon' => 'fa-user-check',
+                    // 'url' => route('customers.online')
                 ],
                 [
                     'id' => 2,
@@ -238,15 +239,17 @@
         @foreach ($dashboardCards as $card)
             <div class="col-lg-3 col-6 card-item wow animate__animated animate__fadeInUp" data-id="{{ $card['id'] }}"
                 data-wow-delay="0.{{ $card['id'] }}s">
-                <div class="small-box bg-{{ $card['bg'] }}">
-                    <div class="inner">
-                        <h3>{{ $card['value'] }}</h3>
-                        <p>{{ $card['title'] }}</p>
+                <a href="{{ $card['url'] ?? '#' }}" style="text-decoration: none;">
+                    <div class="small-box bg-{{ $card['bg'] }}">
+                        <div class="inner">
+                            <h3>{{ $card['value'] }}</h3>
+                            <p>{{ $card['title'] }}</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas {{ $card['icon'] }} fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <div class="icon">
-                        <i class="fas {{ $card['icon'] }} fa-2x text-gray-300"></i>
-                    </div>
-                </div>
+                </a>
             </div>
         @endforeach
     </div>
@@ -285,14 +288,7 @@
 
 
     <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-dark text-white">Yearly Customers Chart</div>
-                <div class="card-body">
-                    <canvas id="customer_chart"></canvas>
-                </div>
-            </div>
-        </div>
+        @include('Backend.Component.Chart.Customer_yearly_static')
         @include('Backend.Component.Chart.Online_offline_chart')
     </div>
 
@@ -419,48 +415,17 @@
 
     <script type="text/javascript">
         $("#branch_recharge_datatable").DataTable();
-        /*GET Recevied Controller Data with json formate for script file*/
-        var onlineCustomer = <?php echo json_encode($online_customer); ?>;
-        var offlineCustomer = <?php echo json_encode($offline_customer); ?>;
+
         /*Customer Recharge Details*/
         var total_recharged = <?php echo json_encode($total_recharged); ?>;
         var totalPaid = <?php echo json_encode($totalPaid); ?>;
         var totalDue = <?php echo json_encode($totalDue); ?>;
         var duePaid = <?php echo json_encode($duePaid); ?>;
 
-        /*************************** Yearly Customers Chat***************************************/
-        var ctx = document.getElementById('customer_chart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                datasets: [{
-                    label: 'Customer',
-                    data: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200],
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
 
 
-        /*************************** Online vs Offline Customers ***************************************/
-        var ctx2 = document.getElementById('customer_online_offline_chart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'pie',
-            data: {
-                labels: ['Online', 'Offline'],
-                datasets: [{
-                    data: [onlineCustomer, offlineCustomer],
-                    backgroundColor: ['#28a745', '#dc3545']
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
+
+
         /*************************** Bandwidth Usage Chart ***************************************/
         var ctx3 = document.getElementById('bandwidthChart').getContext('2d');
         new Chart(ctx3, {
