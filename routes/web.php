@@ -529,7 +529,9 @@ Route::group(['middleware' => 'admin'], function () {
         /*Employee Payroll Management */
         Route::prefix('employee-payroll-management')->group(function(){
             Route::controller(Payroll_controller::class)->group(function(){
-                 Route::get('/create','create')->name('admin.hr.employee.payroll.create');
+                Route::get('/index','index')->name('admin.hr.employee.payroll.index');
+                Route::get('/all_data','all_data')->name('admin.hr.employee.payroll.all_data');
+                Route::get('/create','create')->name('admin.hr.employee.payroll.create');
             });
         });
     });
