@@ -7,7 +7,17 @@
     </div>
 </div>
 
-
+@php
+    $get_pop_id=0;
+    if(!empty($branch_pop_id)){
+        $get_pop_id=$branch_pop_id;
+    }
+    else if(!empty($Pop_id)){
+        $get_pop_id=$pop_id;
+    }else{
+        $get_pop_id=0;
+    }
+@endphp
 
 <script type="text/javascript">
 
@@ -16,7 +26,7 @@
         url: "{{ route('admin.customer.yearly_static') }}",
         method: 'POST',
         data: {
-            pop_id: {{ $branch_user_id ?? 0 }},
+            pop_id: {{ $get_pop_id }},
             _token: '{{ csrf_token() }}'
         },
         success: function (response) {

@@ -356,29 +356,15 @@
     </div>
 
     <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-dark text-white">Yearly Revenue Chart</div>
-                <div class="card-body">
-                    <canvas id="revenueChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">Active vs Inactive Customers</div>
-                <div class="card-body">
-                    <canvas id="customerChart"></canvas>
-                </div>
-            </div>
-        </div>
+        @include('Backend.Component.Chart.Customer_yearly_static',['pop_id'=>$pop->id])
+        @include('Backend.Component.Chart.Online_offline_chart',['pop_id'=>$pop->id])
     </div>
 
 
 
 
 
-   
+
     @include('Backend.Modal.Pop.pop_modal')
     @include('Backend.Modal.Customer.customer_modal',['pop_id'=>$pop->id])
     @include('Backend.Modal.Customer.Package.branch_package_modal')

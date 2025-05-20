@@ -8,9 +8,29 @@
 </div>
 
 @php
-    /*Branch Transaction Current Balance*/
-    $online_customer = App\Models\Customer::where('status','online')->count();
-    $offline_customer = App\Models\Customer::where('status','offline')->count();
+    /*Get Customer Online Offline Count*/
+    $get_pop_id=0;
+    if(!empty($pop_id)){
+        $get_pop_id=$pop_id;
+    }else if(!empty($branch_user_id)){
+        $get_pop_id=$branch_user_id;
+    }else{
+        $get_pop_id=0;
+    }
+    /*Get Online Customer*/
+    $online_customer_query = App\Models\Customer::where('status', 'online');
+    if (!empty($get_pop_id)) {
+        $online_customer_query->where('pop_id', $get_pop_id);
+    }
+    $online_customer = $online_customer_query->count();
+    
+
+    /*Get Offline Customer*/
+    $offline_customer_query = App\Models\Customer::where('status', 'offline');
+    if (!empty($get_pop_id)) {
+        $offline_customer_query->where('pop_id', $get_pop_id);
+    }
+    $offline_customer = $offline_customer_query->count();
 @endphp
 
 <script type="text/javascript">
