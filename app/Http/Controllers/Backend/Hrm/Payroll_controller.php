@@ -95,6 +95,16 @@ class Payroll_controller extends Controller
                 'message' => 'Employee salary structure not found.',
             ]);
         }
+        /*Check this employee Already Paid this Month*/
+        if(!empty($request->employee_id) && !empty($request->month_year)){
+            $salary_check= Employee_payroll::where('employee_id', $request->employee_id)->where('month_year',$request->month_year)->first();
+            if($salary_check){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Employee salary Already Provide.',
+                ]);
+            }
+        }
         /* Create a new Instance*/
         $payroll = new Employee_payroll();
         $payroll->employee_id     = $request->employee_id;

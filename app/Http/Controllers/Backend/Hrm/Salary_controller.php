@@ -87,7 +87,7 @@ class Salary_controller extends Controller
             ->sum('amount');
 
         return response()->json([
-            'total_advance' => $totalAdvance
+            'total_advance' => intval($totalAdvance)
         ]);
     }
 

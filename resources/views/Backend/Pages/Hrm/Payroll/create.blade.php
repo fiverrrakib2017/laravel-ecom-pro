@@ -156,6 +156,7 @@
                     },
                     success: function(response) {
                         $("#advance_salary").val(response.total_advance);
+                         calculate_net_salary();
                     }
                 });
             });
