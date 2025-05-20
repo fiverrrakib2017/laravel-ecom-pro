@@ -9,7 +9,7 @@
                 </h3>
 
             </div>
-            <form action="" method="POST" id="payrollForm">
+            <form action="{{ route('admin.hr.employee.payroll.store') }}" method="POST" id="payrollForm">
                 @csrf
                 <div class="card-body row">
                     <div class="form-group col-md-3">
@@ -55,17 +55,17 @@
 
                     <div class="form-group col-md-3">
                         <label>Basic Salary</label>
-                        <input type="text" id="basic_salary" class="form-control" value="0" readonly>
+                        <input type="text" id="basic_salary" name="basic_salary" class="form-control" value="0" readonly>
                     </div>
 
                     <div class="form-group col-md-3">
                         <label>Allowances</label>
-                        <input type="text" id="allowances" class="form-control" value="0" readonly>
+                        <input type="text" id="allowances" name="allowances" class="form-control" value="0" readonly>
                     </div>
 
                     <div class="form-group col-md-3">
                         <label>Tax</label>
-                        <input type="text" id="tax" class="form-control" value="0" readonly>
+                        <input type="text" id="tax" name="tax" class="form-control" value="0" readonly>
                     </div>
 
                     <div class="form-group col-md-3">
@@ -156,6 +156,73 @@
                     },
                     success: function(response) {
                         $("#advance_salary").val(response.total_advance);
+                    }
+                });
+            });
+            $('#payrollForm').submit(function(e) {
+                e.preventDefault();
+
+                /* Get the submit button */
+                var submitBtn = $(this).find('button[type="submit"]');
+                var originalBtnText = submitBtn.html();
+
+                submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>');
+                submitBtn.prop('disabled', true);
+
+                var form = $(this);
+                var url = form.attr('action');
+                /*Change to FormData to handle file uploads*/
+                var formData = new FormData(this);
+
+                /* Use Ajax to send the request */
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function() {
+                        /* Disable the Form input */
+                        form.find(':input').prop('disabled', true);
+                        submitBtn.prop('disabled', true);
+                    },
+                    success: function(response) {
+
+                        if (response.success) {
+                            toastr.success(response.message);
+                            submitBtn.html(originalBtnText);
+                            submitBtn.prop('disabled', false);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                        }
+                        if(response.success == false){
+                            form.find(':input').prop('disabled', false);
+                            toastr.error(response.message);
+                            submitBtn.html(originalBtnText);
+                            submitBtn.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        submitBtn.html(originalBtnText);
+                        submitBtn.prop('disabled', false);
+                        form.find(':input').prop('disabled', false);
+
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            for (var field in errors) {
+                                toastr.error(errors[field][0]);
+                            }
+                        } else {
+                            toastr.error("Something went wrong! Please try again.");
+                        }
+                    },
+                    complete: function() {
+                        /* Reset button text and enable the button */
+                        form.find(':input').prop('disabled', false);
+                        submitBtn.html(originalBtnText);
+                        submitBtn.prop('disabled', false);
                     }
                 });
             });

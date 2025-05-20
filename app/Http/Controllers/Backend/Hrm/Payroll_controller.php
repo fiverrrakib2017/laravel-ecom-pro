@@ -9,6 +9,7 @@ use App\Models\Employee;
 use App\Models\Employee_advance;
 use App\Models\Employee_leave;
 use App\Models\Employee_payroll;
+use App\Models\Employee_salaries;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -58,6 +59,60 @@ class Payroll_controller extends Controller
             'recordsTotal' => $total,
             'recordsFiltered' => $total,
             'data' => $items,
+        ]);
+    }
+
+    public function store(Request $request){
+        /* Validate the form data*/
+        $rules = [
+            'employee_id'     => 'required|exists:employees,id',
+            'month_year'      => 'required|date',
+            'payment_date'    => 'nullable|date',
+            'payment_method'  => 'required|in:Cash,Bank',
+            'status'          => 'required|in:Paid,Unpaid',
+            'advance_salary'  => 'required|numeric',
+            'loan_deduction'  => 'required|numeric',
+            'net_salary'      => 'required|numeric',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
+        }
+
+        /*Get employee salary info*/
+        $salary = Employee_salaries::where('employee_id', $request->employee_id)->where('is_current',true)->first();
+
+        if (!$salary) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Employee salary structure not found.',
+            ]);
+        }
+        /* Create a new Instance*/
+        $payroll = new Employee_payroll();
+        $payroll->employee_id     = $request->employee_id;
+        $payroll->salary_id       = $salary->id;
+        $payroll->month_year      = $request->month_year;
+        $payroll->basic_salary    = $request->basic_salary;
+        $payroll->advance_salary  = $request->advance_salary;
+        $payroll->loan_deduction  = $request->loan_deduction;
+        $payroll->tax             = $salary->tax ?? 0;
+        $payroll->net_salary      = $request->net_salary;
+        $payroll->payment_date    = $request->payment_date;
+        $payroll->payment_method  = $request->payment_method;
+        $payroll->status          = $request->status;
+        $payroll->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Employee payroll created successfully.',
         ]);
     }
 

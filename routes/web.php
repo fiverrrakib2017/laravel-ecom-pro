@@ -532,6 +532,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/index','index')->name('admin.hr.employee.payroll.index');
                 Route::get('/all_data','all_data')->name('admin.hr.employee.payroll.all_data');
                 Route::get('/create','create')->name('admin.hr.employee.payroll.create');
+                Route::post('/store','store')->name('admin.hr.employee.payroll.store');
             });
         });
     });

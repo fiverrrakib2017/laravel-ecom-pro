@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('employee_id');
             $table->unsignedBigInteger('salary_id');
-            $table->date('month_year');
+            $table->string('month_year');
             $table->decimal('basic_salary', 10, 2);
             $table->decimal('advance_salary', 10, 2);
             $table->decimal('loan_deduction', 10, 2);
