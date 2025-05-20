@@ -158,22 +158,8 @@
     </div>
 
     <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-dark text-white">Yearly Revenue Chart</div>
-                <div class="card-body">
-                    <canvas id="revenueChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-primary text-white">Active vs Inactive Customers</div>
-                <div class="card-body">
-                    <canvas id="customerChart"></canvas>
-                </div>
-            </div>
-        </div>
+        @include('Backend.Component.Chart.Customer_yearly_static',['area_id'=>$data->id])
+        @include('Backend.Component.Chart.Online_offline_chart',['area_id'=>$data->id])
     </div>
 
 
