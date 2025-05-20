@@ -116,5 +116,13 @@ class Payroll_controller extends Controller
         ]);
     }
 
-
+    public function delete(Request $request)
+    {
+        $object = Employee_payroll::find($request->id);
+        $object->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Delete Successfully',
+        ]);
+    }
 }

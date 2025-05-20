@@ -43,6 +43,34 @@
     </div>
 </div>
 
+
+<div id="deleteModal" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <form action="{{route('admin.hr.employee.payroll.delete')}}" method="post" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+            <div class="modal-header flex-column">
+                <div class="icon-box">
+                    <i class="fas fa-trash"></i>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+                <input type="hidden" name="id" value="">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete these records? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -145,11 +173,7 @@
         {
           "data":null,
           render:function(data,type,row){
-              return `
-              <button type="button" class="btn btn-primary btn-sm" name="edit_button" data-id="${row.id}"><i class="fa fa-edit"></i></button>
-
-              <button class="btn btn-danger btn-sm delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="${row.id}"><i class="fa fa-trash"></i></button>
-            `;
+              return `<button class="btn btn-danger btn-sm delete-btn" data-toggle="modal" data-target="#deleteModal" data-id="${row.id}"><i class="fa fa-trash"></i></button>`;
           }
         },
       ],
@@ -171,99 +195,6 @@
         }
         return '';
     }
-    /* Initialize select2 for modal dropdowns*/
-    function initializeSelect2(modalId) {
-      $(modalId).on('show.bs.modal', function (event) {
-        if (!$("select[name='employee_id']").hasClass("select2-hidden-accessible")) {
-            $("select[name='employee_id']").select2({
-                dropdownParent: $(modalId),
-                placeholder: "Select Student"
-            });
-        }
-      });
-    }
-
-    /* Initialize select2 modals*/
-     initializeSelect2("#addModal");
-     initializeSelect2("#editModal");
-
-    /* General form submission handler*/
-    function handleFormSubmit(modalId, form) {
-        $(modalId + ' form').submit(function(e){
-            e.preventDefault();
-            var submitBtn = $(this).find('button[type="submit"]');
-            var originalBtnText = submitBtn.html();
-            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
-            submitBtn.prop('disabled', true);
-
-            var formData = new FormData(this);
-            $.ajax({
-                type: $(this).attr('method'),
-                url: $(this).attr('action'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    if (response.success) {
-                        toastr.success(response.message);
-                        table.ajax.reload(null, false);
-                        $(modalId).modal('hide');
-                        form[0].reset();
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        $.each(errors, function(field, messages) {
-                            $.each(messages, function(index, message) {
-                                toastr.error(message);
-                            });
-                        });
-                    } else {
-                        toastr.error('An error occurred. Please try again.');
-                    }
-                },
-                complete: function() {
-                    submitBtn.html(originalBtnText);
-                    submitBtn.prop('disabled', false);
-                }
-            });
-        });
-    }
-
-    /* Handle Add and Edit Form */
-    handleFormSubmit("#addModal", $('#addModal form'));
-    handleFormSubmit("#editModal", $('#editModal form'));
-
-    /* Edit button click handler*/
-    $(document).on("click", "button[name='edit_button']", function() {
-        var _id = $(this).data("id");
-        var editUrl = '{{ route("admin.hr.employee.advance.get_advance_salary", ":id") }}';
-        var url = editUrl.replace(':id', _id);
-        $.ajax({
-          url: url,
-          type: "GET",
-          dataType: 'json',
-          success: function(response) {
-              if (response.success) {
-                //var data = response.data;
-                $('#editModal').modal('show');
-                $('#editModal input[name="id"]').val(response.data.id);
-                $('#editModal select[name="employee_id"]').val(response.data.employee_id).trigger('change');
-                $('#editModal input[name="amount"]').val(response.data.amount);
-                $('#editModal textarea[name="description"]').val(response.data.description);
-                $('#editModal input[name="advance_date"]').val(response.data.advance_date).trigger('change');
-                $('#editModal select[name="status"]').val(response.data.status).trigger('change');
-                $('#editModal input[name="approved_date"]').val(response.data.approved_date);
-              } else {
-                  toastr.error("Error fetching data for edit: " + response.message);
-              }
-          },
-          error: function(xhr) {
-              toastr.error('Failed to fetch bill collection details.');
-          }
-        });
-    });
 
     /* Handle Delete button click and form submission*/
     $('#datatable1 tbody').on('click', '.delete-btn', function () {
