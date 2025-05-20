@@ -174,7 +174,7 @@
                     'value' => $online_customer,
                     'bg' => 'success',
                     'icon' => 'fa-user-check',
-                    // 'url' => route('customers.online')
+                    'url' => route('admin.customer.index', ['status' => 'online']),
                 ],
                 [
                     'id' => 2,
@@ -182,6 +182,7 @@
                     'value' => $offline_customer,
                     'bg' => 'info',
                     'icon' => 'fa-user-times',
+                    'url' => route('admin.customer.index', ['status' => 'Offline']),
                 ],
                 [
                     'id' => 3,
@@ -189,6 +190,7 @@
                     'value' => $active_customer,
                     'bg' => 'primary',
                     'icon' => 'fa-users',
+                    'url' => route('admin.customer.index', ['status' => 'active']),
                 ],
                 [
                     'id' => 4,
@@ -196,6 +198,7 @@
                     'value' => $expire_customer,
                     'bg' => 'danger',
                     'icon' => 'fa-user-clock',
+                    'url' => route('admin.customer.index', ['status' => 'expired']),
                 ],
                 [
                     'id' => 5,
@@ -203,8 +206,15 @@
                     'value' => $disable_customer,
                     'bg' => 'warning',
                     'icon' => 'fa-user-lock',
+                    'url' => route('admin.customer.index', ['status' => 'disabled']),
                 ],
-                ['id' => 6, 'title' => 'Requests', 'value' => 0, 'bg' => 'dark', 'icon' => 'fa-user-edit'],
+                [
+                    'id' => 6,
+                    'title' => 'Requests',
+                    'value' => 0,
+                    'bg' => 'dark',
+                    'icon' => 'fa-user-edit'
+                ],
 
                 [
                     'id' => 7,
@@ -212,6 +222,7 @@
                     'value' => $total_area,
                     'bg' => 'success',
                     'icon' => 'fas fa-solid fa-map-marker-alt',
+                    'url' => route('admin.pop.area.index'),
                 ],
                 [
                     'id' => 8,
@@ -219,6 +230,7 @@
                     'value' => $tickets,
                     'bg' => 'success',
                     'icon' => 'fas fa-solid fa-ticket-alt',
+                    'url' => route('admin.tickets.index'),
                 ],
                 [
                     'id' => 9,
@@ -226,6 +238,7 @@
                     'value' => $ticket_completed,
                     'bg' => 'success',
                     'icon' => 'fas fa-solid fa-check-circle',
+                     'url' => route('admin.tickets.index',['status' => 'completed']),
                 ],
                 [
                     'id' => 10,
