@@ -9,6 +9,8 @@
 
 @php
     /*Get Customer Online Offline Count*/
+
+    /*When Pass Pop Id*/
     $get_pop_id=0;
     if(!empty($pop_id)){
         $get_pop_id=$pop_id;
@@ -17,18 +19,33 @@
     }else{
         $get_pop_id=0;
     }
+
+    /*When Pass Area Id*/
+    $get_area_id=0;
+    if(!empty($area_id)){
+        $get_area_id=$area_id;
+    }else{
+        $get_area_id=0;
+    }
+
     /*Get Online Customer*/
     $online_customer_query = App\Models\Customer::where('status', 'online');
     if (!empty($get_pop_id)) {
         $online_customer_query->where('pop_id', $get_pop_id);
     }
+    if (!empty($get_area_id)) {
+        $online_customer_query->where('area_id', $get_area_id);
+    }
     $online_customer = $online_customer_query->count();
-    
+
 
     /*Get Offline Customer*/
     $offline_customer_query = App\Models\Customer::where('status', 'offline');
     if (!empty($get_pop_id)) {
         $offline_customer_query->where('pop_id', $get_pop_id);
+    }
+      if (!empty($get_area_id)) {
+        $offline_customer_query->where('area_id', $get_area_id);
     }
     $offline_customer = $offline_customer_query->count();
 @endphp
