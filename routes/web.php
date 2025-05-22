@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Backend\Accounts\Account_controller;
 use App\Http\Controllers\Backend\Accounts\Ledger\LedgerController;
+use App\Http\Controllers\Backend\Accounts\Ledger_controller;
 use App\Http\Controllers\Backend\Accounts\Master_Ledger\MasterLedgerController;
 use App\Http\Controllers\Backend\Accounts\Sub_Ledger\SubLedgerController;
 use App\Http\Controllers\Backend\Accounts\Transaction\TransactionController;
@@ -559,6 +560,13 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/edit/{id}', 'get_account_transaction')->name('admin.account.transaction.edit');
                 Route::post('/update','update')->name('admin.account.transaction.update');
                 Route::post('/delete','delete')->name('admin.account.transaction.delete');
+            });
+        });
+        /* Ledger Report Route */
+        Route::prefix('accounts/ledger-report')->group(function(){
+            Route::controller(Ledger_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.account.ledger.index');
+                Route::post('/report','report')->name('admin.account.ledger.report');
             });
         });
     });
