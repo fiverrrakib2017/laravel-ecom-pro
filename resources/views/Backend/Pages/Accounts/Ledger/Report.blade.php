@@ -6,6 +6,17 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Ledger Report</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="card-body ">
                     <form class="row g-3 align-items-end" id="search_box">
 
