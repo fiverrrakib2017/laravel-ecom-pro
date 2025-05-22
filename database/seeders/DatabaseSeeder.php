@@ -16,11 +16,16 @@ class DatabaseSeeder extends Seeder
         // $this->call([
         //     StudentSeeder::class
         // ]);
-        \App\Models\Admin::create([
-            'name' => 'Rakib Mahmud',
-            'email' => 'admin@gmail.com',
-            'username' => 'rakibas375',
-            'password' => Hash::make('12345678'),
+        // \App\Models\Admin::create([
+        //     'name' => 'Rakib Mahmud',
+        //     'email' => 'admin@gmail.com',
+        //     'username' => 'rakibas375',
+        //     'password' => Hash::make('12345678'),
+        // ]);
+
+        $this->call([
+            AccountSeeder::class,
+            //AccountTransactionSeeder::class,
         ]);
     }
 }

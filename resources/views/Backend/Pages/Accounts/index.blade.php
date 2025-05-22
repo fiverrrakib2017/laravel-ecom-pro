@@ -36,7 +36,6 @@
     <div class="modal-dialog" role="document">
         <form action="{{route('admin.account.store')}}" method="POST" enctype="multipart/form-data" id="accountForm">
             @csrf
-            <input type="hidden" name="id" id="account_id">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Account</h5>
@@ -173,6 +172,8 @@
 @section('script')
 <script type="text/javascript">
   $(document).ready(function(){
+
+    /* Initialize DataTable */
     var table = $("#datatable1").DataTable({
       "processing":true,
       "responsive": true,
@@ -214,22 +215,6 @@
     });
 
 
-
-    /* Initialize select2 for modal dropdowns*/
-    function initializeSelect2(modalId) {
-      $(modalId).on('show.bs.modal', function (event) {
-        if (!$("select[name='student_id']").hasClass("select2-hidden-accessible")) {
-            $("select[name='student_id']").select2({
-                dropdownParent: $(modalId),
-                placeholder: "Select Student"
-            });
-        }
-      });
-    }
-
-    /* Initialize select2 modals*/
-    // initializeSelect2("#addModal");
-    // initializeSelect2("#editModal");
 
     /* General form submission handler*/
     function handleFormSubmit(modalId, form) {
