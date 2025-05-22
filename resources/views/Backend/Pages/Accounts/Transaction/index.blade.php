@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title','Dashboard | Transaction Page Admin Panel')
+@section('title','Dashboard | Admin Panel')
 
 @section('content')
 <div class="row">
@@ -14,12 +14,12 @@
                     <table id="datatable1" class="table table-striped table-bordered    " cellspacing="0" width="100%">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Debit Account</th>
-                                <th>Credit Account</th>
+                                <th>ID</th>
+                                <th>Accounts Title</th>
                                 <th>Amount</th>
                                 <th>Description</th>
                                 <th>Date</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -33,41 +33,52 @@
 {{-- Add Modal --}}
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
-        <form action="{{route('admin.account.store')}}" method="POST" enctype="multipart/form-data" id="accountForm">
+        <form action="{{route('admin.account.transaction.store')}}" method="POST" enctype="multipart/form-data" id="accountForm">
             @csrf
-            <input type="hidden" name="id" id="account_id">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add New Account</h5>
+                    <h5 class="modal-title">Add New Account Transaction</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
 
                     <div class="form-group">
-                        <label for="name">Account Name</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter Account Name" required>
+                         <label>Transaction Type:</label>
+                        <select name="transaction_type" required>
+                             <option value="">---Select---</option>
+                            <option value="payment">Payment</option>
+                            <option value="receive">Receive</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="type">Account Type</label>
-                        <select name="type" id="type" class="form-control" required>
-                            <option value="">---Select---</option>
-                            <option value="Income">Income</option>
-                            <option value="Expense">Expense</option>
-                            <option value="Asset">Asset</option>
-                            <option value="Liability">Liability</option>
-                            <option value="Equity">Equity</option>
+                        <label>Debit Account:</label>
+                        <select name="account_id" required>
+                             <option value="">---Select---</option>
+                            @foreach($accounts as $acc)
+                                <option value="{{ $acc->id }}">{{ $acc->name }}</option>
+                            @endforeach
                         </select>
+
                     </div>
 
                    <div class="form-group">
-                        <label for="parent_account_id">Parent Account</label>
-                        <select name="parent_account_id" id="parent_account_id" class="form-control">
-                            <option value="">-- Select Parent Account (Optional) --</option>
+                          <label>Credit Account:</label>
+                        <select name="related_account_id" required>
+                             <option value="">---Select---</option>
                             @foreach($accounts as $acc)
-                                <option value="{{ $acc->id }}">{{ $acc->name }} ({{ $acc->type }})</option>
+                                <option value="{{ $acc->id }}">{{ $acc->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input type="text" name="amount"  placeholder="Enter Your Amount" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" class="form-control" name="transaction_date" required>
                     </div>
 
                     <div class="form-group">
@@ -86,43 +97,54 @@
 </div>
 
 {{-- edit Modal --}}
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
-        <form action="{{route('admin.account.update')}}" method="POST" enctype="multipart/form-data" id="accountForm">
+        <form action="{{route('admin.account.transaction.update')}}" method="POST" enctype="multipart/form-data" id="UpdateAccountForm">
             @csrf
-            <input type="hidden" name="id">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Update Account</h5>
+                    <h5 class="modal-title">Update Account Transaction</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
                 <div class="modal-body">
-
+                    <input type="hidden" name="id" value="">
                     <div class="form-group">
-                        <label for="name">Account Name</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter Account Name" required>
+                         <label>Transaction Type:</label>
+                        <select name="transaction_type" required>
+                            <option value="">---Select---</option>
+                            <option value="payment">Payment</option>
+                            <option value="receive">Receive</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="type">Account Type</label>
-                        <select name="type" id="type" class="form-control" required>
-                            <option value="">---Select---</option>
-                            <option value="Income">Income</option>
-                            <option value="Expense">Expense</option>
-                            <option value="Asset">Asset</option>
-                            <option value="Liability">Liability</option>
-                            <option value="Equity">Equity</option>
+                        <label>Debit Account:</label>
+                        <select name="account_id" required>
+                             <option value="">---Select---</option>
+                            @foreach($accounts as $acc)
+                                <option value="{{ $acc->id }}">{{ $acc->name }}</option>
+                            @endforeach
                         </select>
+
                     </div>
 
                    <div class="form-group">
-                        <label for="parent_account_id">Parent Account</label>
-                        <select name="parent_account_id" id="parent_account_id" class="form-control">
-                            <option value="">-- Select Parent Account (Optional) --</option>
+                          <label>Credit Account:</label>
+                        <select name="related_account_id" required>
+                             <option value="">---Select---</option>
                             @foreach($accounts as $acc)
-                                <option value="{{ $acc->id }}">{{ $acc->name }} ({{ $acc->type }})</option>
+                                <option value="{{ $acc->id }}">{{ $acc->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input type="text" name="amount"  placeholder="Enter Your Amount" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="date" class="form-control" name="transaction_date" required>
                     </div>
 
                     <div class="form-group">
@@ -142,7 +164,7 @@
 
 <div id="deleteModal" class="modal fade">
     <div class="modal-dialog modal-confirm">
-        <form action="{{route('admin.account.delete')}}" method="post" enctype="multipart/form-data">
+        <form action="{{route('admin.account.transaction.delete')}}" method="post" enctype="multipart/form-data">
             @csrf
             <div class="modal-content">
             <div class="modal-header flex-column">
@@ -177,7 +199,7 @@
       "responsive": true,
       "serverSide":true,
       ajax: {
-            url: "{{ route('admin.account.all_data') }}",
+           url: "{{ route('admin.account.transaction.all_data') }}",
             type: 'GET',
             data: function(d) {
               d.class_id = $('#search_class_id').val();
@@ -192,16 +214,22 @@
         lengthMenu: '_MENU_ items/page',
       },
         "columns": [
-                { data: 'id' },
-                { data: 'parent_name',
-                    render: function(data) {
-                        return data ?? 'N/A';
-                    }
-                },
-                { data: 'name' },
-                { data: 'type' },
-                { data: 'description' },
-
+            { data: 'id' },
+            {
+            data: null,
+            render: function(data, type, row) {
+                let debit = data.debit_account ? data.debit_account.name : '';
+                let credit = data.credit_account ? data.credit_account.name : '';
+                return `
+                    <span>${debit} <small style="color:green;">(Debit)</small></span><br>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${credit} <small style="color:red;">(Credit)</small></span>
+                    `;
+            },
+            title: 'Accounts Title'
+            },
+            { data: 'amount'},
+            { data: 'description'},
+            { data: 'transaction_date'},
                 { data: null, render: function(data,type,row) {
                     return `
                         <button type="button" class="btn btn-primary btn-sm" name="edit_button" data-id="${row.id}"><i class="fa fa-edit"></i></button>

@@ -556,7 +556,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/index','index')->name('admin.account.transaction.index');
                 Route::get('/all_data','all_data')->name('admin.account.transaction.all_data');
                 Route::post('/store','store')->name('admin.account.transaction.store');
-                Route::get('/edit/{id}', 'get_transaction')->name('admin.account.transaction.edit');
+                Route::get('/edit/{id}', 'get_account_transaction')->name('admin.account.transaction.edit');
                 Route::post('/update','update')->name('admin.account.transaction.update');
                 Route::post('/delete','delete')->name('admin.account.transaction.delete');
             });
