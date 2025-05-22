@@ -628,7 +628,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="" class="nav-link "><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.account.balance_sheet.index') }}" class="nav-link {{ $route=='admin.account.balance_sheet.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Balance Sheet</p>
                             </a>
                         </li>
