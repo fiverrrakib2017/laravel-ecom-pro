@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', 'Dashboard |Accounts Trial Balance | Admin Panel')
+@section('title', 'Dashboard |Income Statment Report | Admin Panel')
 @section('style')
 @endsection
 @section('content')
@@ -48,9 +48,8 @@
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>Account Name</th>
-                                    <th>Debit</th>
-                                    <th>Credit</th>
+                                    <th>Account Titles</th>
+                                    <th>Amount</th>
                                 </tr>
                             </thead>
                             <tbody id="_data">
@@ -84,7 +83,7 @@
                     $("#datatable1").DataTable().destroy();
                 }
                 $.ajax({
-                    url: "{{ route('admin.account.trial_balance.report') }}",
+                    url: "{{ route('admin.account.income_statment.report') }}",
                     type: 'POST',
                     dataType: 'json',
                     data: {  _token: "{{ csrf_token() }}",from_date: from_date, end_date: end_date},
@@ -93,12 +92,12 @@
 
                             $("#print_area").removeClass('d-none');
                             $("#_data").html(response.html);
-                            $("#datatable1").DataTable({
-                                "paging": true,
-                                "searching": true,
-                                "ordering": true,
-                                "info": true
-                            });
+                            // $("#datatable1").DataTable({
+                            //     "paging": true,
+                            //     "searching": true,
+                            //     "ordering": true,
+                            //     "info": true
+                            // });
                         }
 
                         if(response.success==false) {

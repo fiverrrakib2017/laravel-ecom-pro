@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Backend\Accounts\Account_controller;
+use App\Http\Controllers\Backend\Accounts\Income_controller;
 use App\Http\Controllers\Backend\Accounts\Ledger\LedgerController;
 use App\Http\Controllers\Backend\Accounts\Ledger_controller;
 use App\Http\Controllers\Backend\Accounts\Master_Ledger\MasterLedgerController;
@@ -575,6 +576,13 @@ Route::group(['middleware' => 'admin'], function () {
             Route::controller(Trial_balance_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.account.trial_balance.index');
                 Route::post('/report','report')->name('admin.account.trial_balance.report');
+            });
+        });
+        /* Income Statment Route */
+        Route::prefix('accounts/income-statment')->group(function(){
+            Route::controller(Income_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.account.income_statment.index');
+                Route::post('/report','report')->name('admin.account.income_statment.report');
             });
         });
     });
