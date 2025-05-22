@@ -1,3 +1,17 @@
+@php
+   //$branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+   if(!empty($branch_user_id) && $branch_user_id > 0){
+        $pop_branches = \App\Models\Pop_branch::where('id',$branch_user_id)->first();
+        $areas=\App\Models\Pop_area::where('status','active')->where('pop_id',$branch_user_id)->get();
+   }else{
+    $pop_branches=\App\Models\Pop_branch::where('status',1)->get();
+    $areas=\App\Models\Pop_area::where('status','active')->get();
+   }
+
+
+@endphp
+
+
 <div class="col-6 nav justify-content-end" id="export_buttonscc"></div>
 <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap"
     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -55,7 +69,76 @@
 
         var pop_id = @json($pop_id ?? '');
         var area_id = @json($area_id ?? '');
+        var status = @json($status ?? '');
 
+        /*GET POP-Branch */
+        var pop_branches    = @json($pop_branches);
+        var pop_filter      = '<label style="margin-left: 20px;">';
+        pop_filter          += '<select id="search_pop_id" name="search_pop_id" class="form-control">';
+        pop_filter          += '<option value="">--Select POP/Branch--</option>';
+        pop_branches.forEach(function(item) {
+            pop_filter += '<option value="' + item.id + '">' + item.name + '</option>';
+        });
+        pop_filter += '</select></label>';
+
+        /*Get Areas*/
+        var areas = @json($areas);
+        var area_filter = '<label style="margin-left: 20px;">';
+        area_filter     += '<select id="search_area_id" name="search_area_id" class="form-control">';
+        area_filter     += '<option value="">--Select Area--</option>';
+        areas.forEach(function(item) {
+           // area_filter += '<option value="' + item.id + '">' + item.name + '</option>';
+        });
+        area_filter += '</select></label>';
+
+        /*Status Filter*/
+       var  status_filter = '<label style="margin-left: 20px;"> ';
+            status_filter += '<select class="status_filter form-control">';
+            status_filter += '<option value="">--Status--</option>';
+            status_filter += '<option value="online" >Online</option>';
+            status_filter += '<option value="offline">Offline</option>';
+            status_filter += '<option value="expired">Expired</option>';
+            status_filter += ' <option value="unpaid">Unpaid</option>';
+            status_filter += ' <option value="due">Due</option>';
+            status_filter += ' <option value="free">Free</option>';
+            status_filter += ' <option value="active">Active</option>';
+            status_filter += ' <option value="disabled">Disabled</option>';
+            status_filter += '</select></label>';
+
+        setTimeout(() => {
+            $('.dataTables_length').append(pop_filter);
+            $('.dataTables_length').append(area_filter);
+            $('.dataTables_length').parent().removeClass('col-sm-12 col-md-6');
+            $('.dataTables_filter').parent().removeClass('col-sm-12 col-md-6');
+            $('.dataTables_length').append(status_filter);
+
+            $('#search_pop_id').select2();
+            $('#search_area_id').select2();
+            $('.status_filter').select2();
+        }, 1000);
+
+        $(document).on('change','select[name="search_pop_id"]',function(){
+            var areas = @json($areas);
+            var selectedPopId = $(this).val();
+            var filteredAreas = areas.filter(function(item) {
+                return item.pop_id == selectedPopId;
+            });
+            var areasOptions = '<option value="">--Select Area--</option>';
+            filteredAreas.forEach(function(item) {
+                areasOptions += '<option value="' + item.id + '">' + item.name + '</option>';
+            });
+
+            $('select[name="search_area_id"]').html(areasOptions);
+        });
+        /*Handle POP/Branch filter change*/
+        $('select[name="search_pop_id"]').on('change', function() {
+            $('#customer_datatable1').DataTable().ajax.reload(null, false);
+        });
+        /*Handle Area filter change*/
+        $('select[name="search_area_id"]').on('change', function() {
+            alert('okkk');
+            $('#customer_datatable1').DataTable().ajax.reload(null, false);
+        });
 
         var customer_table = $("#customer_datatable1").DataTable({
             "processing": true,
@@ -69,6 +152,7 @@
                 data: function(d) {
                     d.pop_id = pop_id;
                     d.area_id = area_id;
+                    d.status = status;
                 }
             },
             language: {
@@ -260,6 +344,7 @@
                 }
             });
         });
+
 
     });
 </script>

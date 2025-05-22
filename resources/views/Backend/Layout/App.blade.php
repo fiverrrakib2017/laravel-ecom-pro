@@ -4,7 +4,7 @@
     $prefix= Request::route()->getPrefix();
     $route=Route::current()->getname();
     $currentRoute = Route::currentRouteName();
-    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null
+    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 @endphp
 
 
