@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\Accounts\Master_Ledger\MasterLedgerController;
 use App\Http\Controllers\Backend\Accounts\Sub_Ledger\SubLedgerController;
 use App\Http\Controllers\Backend\Accounts\Transaction\TransactionController;
 use App\Http\Controllers\Backend\Accounts\Transaction_controller;
+use App\Http\Controllers\Backend\Accounts\Trial_balance_controller;
 use App\Http\Controllers\Backend\Admin\AdminController;
 use App\Http\Controllers\Backend\Client\Client_invoiceController;
 use App\Http\Controllers\Backend\Customer\CustomerController;
@@ -567,6 +568,13 @@ Route::group(['middleware' => 'admin'], function () {
             Route::controller(Ledger_controller::class)->group(function(){
                 Route::get('/index','index')->name('admin.account.ledger.index');
                 Route::post('/report','report')->name('admin.account.ledger.report');
+            });
+        });
+        /* Ledger Report Route */
+        Route::prefix('accounts/trial-balance')->group(function(){
+            Route::controller(Trial_balance_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.account.trial_balance.index');
+                Route::post('/report','report')->name('admin.account.trial_balance.report');
             });
         });
     });

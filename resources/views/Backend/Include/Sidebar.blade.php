@@ -591,7 +591,7 @@
 
                 <!-----------------Accounts--------------------->
                 @php
-                    $active_prefix = ['admin.account.index','admin.account.transaction.index','admin.account.ledger.index'];
+                    $active_prefix = ['admin.account.index','admin.account.transaction.index','admin.account.ledger.index','admin.account.trial_balance.index'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
@@ -618,7 +618,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.account.trial_balance.index') }}" class="nav-link {{ $route=='admin.account.trial_balance.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Trial Balance</p>
                             </a>
                         </li>
