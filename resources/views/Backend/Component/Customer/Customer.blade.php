@@ -10,32 +10,31 @@
 
 
 @endphp
+    <div class="col-6 nav justify-content-end" id="export_buttonscc"></div>
+        <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" class="custom-control-input" id="selectAllCheckbox" name="selectAll">
+                </th>
+
+                <th>ID</th>
+                <th>Name</th>
+                <th>Package</th>
+                <th>Amount</th>
+                <th>Create Date</th>
+                <th>Expired Date</th>
+                <th>User Name</th>
+                <th>Mobile no.</th>
+                <th>POP/Branch</th>
+                <th>Area/Location</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
 
-<div class="col-6 nav justify-content-end" id="export_buttonscc"></div>
-<table id="customer_datatable1" class="table table-bordered dt-responsive nowrap"
-    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-    <thead>
-        <tr>
-            <th>
-                <input type="checkbox" class="custom-control-input" id="selectAllCheckbox" name="selectAll">
-            </th>
-
-            <th>ID</th>
-            <th>Name</th>
-            <th>Package</th>
-            <th>Amount</th>
-            <th>Create Date</th>
-            <th>Expired Date</th>
-            <th>User Name</th>
-            <th>Mobile no.</th>
-            <th>POP/Branch</th>
-            <th>Area/Location</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
 
 <div id="deleteModal" class="modal fade">
     <div class="modal-dialog modal-confirm">
@@ -66,56 +65,88 @@
 <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-
+        /*Get Url Param Recevied*/
         var pop_id = @json($pop_id ?? '');
         var area_id = @json($area_id ?? '');
         var status = @json($status ?? '');
 
-        /*GET POP-Branch */
-        var pop_branches    = @json($pop_branches);
-        var pop_filter      = '<label style="margin-left: 20px;">';
-        pop_filter          += '<select id="search_pop_id" name="search_pop_id" class="form-control">';
-        pop_filter          += '<option value="">--Select POP/Branch--</option>';
+        /* GET POP-Branch */
+        var pop_branches = @json($pop_branches);
+        var pop_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select id="search_pop_id" name="search_pop_id" class="form-control form-control-sm select2">
+                    <option value="">--Select POP/Branch--</option>`;
         pop_branches.forEach(function(item) {
-            pop_filter += '<option value="' + item.id + '">' + item.name + '</option>';
+            pop_filter += `<option value="${item.id}">${item.name}</option>`;
         });
-        pop_filter += '</select></label>';
+        pop_filter += `</select></div>`;
 
-        /*Get Areas*/
+        /* Get Areas */
         var areas = @json($areas);
-        var area_filter = '<label style="margin-left: 20px;">';
-        area_filter     += '<select id="search_area_id" name="search_area_id" class="form-control">';
-        area_filter     += '<option value="">--Select Area--</option>';
+        var area_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select id="search_area_id" name="search_area_id" class="form-control form-control-sm select2">
+                    <option value="">--Select Area--</option>`;
         areas.forEach(function(item) {
-           // area_filter += '<option value="' + item.id + '">' + item.name + '</option>';
+            area_filter += `<option value="${item.id}">${item.name}</option>`;
         });
-        area_filter += '</select></label>';
+        area_filter += `</select></div>`;
 
-        /*Status Filter*/
-       var  status_filter = '<label style="margin-left: 20px;"> ';
-            status_filter += '<select class="status_filter form-control">';
-            status_filter += '<option value="">--Status--</option>';
-            status_filter += '<option value="online" >Online</option>';
-            status_filter += '<option value="offline">Offline</option>';
-            status_filter += '<option value="expired">Expired</option>';
-            status_filter += ' <option value="unpaid">Unpaid</option>';
-            status_filter += ' <option value="due">Due</option>';
-            status_filter += ' <option value="free">Free</option>';
-            status_filter += ' <option value="active">Active</option>';
-            status_filter += ' <option value="disabled">Disabled</option>';
-            status_filter += '</select></label>';
+        /* Status Filter */
+        var status_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select class="status_filter form-control form-control-sm select2">
+                    <option value="">--Status--</option>
+                    <option value="online">Online</option>
+                    <option value="offline">Offline</option>
+                    <option value="expired">Expired</option>
+                    <option value="unpaid">Unpaid</option>
+                    <option value="due">Due</option>
+                    <option value="free">Free</option>
+                    <option value="active">Active</option>
+                    <option value="disabled">Disabled</option>
+                </select>
+            </div>`;
 
         setTimeout(() => {
-            $('.dataTables_length').append(pop_filter);
-            $('.dataTables_length').append(area_filter);
-            $('.dataTables_length').parent().removeClass('col-sm-12 col-md-6');
-            $('.dataTables_filter').parent().removeClass('col-sm-12 col-md-6');
-            $('.dataTables_length').append(status_filter);
+            var filters_wrapper = `
+                <div class="row no-gutters mb-0  " style=" row-gap: 0.5rem;">
+                    <!-- Left: Per Page -->
+                    <div class="col-12 col-md-auto dataTables_length_container d-flex align-items-center mb-2 mb-md-0 pr-md-3"></div>
 
-            $('#search_pop_id').select2();
-            $('#search_area_id').select2();
-            $('.status_filter').select2();
+                    <!-- Middle: Filters -->
+                    <div class="col-12 col-md d-flex flex-wrap align-items-center mb-2 mb-md-0" style="gap: 0.5rem;">
+                        ${pop_filter + area_filter + status_filter}
+                    </div>
+
+                    <!-- Right: Search Input -->
+                    <div class="col-12 col-md-auto dataTables_filter_container d-flex justify-content-md-end"></div>
+                </div>
+            `;
+
+            $('.dataTables_wrapper').prepend(filters_wrapper);
+
+            $('.dataTables_length').appendTo('.dataTables_length_container');
+            $('.dataTables_filter').appendTo('.dataTables_filter_container');
+
+            $('#search_pop_id').select2({ width: 'resolve' });
+            $('#search_area_id').select2({ width: 'resolve' });
+            $('.status_filter').select2({ width: 'resolve' });
         }, 1000);
+
+
+
+
+        /*Check Param Values if else */
+        if (!pop_id) {
+            pop_id = $('#search_pop_id').val();
+        }
+        if (!area_id) {
+            area_id = $('#search_area_id').val();
+        }
+        if (status == null || status == '') {
+            status = $('.status_filter').val();
+        }
 
         $(document).on('change','select[name="search_pop_id"]',function(){
             var areas = @json($areas);
@@ -127,16 +158,15 @@
             filteredAreas.forEach(function(item) {
                 areasOptions += '<option value="' + item.id + '">' + item.name + '</option>';
             });
-
+            $('#customer_datatable1').DataTable().ajax.reload(null, false);
             $('select[name="search_area_id"]').html(areasOptions);
         });
-        /*Handle POP/Branch filter change*/
-        $('select[name="search_pop_id"]').on('change', function() {
+        /*Handle Area filter change*/
+        $(document).on('change', 'select[name="search_area_id"]', function() {
             $('#customer_datatable1').DataTable().ajax.reload(null, false);
         });
-        /*Handle Area filter change*/
-        $('select[name="search_area_id"]').on('change', function() {
-            alert('okkk');
+        /*Handle Status filter change*/
+        $(document).on('change', '.status_filter', function() {
             $('#customer_datatable1').DataTable().ajax.reload(null, false);
         });
 
@@ -144,15 +174,19 @@
             "processing": true,
             "responsive": true,
             "serverSide": true,
-            beforeSend: function() {},
-            complete: function() {},
+            beforeSend: function() {
+
+            },
+            complete: function() {
+
+            },
             "ajax": {
                 url: "{{ route('admin.customer.get_all_data') }}",
                 type: "GET",
                 data: function(d) {
-                    d.pop_id = pop_id;
-                    d.area_id = area_id;
-                    d.status = status;
+                    d.pop_id        = $('#search_pop_id').val() || pop_id;
+                    d.area_id       = $('#search_area_id').val() || area_id;
+                    d.status        = $('.status_filter').val() || status;
                 }
             },
             language: {

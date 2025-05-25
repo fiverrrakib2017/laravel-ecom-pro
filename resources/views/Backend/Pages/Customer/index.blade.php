@@ -8,10 +8,13 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
+                <div class="card-header">
+                    <button data-toggle="modal" data-target="#addCustomerModal" type="button" class=" btn btn-success">
+                        <i class="fas fa-users"></i> Add New Customer</button>
+
+                </div>
                 <div class="card-body">
-                    <button data-toggle="modal" data-target="#addCustomerModal" type="button" class=" btn btn-success mb-2"><i
-                            class="mdi mdi-account-plus"></i>
-                        Add New Customer</button>
+
 
                     <div class="table-responsive" id="tableStyle">
                         @include('Backend.Component.Customer.Customer')
