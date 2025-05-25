@@ -12,10 +12,14 @@
                     <button data-toggle="modal" data-target="#addCustomerModal" type="button" class=" btn btn-success">
                         <i class="fas fa-users"></i> Add New Customer</button>
 
+                    <button type="button" id="bulk_recharge" class="btn btn-danger d-none">Bulk Recharge</button>
+
+                    <button type="button"  id="send_message" class="btn btn-primary text-white d-none"><i class="fas fa-envelope"></i>Send Sms </button>
+
+                    <button type="button" id="change_billing" class="btn btn-primary text-white d-none"><i class="fas fa-envelope"></i>Change Billing </button>
+
                 </div>
                 <div class="card-body">
-
-
                     <div class="table-responsive" id="tableStyle">
                         @include('Backend.Component.Customer.Customer')
                     </div>

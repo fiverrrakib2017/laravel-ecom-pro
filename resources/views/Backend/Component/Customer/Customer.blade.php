@@ -15,7 +15,10 @@
         <thead>
             <tr>
                 <th>
-                    <input type="checkbox" class="custom-control-input" id="selectAllCheckbox" name="selectAll">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customer_select_all">
+                        <label class="custom-control-label" for="customer_select_all"></label>
+                    </div>
                 </th>
 
                 <th>ID</th>
@@ -169,7 +172,25 @@
         $(document).on('change', '.status_filter', function() {
             $('#customer_datatable1').DataTable().ajax.reload(null, false);
         });
+        /*Check Box Selected*/
+        $(document).on('change', '#customer_select_all', function() {
+            let checked = $(this).is(':checked');
+            $('.row-checkbox').prop('checked', checked);
+        });
+        /*Show Button if at least One Check box*/
+        $(document).on('change', '.row-checkbox, #customer_select_all', function () {
+            let anyChecked = $('.row-checkbox:checked').length > 0;
 
+            if (anyChecked) {
+                $('#bulk_recharge').removeClass('d-none').fadeIn(400);
+                $('#send_message').removeClass('d-none').fadeIn(400);
+                $('#change_billing').removeClass('d-none').fadeIn(400);
+            } else {
+                $('#bulk_recharge').addClass('d-none').fadeOut(400);
+                $('#send_message').addClass('d-none').fadeOut(400);
+                $('#change_billing').addClass('d-none').fadeOut(400);
+            }
+        });
         var customer_table = $("#customer_datatable1").DataTable({
             "processing": true,
             "responsive": true,
@@ -194,17 +215,19 @@
                 sSearch: '',
                 lengthMenu: '_MENU_ items/page',
             },
-            "columns": [{
-                    "data": null,
-                    "render": function(data, type, row, meta) {
-                        return '<div class="custom-control custom-checkbox">' +
-                            '<input type="checkbox" class="custom-control-input" id="checkbox_' +
-                            meta.row + '" name="checkbox_' + meta.row + '">' +
-                            '<label class="custom-control-label" for="checkbox_' + meta.row +
-                            '"></label>' +
-                            '</div>';
+            "columns": [
+                {
+                    data: 'id',
+                    orderable: false,
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        return `<div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input row-checkbox" id="row_checkbox_${data}" value="${data}">
+                                    <label class="custom-control-label" for="row_checkbox_${data}"></label>
+                                </div>`;
                     }
                 },
+
                 {
                     "data": "id"
                 },
