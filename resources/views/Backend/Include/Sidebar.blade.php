@@ -247,159 +247,181 @@
                         <a href="{{ route('admin.pop.area.index') }}"
                             class="nav-link  {{ $route == 'admin.pop.area.index' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-map-marker-alt"></i>
-                            <p>Branch Area</p>
+                            <p>{{ __('menu.branch_area') }}</p>
                         </a>
                     </li>
                 @endif
 
-                {{-- <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-network-wired"></i>
-                    <p>OLT Management <i class="right fas fa-angle-left"></i></p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <!-- OLT Device Configuration -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
-                    </li>
+                <!-- OLT Management -->
+                @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-network-wired"></i>
+                        <p>OLT Management <i class="right fas fa-angle-left"></i></p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <!-- OLT Device Configuration -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
+                        </li>
 
-                    <!-- ONT (Optical Network Terminal) Management -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>
-                    </li>
+                        <!-- ONT (Optical Network Terminal) Management -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>
+                        </li>
 
-                    <!-- GPON Port Management -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>GPON Port Configuration</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Monitor GPON Ports</p></a>
-                    </li>
+                        <!-- GPON Port Management -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>GPON Port Configuration</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Monitor GPON Ports</p></a>
+                        </li>
 
-                    <!-- Network Monitoring -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Status</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Traffic Monitoring</p></a>
-                    </li>
+                        <!-- Network Monitoring -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Status</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Traffic Monitoring</p></a>
+                        </li>
 
-                    <!-- Diagnostics and Logs -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>System Diagnostics</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View System Logs</p></a>
-                    </li>
+                        <!-- Diagnostics and Logs -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>System Diagnostics</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View System Logs</p></a>
+                        </li>
 
-                    <!-- Alarm Management -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Alarm Configuration</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View Alarms</p></a>
-                    </li>
+                        <!-- Alarm Management -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Alarm Configuration</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View Alarms</p></a>
+                        </li>
 
-                    <!-- OLT Reports -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Performance Reports</p></a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Customer Service Reports</p></a>
-                    </li>
+                        <!-- OLT Reports -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Performance Reports</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Customer Service Reports</p></a>
+                        </li>
 
-                    <!-- OLT Settings -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Configuration Settings</p></a>
-                    </li>
-                </ul>
-            </li> --}}
+                        <!-- OLT Settings -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Configuration Settings</p></a>
+                        </li>
+                    </ul>
+                </li>
+                @endif
 
-
-                <li class="nav-item">
+                <!-- Ticket Management -->
+               <li class="nav-item">
                     <a href="#"
                         class="nav-link {{ Str::startsWith($currentRoute, 'admin.tickets') ? 'active' : '' }}">
                         <i class='nav-icon fas fa-ticket-alt'></i>
-                        <p>&nbsp; Tickets <i class="right fas fa-angle-left"></i> </p>
+                        <p>&nbsp; {{ __('menu.tickets') }} <i class="right fas fa-angle-left"></i> </p>
                     </a>
+
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, 'admin.tickets') ? 'display: block;' : 'display: none;' }}">
 
                         <li class="nav-item">
                             <a href="{{ route('admin.tickets.index') }}"
-                                class="nav-link {{ $route == 'admin.tickets.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Ticket List</p>
+                                class="nav-link {{ $route == 'admin.tickets.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.ticket_list') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="{{ route('admin.tickets.complain_type.index') }}"
-                                class="nav-link  {{ $route == 'admin.tickets.complain_type.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Complain Type</p>
+                                class="nav-link  {{ $route == 'admin.tickets.complain_type.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.complain_type') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="{{ route('admin.tickets.assign.index') }}"
-                                class="nav-link  {{ $route == 'admin.tickets.assign.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Ticket Assign</p>
+                                class="nav-link  {{ $route == 'admin.tickets.assign.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.ticket_assign') }}</p>
                             </a>
                         </li>
                     </ul>
                 </li>
+
 
                 @php
                     $active_prefix = ['admin.sms.config', 'admin.sms.template_list', 'admin.sms.message_send_list','admin.sms.bulk.message_send_list'];
                 @endphp
-                <li class="nav-item has-treeview">
+               <li class="nav-item has-treeview">
                     <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
                         <i class="nav-icon fas fa-envelope"></i>
-                        <p>SMS <i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.sms') }} <i class="right fas fa-angle-left"></i></p>
                     </a>
+
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                        <li class="nav-item"><a href="{{ route('admin.sms.message_send_list') }}"
-                                class="nav-link {{ $route == 'admin.sms.message_send_list' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Send SMS</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('admin.sms.bulk.message_send_list') }}"
-                                class="nav-link {{ $route == 'admin.sms.bulk.message_send_list' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Send Bulk SMS</p>
-                            </a></li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.sms.message_send_list') }}"
+                                class="nav-link {{ $route == 'admin.sms.message_send_list' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.send_sms') }}</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.sms.bulk.message_send_list') }}"
+                                class="nav-link {{ $route == 'admin.sms.bulk.message_send_list' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.send_bulk_sms') }}</p>
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a href="{{ route('admin.sms.template_list') }}"
-                                class="nav-link {{ $route == 'admin.sms.template_list' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>SMS Template</p>
+                                class="nav-link {{ $route == 'admin.sms.template_list' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.sms_template') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i
-                                class="far fa-circle nav-icon"></i><p>SMS Logs</p>
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.sms_logs') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i
-                                class="far fa-circle nav-icon"></i><p>SMS Report</p>
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.sms_report') }}</p>
                             </a>
                         </li>
-                        <li class="nav-item"><a href="{{ route('admin.sms.config') }}"
-                                class="nav-link {{ $route == 'admin.sms.config' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>SMS Configuration</p>
-                            </a></li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.sms.config') }}"
+                                class="nav-link {{ $route == 'admin.sms.config' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.sms_config') }}</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
+
                 <!-- HR Management -->
                  @php
                     $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index','admin.hr.employee.salary.advance.index', 'admin.hr.employee.salary.advance.report','admin.hr.employee.payroll.create', 'admin.hr.employee.payroll.index'];
