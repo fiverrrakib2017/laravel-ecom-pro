@@ -115,7 +115,7 @@
         </li>
         <!-- Language Select Dropdown -->
         <!-- Language Selector -->
-        <li class="nav-item dropdown">
+        {{-- <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 🌐 {{ strtoupper(app()->getLocale()) }}
                 <i class="fa fa-angle-down ml-1"></i>
@@ -125,7 +125,7 @@
                 <a href="{{ url('lang/bn') }}" class="dropdown-item">বাংলা</a>
                 <a href="{{ url('lang/es') }}" class="dropdown-item">Español</a>
             </div>
-        </li>
+        </li> --}}
 
     </ul>
   </nav>
