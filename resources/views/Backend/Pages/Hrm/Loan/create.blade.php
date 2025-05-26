@@ -9,9 +9,9 @@
                 @csrf
                 <div class="card-body">
 
-                    <!-- 1. Personal Information -->
+                    <!-- 1. Loan Information -->
                     <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
-                        <legend class="w-auto px-3 text-primary fw-bold">Personal Information</legend>
+                        <legend class="w-auto px-3 text-primary fw-bold">Loan Information</legend>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label>Employee Name <span class="text-danger">*</span></label>

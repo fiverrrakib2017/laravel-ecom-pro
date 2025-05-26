@@ -59,7 +59,7 @@ class Loan_controller extends Controller
         $employees = Employee::latest()->get();
         return view('Backend.Pages.Hrm.Loan.edit', compact('data', 'employees'));
     }
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         /* Validate the form data*/
         $rules = [
@@ -82,7 +82,7 @@ class Loan_controller extends Controller
             );
         }
         /* Update the existing Instance*/
-        $object = Employee_loans::findOrFail($id);
+        $object = Employee_loans::findOrFail($request->id);
         $object->employee_id            = $request->employee_id;
         $object->loan_amount            = $request->loan_amount;
         $object->installment_amount     = $request->installment_amount;
