@@ -481,17 +481,25 @@
                 </li>
                 @endif
                 <!-- Loan Management -->
+                @php
+                    $active_prefix = [
+                        'admin.hr.employee.loan.index',
+                        'admin.hr.employee.loan.create',
+                        'admin.hr.employee.loan.edit',
+                        'admin.hr.employee.loan.show',
+                    ];
+                @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
 
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
                         <i class="nav-icon fas fa-money-check-alt"></i>
                         <p>Loan Management <i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                            <a href="{{ route('admin.hr.employee.loan.index') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Employee Loans</p>
                             </a>
                         </li>

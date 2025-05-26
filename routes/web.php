@@ -42,6 +42,7 @@ use App\Http\Controllers\Backend\Hrm\Department_controller;
 use App\Http\Controllers\Backend\Hrm\Designation_controller;
 use App\Http\Controllers\Backend\Hrm\Employee_controller;
 use App\Http\Controllers\Backend\Hrm\Leave_controller;
+use App\Http\Controllers\Backend\Hrm\Loan_controller;
 use App\Http\Controllers\Backend\Hrm\Payroll_controller;
 use App\Http\Controllers\Backend\Hrm\Salary_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
@@ -538,6 +539,20 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/create','create')->name('admin.hr.employee.payroll.create');
                 Route::post('/store','store')->name('admin.hr.employee.payroll.store');
                 Route::post('/delete','delete')->name('admin.hr.employee.payroll.delete');
+            });
+        });
+        /*Employee Loan Management */
+        Route::prefix('employee-loan-management')->group(function(){
+            Route::controller(Loan_controller::class)->group(function(){
+                Route::get('/index','index')->name('admin.hr.employee.loan.index');
+                Route::get('/all_data','all_data')->name('admin.hr.employee.loan.all_data');
+                Route::get('/create','create')->name('admin.hr.employee.loan.create');
+                Route::post('/store','store')->name('admin.hr.employee.loan.store');
+
+                Route::get('/edit/{loan_id}','edit')->name('admin.hr.employee.loan.edit');
+                Route::post('/update','update')->name('admin.hr.employee.loan.update');
+
+                Route::post('/delete','delete')->name('admin.hr.employee.loan.delete');
             });
         });
     });
