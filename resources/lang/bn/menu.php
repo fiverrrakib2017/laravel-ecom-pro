@@ -10,4 +10,8 @@ return [
     'customer_logs' => 'গ্রাহক লগসমূহ',
     'mikrotik_logs' => 'মাইক্রোটিক লগস',
     'backup_restore' => 'ব্যাকআপ ও রিস্টোর',
+
+    'billing_payments' => 'বিলিং ও পেমেন্ট',
+    'payment_history' => 'পেমেন্ট ইতিহাস',
+    'credit_recharge_list' => 'ক্রেডিট রিচার্জ তালিকা',
 ];

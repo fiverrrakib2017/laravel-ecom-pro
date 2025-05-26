@@ -10,4 +10,8 @@ return [
     'customer_logs' => 'Customer Logs',
     'mikrotik_logs' => 'Mikrotik Logs',
     'backup_restore' => 'Backup & Restore',
+
+    'billing_payments' => 'Billing & Payments',
+    'payment_history' => 'Payment History',
+    'credit_recharge_list' => 'Credit Recharge List',
 ];

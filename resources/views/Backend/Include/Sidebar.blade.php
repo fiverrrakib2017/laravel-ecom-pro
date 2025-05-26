@@ -131,10 +131,9 @@
                     $active_prefix = ['admin.customer.payment.history', 'admin.customer.customer_credit_recharge_list'];
                 @endphp
                 <li class="nav-item has-treeview">
-                    <a href="#"
-                        class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>Billing & Payments <i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.billing_payments') }} <i class="right fas fa-angle-left"></i></p>
                     </a>
 
                     <ul class="nav nav-treeview"
@@ -143,21 +142,23 @@
                         <!-- Payment Management -->
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.payment.history') }}"
-                                class="nav-link {{ $route == 'admin.customer.payment.history' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Payment History</p>
+                                class="nav-link {{ $route == 'admin.customer.payment.history' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.payment_history') }}</p>
                             </a>
                         </li>
-                        <!-- Creadit Recharge-->
+
+                        <!-- Credit Recharge -->
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_credit_recharge_list') }}"
-                                class="nav-link {{ $route == 'admin.customer.customer_credit_recharge_list' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p> Credit Recharge List</p>
+                                class="nav-link {{ $route == 'admin.customer.customer_credit_recharge_list' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.credit_recharge_list') }}</p>
                             </a>
                         </li>
                     </ul>
                 </li>
+
                 {{-- Customer Package --}}
                 @php
                     $active_prefix = ['admin.customer.ip_pool.index', 'admin.customer.package.index'];
