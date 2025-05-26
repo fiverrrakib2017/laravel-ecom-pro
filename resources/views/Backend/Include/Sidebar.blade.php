@@ -17,7 +17,7 @@
                     <a href="{{ route('admin.dashboard') }}"
                         class="nav-link  {{ $route == 'admin.dashboard' ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
+                        <p>{{ __('menu.dashboard') }}</p>
                     </a>
                 </li>
 
@@ -70,61 +70,62 @@
                     ];
                 @endphp
                 <li class="nav-item has-treeview mt-2">
-                    <a href="#"
-                        class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Customer <i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.customer') }} <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                        <li class="nav-item"><a href="{{ route('admin.customer.index') }}"
-                                class="nav-link {{ $route == 'admin.customer.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Customer List</p>
-                            </a></li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customer.index') }}"
+                            class="nav-link {{ $route == 'admin.customer.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.customer_list') }}</p>
+                            </a>
+                        </li>
 
-                        <li class="nav-item"><a href="{{ route('admin.customer.create') }}"
-                                class="nav-link {{ $route == 'admin.customer.create' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Add Customer</p>
-                            </a></li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customer.create') }}"
+                            class="nav-link {{ $route == 'admin.customer.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.add_customer') }}</p>
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_import') }}"
-                                class="nav-link {{ $route == 'admin.customer.customer_import' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.customer.customer_import' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Customer Import</p>
+                                <p>{{ __('menu.customer_import') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.log.index') }}"
-                                class="nav-link {{ $route == 'admin.customer.log.index' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.customer.log.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Customer Logs</p>
+                                <p>{{ __('menu.customer_logs') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="{{ route('admin.router.log.index') }}"
-                                class="nav-link {{ $route == 'admin.router.log.index' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.router.log.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Mikrotik Logs</p>
+                                <p>{{ __('menu.mikrotik_logs') }}</p>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>Reports</p>
-                        </a>
-                    </li> --}}
+
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.restore.index') }}"
-                                class="nav-link {{ $route == 'admin.customer.restore.index' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.customer.restore.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Backup & Restore</p>
+                                <p>{{ __('menu.backup_restore') }}</p>
                             </a>
                         </li>
                     </ul>
                 </li>
+
                 {{-- Customer Billings And Payment --}}
                 @php
                     $active_prefix = ['admin.customer.payment.history', 'admin.customer.customer_credit_recharge_list'];

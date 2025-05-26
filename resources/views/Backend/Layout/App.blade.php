@@ -16,17 +16,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
 
   <title>  @yield('title')</title>
 
   @include('Backend.Include.Style')
     <style>
-        .menu-open {
+    .menu-open {
         display: block;
     }
+    .sidebar, .navbar, .content-wrapper {
+        font-family: 'Hind Siliguri', sans-serif !important;
+    }
     .layout-navbar-fixed .wrapper .sidebar-dark-primary .brand-link:not([class*=navbar]) {
-    background-color: #fff !important;
-}
+        background-color: #fff !important;
+    }
 </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed">

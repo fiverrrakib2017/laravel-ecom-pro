@@ -57,6 +57,7 @@ use App\Models\Product_Category;
 use App\Models\Router;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use RouterOS\Client;
 use RouterOS\Query;
 use function App\Helpers\formate_uptime;
@@ -649,6 +650,12 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('/optimize', function () {
         Artisan::call('optimize:clear');
         return 'Optimize Clear Completed';
+    });
+    Route::get('/lang/{locale}', function ($locale) {
+        if (in_array($locale, ['en', 'bn'])) {
+            Session::put('locale', $locale);
+        }
+        return redirect()->back();
     });
     Route::get('/admin/network/diagram', function () {
         return view('Backend.Pages.Network.diagram');
