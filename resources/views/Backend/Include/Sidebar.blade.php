@@ -504,8 +504,8 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
-                                <p>Add New Loan</p>
+                            <a href="{{ route('admin.hr.employee.loan.create') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                <p>Apply Loan</p>
                             </a>
                         </li>
                     </ul>
