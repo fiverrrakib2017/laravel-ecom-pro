@@ -603,6 +603,19 @@ class CustomerController extends Controller
                 422,
             );
         }
+        /*Check Recharge is Exist*/
+        $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
+            ->where('pop_id', $request->pop_id)
+            ->where('area_id', $request->area_id)
+            ->where('transaction_type', '!=', 'due_paid')
+            ->whereIn('recharge_month', $request->recharge_month)
+            ->exists();
+        if ($existingRecharge) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recharge for this month already exists.',
+            ]);
+        }
         /*Check Pop Balance*/
         $pop_balance = check_pop_balance($request->pop_id);
 

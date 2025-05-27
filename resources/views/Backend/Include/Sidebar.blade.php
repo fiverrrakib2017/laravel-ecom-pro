@@ -198,7 +198,7 @@
                 <li class="nav-item has-treeview">
                     <a href="#"
                         class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-network-wired"></i>
+                        <i class="nav-icon fas fa-project-diagram"></i>
                         <p>Network Diagram <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview"
@@ -256,7 +256,7 @@
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-network-wired"></i>
+                        <i class="nav-icon fas fa-server"></i>
                         <p>OLT Management <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
@@ -424,7 +424,7 @@
 
                 <!-- HR Management -->
                  @php
-                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index','admin.hr.employee.salary.advance.index', 'admin.hr.employee.salary.advance.report','admin.hr.employee.payroll.create', 'admin.hr.employee.payroll.index'];
+                    $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index','admin.hr.employee.salary.advance.index', 'admin.hr.employee.salary.advance.report','admin.hr.employee.payroll.create', 'admin.hr.employee.payroll.index','admin.hr.employee.loan.index','admin.hr.employee.loan.create','admin.hr.employee.loan.edit','admin.hr.employee.loan.show'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
@@ -476,6 +476,16 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('admin.hr.employee.loan.index') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                <p>Employee Loans</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hr.employee.loan.create') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                <p>Apply Loan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('admin.hr.employee.payroll.index') }}" class="nav-link {{ $route == 'admin.hr.employee.payroll.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Payroll Management</p>
                             </a>
@@ -504,38 +514,8 @@
                     </ul>
                 </li>
                 @endif
-                <!-- Loan Management -->
-                @php
-                    $active_prefix = [
-                        'admin.hr.employee.loan.index',
-                        'admin.hr.employee.loan.create',
-                        'admin.hr.employee.loan.edit',
-                        'admin.hr.employee.loan.show',
-                    ];
-                @endphp
-                @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
 
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
-                        <i class="nav-icon fas fa-money-check-alt"></i>
-                        <p>Loan Management <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.loan.index') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Employee Loans</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.loan.create') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Apply Loan</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                @endif
 
                 <!-----------Invenotry Menu------------------->
                 @php
@@ -623,7 +603,7 @@
 
                 <!-----------------Accounts--------------------->
                 @php
-                    $active_prefix = ['admin.account.index','admin.account.transaction.index','admin.account.ledger.index','admin.account.trial_balance.index','admin.account.income_statment.index'];
+                    $active_prefix = ['admin.account.index','admin.account.transaction.index','admin.account.ledger.index','admin.account.trial_balance.index','admin.account.income_statment.index','admin.account.balance_sheet.index'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                 <li class="nav-item has-treeview">
