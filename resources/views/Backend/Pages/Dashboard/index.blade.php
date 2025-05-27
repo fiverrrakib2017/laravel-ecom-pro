@@ -307,14 +307,9 @@
 
 
     <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-info text-white">Bandwidth Usage Chart</div>
-                <div class="card-body">
-                    <canvas id="bandwidthChart"></canvas>
-                </div>
-            </div>
-        </div>
+        <!----- Ticket Chart------>
+        @include('Backend.Component.Chart.Ticket.Yearly_chart')
+        <!----- Cusomer Payment Chart------>
         @include('Backend.Component.Chart.Customer_payment_chart')
     </div>
 
@@ -439,22 +434,7 @@
 
 
 
-        /*************************** Bandwidth Usage Chart ***************************************/
-        var ctx3 = document.getElementById('bandwidthChart').getContext('2d');
-        new Chart(ctx3, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Bandwidth Usage (GB)',
-                    data: [100, 150, 200, 250, 300, 350],
-                    backgroundColor: 'rgba(255, 159, 64, 0.6)'
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
+       
 
         /*************************** Customer Payment Status Chart ***************************************/
 

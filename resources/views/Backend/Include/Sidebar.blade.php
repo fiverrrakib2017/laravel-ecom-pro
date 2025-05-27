@@ -444,6 +444,12 @@
                                 <p>Add New Employee</p>
                             </a>
                         </li>
+                        {{-- <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Employee Documents</p>
+                            </a>
+                        </li> --}}
                         <li class="nav-item">
                             <a href="{{ route('admin.hr.employee.leave.index') }}" class="nav-link {{ $route == 'admin.hr.employee.leave.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Leave Management</p>
@@ -465,6 +471,7 @@
                                 <p>Salary</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="{{ route('admin.hr.employee.salary.advance.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
                                 <p>Advance Salary</p>
@@ -509,6 +516,44 @@
                                 <p>Shift Management</p>
                             </a>
                         </li>
+
+                        {{-- <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Employee Promotions</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Employee Transfers</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Resignation / Termination</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Performance Evaluation</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Training Records</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Notice Board</p>
+                            </a>
+                        </li> --}}
 
 
                     </ul>
