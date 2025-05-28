@@ -77,7 +77,8 @@ class CustomerController extends Controller
             })
             ->when($area_id, function ($query) use ($area_id) {
                 $query->where('area_id', $area_id);
-            })->when($status, function ($query) use ($status) {
+            })
+            ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
             });
         $filteredQuery = clone $baseQuery;
@@ -187,7 +188,6 @@ class CustomerController extends Controller
             'success' => true,
             'html' => $html,
         ]);
-
     }
     public function store(Request $request)
     {
@@ -581,7 +581,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function customer_recharge(Request $request)
+    public function customer_recharge_old_method(Request $request)
     {
         /*Validate the form data*/
         $rules = [
@@ -603,19 +603,7 @@ class CustomerController extends Controller
                 422,
             );
         }
-        /*Check Recharge is Exist*/
-        $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
-            ->where('pop_id', $request->pop_id)
-            ->where('area_id', $request->area_id)
-            ->where('transaction_type', '!=', 'due_paid')
-            ->whereIn('recharge_month', $request->recharge_month)
-            ->exists();
-        if ($existingRecharge) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Recharge for this month already exists.',
-            ]);
-        }
+
         /*Check Pop Balance*/
         $pop_balance = check_pop_balance($request->pop_id);
 
@@ -637,6 +625,15 @@ class CustomerController extends Controller
             $object->recharge_month = implode(',', $request->recharge_month);
 
             if ($request->transaction_type !== 'due_paid') {
+                /*Check Recharge is Exist*/
+                $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)->where('pop_id', $request->pop_id)->where('area_id', $request->area_id)->whereIn('recharge_month', $request->recharge_month)->exists();
+                if ($existingRecharge) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Recharge for this month already exists.',
+                    ]);
+                    exit();
+                }
                 /*Update Customer Table Expire date*/
                 $customer = Customer::find($request->customer_id);
                 $months_count = count($request->recharge_month);
@@ -695,16 +692,139 @@ class CustomerController extends Controller
             );
         }
     }
+    public function customer_recharge(Request $request)
+    {
+        $rules = [
+            'customer_id' => 'required',
+            'pop_id' => 'required',
+            'area_id' => 'required',
+            'payable_amount' => 'required|numeric',
+            'recharge_month' => 'required|array',
+            'transaction_type' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
+        }
+
+        $pop_balance = check_pop_balance($request->pop_id);
+
+        if ($pop_balance < $request->payable_amount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pop balance is not enough',
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            $object = new Customer_recharge();
+            $object->user_id = auth()->guard('admin')->user()->id;
+            $object->customer_id = $request->customer_id;
+            $object->pop_id = $request->pop_id;
+            $object->area_id = $request->area_id;
+            $object->recharge_month = implode(',', $request->recharge_month);
+            $customer = Customer::find($request->customer_id);
+
+            if ($request->transaction_type !== 'due_paid') {
+                foreach ($request->recharge_month as $month) {
+                    $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
+                        ->where('pop_id', $request->pop_id)
+                        ->where('area_id', $request->area_id)
+                        ->where('recharge_month', 'LIKE', '%' . $month . '%')
+                        ->exists();
+
+                    if ($existingRecharge) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Recharge for month $month already exists.",
+                        ]);
+                    }
+                }
+
+                $months_count = count($request->recharge_month);
+                $base_date = strtotime($customer->expire_date) > time() ? $customer->expire_date : date('Y-m-d');
+                $new_expire_date = date('Y-m-d', strtotime("+$months_count months", strtotime($base_date)));
+                $customer->expire_date = $new_expire_date;
+                $customer->update();
+                $object->paid_until = $new_expire_date;
+            }
+
+            if($request->transaction_type === 'due_paid') {
+                $object->paid_until = $customer->expire_date;
+            }
+
+            $object->transaction_type = $request->transaction_type;
+            $object->amount = $request->payable_amount;
+            $object->note = $request->note;
+
+            if ($object->save()) {
+                customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');
+
+                $router = Mikrotik_router::where('status', 'active')->where('id', $customer->router_id)->first();
+
+                if ($router) {
+                    $client = new Client([
+                        'host' => $router->ip_address,
+                        'user' => $router->username,
+                        'pass' => $router->password,
+                        'port' => (int) $router->port ?? 8728,
+                    ]);
+
+                    $checkQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
+                    $existingUsers = $client->query($checkQuery)->read();
+
+                    if (empty($existingUsers)) {
+                        $enableQuery = new Query('/ppp/secret/enable');
+                        $enableQuery->equal('numbers', $customer->username);
+                        $client->query($enableQuery)->read();
+
+                        $customer->status = 'online';
+                        $customer->update();
+                    }
+                }
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Recharge successfully.',
+                ]);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recharge failed. Please try again.',
+                ]);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Recharge failed! Error: ' . $e->getMessage(),
+                ],
+                500,
+            );
+        }
+    }
+
     public function customer_recharge_undo($id)
     {
         $object = Customer_recharge::find($id);
 
-        if(empty($object)){
+        if (empty($object)) {
             return response()->json(['success' => false, 'message' => 'Not found.']);
-            exit;
+            exit();
         }
 
-        if($object->transaction_type!=='due_paid'){
+        if ($object->transaction_type !== 'due_paid') {
             /*Update Customer Table Expire date*/
             $recharge_months = explode(',', $object->recharge_month);
             $months_count = count($recharge_months);
@@ -727,25 +847,42 @@ class CustomerController extends Controller
         $data = Customer_recharge::find($recharge_id);
         if (!$data) {
             return response()->json(['success' => false, 'message' => 'Not found.']);
-            exit;
+            exit();
         }
-        $html = '
+        $html =
+            '
         <div style="font-family: monospace; font-size: 12px; text-align: center;">
             <strong>ISP Billing System</strong><br>
             -----------------------------<br>
-            Customer Name: ' . $data->customer->fullname . '<br>
-            Customer ID: ' . $data->customer->id . '<br>
-            Date: ' . \Carbon\Carbon::parse($data->created_at)->format('d M Y') . '<br>
-            Months: ' . $data->recharge_month . '<br>
-            Type: ' . ucfirst($data->transaction_type) . '<br>
-            Amount: ' . number_format($data->amount, 2) . ' BDT<br>
-            Paid Until: ' . \Carbon\Carbon::parse($data->paid_until)->format('d M Y') . '<br>
-            Remarks: ' . ucfirst($data->note??'-') . '<br>
+            Customer Name: ' .
+            $data->customer->fullname .
+            '<br>
+            Customer ID: ' .
+            $data->customer->id .
+            '<br>
+            Date: ' .
+            \Carbon\Carbon::parse($data->created_at)->format('d M Y') .
+            '<br>
+            Months: ' .
+            $data->recharge_month .
+            '<br>
+            Type: ' .
+            ucfirst($data->transaction_type) .
+            '<br>
+            Amount: ' .
+            number_format($data->amount, 2) .
+            ' BDT<br>
+            Paid Until: ' .
+            \Carbon\Carbon::parse($data->paid_until)->format('d M Y') .
+            '<br>
+            Remarks: ' .
+            ucfirst($data->note ?? '-') .
+            '<br>
             -----------------------------<br>
             Thank You!
         </div>';
 
-       return response()->json(['success' => true, 'html' => $html]);
+        return response()->json(['success' => true, 'html' => $html]);
     }
 
     public function customer_payment_history()
