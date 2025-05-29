@@ -254,18 +254,21 @@
 
                 <!-- OLT Management -->
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
+                 @php
+                    $active_prefix = ['admin.olt.index','admin.olt.create'];
+                @endphp
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-server"></i>
                         <p>OLT Management <i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
+                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <!-- OLT Device Configuration -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
+                            <a href="{{ route('admin.olt.index') }}" class="nav-link {{ $route == 'admin.olt.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
+                            <a href="{{ route('admin.olt.create') }}" class="nav-link  {{ $route == 'admin.olt.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
                         </li>
 
                         <!-- ONT (Optical Network Terminal) Management -->

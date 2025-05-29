@@ -52,6 +52,7 @@ use App\Http\Controllers\Backend\Teacher\Transaction\TeacherTransaction_controll
 use App\Http\Controllers\Backend\Tickets\Assign_controller;
 use App\Http\Controllers\Backend\Tickets\Complain_typeController;
 use App\Http\Controllers\Backend\Hrm\Shift_controller;
+use App\Http\Controllers\Backend\Olt\Olt_controller;
 use App\Http\Controllers\Backend\Tickets\Ticket_controller;
 use App\Models\Product_Category;
 use App\Models\Router;
@@ -393,6 +394,21 @@ Route::group(['middleware' => 'admin'], function () {
                 /* Change Area Status */
                 Route::post('/change/status/{id}', 'area_change_status')->name('admin.pop.area.change_status');
             });
+        });
+    });
+    /* OLT Management Route */
+    Route::prefix('admin/olt-management')->group(function () {
+        /* OLT Device  Route */
+        Route::controller(Olt_controller::class)->group(function () {
+            Route::get('/list', 'index')->name('admin.olt.index');
+            Route::get('/create', 'create')->name('admin.olt.create');
+
+            Route::get('/edit/{id}', 'edit')->name('admin.olt.edit');
+            Route::get('/update', 'update')->name('admin.olt.update');
+
+            Route::post('/delete', 'delete')->name('admin.olt.delete');
+
+            Route::post('/store', 'store')->name('admin.olt.store');
         });
     });
     /* SMS Management Route */
