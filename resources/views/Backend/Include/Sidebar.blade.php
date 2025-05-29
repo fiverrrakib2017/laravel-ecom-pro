@@ -255,7 +255,7 @@
                 <!-- OLT Management -->
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
                  @php
-                    $active_prefix = ['admin.olt.index','admin.olt.create'];
+                    $active_prefix = ['admin.olt.index','admin.olt.create','admin.onu.index'];
                 @endphp
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
@@ -273,7 +273,7 @@
 
                         <!-- ONT (Optical Network Terminal) Management -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
+                            <a href="{{ route('admin.onu.index') }}" class="nav-link {{ $route == 'admin.onu.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>

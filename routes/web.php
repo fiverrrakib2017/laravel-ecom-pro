@@ -3,11 +3,7 @@
 use App\Http\Controllers\Backend\Accounts\Account_controller;
 use App\Http\Controllers\Backend\Accounts\Balance_sheet_controller;
 use App\Http\Controllers\Backend\Accounts\Income_controller;
-use App\Http\Controllers\Backend\Accounts\Ledger\LedgerController;
 use App\Http\Controllers\Backend\Accounts\Ledger_controller;
-use App\Http\Controllers\Backend\Accounts\Master_Ledger\MasterLedgerController;
-use App\Http\Controllers\Backend\Accounts\Sub_Ledger\SubLedgerController;
-use App\Http\Controllers\Backend\Accounts\Transaction\TransactionController;
 use App\Http\Controllers\Backend\Accounts\Transaction_controller;
 use App\Http\Controllers\Backend\Accounts\Trial_balance_controller;
 use App\Http\Controllers\Backend\Admin\AdminController;
@@ -46,13 +42,11 @@ use App\Http\Controllers\Backend\Hrm\Loan_controller;
 use App\Http\Controllers\Backend\Hrm\Payroll_controller;
 use App\Http\Controllers\Backend\Hrm\Salary_controller;
 use App\Http\Controllers\Backend\Supplier\SupplierController;
-use App\Http\Controllers\Backend\Teacher\TeacherAttendance_controller;
-use App\Http\Controllers\Backend\Teacher\TeacherController;
-use App\Http\Controllers\Backend\Teacher\Transaction\TeacherTransaction_controller;
 use App\Http\Controllers\Backend\Tickets\Assign_controller;
 use App\Http\Controllers\Backend\Tickets\Complain_typeController;
 use App\Http\Controllers\Backend\Hrm\Shift_controller;
 use App\Http\Controllers\Backend\Olt\Olt_controller;
+use App\Http\Controllers\Backend\Onu\Onu_controller;
 use App\Http\Controllers\Backend\Tickets\Ticket_controller;
 use App\Models\Product_Category;
 use App\Models\Router;
@@ -409,6 +403,10 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/delete', 'delete')->name('admin.olt.delete');
 
             Route::post('/store', 'store')->name('admin.olt.store');
+        });
+        /* ONT Device  Route */
+        Route::controller(Onu_controller::class)->group(function () {
+            Route::get('/onu-list', 'index')->name('admin.onu.index');
         });
     });
     /* SMS Management Route */

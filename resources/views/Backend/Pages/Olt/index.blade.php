@@ -44,7 +44,7 @@
                             <p><strong>Location:</strong> {{ $device['location'] }}</p>
                         </div>
                         <div class="col-md-6">
-                            <canvas id="usageChart-{{ $device['id'] }}" style="width: 100px; height: 120px;"></canvas>
+                            <canvas id="usageChart-{{ $device['id'] }}" ></canvas>
                         </div>
                       
 
