@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', 'Dashboard | Payroll Management | Admin Panel')
+@section('title', 'Create OLT Device | Dashboard | Admin Panel')
 @section('content')
     <div class="container-fluid">
         <div class="card ">
