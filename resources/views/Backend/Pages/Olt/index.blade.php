@@ -7,34 +7,35 @@
     <div class="row">
 
         @php
-            $devices = [
-                ['id' => 1, 'name' => 'Huawei OLT 1234', 'ip' => '192.168.1.100', 'status' => 'active', 'brand' => 'Huawei', 'model' => 'HG8245H', 'location' => 'Dhaka', 'cpu' => 55, 'ram' => 70],
-                
-                ['id' => 2, 'name' => 'ZTE OLT 5678', 'ip' => '192.168.1.101', 'status' => 'inactive', 'brand' => 'ZTE', 'model' => 'ZXA10', 'location' => 'Chittagong', 'cpu' => 30, 'ram' => 45],
+            // $devices = [
+            //     ['id' => 1, 'name' => 'Huawei OLT 1234', 'ip' => '192.168.1.100', 'status' => 'active', 'brand' => 'Huawei', 'model' => 'HG8245H', 'location' => 'Dhaka', 'cpu' => 55, 'ram' => 70],
 
-                ['id' => 3, 'name' => 'Fiberhome OLT 9012', 'ip' => '192.168.1.102', 'status' => 'maintenance', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Khulna', 'cpu' => 80, 'ram' => 60],
+            //     ['id' => 2, 'name' => 'ZTE OLT 5678', 'ip' => '192.168.1.101', 'status' => 'inactive', 'brand' => 'ZTE', 'model' => 'ZXA10', 'location' => 'Chittagong', 'cpu' => 30, 'ram' => 45],
 
-                ['id' => 4, 'name' => 'Viewsonic OLT 9012', 'ip' => '192.168.1.102', 'status' => 'active', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Cumilla', 'cpu' => 80, 'ram' => 60],
-            ];
+            //     ['id' => 3, 'name' => 'Fiberhome OLT 9012', 'ip' => '192.168.1.102', 'status' => 'maintenance', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Khulna', 'cpu' => 80, 'ram' => 60],
+
+            //     ['id' => 4, 'name' => 'Viewsonic OLT 9012', 'ip' => '192.168.1.102', 'status' => 'active', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Cumilla', 'cpu' => 80, 'ram' => 60],
+            // ];
+            $devices = App\Models\Olt_device::get()->toArray();
         @endphp
 
         @foreach($devices as $device)
             <div class="col-md-6">
-                <div class="card @if($device['status'] == 'active') card-success 
-                                 @elseif($device['status'] == 'inactive') card-danger 
-                                 @elseif($device['status'] == 'maintenance') card-warning 
+                <div class="card @if($device['status'] == 'active') card-success
+                                 @elseif($device['status'] == 'inactive') card-danger
+                                 @elseif($device['status'] == 'maintenance') card-warning
                                  @else card-secondary @endif">
                     <div class="card-header">
                         <h5 class="card-title">{{ $device['name'] }}</h5>
                     </div>
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div class="col-md-6">
-                            <p><strong>IP Address:</strong> {{ $device['ip'] }}</p>
-                            <p><strong>Status:</strong> 
-                                <span class="badge 
-                                    @if($device['status'] == 'active') badge-success 
-                                    @elseif($device['status'] == 'inactive') badge-danger 
-                                    @elseif($device['status'] == 'maintenance') badge-warning 
+                            <p><strong>IP Address:</strong> {{ $device['ip_address'] }}</p>
+                            <p><strong>Status:</strong>
+                                <span class="badge
+                                    @if($device['status'] == 'active') badge-success
+                                    @elseif($device['status'] == 'inactive') badge-danger
+                                    @elseif($device['status'] == 'maintenance') badge-warning
                                     @else badge-secondary @endif">
                                     {{ ucfirst($device['status']) }}
                                 </span>
@@ -46,9 +47,6 @@
                         <div class="col-md-6">
                             <canvas id="usageChart-{{ $device['id'] }}" ></canvas>
                         </div>
-                      
-
-                       {{-- <canvas id="usageChart-{{ $device['id'] }}" style="width: 100px; height: 120px;"></canvas> --}}
                     </div>
                 </div>
             </div>

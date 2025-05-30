@@ -140,71 +140,8 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#employee_id').change(function() {
-
-                if ($(this).val() !== '') {
-                    $('input[name="month_year"]').prop('disabled', false);
-                } else {
-                    $('input[name="month_year"]').prop('disabled', true);
-                    $('input[name="month_year"]').val('');
-                }
-                let empId = $(this).val();
-                if (empId) {
-                    $.ajax({
-                        url: '{{ route('admin.hr.employee.salary.get_employee_salary') }}',
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            employee_id: empId
-                        },
-                        success: function(data) {
-                            $('#basic_salary').val(data.basic_salary);
-                            $('#allowances').val(data.total_allowance);
-                            $('#advance_salary').val(data.advance_salary);
-                            $('#loan_deduction').val(data.loan);
-                            $('#tax').val(data.tax);
-                            calculate_net_salary();
-                        }
-                    });
-                }
-            });
-
-            function calculate_net_salary() {
-
-                let basic = parseFloat($('#basic_salary').val()) || 0;
-                let advance = parseFloat($('#advance_salary').val()) || 0;
-                let loan = parseFloat($('#loan_deduction').val()) || 0;
-                let tax = parseFloat($('#tax').val()) || 0;
-
-                let net = basic - (advance + loan + tax);
-                $('#net_salary').val(net.toFixed(2));
-            }
-            $('#basic_salary, #advance_salary, #loan_deduction, #tax').on('input', calculate_net_salary);
-
-            $(document).on('change', 'input[name="month_year"]', function() {
-                var employee_id = $('#employee_id').val();
-                var month_year = $(this).val();
-
-                if (!employee_id) {
-                    toastr.error("Please select employee first");
-                    $(this).val('');
-                    $(this).prop('disabled', true);
-                }
-                $.ajax({
-                    url: '{{ route('admin.hr.employee.advance.get_advance_salary_by_month') }}',
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        employee_id: employee_id,
-                        month_year: month_year
-                    },
-                    success: function(response) {
-                        $("#advance_salary").val(response.total_advance);
-                        calculate_net_salary();
-                    }
-                });
-            });
-            $('#payrollForm').submit(function(e) {
+            /* Handle form submission */
+            $('#addOltForm').submit(function(e) {
                 e.preventDefault();
 
                 /* Get the submit button */
