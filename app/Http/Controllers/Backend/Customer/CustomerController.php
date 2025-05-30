@@ -695,76 +695,156 @@ class CustomerController extends Controller
     public function customer_recharge(Request $request)
     {
         $rules = [
-            'customer_id' => 'required',
-            'pop_id' => 'required',
-            'area_id' => 'required',
-            'payable_amount' => 'required|numeric',
-            'recharge_month' => 'required|array',
-            'transaction_type' => 'required',
+            'customer_id'       => 'required',
+            'pop_id'            => 'required',
+            'area_id'           => 'required',
+            'payable_amount'    => 'required|numeric',
+            'recharge_month'    => 'required|array',
+            'transaction_type'  => 'required',
         ];
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(
                 [
-                    'success' => false,
-                    'errors' => $validator->errors(),
+                    'success'   => false,
+                    'errors'    => $validator->errors(),
                 ],
                 422,
             );
         }
-
-        $pop_balance = check_pop_balance($request->pop_id);
-
-        if ($pop_balance < $request->payable_amount) {
+        /*Check if Recharge Month is empty*/
+        if (empty($request->recharge_month)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Pop balance is not enough',
+                'message' => 'Please select at least one month for recharge.',
             ]);
         }
+        /*Check if Recharge Month is valid*/
+        $validMonths = [];
+        foreach ($request->recharge_month as $month) {
+            if (in_array($month, ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])) {
+                $validMonths[] = $month;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Invalid month: $month",
+                ]);
+            }
+        }
+        /*When Credit Recharge Will BE Paid*/
+        if($request->transaction_type === 'due_paid'){
+            if (empty($validMonths)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please select at least one month for due payment.',
+                ]);
+            }
 
-        DB::beginTransaction();
-        try {
-            $object = new Customer_recharge();
-            $object->user_id = auth()->guard('admin')->user()->id;
-            $object->customer_id = $request->customer_id;
-            $object->pop_id = $request->pop_id;
-            $object->area_id = $request->area_id;
-            $object->recharge_month = implode(',', $request->recharge_month);
+            // Check if already paid for current month
+            $alreadyPaid = Customer_recharge::where('customer_id', $request->customer_id)
+                ->where('pop_id', $request->pop_id)
+                ->where('area_id', $request->area_id)
+                ->where('transaction_type', 'due_paid')
+                ->where('recharge_month', 'LIKE', '%' . date('F') . '%')
+                ->first();
+
+            if ($alreadyPaid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Due already paid for this month.',
+                ]);
+            }
+
+            // Get total due (credit)
+            $totalDue = Customer_recharge::where('customer_id', $request->customer_id)
+                ->where('pop_id', $request->pop_id)
+                ->where('area_id', $request->area_id)
+                ->where('transaction_type', 'credit')
+                ->sum('amount');
+
+            if ($totalDue <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No due found for this customer.',
+                ]);
+            }
+
+            if ($request->payable_amount <= 0 || $request->payable_amount > $totalDue) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid due paid amount.',
+                ]);
+            }
+
+            /*Store due paid data*/
+            $due_paid                     = new Customer_recharge();
+            $due_paid->user_id            = auth()->guard('admin')->user()->id;
+            $due_paid->customer_id        = $request->customer_id;
+            $due_paid->pop_id             = $request->pop_id;
+            $due_paid->area_id            = $request->area_id;
+            $due_paid->recharge_month     = implode(',', $validMonths);
+            $due_paid->transaction_type   = 'due_paid';
+            $due_paid->amount             = $request->payable_amount;
+            $due_paid->paid_until         = null;
+            $due_paid->note               = $request->note;
+            $due_paid->save();
+
+
+            customer_log($request->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Due Paid Successfully');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Due paid successfully.',
+            ]);
+            exit;
+        }
+
+        if ($request->transaction_type !== 'due_paid'){
+            /*Check POP/Branch Balance*/
+            $pop_balance = check_pop_balance($request->pop_id);
+
+            if ($pop_balance < $request->payable_amount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pop balance is not enough',
+                ]);
+                exit();
+            }
+            $object                     = new Customer_recharge();
+            $object->user_id            = auth()->guard('admin')->user()->id;
+            $object->customer_id        = $request->customer_id;
+            $object->pop_id             = $request->pop_id;
+            $object->area_id            = $request->area_id;
+            $object->recharge_month     = implode(',', $request->recharge_month);
+            $object->transaction_type   = $request->transaction_type;
+            $object->amount             = $request->payable_amount;
+            $object->note               = $request->note;
+
             $customer = Customer::find($request->customer_id);
 
-            if ($request->transaction_type !== 'due_paid') {
-                foreach ($request->recharge_month as $month) {
-                    $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
-                        ->where('pop_id', $request->pop_id)
-                        ->where('area_id', $request->area_id)
-                        ->where('recharge_month', 'LIKE', '%' . $month . '%')
-                        ->exists();
+            foreach ($request->recharge_month as $month) {
+                $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
+                    ->where('pop_id', $request->pop_id)
+                    ->where('area_id', $request->area_id)
+                    ->where('recharge_month', 'LIKE', '%' . $month . '%')
+                    ->exists();
 
-                    if ($existingRecharge) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => "Recharge for month $month already exists.",
-                        ]);
-                    }
+                if ($existingRecharge) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Recharge for month $month already exists.",
+                    ]);
                 }
-
-                $months_count = count($request->recharge_month);
-                $base_date = strtotime($customer->expire_date) > time() ? $customer->expire_date : date('Y-m-d');
-                $new_expire_date = date('Y-m-d', strtotime("+$months_count months", strtotime($base_date)));
-                $customer->expire_date = $new_expire_date;
-                $customer->update();
-                $object->paid_until = $new_expire_date;
             }
 
-            if($request->transaction_type === 'due_paid') {
-                $object->paid_until = $customer->expire_date;
-            }
+            $months_count           = count($request->recharge_month);
+            $base_date              = strtotime($customer->expire_date) > time() ? $customer->expire_date : date('Y-m-d');
+            $new_expire_date        = date('Y-m-d', strtotime("+$months_count months", strtotime($base_date)));
+            $customer->expire_date  = $new_expire_date;
+            $object->paid_until     = $new_expire_date;
 
-            $object->transaction_type = $request->transaction_type;
-            $object->amount = $request->payable_amount;
-            $object->note = $request->note;
-
+            $customer->update();
             if ($object->save()) {
                 customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');
 
@@ -803,15 +883,6 @@ class CustomerController extends Controller
                     'message' => 'Recharge failed. Please try again.',
                 ]);
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'Recharge failed! Error: ' . $e->getMessage(),
-                ],
-                500,
-            );
         }
     }
 

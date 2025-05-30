@@ -114,60 +114,13 @@
                             <hr>
                             <!-- Additional Information -->
                             <div class="card card-primary card-outline shadow-sm">
-                                {{-- <div class="card-header text-center">
-                            <h5 class="card-title mb-0"><i class="fas fa-server text-primary"></i> Mikrotik Router Info</h5>
-                        </div> --}}
+
                                 <div class="card-body">
 
                                     <div class="row mb-3">
                                         <div class="col-md-6 text-center border-end">
                                             <p class="mb-1"><i class="fas fa-clock text-warning fa-lg"></i></p>
                                             <strong>Up Time</strong>
-                                            {{-- <div class="mt-2">
-                                                @php
-                                                    $uptime = $mikrotik_data['uptime'] ?? null;
-                                                    if ($uptime) {
-                                                        preg_match(
-                                                            '/(?:(\d+)w)?(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/',
-                                                            $uptime,
-                                                            $matches,
-                                                        );
-                                                        $weeks = $matches[1] ?? 0;
-                                                        $days = $matches[2] ?? 0;
-                                                        $hours = $matches[3] ?? 0;
-                                                        $minutes = $matches[4] ?? 0;
-                                                        $seconds = $matches[5] ?? 0;
-                                                    }
-                                                @endphp
-
-                                                @if ($uptime)
-                                                    @if ($weeks > 0)
-                                                        <span class="badge bg-primary me-1"><i
-                                                                class="fas fa-calendar-week"></i>
-                                                            {{ $weeks }}w</span>
-                                                    @endif
-                                                    @if ($days > 0)
-                                                        <span class="badge bg-success me-1"><i
-                                                                class="fas fa-calendar-day"></i>
-                                                            {{ $days }}d</span>
-                                                    @endif
-                                                    @if ($hours > 0)
-                                                        <span class="badge bg-warning text-dark me-1"><i
-                                                                class="fas fa-hourglass-half"></i>
-                                                            {{ $hours }}h</span>
-                                                    @endif
-                                                    @if ($minutes > 0)
-                                                        <span class="badge bg-info text-dark me-1"><i
-                                                                class="fas fa-stopwatch"></i> {{ $minutes }}m</span>
-                                                    @endif
-                                                    @if ($seconds > 0)
-                                                        <span class="badge bg-secondary me-1"><i class="fas fa-clock"></i>
-                                                            {{ $seconds }}s</span>
-                                                    @endif
-                                                @else
-                                                    <span class="badge bg-danger">N/A</span>
-                                                @endif
-                                            </div> --}}
                                             <p class="text-dark"><span id="customer_uptime">0.00</span></p>
                                         </div>
 
@@ -327,17 +280,17 @@
                                     'bg' => 'danger',
                                     'icon' => 'fa-hand-holding-usd',
                                 ],
-                                [
-                                    'id' => 4,
-                                    'title' => 'Due Paid',
-                                    'value' => $duePaid,
-                                    'bg' => 'warning',
-                                    'icon' => 'fa-check-circle',
-                                ],
+                                // [
+                                //     'id' => 4,
+                                //     'title' => 'Due Paid',
+                                //     'value' => $duePaid,
+                                //     'bg' => 'warning',
+                                //     'icon' => 'fa-check-circle',
+                                // ],
                             ];
                         @endphp
                         @foreach ($dashboardCards as $card)
-                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                                 <div class="small-box bg-{{ $card['bg'] }} shadow-lg rounded">
                                     <div class="inner">
                                         <h3>{{ $card['value'] }}</h3>
@@ -375,9 +328,8 @@
                                 </div>
                                 <!-- Customer Recharge Section  -->
                                 <div class="tab-pane" id="recharge">
-                                    <div class="table-responsive">
-                                        <table id="recharge_datatable" class="table table-bordered dt-responsive nowrap"
-                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <div class="table table-responsive">
+                                        <table id="recharge_datatable"  class="table table-bordered dt-responsive nowrap"style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
                                                 <tr>
                                                     <th>Date</th>
@@ -397,6 +349,10 @@
                                                     )
                                                         ->latest()
                                                         ->get();
+
+                                                    // echo '<pre>';
+                                                    //  print_r($total_recharge_data->toArray());
+                                                    // echo '</pre>';
                                                 @endphp
                                                 @foreach ($total_recharge_data as $item)
                                                     <tr>
@@ -420,15 +376,25 @@
                                                         </td>
 
                                                         <td>{{ ucfirst($item->note) }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse(ucfirst($item->paid_until))->format('d M Y') }}
+                                                        <td>
+                                                            @if ($item->paid_until)
+                                                                {{ \Carbon\Carbon::parse($item->paid_until)->format('d M Y') }}
+                                                            @else
+                                                                <span class="text-muted">N/A</span>
+                                                            @endif
                                                         </td>
+
 
                                                         <td>{{ number_format($item->amount, 2) }} BDT</td>
                                                         <td>
                                                             <button
                                                                 class="btn btn-danger btn-sm customer_recharge_undo_btn"
-                                                                data-id="{{ $item->id }}"><i
-                                                                    class="fas fa-undo"></i></button>
+                                                                data-id="{{ $item->id }}">
+                                                                <i class="fas fa-undo"></i></button>
+                                                            {{-- @if ($item->transaction_type == 'credit')
+                                                                <button class="btn btn-info btn-sm credit_recharge_btn" data-id="{{ $item->id }}"> <i class="fas fa-check-circle"></i> </button>
+                                                            @endif --}}
+
 
                                                             <button
                                                                 class="btn btn-success btn-sm customer_recharge_print_btn"
@@ -544,7 +510,16 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#recharge_datatable").DataTable();
+            $("#recharge_datatable").DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "lengthMenu": [10, 25, 50, 100],
+                "language": {
+                    "emptyTable": "No recharge data available",
+                    "zeroRecords": "No matching records found"
+                },
+                "order": [[0, 'desc']],
+            });
             /************** Customer Enable And Disabled Start**************************/
             $(document).on("click", ".change-status", function() {
                 let id = $(this).data('id');
