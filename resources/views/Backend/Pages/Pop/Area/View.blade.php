@@ -140,7 +140,7 @@
                         <!-- Customer -->
                         <div class="active tab-pane" id="customers">
                             <div class="table-responsive">
-                                @include('Backend.Component.Customer.Customer',['area_id' => $data->id])
+                                @include('Backend.Component.Customer.Customer',['area_id' => $data->id, 'area_page' => true])
                             </div>
                         </div>
                         <!-- Tickets -->

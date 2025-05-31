@@ -1,12 +1,21 @@
 @php
    //$branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-   if(!empty($branch_user_id) && $branch_user_id > 0){
+    if(!empty($branch_user_id) && $branch_user_id > 0){
         $pop_branches = \App\Models\Pop_branch::where('id',$branch_user_id)->first();
         $areas=\App\Models\Pop_area::where('status','active')->where('pop_id',$branch_user_id)->get();
-   }else{
-    $pop_branches=\App\Models\Pop_branch::where('status',1)->get();
-    $areas=\App\Models\Pop_area::where('status','active')->get();
-   }
+    }else{
+        $pop_branches=\App\Models\Pop_branch::where('status',1)->get();
+        $areas=\App\Models\Pop_area::where('status','active')->get();
+    }
+
+    /*GET Request POP/Branch View Table*/
+    if(!empty($pop_id) && $pop_id > 0 && isset($pop_id)){
+        $pop_branches = \App\Models\Pop_branch::where('id',$pop_id)->get();
+        $areas = \App\Models\Pop_area::where('status','active')->where('pop_id',$pop_id)->get();
+    }else{
+        $pop_branches = \App\Models\Pop_branch::where('status',1)->get();
+        $areas = \App\Models\Pop_area::where('status','active')->get();
+    }
 
 
 @endphp
@@ -73,6 +82,15 @@
         var area_id = @json($area_id ?? '');
         var status = @json($status ?? '');
 
+        /*When Request Get Area Page*/
+       var  area_page = @json($area_page ?? false);
+        // if (area_page) {
+        //     pop_id = @json($pop_id ?? '');
+        //     area_id = @json($area_id ?? '');
+        //     status = @json($status ?? '');
+        // }
+        /*When Request Get POP/Branch Page*/
+
         /* GET POP-Branch */
         var pop_branches = @json($pop_branches);
         var pop_filter = `
@@ -126,11 +144,16 @@
                     <div class="col-12 col-md-auto dataTables_filter_container d-flex justify-content-md-end"></div>
                 </div>
             `;
+            /* Append the filters to the DataTable wrapper */
+            if(area_page==false){
+                var tableWrapper = $('#customer_datatable1').closest('.dataTables_wrapper');
+                tableWrapper.prepend(filters_wrapper);
 
-            $('.dataTables_wrapper').prepend(filters_wrapper);
+                tableWrapper.find('.dataTables_length').appendTo(tableWrapper.find('.dataTables_length_container'));
+                tableWrapper.find('.dataTables_filter').appendTo(tableWrapper.find('.dataTables_filter_container'));
+            }
 
-            $('.dataTables_length').appendTo('.dataTables_length_container');
-            $('.dataTables_filter').appendTo('.dataTables_filter_container');
+
 
             $('#search_pop_id').select2({ width: 'resolve' });
             $('#search_area_id').select2({ width: 'resolve' });
