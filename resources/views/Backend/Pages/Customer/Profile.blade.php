@@ -307,9 +307,9 @@
                     <div class="card">
                         <div class="card-header p-2">
                             <ul class="nav nav-pills">
-                                <li class="nav-item"><a class="nav-link active" href="#tickets"
+                                <li class="nav-item"><a class="nav-link " href="#tickets"
                                         data-toggle="tab">Tickets</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#recharge" data-toggle="tab">Recharge
+                                <li class="nav-item"><a class="nav-link active" href="#recharge" data-toggle="tab">Recharge
                                         History</a></li>
                                 <li class="nav-item"><a class="nav-link" href="#onu_details" data-toggle="tab">Onu
                                         Information</a></li>
@@ -319,7 +319,7 @@
                         <div class="card-body">
                             <div class="tab-content">
                                 <!-- Tickets -->
-                                <div class="active tab-pane" id="tickets">
+                                <div class=" tab-pane" id="tickets">
                                     <div class="table-responsive">
                                         @include('Backend.Component.Tickets.Tickets', [
                                             'customer_id' => $data->id,
@@ -327,7 +327,7 @@
                                     </div>
                                 </div>
                                 <!-- Customer Recharge Section  -->
-                                <div class="tab-pane" id="recharge">
+                                <div class="active tab-pane" id="recharge">
                                     <div class="table table-responsive">
                                         <table id="recharge_datatable"  class="table table-bordered dt-responsive nowrap"style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
@@ -397,19 +397,14 @@
 
                                                         <td>{{ number_format($item->amount, 2) }} BDT</td>
                                                         <td>
-                                                            <button
-                                                                class="btn btn-danger btn-sm customer_recharge_undo_btn"
-                                                                data-id="{{ $item->id }}">
-                                                                <i class="fas fa-undo"></i></button>
-                                                            {{-- @if ($item->transaction_type == 'credit')
-                                                                <button class="btn btn-info btn-sm credit_recharge_btn" data-id="{{ $item->id }}"> <i class="fas fa-check-circle"></i> </button>
-                                                            @endif --}}
+
+                                                            @if ($item->note !== 'Created')
+                                                                <button class="btn btn-danger btn-sm customer_recharge_undo_btn"
+                                                                data-id="{{ $item->id }}"><i class="fas fa-undo"></i></button>
+                                                            @endif
+                                                            <button class="btn btn-success btn-sm customer_recharge_print_btn" data-id="{{ $item->id }}"><i class="fas fa-print"></i></button>
 
 
-                                                            <button
-                                                                class="btn btn-success btn-sm customer_recharge_print_btn"
-                                                                data-id="{{ $item->id }}"><i
-                                                                    class="fas fa-print"></i></button>
                                                         </td>
                                                     </tr>
                                                 @endforeach

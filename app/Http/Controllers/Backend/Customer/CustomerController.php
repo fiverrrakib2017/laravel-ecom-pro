@@ -8,6 +8,7 @@ use App\Models\Customer_log;
 use App\Models\Customer_recharge;
 use App\Models\Router as Mikrotik_router;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use function App\Helpers\check_pop_balance;
@@ -231,7 +232,7 @@ class CustomerController extends Controller
             $object->customer_id = $customer->id;
             $object->pop_id = $request->pop_id;
             $object->area_id = $request->area_id;
-            $object->recharge_month = implode(',', [date('F')]);
+           $object->recharge_month = implode(',', [date('Y-m')]);
             $object->transaction_type = 'cash';
             $object->paid_until = date('Y-m-d', strtotime('+1 month'));
             $object->amount = $request->amount;
@@ -752,9 +753,10 @@ class CustomerController extends Controller
                     ->first();
 
                 if ($existingRecharge) {
+                    $formattedMonth = Carbon::parse($monthYear)->translatedFormat('F Y');
                     return response()->json([
                         'success' => false,
-                        'message' => "Due already paid for $monthYear .",
+                        'message' => "Due already paid for $formattedMonth .",
                     ]);
                 }
             }
@@ -834,9 +836,10 @@ class CustomerController extends Controller
                     ->exists();
 
                 if ($existingRecharge) {
+                     $formattedMonth = Carbon::parse($monthYear)->translatedFormat('F Y');
                     return response()->json([
                         'success' => false,
-                        'message' => "Recharge for month $monthYear already exists.",
+                        'message' => "Recharge for month $formattedMonth already exists.",
                     ]);
                 }
             }

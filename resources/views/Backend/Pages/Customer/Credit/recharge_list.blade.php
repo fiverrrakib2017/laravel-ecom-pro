@@ -12,105 +12,117 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" id="tableStyle">
-                        <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap"
-                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>POP/Branch</th>
-                                <th>Area</th>
-                                <th>Phone Number</th>
-                                <th>Month</th>
-                                <th>Recharged</th>
-                                <th>Total Paid</th>
-                                <th>Total Due</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+                       @php
+    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 
-                                $dataQuery = App\Models\Customer_recharge::select('customer_id')
-                                    ->groupBy('customer_id')
-                                    ->latest();
+    $dataQuery = App\Models\Customer_recharge::select('customer_id')
+        ->groupBy('customer_id')
+        ->latest();
 
-                                if ($branch_user_id) {
-                                    $dataQuery->whereHas('customer', function ($query) use ($branch_user_id) {
-                                        $query->where('pop_id', $branch_user_id);
-                                    });
-                                }
+    if ($branch_user_id) {
+        $dataQuery->whereHas('customer', function ($query) use ($branch_user_id) {
+            $query->where('pop_id', $branch_user_id);
+        });
+    }
 
-                                $data = $dataQuery->get();
-                            @endphp
+    $data = $dataQuery->get();
+@endphp
 
-                        @foreach ($data as $item)
-                            @php
-                                /* get customer  */
-                                $recharge_months = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
-                                    ->groupBy('recharge_month')
-                                    ->pluck('recharge_month');
+<table id="customer_datatable1" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>POP/Branch</th>
+            <th>Area</th>
+            <th>Phone Number</th>
+            <th>Month</th>
+            <th>Recharged</th>
+            <th>Total Paid</th>
+            <th>Total Due</th>
+        </tr>
+    </thead>
+    <tbody>
+       @php
+    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 
-                                /* total recharge */
-                                $total_recharge = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
-                                    ->where('transaction_type', '!=', 'due_paid')
-                                    ->sum('amount');
+    $dataQuery = App\Models\Customer_recharge::select('customer_id')
+        ->groupBy('customer_id')
+        ->latest();
 
-                                /* total paid */
-                                $total_paid = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
-                                    ->where('transaction_type', '!=', 'credit')
-                                    ->sum('amount');
+    if ($branch_user_id) {
+        $dataQuery->whereHas('customer', function ($query) use ($branch_user_id) {
+            $query->where('pop_id', $branch_user_id);
+        });
+    }
 
-                                /* total due */
-                                $get_total_due = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
-                                    ->where('transaction_type', 'credit')
-                                    ->sum('amount');
+    $data = $dataQuery->get();
+@endphp
 
-                                $due_paid = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
-                                    ->where('transaction_type', 'due_paid')
-                                    ->sum('amount');
+@foreach ($data as $item)
+    @php
+        // Credit month collect
+        $credit_recharges = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
+            ->where('transaction_type', 'credit')
+            ->get(['recharge_month', 'amount']);
 
-                                $total_due = $get_total_due - $due_paid;
+        // Due paid month collect
+        $due_paids = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
+            ->where('transaction_type', 'due_paid')
+            ->get(['recharge_month', 'amount']);
 
-                                /* ডিউ থাকতে হলে প্রথম মাস দেখানো হবে */
-                                $due_month = $recharge_months->firstWhere(function ($month) use ($total_due) {
-                                    return $total_due > 0;
-                                });
-                            @endphp
+        $paid_months = $due_paids->pluck('recharge_month')->toArray();
 
-                            @if($total_due !== 0)
-                                <tr>
-                                    @if($item->customer->status == 'online')
-                                        <td>
-                                            <a href="{{ route('admin.customer.view', $item->customer->id) }}"
-                                            style="display: flex; align-items: center; text-decoration: none; color: #333;">
-                                                <i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;"></i>
-                                                &nbsp;<span class="font-size: 16px; font-weight: bold;">{{ $item->customer->username }}</span>
-                                            </a>
-                                        </td>
-                                    @else
-                                        <td>
-                                            <a href="{{ route('admin.customer.view', $item->customer->id) }}"
-                                            style="display: flex; align-items: center; text-decoration: none; color: #333;">
-                                                <i class="fas fa-lock" style="font-size: 15px; color: rgb(236, 0, 0); margin-right: 8px;"></i>
-                                                &nbsp; <span class="font-size: 16px; font-weight: bold;">{{ $item->customer->username }}</span>
-                                            </a>
-                                        </td>
-                                    @endif
+        $unpaid_credits = [];
+        $total_due = 0;
 
-                                    <td>{{ $item->customer->pop->name }}</td>
-                                    <td>{{ $item->customer->area->name }}</td>
-                                    <td>{{ $item->customer->phone }}</td>
-                                    <td>{{ $due_month ?? 'N/A' }}</td>
-                                    <td>{{ $total_recharge ?? '' }}</td>
-                                    <td>{{ $total_paid ?? '' }}</td>
-                                    <td>{{ $total_due ?? '' }}</td>
-                                </tr>
-                            @endif
-                        @endforeach
+        foreach ($credit_recharges as $credit) {
+            if (!in_array($credit->recharge_month, $paid_months)) {
+                $unpaid_credits[] = $credit->recharge_month;
+                $total_due += $credit->amount;
+            }
+        }
 
-                        </tbody>
+        $total_recharge = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
+            ->where('transaction_type', '!=', 'due_paid')
+            ->sum('amount');
 
-                    </table>
+        $total_paid = App\Models\Customer_recharge::where('customer_id', $item->customer_id)
+            ->where('transaction_type', '!=', 'credit')
+            ->sum('amount');
+    @endphp
+
+    @if($total_due !== 0)
+        <tr>
+            <td>
+                <a href="{{ route('admin.customer.view', $item->customer->id) }}"
+                    style="display: flex; align-items: center; text-decoration: none; color: #333;">
+                    @if($item->customer->status == 'online')
+                        <i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;"></i>
+                    @else
+                        <i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;"></i>
+                    @endif
+                    &nbsp;<span style="font-size: 16px; font-weight: bold;">{{ $item->customer->username }}</span>
+                </a>
+            </td>
+            <td>{{ $item->customer->pop->name }}</td>
+            <td>{{ $item->customer->area->name }}</td>
+            <td>{{ $item->customer->phone }}</td>
+            <td>
+                @foreach($unpaid_credits as $month)
+                    {{ \Carbon\Carbon::parse($month)->format('F Y') }}<br>
+                @endforeach
+            </td>
+            <td>{{ $total_recharge }}</td>
+            <td>{{ $total_paid }}</td>
+            <td>{{ $total_due }}</td>
+        </tr>
+    @endif
+@endforeach
+
+    </tbody>
+</table>
+
+
                     </div>
                 </div>
                 <div class="card-footer text-end">
