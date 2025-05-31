@@ -34,21 +34,27 @@
                         $currentMonth = date('n');
                     @endphp
 
+                    @php
+                        $currentYear = date('Y');
+                        $years = range($currentYear, $currentYear + 5);
+                    @endphp
+
                     <div class="form-group mb-2">
-                        <label>Recharge Month</label>
-                        <select name="recharge_month[]" class="form-control" multiple required>
-                            <option value="{{ $months[$currentMonth] }}" selected>{{ $months[$currentMonth] }}</option>
-                            @foreach ($months as $num => $name)
-                                @if ($num != $currentMonth)
-                                    <option value="{{ $name }}">{{ $name }}</option>
-                                @endif
+                        <label>Recharge Month & Year</label>
+                        <select  name="recharge_month[]" class="form-control" multiple required>
+                            @foreach ($years as $year)
+                                @foreach ($months as $num => $name)
+                                    @php
+                                        $value = $year . '-' . str_pad($num, 2, '0', STR_PAD_LEFT); // ex: 2025-05
+                                        $label = $name . ' ' . $year; // ex: May 2025
+                                    @endphp
+                                    <option value="{{ $value }}" {{ ($num == $currentMonth && $year == $currentYear) ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
                             @endforeach
                         </select>
-                        <small class="text-success">Hold Ctrl (Windows) or Command (Mac) to select multiple
-                            months.</small>
                     </div>
-
-
 
                     <div class="d-none">
                         <input name="pop_id" class="form-control" type="text" value="{{ $data->pop_id }}">

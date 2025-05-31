@@ -343,22 +343,32 @@
                                             </thead>
                                             <tbody>
                                                 @php
-                                                    $total_recharge_data = App\Models\Customer_recharge::where(
-                                                        'customer_id',
-                                                        $data->id,
-                                                    )
+                                                    $total_recharge_data = App\Models\Customer_recharge::where('customer_id',$data->id)
                                                         ->latest()
                                                         ->get();
-
-                                                    // echo '<pre>';
-                                                    //  print_r($total_recharge_data->toArray());
-                                                    // echo '</pre>';
                                                 @endphp
                                                 @foreach ($total_recharge_data as $item)
                                                     <tr>
                                                         <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
                                                         </td>
-                                                        <td>{{ $item->recharge_month }}</td>
+                                                    @php
+                                                        $months = explode(',', $item->recharge_month);
+
+                                                        $cleanMonths = array_filter(array_map('trim', $months));
+                                                        $uniqueMonths = array_unique($cleanMonths);
+
+                                                        $formattedMonths = [];
+                                                        foreach ($uniqueMonths as $month) {
+                                                            /*Convert month string to timestamp and format it*/
+                                                            $time = strtotime($month);
+                                                            if ($time !== false) {
+                                                                $formattedMonths[] = date('F Y', $time);
+                                                            } else {
+                                                                $formattedMonths[] = $month;
+                                                            }
+                                                        }
+                                                    @endphp
+                                                        <td>{!! implode('<br>', $formattedMonths) !!}</td>
                                                         <td>
                                                             @if ($item->transaction_type == 'cash')
                                                                 <span

@@ -720,15 +720,16 @@ class CustomerController extends Controller
                 'message' => 'Please select at least one month for recharge.',
             ]);
         }
-        /*Check if Recharge Month is valid*/
+        /* Check if Recharge Month is valid */
         $validMonths = [];
-        foreach ($request->recharge_month as $month) {
-            if (in_array($month, ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])) {
-                $validMonths[] = $month;
+
+        foreach ($request->recharge_month as $monthYear) {
+            if (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $monthYear)) {
+                $validMonths[] = $monthYear;
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => "Invalid month: $month",
+                    'message' => "Invalid month format: $monthYear. Valid format is YYYY-MM (e.g. 2025-05)",
                 ]);
             }
         }
@@ -741,22 +742,24 @@ class CustomerController extends Controller
                 ]);
             }
 
-            // Check if already paid for current month
-            $alreadyPaid = Customer_recharge::where('customer_id', $request->customer_id)
-                ->where('pop_id', $request->pop_id)
-                ->where('area_id', $request->area_id)
-                ->where('transaction_type', 'due_paid')
-                ->where('recharge_month', 'LIKE', '%' . date('F') . '%')
-                ->first();
+            /* Check if already paid for current month Year*/
+            foreach ($request->recharge_month as $monthYear) {
+                $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
+                    ->where('pop_id', $request->pop_id)
+                    ->where('area_id', $request->area_id)
+                    ->where('transaction_type', 'due_paid')
+                     ->where('recharge_month', $monthYear)
+                    ->first();
 
-            if ($alreadyPaid) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Due already paid for this month.',
-                ]);
+                if ($existingRecharge) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Due already paid for $monthYear .",
+                    ]);
+                }
             }
 
-            // Get total due (credit)
+            /* Get total due (credit)*/
             $totalDue = Customer_recharge::where('customer_id', $request->customer_id)
                 ->where('pop_id', $request->pop_id)
                 ->where('area_id', $request->area_id)
@@ -787,7 +790,7 @@ class CustomerController extends Controller
             $due_paid->transaction_type   = 'due_paid';
             $due_paid->amount             = $request->payable_amount;
             $due_paid->paid_until         = null;
-            $due_paid->note               = $request->note;
+            $due_paid->note               = $request->note ?? 'Due Paid';
             $due_paid->save();
 
 
@@ -823,17 +826,17 @@ class CustomerController extends Controller
 
             $customer = Customer::find($request->customer_id);
 
-            foreach ($request->recharge_month as $month) {
+            foreach ($request->recharge_month as $monthYear) {
                 $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
                     ->where('pop_id', $request->pop_id)
                     ->where('area_id', $request->area_id)
-                    ->where('recharge_month', 'LIKE', '%' . $month . '%')
+                    ->where('recharge_month', $monthYear)
                     ->exists();
 
                 if ($existingRecharge) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Recharge for month $month already exists.",
+                        'message' => "Recharge for month $monthYear already exists.",
                     ]);
                 }
             }
