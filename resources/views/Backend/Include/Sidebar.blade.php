@@ -700,7 +700,7 @@
 
                 <!-----------------Task Management--------------------->
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                <li class="nav-item has-treeview">
+                {{-- <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-tasks"></i>
                         <p>Task Management <i class="right fas fa-angle-left"></i></p>
@@ -731,7 +731,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
                 @endif
                 <!-----------------Settings--------------------->
                 @php

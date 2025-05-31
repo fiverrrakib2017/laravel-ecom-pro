@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('invoice_id');
             $table->unsignedBigInteger('supplier_id');
-            $table->decimal('amount', 10, 2);
+            $table->decimal('amount', 15, 2);
             $table->integer('status');
             $table->timestamps();
-            
+
             $table->foreign('invoice_id')->references('id')->on('supplier__invoices')->onDelete('cascade');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
         });

@@ -17,11 +17,11 @@ return new class extends Migration
             $table->integer('usr_id')->nullable();
             $table->unsignedBigInteger('supplier_id');
             $table->date('invoice_date');
-            $table->decimal('sub_total', 10, 0);
-            $table->decimal('discount', 10, 0);
-            $table->decimal('grand_total', 10, 0);
-            $table->decimal('due_amount', 10, 0);
-            $table->decimal('paid_amount', 10, 0);
+            $table->decimal('sub_total', 15, 2);
+            $table->decimal('discount', 15, 2);
+            $table->decimal('grand_total', 15, 2);
+            $table->decimal('due_amount', 15, 2);
+            $table->decimal('paid_amount', 15, 2);
             $table->text('note')->nullable();
             $table->integer('status')->comment('0=Draf,1=Completed');
             $table->timestamps();
