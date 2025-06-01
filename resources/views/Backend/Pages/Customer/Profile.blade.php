@@ -264,7 +264,7 @@
                                     'title' => 'Recharged',
                                     'value' => $total_recharged,
                                     'bg' => 'success',
-                                    'icon' => 'fa-arrow-up',
+                                    'icon' => 'fas fa-bolt',
                                 ],
                                 [
                                     'id' => 2,
