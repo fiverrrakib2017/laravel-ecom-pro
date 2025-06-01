@@ -104,7 +104,7 @@ class AdminController extends Controller
         ]);
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->intended(route('admin.dashboard'));
         }else{
             return redirect()->back()->with('error-message','Invalid Email or Password');
         }

@@ -264,34 +264,35 @@
                                     'title' => 'Recharged',
                                     'value' => $total_recharged,
                                     'bg' => 'success',
-                                    'icon' => 'fas fa-bolt',
+                                    'icon' => 'fas fa-coins',
                                 ],
                                 [
                                     'id' => 2,
                                     'title' => 'Total Paid',
                                     'value' => $totalPaid,
                                     'bg' => 'info',
-                                    'icon' => 'fa-credit-card',
+                                    'icon' => 'fas fa-money-check-alt',
                                 ],
                                 [
                                     'id' => 3,
                                     'title' => 'Total Due',
                                     'value' => $totalDue,
                                     'bg' => 'danger',
-                                    'icon' => 'fa-hand-holding-usd',
+                                    'icon' => 'fas fa-wallet',
                                 ],
-                                // [
-                                //     'id' => 4,
-                                //     'title' => 'Due Paid',
-                                //     'value' => $duePaid,
-                                //     'bg' => 'warning',
-                                //     'icon' => 'fa-check-circle',
-                                // ],
+
+                                [
+                                    'id' => 4,
+                                    'title' => 'Due Paid',
+                                    'value' => $duePaid,
+                                    'bg' => 'warning',
+                                    'icon' => 'fas fa-handshake',
+                                ],
                             ];
                         @endphp
                         @foreach ($dashboardCards as $card)
-                            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                                <div class="small-box bg-{{ $card['bg'] }} shadow-lg rounded">
+                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                                <div class="small-box bg-{{ $card['bg'] }} shadow-lg ">
                                     <div class="inner">
                                         <h3>{{ $card['value'] }}</h3>
                                         <p>{{ $card['title'] }}</p>

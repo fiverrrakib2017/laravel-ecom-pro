@@ -1,11 +1,17 @@
 @extends('Backend.Layout.App')
-@section('title', 'Dashboard | SMS Template | Admin Panel')
+@section('title', 'Dashboard | Bulk Recharge | Admin Panel')
 @section('style')
 @endsection
 @section('content')
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">
+                        <i class="fas fa-cogs"></i> Bulk Recharge
+                    </h4>
+
+                </div>
                 <div class="card-body ">
                     <form class="row g-3 align-items-end" id="search_box">
                         <div class="col-md-3">
@@ -85,9 +91,10 @@
 
                     <div class="row">
                         <div class="col-md-12 text-right">
-                            <button type="button" id="send_message_btn" class="btn btn-danger mb-2"><i
-                                    class="far fa-envelope"></i>
-                                Process </button>
+                            <button type="button" id="bulk_recharge_btn" class="btn btn-primary mb-2">
+                                <i class="fas fa-cogs"></i> Process
+                            </button>
+
                         </div>
                     </div>
 
@@ -103,7 +110,7 @@
                                     <th class="">ID.</th>
                                     <th class="">Username</th>
                                     <th class="">Package </th>
-                                        <th class="">Price </th>
+                                    <th class="">Price </th>
                                     <th class="">Expire Date </th>
                                     <th class="">POP/Branch</th>
                                     <th class="">Area</th>
@@ -128,41 +135,80 @@
 
 
 
-    <!-- Modal for Send Message -->
-    <div class="modal fade bs-example-modal-lg" id="sendMessageModal" tabindex="-1" role="dialog"
+    <!-- Modal for Bulk Recharge -->
+    <div class="modal fade bs-example-modal-lg" id="bulk_rechargeModal" tabindex="-1" role="dialog"
         aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog " role="document">
             <div class="modal-content col-md-12">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="ModalLabel"><span class="mdi mdi-account-check mdi-18px"></span> &nbsp;Send Message</h5>
+                    <h5 class="modal-title" id="ModalLabel"><span class="mdi mdi-account-check mdi-18px"></span> &nbsp;Bulk Recharge</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-success" id="selectedCustomerCount"></div>
-                    <form id="paymentForm" method="POST">
+                    <form  action="{{ route('admin.customer.bulk.recharge.store') }}" id="bulk_rechargeForm" method="POST">
+                        @csrf
+                    @php
+                        $months = [
+                            1 => 'January',
+                            2 => 'February',
+                            3 => 'March',
+                            4 => 'April',
+                            5 => 'May',
+                            6 => 'June',
+                            7 => 'July',
+                            8 => 'August',
+                            9 => 'September',
+                            10 => 'October',
+                            11 => 'November',
+                            12 => 'December',
+                        ];
+
+                        /*Current Month*/
+                        $currentMonth = date('n');
+                    @endphp
+
+                        @php
+                            $currentYear = date('Y');
+                            $years = range($currentYear, $currentYear + 5);
+                        @endphp
 
                         <div class="form-group mb-2">
-                            <label>Message Template </label>
-                            <select name="template_id" class="form-control" type="text" required style="width: 100%">
-                                <option value="">---Select---</option>
-                                @php
-                                    $data = \App\Models\Message_template::latest()->get();
-                                @endphp
-                                @foreach ($data as $item)
-                                    <option value="{{ $item->id }}"> {{ $item->name }}</option>
+                            <label>Recharge Month & Year</label>
+                            <select  name="recharge_month[]" class="form-control" multiple required>
+                                @foreach ($years as $year)
+                                    @foreach ($months as $num => $name)
+                                        @php
+                                            $value = $year . '-' . str_pad($num, 2, '0', STR_PAD_LEFT); // ex: 2025-05
+                                            $label = $name . ' ' . $year; // ex: May 2025
+                                        @endphp
+                                        <option value="{{ $value }}" {{ ($num == $currentMonth && $year == $currentYear) ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group mb-2">
-                            <label>SMS </label>
-                            <textarea name="message" placeholder="Enter SMS" class="form-control" type="text" style="height: 158px;"></textarea>
-                        </div>
+                        <label for="">Transaction Type</label>
+                        <select type="text" class="form-select" name="transaction_type" style="width: 100%;"
+                            required>
+                            <option value="">---Select---</option>
+                            <option value="cash">Cash</option>
+                            <option value="credit">Credit</option>
+                            <option value="bkash">Bkash</option>
+                            <option value="nagad">Nagad</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label>Remarks</label>
+                        <input name="note" placeholder="Enter Remarks" class="form-control" type="text">
+                    </div>
                         <div class="modal-footer ">
                             <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
-                            <button type="button" name="send_message_btn" class="btn btn-success">Send
-                                Message</button>
+                            <button type="submit"  class="btn btn-success">Confirm Recharge</button>
                         </div>
                     </form>
                 </div>
@@ -252,35 +298,87 @@
                     }
                 });
             });
-            $(document).on('click', '#send_message_btn', function(event) {
+            $(document).on('click', '#bulk_recharge_btn', function(event) {
                 event.preventDefault();
                 var selectedCustomers = [];
                 $(".checkSingle:checked").each(function() {
                     selectedCustomers.push($(this).val());
                 });
+                if(selectedCustomers.length === 0) {
+                    toastr.error('Please select at least one customer.');
+                    return;
+                }
                 var countText = "You have selected " + selectedCustomers.length + " customers.";
                 $("#selectedCustomerCount").text(countText);
-                $('#sendMessageModal').modal('show');
+                $('#bulk_rechargeModal').modal('show');
             });
-            /*Load Message Template*/
-            $("select[name='template_id']").on('change', function() {
-                var template_id = $(this).val();
-                if (template_id) {
-                    $.ajax({
-                        url: "{{ route('admin.sms.template_get', ':id') }}".replace(':id',
-                            template_id),
-                        type: "GET",
-                        dataType: "json",
-                        success: function(response) {
-                            $("textarea[name='message']").val(response.data.message);
-                        },
-                        error: function(xhr, status, error) {
-                            console.log("Error:", error);
+            $("#bulk_rechargeForm").submit(function(e) {
+                e.preventDefault();
+
+                /* Get the submit button */
+                var submitBtn = $(this).find('button[type="submit"]');
+                var originalBtnText = submitBtn.html();
+
+                submitBtn.html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden"></span>'
+                    );
+                submitBtn.prop('disabled', true);
+
+                var form = $(this);
+                var formData = new FormData(this);
+                var customer_ids = [];
+                $(".checkSingle:checked").each(function() {
+                    customer_ids.push($(this).val());
+                });
+                customer_ids.forEach(function(customerId) {
+                    formData.append('customer_ids[]', customerId);
+                });
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        form.find(':input').prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.success == true) {
+                            toastr.success(response.message);
+                            form[0].reset();
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                            submitBtn.html(originalBtnText);
+                            submitBtn.prop('disabled', false);
+                            form.find(':input').prop('disabled', false);
+                        } else if (response.success == false) {
+                            toastr.error(response.message);
                         }
-                    });
-                } else {
-                    $("textarea[name='message']").val('');
-                }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            /* Validation error*/
+                            var errors = xhr.responseJSON.errors;
+
+                            /* Loop through the errors and show them using toastr*/
+                            $.each(errors, function(field, messages) {
+                                $.each(messages, function(index, message) {
+                                    /* Display each error message*/
+                                    toastr.error(message);
+                                });
+                            });
+                        } else {
+                            /*General error message*/
+                            toastr.error('An error occurred. Please try again.');
+                        }
+                    },
+                    complete: function() {
+                        submitBtn.html(originalBtnText);
+                        submitBtn.prop('disabled', false);
+                        form.find(':input').prop('disabled', false);
+                    }
+                });
             });
     </script>
 
