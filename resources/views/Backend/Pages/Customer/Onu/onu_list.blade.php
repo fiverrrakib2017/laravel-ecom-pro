@@ -8,6 +8,12 @@
 <div class="row">
     <div class="col-md-12 ">
         <div class="card">
+            <div class="card-header">
+                <marquee behavior="scroll" direction="left" scrollamount="5" style="color: #0c5460; font-weight: bold; background-color: #d1ecf1; padding: 8px; border-radius: 5px;">
+                    📢 নোটিশ: এই তালিকায় থাকা কাস্টমাররা তাদের ইন্টারনেট সংযোগ বাতিল করেছেন। অনু/ONU ডিভাইস যদি কোম্পানি প্রদান করে থাকে, তবে তা দ্রুত সংগ্রহ করুন এবং স্টকে আপডেট করুন। সংযোগ বাতিলের তারিখ ও অনু টাইপ যাচাই করে প্রয়োজনীয় পদক্ষেপ গ্রহণ করুন। ✅
+                </marquee>
+
+            </div>
             <div class="card-body">
                 <div class="table-responsive" id="tableStyle">
                     <div class="col-6 nav justify-content-end" id="export_buttonscc"></div>
@@ -20,7 +26,7 @@
                                     <th>Amount</th>
 
 
-                                    <th>Mobile no.</th>
+                                    <th>Mobile No.</th>
                                     <th>POP/Branch</th>
                                     <th>Area/Location</th>
                                     <th>Onu Type</th>
