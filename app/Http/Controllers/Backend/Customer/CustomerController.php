@@ -36,6 +36,10 @@ class CustomerController extends Controller
         return view('Backend.Pages.Customer.Restore.index');
     }
 
+    public function customer_comming_expire()
+    {
+        return view('Backend.Pages.Customer.Expire.comming_expire');
+    }
     public function get_all_data(Request $request)
     {
         $pop_id = $request->pop_id;
@@ -157,6 +161,13 @@ class CustomerController extends Controller
             $query->where('status', $request->status);
         }
 
+        if (!empty($request->expire_days)) {
+            $today = now();
+            $endDate = now()->addDays($request->expire_days);
+
+            $query->whereBetween('expire_date', [$today, $endDate]);
+        }
+
         $customers = $query->where('is_delete', 0)->get();
 
         if ($customers->isEmpty()) {
@@ -171,11 +182,13 @@ class CustomerController extends Controller
             $package_name = $row->package ? $row->package->name : 'N/A';
             $get_pop_name = $row->pop ? $row->pop->name : 'N/A';
             $get_area_name = $row->area ? $row->area->name : 'N/A';
+            $status_icon = $row->status == 'online'? '<span style="color:green; font-size:16px; margin-right:5px;">&#9679;</span>': '<span style="color:red; font-size:16px; margin-right:5px;">&#9679;</span>';
+            $url = route('admin.customer.view', $row->id);
 
             $html .= '<tr>';
             $html .= '<td><input type="checkbox" class="customer-checkbox checkSingle" value="' . $row->id . '"></td>';
             $html .= '<td>' . $row->id . '</td>';
-            $html .= '<td>' . $row->username . '</td>';
+           $html .= '<td>' . $status_icon . '<a href="' . $url . '" style="text-decoration:none; color:#007bff;">' . $row->username . '</a></td>';
             $html .= '<td>' . $package_name . '</td>';
             $html .= '<td>' . $row->amount . '</td>';
             $html .= '<td>' . $row->expire_date . '</td>';
@@ -191,6 +204,8 @@ class CustomerController extends Controller
             'html' => $html,
         ]);
     }
+
+
     public function store(Request $request)
     {
         /* Validate the form data */

@@ -121,6 +121,11 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/recharge/print/{id}', 'customer_recharge_print')->name('admin.customer.recharge.print');
             Route::get('/recharge/bulk-recharge', 'customer_bulk_recharge')->name('admin.customer.bulk.recharge');
             Route::post('/recharge/bulk-recharge-store', 'customer_bulk_recharge_store')->name('admin.customer.bulk.recharge.store');
+
+            /***** Customer comming expire *******/
+             Route::get('/comming-expire', 'customer_comming_expire')->name('admin.customer.customer_comming_expire');
+       
+
             /***** Customer Payment History *******/
             Route::get('/payment/history', 'customer_payment_history')->name('admin.customer.payment.history');
             Route::get('/payment/history/get_all_data', 'customer_payment_history_get_all_data')->name('admin.customer.payment.history.get_all_data');

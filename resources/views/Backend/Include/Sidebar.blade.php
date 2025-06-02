@@ -128,7 +128,7 @@
 
                 {{-- Customer Billings And Payment --}}
                 @php
-                    $active_prefix = ['admin.customer.payment.history', 'admin.customer.customer_credit_recharge_list','admin.customer.bulk.recharge'];
+                    $active_prefix = ['admin.customer.payment.history', 'admin.customer.customer_credit_recharge_list','admin.customer.bulk.recharge','admin.customer.customer_comming_expire'];
                 @endphp
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
@@ -139,6 +139,14 @@
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
+                        <!-- Bulk Recharge -->
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customer.customer_comming_expire') }}"
+                                class="nav-link {{ $route == 'admin.customer.customer_comming_expire' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Upcomming Expired </p>
+                            </a>
+                        </li>
                         <!-- Bulk Recharge -->
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.bulk.recharge') }}"
