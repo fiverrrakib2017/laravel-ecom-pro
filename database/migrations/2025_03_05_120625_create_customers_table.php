@@ -29,6 +29,7 @@ return new class extends Migration
             $table->date('expire_date')->nullable();
             $table->text('remarks')->nullable();
             $table->enum('liabilities', ['YES', 'NO'])->default('NO');
+            $table->enum('onu_type', ['customer', 'company'])->default('customer');
             $table->integer('is_delete')->default('0');
             $table->timestamps();
 

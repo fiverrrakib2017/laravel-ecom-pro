@@ -115,6 +115,10 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/update/{id}', 'update')->name('admin.customer.update');
             Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');
 
+            /*Customer Onu List*/
+            Route::get('/get_customer_onu_list', 'onu_list')->name('admin.customer.onu_list');
+            Route::get('/get_customer_onu_list_data', 'get_customer_onu_list_data')->name('admin.customer.get_customer_onu_list_data');
+
             /***** Customer Recharge *******/
             Route::post('/recharge/store', 'customer_recharge')->name('admin.customer.recharge.store');
             Route::get('/recharge/undo/{id}', 'customer_recharge_undo')->name('admin.customer.recharge.undo');
@@ -124,7 +128,7 @@ Route::group(['middleware' => 'admin'], function () {
 
             /***** Customer comming expire *******/
              Route::get('/comming-expire', 'customer_comming_expire')->name('admin.customer.customer_comming_expire');
-       
+
 
             /***** Customer Payment History *******/
             Route::get('/payment/history', 'customer_payment_history')->name('admin.customer.payment.history');

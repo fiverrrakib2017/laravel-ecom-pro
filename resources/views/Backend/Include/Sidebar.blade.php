@@ -23,7 +23,7 @@
 
                 <li class="nav-item ">
                     <select class="form-control" name="sidebar_customer_id" style="width: 100%;">
-                        <option value="1">---Select---</option>
+                        <option >---Select---</option>
                         @php
 
                             if(!empty($branch_user_id)){
@@ -65,6 +65,9 @@
                         'admin.customer.log.index',
                         'admin.customer.customer_import',
                         'admin.router.log.index',
+                        'admin.customer.onu_list',
+                        'admin.customer.view',
+                        'admin.customer.edit',
                     ];
                 @endphp
                 <li class="nav-item has-treeview mt-2">
@@ -87,6 +90,13 @@
                             class="nav-link {{ $route == 'admin.customer.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>{{ __('menu.add_customer') }}</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customer.onu_list') }}"
+                            class="nav-link {{ $route == 'admin.customer.onu_list' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Customer Onu</p>
                             </a>
                         </li>
 

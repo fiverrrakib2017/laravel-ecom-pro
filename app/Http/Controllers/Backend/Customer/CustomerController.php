@@ -331,7 +331,70 @@ class CustomerController extends Controller
     {
         return view('Backend.Pages.Customer.Credit.recharge_list');
     }
+    public function onu_list(){
+        return view('Backend.Pages.Customer.Onu.onu_list');
+    }
 
+    public function get_customer_onu_list_data(Request $request){
+        $pop_id = $request->pop_id;
+        $area_id = $request->area_id;
+        $onu_type = $request->onu_type;
+        $search = $request->search['value'];
+        $columnsForOrderBy = ['id'];
+
+        $orderByColumn = $request->order[0]['column'] ?? 0;
+        $orderDirection = $request->order[0]['dir'] ?? 'desc';
+        /*Check if search value is empty*/
+        $start = $request->start ?? 0;
+        $length = $request->length ?? 10;
+
+        /*Check if branch user  value is empty*/
+        $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+
+        $baseQuery = Customer::with(['pop', 'area', 'package'])
+            ->where('is_delete', '!=', 1)
+            ->when($search, function ($query) use ($search) {
+                $query
+                    ->where('phone', 'like', "%$search%")
+                    ->orWhere('username', 'like', "%$search%")
+                    ->orWhereHas('pop', function ($query) use ($search) {
+                        $query->where('fullname', 'like', "%$search%");
+                    })
+                    ->orWhereHas('area', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    })
+                    ->orWhereHas('package', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    });
+            })
+            ->when($pop_id, function ($query) use ($pop_id) {
+                $query->where('pop_id', $pop_id);
+            })
+            /*POP/BRANCH Filter*/
+            ->when($branch_user_id, function ($query) use ($branch_user_id) {
+                $query->where('pop_id', $branch_user_id);
+            })
+            ->when($area_id, function ($query) use ($area_id) {
+                $query->where('area_id', $area_id);
+            })
+            ->when($onu_type, function ($query) use ($onu_type) {
+                $query->where('onu_type', $onu_type);
+            });
+        $filteredQuery = clone $baseQuery;
+        /*Pagination*/
+        $paginatedData = $baseQuery
+            ->orderBy($columnsForOrderBy[$orderByColumn] ?? 'id', $orderDirection)
+            ->skip($start)
+            ->take($length)
+            ->get();
+
+        return response()->json([
+            'draw' => intval($request->draw),
+            'recordsTotal' => Customer::where('is_delete', '!=', 1)->count(),
+            'recordsFiltered' => $filteredQuery->count(),
+            'data' => $paginatedData,
+        ]);
+    }
     public function delete(Request $request)
     {
         $object = Customer::find($request->id);
