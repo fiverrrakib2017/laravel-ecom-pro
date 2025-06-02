@@ -182,7 +182,7 @@ class CustomerController extends Controller
             $package_name = $row->package ? $row->package->name : 'N/A';
             $get_pop_name = $row->pop ? $row->pop->name : 'N/A';
             $get_area_name = $row->area ? $row->area->name : 'N/A';
-            $status_icon = $row->status == 'online'? '<span style="color:green; font-size:16px; margin-right:5px;">&#9679;</span>': '<span style="color:red; font-size:16px; margin-right:5px;">&#9679;</span>';
+            $status_icon = $row->status == 'online'? '<span style="color:green; font-size:20px; margin-right:5px;">&#9679;</span>': '<span style="color:red; font-size:20px; margin-right:5px;">&#9679;</span>';
             $url = route('admin.customer.view', $row->id);
 
             $html .= '<tr>';

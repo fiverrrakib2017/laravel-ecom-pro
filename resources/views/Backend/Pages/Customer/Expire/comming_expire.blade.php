@@ -90,7 +90,7 @@
                     <div class="row">
                         <div class="col-md-12 text-right">
                             <button type="button" id="bulk_recharge_btn" class="btn btn-primary mb-2">
-                                <i class="fas fa-cogs"></i> Process
+                                <i class="fas fa-plus me-1"></i> Recharge
                             </button>
 
                         </div>

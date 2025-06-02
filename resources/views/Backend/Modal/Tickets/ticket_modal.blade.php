@@ -34,12 +34,13 @@
                                 @endphp
                                 @if ($customers->isNotEmpty())
                                     @foreach ($customers as $item)
-                                        <option value="{{ $item->id }}"
-                                            @if ($item->id == $customer_id) selected @endif> [{{ $item->id }}] -
-                                            {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})
-                                        </option>
+                                        @php
+                                            $status_icon = $item->status == 'online' ? '🟢' : '🔴';
+                                        @endphp
+                                        <option value="{{ $item->id }}"> {!! $status_icon !!} [{{ $item->id }}] -
+                                            {{ $item->username }} || ({{ $item->phone }})</option>
                                     @endforeach
-                            
+
                                 @endif
                             </select>
 
