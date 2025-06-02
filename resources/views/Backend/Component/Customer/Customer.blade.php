@@ -23,12 +23,12 @@
         <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         <thead>
             <tr>
-                <th>
+                {{-- <th>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customer_select_all">
                         <label class="custom-control-label" for="customer_select_all"></label>
                     </div>
-                </th>
+                </th> --}}
 
                 <th>ID</th>
                 <th>Name</th>
@@ -239,17 +239,17 @@
                 lengthMenu: '_MENU_ items/page',
             },
             "columns": [
-                {
-                    data: 'id',
-                    orderable: false,
-                    searchable: false,
-                    render: function(data, type, row, meta) {
-                        return `<div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input row-checkbox" id="row_checkbox_${data}" value="${data}">
-                                    <label class="custom-control-label" for="row_checkbox_${data}"></label>
-                                </div>`;
-                    }
-                },
+                // {
+                //     data: 'id',
+                //     orderable: false,
+                //     searchable: false,
+                //     render: function(data, type, row, meta) {
+                //         return `<div class="custom-control custom-checkbox">
+                //                     <input type="checkbox" class="custom-control-input row-checkbox" id="row_checkbox_${data}" value="${data}">
+                //                     <label class="custom-control-label" for="row_checkbox_${data}"></label>
+                //                 </div>`;
+                //     }
+                // },
 
                 {
                     "data": "id"
