@@ -74,7 +74,7 @@ class Ticket_controller extends Controller
             ->when($area_id, function ($query) use ($area_id) {
                 $query->where('area_id', $area_id);
             })
-            ->when($status, function ($query) use ($status) {
+            ->when($status !== null, function ($query) use ($status) {
                 $query->where('status', $status);
             })
             ->orderBy($columnsForOrderBy[$orderByColumn] ?? 'id', $orderDirection)

@@ -37,7 +37,7 @@
                                         @php
                                             $status_icon = $item->status == 'online' ? '🟢' : '🔴';
                                         @endphp
-                                        <option value="{{ $item->id }}"> {!! $status_icon !!} [{{ $item->id }}] -
+                                        <option value="{{ $item->id }}" {{ (isset($customer_id) && $item->id == $customer_id) ? 'selected' : '' }} > {!! $status_icon !!} [{{ $item->id }}] -
                                             {{ $item->username }} || ({{ $item->phone }})</option>
                                     @endforeach
 
