@@ -93,35 +93,45 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 },
                 {
                     "data": "priority_id",
-                    render: function(data, type, row) {
+                    "render": function(data, type, row) {
                         let priorityLabel = '';
+                        let badgeColor = '';
+
                         switch (row.priority_id) {
                             case 1:
                                 priorityLabel = 'Low';
+                                badgeColor = 'badge-secondary';
                                 break;
                             case 2:
                                 priorityLabel = 'Normal';
+                                badgeColor = 'badge-info';
                                 break;
                             case 3:
                                 priorityLabel = 'Standard';
+                                badgeColor = 'badge-primary';
                                 break;
                             case 4:
                                 priorityLabel = 'Medium';
+                                badgeColor = 'badge-warning';
                                 break;
                             case 5:
                                 priorityLabel = 'High';
+                                badgeColor = 'badge-danger';
                                 break;
                             case 6:
                                 priorityLabel = 'Very High';
+                                badgeColor = 'badge-dark';
                                 break;
                             default:
                                 priorityLabel = 'Unknown';
+                                badgeColor = 'badge-light';
                                 break;
                         }
-                        return priorityLabel;
-                    }
 
+                        return `<span class="badge ${badgeColor}" style="font-size: 80%;">${priorityLabel}</span>`;
+                    }
                 },
+
                 {
                     "data": "customer.fullname",
                     "render": function(data, type, row) {

@@ -52,9 +52,10 @@
                     @endforeach
                 </div>
             </div>
-            <div class="card-body">
-                <button data-toggle="modal" data-target="#ticketModal" type="button" class=" btn btn-success mb-2"><i class="mdi mdi-account-plus"></i>
+            <div class="card-body" style="padding: 0.25rem !important;">
+                    <button data-toggle="modal" data-target="#ticketModal" type="button" class=" btn btn-success mb-2"><i class="mdi mdi-account-plus"></i>
                     Add New Ticket</button>
+
 
                 <div class="table-responsive" id="tableStyle">
                     @include('Backend.Component.Tickets.Tickets')
