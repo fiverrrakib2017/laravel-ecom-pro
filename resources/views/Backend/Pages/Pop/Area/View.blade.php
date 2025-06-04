@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 @endsection
 @section('header_title')
-    <li class="breadcrumb-item active">POP Area/{{ $data->name }} </li>
+    <li class="breadcrumb-item active"><a href="#">POP Area/{{ $data->name }} </a></li>
 @endsection
 @section('content')
     <div class="row mb-3">

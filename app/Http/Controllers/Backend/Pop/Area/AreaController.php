@@ -110,10 +110,10 @@ class AreaController extends Controller
 
 
          /*Tickets Details*/
-         $total_area=Pop_area::where('pop_id',$id)->count();
-         $tickets=Ticket::where('pop_id',$id)->count();
-         $ticket_completed=Ticket::where('pop_id',$id)->where('status','1')->count();
-         $ticket_pending=Ticket::where('pop_id',$id)->where('status','0')->count();
+         $total_area=Pop_area::where('id',$id)->count();
+         $tickets=Ticket::where('area_id',$id)->count();
+         $ticket_completed=Ticket::where('area_id',$id)->where('status','1')->count();
+         $ticket_pending=Ticket::where('area_id',$id)->where('status','0')->count();
 
         /*Customer Details*/
         $online_customer=Customer::where('area_id',$id)->where('status','online')->count();
