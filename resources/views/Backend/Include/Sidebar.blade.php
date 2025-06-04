@@ -22,22 +22,31 @@
                 </li>
 
                 <li class="nav-item ">
-                    <select class="form-control" name="sidebar_customer_id" style="width: 100%;">
+                    <select class="form-control" name="sidebar_customer_id" style="width: 100%; font-size: 13px;">
                         <option >---Select---</option>
                         @php
+                            if (!session()->has('sidebar_customers')) {
+                                if (!empty($branch_user_id)) {
+                                    $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
+                                } else {
+                                    $customers = \App\Models\Customer::latest()->get();
+                                }
 
-                            if(!empty($branch_user_id)){
-                                $customers = \App\Models\Customer::where('pop_id',$branch_user_id)->latest()->get();
-                            }else{
-                                $customers = \App\Models\Customer::latest()->get();
+                                session()->put('sidebar_customers', $customers);
+                            } else {
+                                $customers = session('sidebar_customers');
                             }
                         @endphp
+
+                        {{-- Check if customers are not empty --}}
+
                         @if ($customers->isNotEmpty())
                             @foreach ($customers as $item)
                                 @php
                                     $status_icon = $item->status == 'online' ? '🟢' : '🔴';
                                 @endphp
-                               <option value="{{ $item->id }}"> {!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} ||({{ $item->phone }})</option>
+
+                               <option value="{{ $item->id }}">{!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})</option>
                             @endforeach
                         @else
                         @endif
@@ -246,7 +255,7 @@
                     <li class="nav-item has-treeview">
                     <a href="#"
                         class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-map-marker-alt"></i>
+                        <i class="nav-icon fas fa-broadcast-tower"></i>
                         <p>POP/Branch <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview"

@@ -299,6 +299,7 @@ class CustomerController extends Controller
             }
 
             DB::commit();
+            session()->forget('sidebar_customers');
             return response()->json([
                 'success' => true,
                 'message' => 'Customer Created Successfully!',
@@ -469,9 +470,9 @@ class CustomerController extends Controller
 
         $totalDue = $get_total_due - $duePaid;
         /*Include Mikrotik Data Customer Profile*/
-        $router = Mikrotik_router::where('status', 'active')->where('id', $data->router_id)->first();
+        //$router = Mikrotik_router::where('status', 'active')->where('id', $data->router_id)->first();
         /*Get Mikrotik Data via reusable function */
-        $mikrotik_data = $router ? get_mikrotik_user_info($router, $data->username) : null;
+        //$mikrotik_data = $router ? get_mikrotik_user_info($router, $data->username) : null;
         /*Get Onu Information */
         //  $ssh = new SSH2('OLT_IP_ADDRESS');
         //  if (!$ssh->login('username', 'password')) {
@@ -479,7 +480,7 @@ class CustomerController extends Controller
         //  }
         // /*Send MAC search command*/
         // $response = $ssh->exec("show mac-address-table | include $mikrotik_data['mac']");
-        return view('Backend.Pages.Customer.Profile', compact('data', 'totalDue', 'totalPaid', 'duePaid', 'total_recharged', 'mikrotik_data'));
+        return view('Backend.Pages.Customer.Profile', compact('data', 'totalDue', 'totalPaid', 'duePaid', 'total_recharged', ));
     }
     public function customer_mikrotik_reconnect($id)
     {
@@ -614,23 +615,55 @@ class CustomerController extends Controller
             $sessions = $client->query(new Query('/ppp/active/print'))->read();
 
             $uptime = 'N/A';
+            $ip_address = 'N/A';
+            $mac_address = 'N/A';
             foreach ($sessions as $session) {
                 if ($session['name'] == $object->username) {
-                    $uptime = $session['uptime'];
+                    $uptime = $session['uptime'] ?? 'N/A';
+                    $ip_address = $session['address'] ?? 'N/A';
+                    $mac_address = $session['caller-id'] ?? 'N/A';
                     break;
+                }
+            }
+            /* Get MAC from ARP table using IP*/
+            if ($ip_address && $ip_address != 'N/A') {
+                $arp_entries = $client->query(new Query('/ip/arp/print'))->read();
+                foreach ($arp_entries as $entry) {
+                    if (isset($entry['address']) && $entry['address'] === $ip_address) {
+                        $mac_address = $entry['mac-address'] ?? 'N/A';
+                        break;
+                    }
                 }
             }
 
             foreach ($interfaces as $intf) {
                 if (strpos($intf['name'], $object->username) !== false) {
+                    $interface_name = $intf['name'];
+                    /* Live bandwidth*/
+                    $monitor = $client->query(
+                        (new Query('/interface/monitor-traffic'))
+                            ->equal('interface', $interface_name)
+                            ->equal('once', '')
+                    )->read();
+                    
+
+                    $rx_speed = isset($monitor[0]['rx-bits-per-second']) ? round($monitor[0]['rx-bits-per-second'] / 1024, 2) : 0; // in Kbps
+                    $tx_speed = isset($monitor[0]['tx-bits-per-second']) ? round($monitor[0]['tx-bits-per-second'] / 1024, 2) : 0; // in Kbps
                     return response()->json([
                         'success' => true,
                         'interface_name' => $intf['name'],
                         'type' => $intf['type'],
-                        'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2),
-                        'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2),
+                        'mac_address' => $mac_address,
+
+                        'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2), // total downloaded
+                        'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2), // total uploaded
+
+                        'rx_speed_kbps' => $rx_speed,
+                        'tx_speed_kbps' => $tx_speed,
+
                         'rx_packet' => $intf['rx-packet'],
                         'tx_packet' => $intf['tx-packet'],
+                        'ip_address' => $ip_address,
                         'uptime' => formate_uptime($uptime),
                     ]);
                 }
@@ -641,6 +674,7 @@ class CustomerController extends Controller
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
+
     // public function getMonthlyUsage($username)
     // {
     //     $month = now()->month;

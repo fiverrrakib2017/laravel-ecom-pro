@@ -128,7 +128,7 @@
                                         <div class="col-md-6 text-center">
                                             <p class="mb-1"><i class="fas fa-chart-line text-success"></i></p>
                                             <strong>Monthly Usage</strong>
-                                            <p class="text-primary">{{ $mikrotik_data['monthly_usage'] ?? 'N/A' }} MB</p>
+                                            <p class="text-primary"> N/A GB</p>
                                         </div>
                                     </div>
 
@@ -155,7 +155,7 @@
                                         <div class="col-md-6 text-center">
                                             <p class="mb-1"><i class="fas fa-address-card text-warning"></i></p>
                                             <strong>MAC Address</strong>
-                                            <p class="text-muted">{{ $mikrotik_data['mac'] ?? 'N/A' }}</p>
+                                            <p class="text-muted"><span id="customer_mac_address">N/A</span></p>
                                         </div>
                                     </div>
 
@@ -163,7 +163,7 @@
                                         <div class="col-md-6 text-center border-right">
                                             <p class="mb-1"><i class="fas fa-laptop-code text-secondary"></i></p>
                                             <strong>IP Address</strong>
-                                            <p class="text-muted">{{ $mikrotik_data['ip'] ?? 'N/A' }}</p>
+                                            <p class="text-muted"><span id="customer_ip_address">N/A</span></p>
                                         </div>
                                         <div class="col-md-6 text-center">
                                             <p class="mb-1"><i class="fas fa-route text-success"></i></p>
@@ -724,14 +724,19 @@
                     "{{ $data->id }}"),
                 method: 'GET',
                 success: function(response) {
-                    // console.log(response);
+                     console.log(response);
                     if (response.success) {
                         const downloadSpeed = response.rx_mb;
                         const uploadSpeed = response.tx_mb;
+                        // const rx_speed_kbps = response.rx_speed_kbps;
+                        // const tx_speed_kbps = response.tx_speed_kbps;
+
                         const user_uptime = response.uptime;
                         const user_interface_name = response.interface_name;
+                        const user_ip_address = response.ip_address;
+                        const user_mac_address = response.mac_address;
 
-                        // Update graph data with new point (slide effect)
+                        /* Update graph data with new point (slide effect)*/
                         downloadData.push(downloadSpeed);
                         downloadData.shift();
 
@@ -740,34 +745,38 @@
 
                         bandwidthChart.update();
 
-                        // Update Client Data
+                        /* Update Client Data*/
                         $("#customer_upload_speed").html(uploadSpeed);
                         $("#customer_download_speed").html(downloadSpeed);
                         $("#customer_uptime").html(user_uptime);
+                        $("#customer_mac_address").html(user_mac_address);
+                        $("#customer_ip_address").html(user_ip_address);
                         $("#customer_interface").html($('<div>').text(user_interface_name).html());
                     }
                 }
             });
+
+
         }
 
         fetch_live_bandwidth_data();
         setInterval(fetch_live_bandwidth_data, 1000);
 
         /************** Customer Bandwidth Graph End **************************/
-        $.ajax({
-            url: "{{ route('admin.customer.get_onu_info') }}",
-            type: "POST",
-            data: {
-                mac_address: "{{ $mikrotik_data['mac'] ?? 'N/A' }}",
-                _token: '{{ csrf_token() }}'
-            },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function() {
-                console.error("Something went wrong!");
-            },
-        });
+        // $.ajax({
+        //     url: "{{ route('admin.customer.get_onu_info') }}",
+        //     type: "POST",
+        //     data: {
+        //         mac_address: "",
+        //         _token: '{{ csrf_token() }}'
+        //     },
+        //     success: function(response) {
+        //         console.log(response);
+        //     },
+        //     error: function() {
+        //         console.error("Something went wrong!");
+        //     },
+        // });
     </script>
 
 @endsection
