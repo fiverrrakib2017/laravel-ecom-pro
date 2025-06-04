@@ -1,6 +1,26 @@
+@php
+   //$branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+    if(!empty($branch_user_id) && $branch_user_id > 0){
+        $pop_branches = \App\Models\Pop_branch::where('id',$branch_user_id)->first();
+        $areas=\App\Models\Pop_area::where('status','active')->where('pop_id',$branch_user_id)->get();
+    }else{
+        $pop_branches=\App\Models\Pop_branch::where('status',1)->get();
+        $areas=\App\Models\Pop_area::where('status','active')->get();
+    }
+
+    /*GET Request POP/Branch View Table*/
+    if(!empty($pop_id) && $pop_id > 0 && isset($pop_id)){
+        $pop_branches = \App\Models\Pop_branch::where('id',$pop_id)->get();
+        $areas = \App\Models\Pop_area::where('status','active')->where('pop_id',$pop_id)->get();
+    }else{
+        $pop_branches = \App\Models\Pop_branch::where('status',1)->get();
+        $areas = \App\Models\Pop_area::where('status','active')->get();
+    }
 
 
-<table id="datatable1" class="table table-bordered dt-responsive nowrap"
+@endphp
+
+<table id="tickets_datatable1" class="table table-bordered dt-responsive nowrap"
 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
     <thead>
         <tr>
@@ -30,26 +50,112 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
     $(document).ready(function() {
         var customer_id = @json($customer_id ?? '');
-        var pop_id = @json($pop_id ?? '');
-        var area_id = @json($area_id ?? '');
-        var status = @json($status ?? '');
+        var pop_id_for_ticket = @json($pop_id ?? '');
+        var area_id_for_ticket = @json($area_id ?? '');
+        var status_for_ticket = @json($status ?? '');
 
-        if (status == null || status === '') {
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlStatus = urlParams.get('status');
+        if (status_for_ticket == null || status_for_ticket === '') {
+            const tickets_urlParams = new URLSearchParams(window.location.search);
+            const tickets_urlStatus = tickets_urlParams.get('status');
             // console.log('Before logic - status:', status);
             // console.log('From URL - urlStatus:', urlStatus);
 
-            if (urlStatus === 'completed') {
-                status = '1';
+            if (tickets_urlStatus === 'completed') {
+                status_for_ticket = '1';
             }
-            if(urlStatus === 'pending') {
-                status = '0';
+            if(tickets_urlStatus === 'pending') {
+                status_for_ticket = '0';
             }
 
         }
+        /*When Request Get Area Page*/
+       var  area_page = @json($area_page ?? false);
+        // if (area_page) {
+        //     pop_id = @json($pop_id ?? '');
+        //     area_id = @json($area_id ?? '');
+        //     status = @json($status ?? '');
+        // }
+        /*When Request Get POP/Branch Page*/
 
-        var table = $("#datatable1").DataTable({
+        /* GET POP-Branch */
+        var pop_branches = @json($pop_branches);
+        var tickets_pop_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select id="search_ticket_pop_id" name="search_ticket_pop_id" class="form-control form-control-sm select2">
+                    <option value="">--Select POP/Branch--</option>`;
+        pop_branches.forEach(function(item) {
+            tickets_pop_filter += `<option value="${item.id}">${item.name}</option>`;
+        });
+        tickets_pop_filter += `</select></div>`;
+
+        /* Get Areas */
+        var areas = @json($areas);
+        var tickets_area_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select id="search_ticket_area_id" name="search_ticket_area_id" class="form-control form-control-sm select2">
+                    <option value="">--Select Area--</option>`;
+        areas.forEach(function(item) {
+            tickets_area_filter += `<option value="${item.id}">${item.name}</option>`;
+        });
+        tickets_area_filter += `</select></div>`;
+
+        /* Status Filter */
+        var ticekts_status_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select class="tickets_status_filter form-control form-control-sm select2">
+                    <option value="">--Status--</option>
+                    <option value="1">Completed</option>
+                    <option value="0">Pending</option>
+
+                </select>
+            </div>`;
+
+        setTimeout(() => {
+            var tickets_filters_wrapper = `
+                <div class="row no-gutters mb-0  " style=" row-gap: 0.5rem;">
+                    <!-- Left: Per Page -->
+                    <div class="col-12 col-md-auto dataTables_length_container d-flex align-items-center mb-2 mb-md-0 pr-md-3"></div>
+
+                    <!-- Middle: Filters -->
+                    <div class="col-12 col-md d-flex flex-wrap align-items-center mb-2 mb-md-0" style="gap: 0.5rem;">
+                        ${tickets_pop_filter + tickets_area_filter + ticekts_status_filter}
+                    </div>
+
+                    <!-- Right: Search Input -->
+                    <div class="col-12 col-md-auto dataTables_filter_container d-flex justify-content-md-end"></div>
+                </div>
+            `;
+            /* Append the filters to the DataTable wrapper */
+            if(area_page==false){
+                var tableWrapper = $('#tickets_datatable1').closest('.dataTables_wrapper');
+                tableWrapper.prepend(tickets_filters_wrapper);
+
+                tableWrapper.find('.dataTables_length').appendTo(tableWrapper.find('.dataTables_length_container'));
+                tableWrapper.find('.dataTables_filter').appendTo(tableWrapper.find('.dataTables_filter_container'));
+            }
+
+
+
+            $('#search_ticket_pop_id').select2({ width: 'resolve' });
+            $('#search_ticket_area_id').select2({ width: 'resolve' });
+            $('.tickets_status_filter').select2({ width: 'resolve' });
+        }, 1000);
+
+
+
+
+        /*Check Param Values if else */
+        if (!pop_id_for_ticket) {
+            pop_id_for_ticket = $('#search_ticket_pop_id').val();
+        }
+        if (!area_id_for_ticket) {
+            area_id_for_ticket = $('#search_ticket_area_id').val();
+        }
+        if (status_for_ticket == null || status_for_ticket == '') {
+            status_for_ticket = $('.tickets_status_filter').val();
+        }
+
+        var table = $("#tickets_datatable1").DataTable({
             "processing": true,
             "responsive": true,
             "serverSide": true,
@@ -60,9 +166,9 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 type: "GET",
                 data: function(d) {
                     d.customer_id = customer_id;
-                    d.pop_id = pop_id;
-                    d.area_id = area_id;
-                    d.status = status;
+                    d.pop_id = pop_id_for_ticket;
+                    d.area_id = area_id_for_ticket;
+                    d.status = status_for_ticket;
                 }
             },
             language: {

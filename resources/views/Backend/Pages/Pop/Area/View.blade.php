@@ -146,7 +146,7 @@
                         <!-- Tickets -->
                         <div class="tab-pane" id="tickets">
                             <div class="table table-responsive">
-                                @include('Backend.Component.Tickets.Tickets',['area_id' => $data->id])
+                                @include('Backend.Component.Tickets.Tickets',['area_id' => $data->id, 'area_page' => true])
                             </div>
                         </div>
                     </div>
