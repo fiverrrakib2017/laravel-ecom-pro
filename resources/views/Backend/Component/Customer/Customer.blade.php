@@ -90,7 +90,7 @@
 
 
         /*When Request Get Area Page*/
-       var  area_page = @json($area_page ?? false);
+       var  filter_dropdown = @json($filter_dropdown ?? true);
         // if (area_page) {
         //     pop_id = @json($pop_id ?? '');
         //     area_id = @json($area_id ?? '');
@@ -152,7 +152,7 @@
                 </div>
             `;
             /* Append the filters to the DataTable wrapper */
-            if(area_page==false){
+            if(filter_dropdown==true){
                 var tableWrapper = $('#customer_datatable1').closest('.dataTables_wrapper');
                 tableWrapper.prepend(filters_wrapper);
 

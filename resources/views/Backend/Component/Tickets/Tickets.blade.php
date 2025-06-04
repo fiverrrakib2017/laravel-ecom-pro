@@ -69,7 +69,7 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
         }
         /*When Request Get Area Page*/
-       var  area_page = @json($area_page ?? false);
+       var  filter_dropdown = @json($filter_dropdown ?? true);
         // if (area_page) {
         //     pop_id = @json($pop_id ?? '');
         //     area_id = @json($area_id ?? '');
@@ -78,23 +78,23 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         /*When Request Get POP/Branch Page*/
 
         /* GET POP-Branch */
-        var pop_branches = @json($pop_branches);
+        var tickets_pop_branches = @json($pop_branches);
         var tickets_pop_filter = `
             <div class="form-group mb-0 mr-2" style="min-width: 150px;">
                 <select id="search_ticket_pop_id" name="search_ticket_pop_id" class="form-control form-control-sm select2">
                     <option value="">--Select POP/Branch--</option>`;
-        pop_branches.forEach(function(item) {
+        tickets_pop_branches.forEach(function(item) {
             tickets_pop_filter += `<option value="${item.id}">${item.name}</option>`;
         });
         tickets_pop_filter += `</select></div>`;
 
         /* Get Areas */
-        var areas = @json($areas);
+        var tickets_areas = @json($areas);
         var tickets_area_filter = `
             <div class="form-group mb-0 mr-2" style="min-width: 150px;">
                 <select id="search_ticket_area_id" name="search_ticket_area_id" class="form-control form-control-sm select2">
                     <option value="">--Select Area--</option>`;
-        areas.forEach(function(item) {
+        tickets_areas.forEach(function(item) {
             tickets_area_filter += `<option value="${item.id}">${item.name}</option>`;
         });
         tickets_area_filter += `</select></div>`;
@@ -126,7 +126,7 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 </div>
             `;
             /* Append the filters to the DataTable wrapper */
-            if(area_page==false){
+            if(filter_dropdown==true){
                 var tableWrapper = $('#tickets_datatable1').closest('.dataTables_wrapper');
                 tableWrapper.prepend(tickets_filters_wrapper);
 
@@ -154,6 +154,27 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         if (status_for_ticket == null || status_for_ticket == '') {
             status_for_ticket = $('.tickets_status_filter').val();
         }
+        $(document).on('change','select[name="search_ticket_pop_id"]',function(){
+            var areas = @json($areas);
+            var selectedPopId = $(this).val();
+            var tickets_filteredAreas = areas.filter(function(item) {
+                return item.pop_id == selectedPopId;
+            });
+            var tickets_areas_Options = '<option value="">--Select Area--</option>';
+            tickets_filteredAreas.forEach(function(item) {
+                tickets_areas_Options += '<option value="' + item.id + '">' + item.name + '</option>';
+            });
+            $('#tickets_datatable1').DataTable().ajax.reload(null, false);
+            $('select[name="search_ticket_area_id"]').html(tickets_areas_Options);
+        });
+        /*Handle Area filter change*/
+        $(document).on('change', 'select[name="search_ticket_area_id"]', function() {
+            $('#tickets_datatable1').DataTable().ajax.reload(null, false);
+        });
+        /*Handle Status filter change*/
+        $(document).on('change', '.tickets_status_filter', function() {
+            $('#tickets_datatable1').DataTable().ajax.reload(null, false);
+        });
 
         var table = $("#tickets_datatable1").DataTable({
             "processing": true,
@@ -166,9 +187,10 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 type: "GET",
                 data: function(d) {
                     d.customer_id = customer_id;
-                    d.pop_id = pop_id_for_ticket;
-                    d.area_id = area_id_for_ticket;
-                    d.status = status_for_ticket;
+
+                    d.pop_id        = $('#search_ticket_pop_id').val() || pop_id_for_ticket;
+                    d.area_id       = $('#search_ticket_area_id').val() || area_id_for_ticket;
+                    d.status        = $('.tickets_status_filter').val() || status_for_ticket;
                 }
             },
             language: {

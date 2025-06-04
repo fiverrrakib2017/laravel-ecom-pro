@@ -52,9 +52,9 @@
                                     @php
                                         $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
                                         if($branch_user_id != null || $branch_user_id != 0){
-                                            $pops = App\Models\Pop_branch::where('id', $branch_user_id)->latest()->get();
+                                            $pops = App\Models\Pop_branch::where('id', $branch_user_id)->where('status',1)->latest()->get();
                                         }else{
-                                            $pops = \App\Models\Pop_branch::latest()->get();
+                                            $pops = \App\Models\Pop_branch::where('status',1)->latest()->get();
                                         }
                                     @endphp
                                     @foreach ($pops as $item)
@@ -69,9 +69,9 @@
                                     @php
                                     $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
                                     if($branch_user_id != null || $branch_user_id != 0){
-                                        $areas = App\Models\Pop_area::where('pop_id', $branch_user_id)->latest()->get();
+                                        $areas = App\Models\Pop_area::where('pop_id', $branch_user_id)->where('status','active')->latest()->get();
                                     }else{
-                                        $areas = \App\Models\Pop_area::latest()->get();
+                                        $areas = \App\Models\Pop_area::where('status','active')->latest()->get();
                                     }
                                 @endphp
                                     @foreach ($areas as $item)

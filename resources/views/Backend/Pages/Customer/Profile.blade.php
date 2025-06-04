@@ -324,6 +324,7 @@
                                     <div class="table-responsive">
                                         @include('Backend.Component.Tickets.Tickets', [
                                             'customer_id' => $data->id,
+                                            'filter_dropdown'=>false,
                                         ])
                                     </div>
                                 </div>
@@ -503,6 +504,7 @@
         'customer_id' => $data->id,
         'pop_id' => $data->pop_id,
         'area_id' => $data->area_id,
+
     ])
     @include('Backend.Modal.Customer.customer_modal')
     @include('Backend.Modal.delete_modal')
