@@ -259,35 +259,44 @@ class CustomerController extends Controller
             customer_log($customer->id, 'add', auth()->guard('admin')->user()->id, 'Customer Created Successfully!');
 
             /* Create Customer Radius Server */
-            $existing_radius_customer= \App\Models\Radius\Radcheck::where('username', $request->username)->first();
-            if(!$existing_radius_customer){
-                $radius = new \App\Models\Radius\Radcheck();
-                $radius->username = $request->username;
-                $radius->attribute = 'Cleartext-Password';
-                $radius->op = ':=';
-                $radius->value = $request->password;
-                $radius->save();
-            }
-
-            // $router = Mikrotik_router::where('status', 'active')->where('id', $request->router_id)->first();
-            // $client = new Client([
-            //     'host' => $router->ip_address,
-            //     'user' => $router->username,
-            //     'pass' => $router->password,
-            //     'port' => (int) $router->port ?? 8728,
-            // ]);
-            // /*Check if alreay exist*/
-            // $check_Query = new Query('/ppp/secret/print');
-            // $check_Query->where('name', $request->username);
-            // $check_customer = $client->query($check_Query)->read();
-            // if (empty($check_customer)) {
-            //     $query = new Query('/ppp/secret/add');
-            //     $query->equal('name', $request->username);
-            //     $query->equal('password', $request->password);
-            //     $query->equal('service', 'pppoe');
-            //     $query->equal('profile', Branch_package::find($request->package_id)->name);
-            //     $client->query($query)->read();
+            // $existing_racheck= \App\Models\Radius\Radcheck::where('username', $request->username)->first();
+            // if(!$existing_racheck){
+            //     $radius = new \App\Models\Radius\Radcheck();
+            //     $radius->username = $request->username;
+            //     $radius->attribute = 'Cleartext-Password';
+            //     $radius->op = ':=';
+            //     $radius->value = $request->password;
+            //     $radius->save();
             // }
+            // $existing_radreply= \App\Models\Radius\Radreply::where('username', $request->username)->first();
+            // if(!$existing_radreply){
+            //     $radreply = new \App\Models\Radius\Radreply();
+            //     $radreply->username = $request->username;
+            //     $radreply->attribute = 'MikroTik-Group';
+            //     $radreply->op = ':=';
+            //     $radreply->value = Branch_package::find($request->package_id)->name;
+            //     $radreply->save();
+            // }
+
+            $router = Mikrotik_router::where('status', 'active')->where('id', $request->router_id)->first();
+            $client = new Client([
+                'host' => $router->ip_address,
+                'user' => $router->username,
+                'pass' => $router->password,
+                'port' => (int) $router->port ?? 8728,
+            ]);
+            /*Check if alreay exist*/
+            $check_Query = new Query('/ppp/secret/print');
+            $check_Query->where('name', $request->username);
+            $check_customer = $client->query($check_Query)->read();
+            if (empty($check_customer)) {
+                $query = new Query('/ppp/secret/add');
+                $query->equal('name', $request->username);
+                $query->equal('password', $request->password);
+                $query->equal('service', 'pppoe');
+                $query->equal('profile', Branch_package::find($request->package_id)->name);
+                $client->query($query)->read();
+            }
 
             DB::commit();
             return response()->json([

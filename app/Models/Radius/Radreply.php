@@ -5,11 +5,11 @@ namespace App\Models\Radius;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Radcheck extends Model
+class Radreply extends Model
 {
     use HasFactory;
-    protected $connection = 'radiusdb'; // <-- IMPORTANT
-    protected $table = 'radcheck';
+    protected $connection = 'radiusdb';
+    protected $table = 'radreply';
     public $timestamps = false;
 
     protected $fillable = [
