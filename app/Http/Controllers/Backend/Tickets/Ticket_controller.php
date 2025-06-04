@@ -37,6 +37,7 @@ class Ticket_controller extends Controller
         $customer_id = $request->customer_id;
         $pop_id = $request->pop_id;
         $area_id = $request->area_id;
+        $status = $request->status;
         $columnsForOrderBy = ['id', 'status', 'created_at', 'priority_id', 'customer_id', 'customer_id', 'customer_id', 'customer_id', 'customer_id', 'customer_id', 'customer_id', 'created_at'];
         $orderByColumn = $request->order[0]['column'] ?? 0;
         $orderDirection = $request->order[0]['dir'] ?? 'asc';
@@ -72,6 +73,9 @@ class Ticket_controller extends Controller
             })
             ->when($area_id, function ($query) use ($area_id) {
                 $query->where('area_id', $area_id);
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
             })
             ->orderBy($columnsForOrderBy[$orderByColumn] ?? 'id', $orderDirection)
             ->paginate($request->length);

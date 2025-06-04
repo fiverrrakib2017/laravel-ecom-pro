@@ -32,6 +32,22 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         var customer_id = @json($customer_id ?? '');
         var pop_id = @json($pop_id ?? '');
         var area_id = @json($area_id ?? '');
+        var status = @json($status ?? '');
+
+        if (status == null || status === '') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlStatus = urlParams.get('status');
+            // console.log('Before logic - status:', status);
+            // console.log('From URL - urlStatus:', urlStatus);
+
+            if (urlStatus === 'completed') {
+                status = '1';
+            }
+            if(urlStatus === 'pending') {
+                status = '0';
+            }
+
+        }
 
         var table = $("#datatable1").DataTable({
             "processing": true,
@@ -46,6 +62,7 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     d.customer_id = customer_id;
                     d.pop_id = pop_id;
                     d.area_id = area_id;
+                    d.status = status;
                 }
             },
             language: {
@@ -106,17 +123,57 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
                 },
                 {
-                    "data": "customer.fullname"
+                    "data": "customer.fullname",
+                    "render": function(data, type, row) {
+                        var viewUrl = '{{ route('admin.customer.view', ':id') }}'.replace(':id',
+                            row.customer.id);
+                        /*Set the icon based on the status*/
+                        var icon = '';
+                        var color = '';
+
+                        if (row.customer.status === 'online') {
+                            icon =
+                                '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;"></i>';
+                        } else if (row.customer.status === 'offline') {
+                            icon =
+                                '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;"></i>';
+                        } else {
+                            icon =
+                                '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;"></i>';
+                        }
+
+                        return '<a href="' + viewUrl +
+                            '" style="display: flex; align-items: center; text-decoration: none; color: #333;">' +
+                            icon +
+                            '<span style="font-size: 16px; font-weight: bold;">' + row
+                            .customer.fullname + '</span>' +
+                            '</a>';
+                    }
                 },
                 {
-                    "data": "customer.phone"
+                    "data": "customer.phone",
+                    "render": function(data, type, row) {
+                        return '<i class="fas fa-phone-alt" style="color: #007bff; margin-right: 6px;"></i>' +
+                            '<span>' + row.customer.phone + '</span>';
+                    }
                 },
+
                 {
-                    "data": "pop.name"
+                    "data": "pop.name",
+                    "render": function(data, type, row) {
+                        return '<i class="fas fa-broadcast-tower" style="color: #28a745; margin-right: 6px;"></i>' +
+                            '<span>' + row.pop.name + '</span>';
+                    }
                 },
+
                 {
-                    "data": "area.name"
+                    "data": "area.name",
+                    "render": function(data, type, row) {
+                        return '<i class="fas fa-map-marker-alt" style="color: #dc3545; margin-right: 6px;"></i>' +
+                            '<span>' + row.area.name + '</span>';
+                    }
                 },
+
                 {
                     "data": "complain_type.name"
                 },

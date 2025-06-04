@@ -246,6 +246,7 @@
                     'value' => $ticket_pending,
                     'bg' => 'danger',
                     'icon' => 'fas fa-solid fa-exclamation-triangle',
+                     'url' => route('admin.tickets.index',['status' => 'pending']),
                 ],
             ];
         @endphp
