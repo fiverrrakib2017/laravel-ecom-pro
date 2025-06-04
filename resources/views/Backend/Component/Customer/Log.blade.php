@@ -46,6 +46,7 @@
 <script src="{{ asset('Backend/assets/js/render_customer_column.js') }}"></script>
 <script type="text/javascript">
  var baseUrl = "{{ url('/') }}";
+ let branch_user_id = @json(Auth::guard('admin')->user()->pop_id ?? null);
     $(document).ready(function() {
         /* From Date */
         var from_date = `<label>
@@ -88,7 +89,7 @@
                     d.length = d.length || 10;
                     d.from_date = $('.from_date').val();
                     d.to_date = $('.to_date').val();
-                    d.pop_id = {{ Auth::guard('admin')->user()->pop_id ?? null }};
+                    d.pop_id = branch_user_id;
                 },
             },
             language: {

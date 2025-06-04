@@ -82,6 +82,12 @@
         var area_id = @json($area_id ?? '');
         var status = @json($status ?? '');
 
+        if(status == null || status == ''){
+            const urlParams = new URLSearchParams(window.location.search);
+            status = urlParams.get('status');
+        }
+
+
         /*When Request Get Area Page*/
        var  area_page = @json($area_page ?? false);
         // if (area_page) {
