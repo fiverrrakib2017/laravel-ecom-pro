@@ -34,12 +34,13 @@
                 <th>Name</th>
                 <th>Package</th>
                 <th>Amount</th>
-                <th>Create Date</th>
+
                 <th>Expired Date</th>
                 <th>User Name</th>
                 <th>Mobile no.</th>
                 <th>POP/Branch</th>
                 <th>Area/Location</th>
+                <th>Create Date</th>
                 <th></th>
             </tr>
         </thead>
@@ -297,18 +298,7 @@
                 {
                     "data": "amount"
                 },
-                {
-                    "data": "created_at",
-                    "render": function(data, type, row) {
-                        var date = new Date(data);
-                        var options = {
-                            year: 'numeric',
-                            month: 'short',
-                            day: '2-digit'
-                        };
-                        return date.toLocaleDateString('en-GB', options);
-                    }
-                },
+
 
                 {
                     "data": "expire_date",
@@ -330,13 +320,37 @@
                     "data": "username"
                 },
                 {
-                    "data": "phone"
+                    "data": "phone",
+                    "render": function(data, type, row) {
+                        return '<i class="fas fa-phone-alt" style="color: #007bff; margin-right: 6px;"></i>' +
+                            '<span>' + row.phone + '</span>';
+                    }
                 },
                 {
-                    "data": "pop.name"
+                    "data": "pop.name",
+                    "render": function(data, type, row) {
+                        return '<i class="fas fa-broadcast-tower" style="color: #28a745; margin-right: 6px;"></i>' +
+                            '<span>' + row.pop.name + '</span>';
+                    }
                 },
                 {
-                    "data": "area.name"
+                    "data": "area.name",
+                     "render": function(data, type, row) {
+                        return '<i class="fas fa-map-marker-alt" style="color: #dc3545; margin-right: 6px;"></i>' +
+                            '<span>' + row.area.name + '</span>';
+                    }
+                },
+                {
+                    "data": "created_at",
+                    "render": function(data, type, row) {
+                        var date = new Date(data);
+                        var options = {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit'
+                        };
+                        return date.toLocaleDateString('en-GB', options);
+                    }
                 },
 
                 {
