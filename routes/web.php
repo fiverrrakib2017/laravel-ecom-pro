@@ -98,6 +98,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/store', 'store')->name('admin.tickets.store');
             Route::post('/update/{id}', 'update')->name('admin.tickets.update');
             Route::post('/change_status/{id}', 'change_status')->name('admin.tickets.change_status');
+            Route::get('/get_tickets/{id}', 'get_customer_tickets')->name('admin.tickets.get_customer_tickets');
         });
     });
 

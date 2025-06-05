@@ -154,6 +154,27 @@
                         <div class="col-md-6 mb-2">
 
                         </div>
+                        <!-- Previous Tickets Table -->
+                    <div class="mt-3 col-md-12 mb-2 d-none" id="previous_tickets">
+                        <h6>Previous Tickets</h6>
+                        <table class="table table-bordered"  id="customer_tickets_table">
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Issue</th>
+                                    <th>Priority</th>
+                                    <th>Percentage</th>
+                                    <th>Acctual Work</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customer_tickets">
+                                <tr >
+                                    <td colspan="6" class="text-center">No Tickets Found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     </div>
 
                     <div class="modal-footer">
@@ -314,6 +335,95 @@
                     btn.prop("disabled", false);
                 }
             });
+        });
+        /*GET Customer Ticket*/
+        $(document).on('change','#ticketForm select[name="customer_id"]',function(){
+            var customer_id = $(this).val();
+            if (customer_id) {
+                $.ajax({
+                    url: "{{ route('admin.tickets.get_customer_tickets', '') }}/" + customer_id,
+                    type: "GET",
+                    data: { get_customer_tickets: true, customer_id: customer_id },
+                    dataType:'json',
+                    success: function (response) {
+                        if (response.success == true) {
+                            let tickets = response.data;
+                            let tableBody = $("#customer_tickets_table tbody");
+                            tableBody.empty();
+                            if (tickets.length > 0) {
+                                $("#previous_tickets").removeClass('d-none');
+                                tickets.forEach((ticket, index) => {
+                                    switch (ticket.priority_id) {
+                                        case 1:
+                                            priorityLabel = 'Low';
+                                            badgeColor = 'badge-secondary';
+                                            break;
+                                        case 2:
+                                            priorityLabel = 'Normal';
+                                            badgeColor = 'badge-info';
+                                            break;
+                                        case 3:
+                                            priorityLabel = 'Standard';
+                                            badgeColor = 'badge-primary';
+                                            break;
+                                        case 4:
+                                            priorityLabel = 'Medium';
+                                            badgeColor = 'badge-warning';
+                                            break;
+                                        case 5:
+                                            priorityLabel = 'High';
+                                            badgeColor = 'badge-danger';
+                                            break;
+                                        case 6:
+                                            priorityLabel = 'Very High';
+                                            badgeColor = 'badge-dark';
+                                            break;
+                                        default:
+                                            priorityLabel = 'Unknown';
+                                            badgeColor = 'badge-light';
+                                            break;
+                                    }
+
+                                    /*get Acctual Work*/
+                                    var acctual_work='';
+                                    if (ticket.updated_at == ticket.created_at) {
+                                        acctual_work= 'N/A';
+                                    }
+                                    if (ticket.updated_at && ticket.created_at) {
+                                        let start = moment(ticket.created_at);
+                                        let end = moment(ticket.updated_at);
+
+                                        acctual_work= end.from(start);
+                                    } else {
+                                        acctual_work= 'N/A';
+                                    }
+                                    /*GET Ticket Status*/
+                                    var ticket_status       ='';
+                                    if (ticket.status       == 0) {
+                                        ticket_status       = '<span class="badge bg-danger">Active</span>';
+                                    } else if (ticket.status   == 2) {
+                                        ticket_status       ='<span class="badge bg-warning">Pending</span>';
+                                    } else if (ticket.status   == 1) {
+                                        ticket_status       ='<span class="badge bg-success">Completed</span>';
+                                    }
+                                    let row = `
+                                        <tr class="wow animate__animated animate__fadeInUp animate__delay-${index  * 0.1}s ">
+                                            <td>${ticket.id}</td>
+                                            <td>${ticket.complain_type.name}</td>
+                                            <td><span class="badge ${badgeColor}" style="font-size: 80%;">${priorityLabel}</span></td>
+                                            <td>${ticket.percentage}</td>
+                                            <td>${acctual_work} </td>
+                                            <td>${ticket_status}</td>
+                                        </tr>`;
+                                    tableBody.append(row);
+                                });
+                            } else {
+                                tableBody.append(`<tr><td colspan="6" class="text-center text-danger">No tickets found</td></tr>`);
+                            }
+                        }
+                    }
+                });
+            }
         });
     });
 </script>

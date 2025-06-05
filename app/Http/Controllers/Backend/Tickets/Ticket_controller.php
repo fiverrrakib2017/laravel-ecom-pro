@@ -171,6 +171,18 @@ class Ticket_controller extends Controller
             return response()->json(['success' => false, 'message' => 'Not found.']);
         }
     }
+    public function get_customer_tickets($customer_id){
+        if(!empty($customer_id) && isset($customer_id)){
+          $data=  Ticket::with(['customer', 'assign', 'complain_type', 'pop', 'area'])->where('customer_id',$customer_id)->latest()->get();
+            if ($data) {
+                return response()->json(['success' => true, 'data' => $data]);
+                exit();
+            } else {
+                return response()->json(['success' => false, 'message' => 'Not found.']);
+            }
+        }
+        exit;
+    }
 
     public function update(Request $request, $id)
     {
