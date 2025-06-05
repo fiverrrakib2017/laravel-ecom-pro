@@ -378,6 +378,35 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
         });
 
+         /** Handle Completed button click**/
+        $(document).on("click", ".tickets_completed_btn", function() {
+            let id = $(this).data("id");
+            let btn = $(this);
+            let originalHtml = btn.html();
+            btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop("disabled", true);
+            $.ajax({
+                url: "{{ route('admin.tickets.change_status', '') }}/" + id,
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        btn.html(originalHtml).prop("disabled", false);
+                        toastr.success(response.message);
+                        $('#datatable1').DataTable().ajax.reload(null, false);
+                    } else if (response.success == false) {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function() {
+                    toastr.error("Something went wrong!");
+                },
+                complete: function() {
+                    btn.prop("disabled", false);
+                }
+            });
+        });
 
 
     });
