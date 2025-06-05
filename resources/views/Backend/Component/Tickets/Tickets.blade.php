@@ -356,6 +356,7 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             return `
                             <button class="btn btn-primary btn-sm mr-3 tickets_edit_btn" data-id="${row.id}"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm mr-3 tickets_delete_btn"  data-id="${row.id}"><i class="fa fa-trash"></i></button>
+                            <button class="btn btn-success btn-sm mr-3 tickets_view_btn"  data-id="${row.id}"><i class="fa fa-eye"></i></button>
                             `;
                         }else{
                             return `
@@ -407,7 +408,12 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                 }
             });
         });
+        /** Handle ticket view button click**/
 
+        $(document).on("click", ".tickets_view_btn", function() {
+             let id = $(this).data("id");
+             
+        });
 
     });
 </script>

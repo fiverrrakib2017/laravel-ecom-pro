@@ -94,6 +94,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/list', 'index')->name('admin.tickets.index');
             Route::get('/all-data', 'get_all_data')->name('admin.tickets.get_all_data');
             Route::get('/edit/{id}', 'edit')->name('admin.tickets.edit');
+            Route::get('/view/{id}', 'view')->name('admin.tickets.view');
             Route::post('/delete', 'delete')->name('admin.tickets.delete');
             Route::post('/store', 'store')->name('admin.tickets.store');
             Route::post('/update/{id}', 'update')->name('admin.tickets.update');
