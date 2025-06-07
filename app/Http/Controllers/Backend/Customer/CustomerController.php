@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RouterOS\Client;
 use RouterOS\Query;
+use Illuminate\Support\Facades\Cache;
 
 class CustomerController extends Controller
 {
@@ -316,7 +317,7 @@ class CustomerController extends Controller
             }
 
             DB::commit();
-            session()->forget('sidebar_customers');
+            Cache::forget('sidebar_customers');
             return response()->json([
                 'success' => true,
                 'message' => 'Customer Created Successfully!',
@@ -423,7 +424,7 @@ class CustomerController extends Controller
 
             DB::commit();
 
-            session()->forget('sidebar_customers');
+            Cache::forget('sidebar_customers');
 
             // Log
             customer_log($customer->id, 'edit', auth()->guard('admin')->user()->id, 'Customer updated successfully!');

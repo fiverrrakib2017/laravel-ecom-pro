@@ -7,6 +7,8 @@ use App\Models\Customer;
 use App\Models\Router;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use App\Services\SessionService;
 
 class automation extends Command
 {
@@ -27,11 +29,14 @@ class automation extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(SessionService $session_service)
     {
         $this->info('--- ISP Daily Tasks Started ---');
         $this->check_online_offline_status();
         $this->check_expire_customer();
+
+        /* Call the Session Remove method*/
+        $session_service->forget_session_sidebar_customer();
         $this->info('--- ISP Daily Tasks Finished ---');
     }
     protected function check_online_offline_status()
@@ -140,44 +145,53 @@ class automation extends Command
         ->where('id', $customer->router_id)
         ->first();
 
-    if (!$router) {
-        return response()->json(['error' => 'Router not found'], 404);
-    }
-
-    try {
-        $client = new Client([
-            'host'     => $router->ip_address,
-            'user'     => $router->username,
-            'pass'     => $router->password,
-            'port'     => (int)$router->port,
-            'timeout'  => 3,
-            'attempts' => 1
-        ]);
-
-        /*Find the secret*/
-        $query = new Query('/ppp/secret/print');
-        $query->where('name', $customer->username);
-        $secrets = $client->query($query)->read();
-
-        if (!empty($secrets)) {
-            $secretId = $secrets[0]['.id'];
-
-            /*Enable the secret*/
-            $enableQuery = new Query('/ppp/secret/set');
-            $enableQuery->equal('.id', $secretId)
-                        ->equal('disabled', 'no');
-            $client->query($enableQuery)->read();
-
-            /*Update DB status*/
-            $customer->update(['status' => 'active']);
-
-            return response()->json(['message' => "Customer {$customer->username} is now active."], 200);
-        } else {
-            return response()->json(['error' => 'PPP secret not found in MikroTik'], 404);
+        if (!$router) {
+            return response()->json(['error' => 'Router not found'], 404);
         }
 
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
+        try {
+            $client = new Client([
+                'host'     => $router->ip_address,
+                'user'     => $router->username,
+                'pass'     => $router->password,
+                'port'     => (int)$router->port,
+                'timeout'  => 3,
+                'attempts' => 1
+            ]);
+
+            /*Find the secret*/
+            $query = new Query('/ppp/secret/print');
+            $query->where('name', $customer->username);
+            $secrets = $client->query($query)->read();
+
+            if (!empty($secrets)) {
+                $secretId = $secrets[0]['.id'];
+
+                /*Enable the secret*/
+                $enableQuery = new Query('/ppp/secret/set');
+                $enableQuery->equal('.id', $secretId)
+                            ->equal('disabled', 'no');
+                $client->query($enableQuery)->read();
+
+                /*Update DB status*/
+                $customer->update(['status' => 'active']);
+
+                return response()->json(['message' => "Customer {$customer->username} is now active."], 200);
+            } else {
+                return response()->json(['error' => 'PPP secret not found in MikroTik'], 404);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
+    protected function remove_sidebar_session(){
+        try {
+            if (!app()->runningInConsole()) {
+                session()->forget('sidebar_customers');
+            }
+        } catch (\Exception $e) {
+            Log::warning('Session forget failed in console: ' . $e->getMessage());
+        }
     }
 }

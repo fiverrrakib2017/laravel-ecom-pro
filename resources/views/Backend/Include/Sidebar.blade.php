@@ -25,16 +25,16 @@
                     <select class="form-control" name="sidebar_customer_id" style="width: 100%; font-size: 13px;">
                         <option >---Select---</option>
                         @php
-                            if (!session()->has('sidebar_customers')) {
+                            if (!Cache::has('sidebar_customers')) {
                                 if (!empty($branch_user_id)) {
                                     $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
                                 } else {
                                     $customers = \App\Models\Customer::latest()->get();
                                 }
 
-                                session()->put('sidebar_customers', $customers);
+                                Cache::put('sidebar_customers', $customers, now()->addHours(2)); // optional expiry
                             } else {
-                                $customers = session('sidebar_customers');
+                                $customers = Cache::get('sidebar_customers');
                             }
                         @endphp
 
