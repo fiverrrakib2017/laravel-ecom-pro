@@ -394,7 +394,23 @@
 
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-warning text-white">New Customers by months</div>
+                <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+                    @php
+                        $selectedYear = request()->get('year', date('Y'));
+                        $endYear = date('Y');
+                        $startYear = 2000;
+                    @endphp
+                    <span>New Customers by Month ({{ $selectedYear }})</span>
+                    <form method="GET" action="" id="yearForm" class="d-flex align-items-center" style="width: 50%;">
+                        <select name="year" class="form-control ms-2"  onchange="document.getElementById('yearForm').submit();">
+                          
+                            @for ($y = $endYear; $y >= $startYear; $y--)
+                                <option value="{{ $y }}" {{ $y == $selectedYear ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+
+                    </form>
+                </div>
                 <div class="card-body">
                     <table class="table table-striped">
                         <thead>
@@ -406,17 +422,54 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>January</td>
-                                <td><span class="badge bg-success">23</span></td>
-                                <td><span class="badge bg-danger">52</span></td>
-                            </tr>
+                            @php
+                                use App\Models\Customer;
+                                use Illuminate\Support\Carbon;
+
+                                $monthlyData = [];
+
+                                for ($month = 1; $month <= 12; $month++) {
+                                    $monthName = Carbon::createFromDate($selectedYear, $month, 1)->format('F');
+
+                                    $query = Customer::query();
+
+                                    if (!empty($branch_user_id) && $branch_user_id > 0) {
+                                        $query->where('pop_id', $branch_user_id);
+                                    }
+
+                                    $newCustomers = (clone $query)
+                                        ->whereYear('created_at', $selectedYear)
+                                        ->whereMonth('created_at', $month)
+                                        ->count();
+
+                                    $expiredCustomers = (clone $query)
+                                        ->whereYear('expire_date', $selectedYear)
+                                        ->whereMonth('expire_date', $month)
+                                        ->count();
+
+                                    $monthlyData[] = [
+                                        'month' => $monthName,
+                                        'new' => $newCustomers,
+                                        'expired' => $expiredCustomers,
+                                    ];
+                                }
+                            @endphp
+
+                            @foreach ($monthlyData as $index => $data)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $data['month'] }}</td>
+                                    <td><span class="badge bg-success text-dark">{{ $data['new'] }}</span></td>
+                                    <td><span class="badge bg-danger">{{ $data['expired'] }}</span></td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+
     </div>
     @include('Backend.Modal.Customer.customer_modal')
     @include('Backend.Modal.Tickets.ticket_modal')
