@@ -285,10 +285,27 @@ class CustomerController extends Controller
                 'pass' => $router->password,
                 'port' => (int) $router->port ?? 8728,
             ]);
+            /*Load MikroTik Profile list*/
+            $mikrotik_profile_list = new Query('/ppp/profile/print');
+            $profiles = $client->query($mikrotik_profile_list)->read();
+            /*Find profile name from Branch Package*/
+            $profileName = Branch_package::find($request->package_id)->name;
+            /* Check if the profile name exists in MikroTik*/
+            $profileExists = collect($profiles)->pluck('name')->contains($profileName);
+
+            if (!$profileExists) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package configuration.",
+                ]);
+                exit;
+            }
             /*Check if alreay exist*/
             $check_Query = new Query('/ppp/secret/print');
             $check_Query->where('name', $request->username);
             $check_customer = $client->query($check_Query)->read();
+
             if (empty($check_customer)) {
                 $query = new Query('/ppp/secret/add');
                 $query->equal('name', $request->username);
@@ -341,6 +358,7 @@ class CustomerController extends Controller
 
         /* Save to the database table*/
         $customer->save();
+        session()->forget('sidebar_customers');
         /* Create Customer Log */
         customer_log($customer->id, 'edit', auth()->guard('admin')->user()->id, 'Customer Update Successfully!');
         return response()->json([
@@ -645,7 +663,7 @@ class CustomerController extends Controller
                             ->equal('interface', $interface_name)
                             ->equal('once', '')
                     )->read();
-                    
+
 
                     $rx_speed = isset($monitor[0]['rx-bits-per-second']) ? round($monitor[0]['rx-bits-per-second'] / 1024, 2) : 0; // in Kbps
                     $tx_speed = isset($monitor[0]['tx-bits-per-second']) ? round($monitor[0]['tx-bits-per-second'] / 1024, 2) : 0; // in Kbps
