@@ -313,7 +313,10 @@
         <!----- Cusomer Payment Chart------>
         @include('Backend.Component.Chart.Customer_payment_chart')
     </div>
+    <!----- Google Map  Start ------>
+      @include('Backend.Component.Customer.Google_map')
 
+    <!----- Google Map  End ------>
 
     <div class="row mt-4">
         <div class="col-md-6">
@@ -403,7 +406,7 @@
                     <span>New Customers by Month ({{ $selectedYear }})</span>
                     <form method="GET" action="" id="yearForm" class="d-flex align-items-center" style="width: 50%;">
                         <select name="year" class="form-control ms-2"  onchange="document.getElementById('yearForm').submit();">
-                          
+
                             @for ($y = $endYear; $y >= $startYear; $y--)
                                 <option value="{{ $y }}" {{ $y == $selectedYear ? 'selected' : '' }}>{{ $y }}</option>
                             @endfor
@@ -468,8 +471,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
     @include('Backend.Modal.Customer.customer_modal')
     @include('Backend.Modal.Tickets.ticket_modal')
