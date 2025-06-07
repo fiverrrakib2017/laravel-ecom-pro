@@ -338,34 +338,110 @@ class CustomerController extends Controller
         /* Validate the form data*/
         $this->validateForm($request);
 
-        /* update  Customer*/
-        $customer = Customer::findOrFail($id);
-        $customer->fullname = $request->fullname;
-        $customer->phone = $request->phone;
-        $customer->nid = $request->nid;
-        $customer->address = $request->address;
-        $customer->con_charge = $request->con_charge ?? 0;
-        $customer->amount = $request->amount ?? 0;
-        $customer->username = $request->username;
-        $customer->password = $request->password;
-        $customer->package_id = $request->package_id;
-        $customer->pop_id = $request->pop_id;
-        $customer->area_id = $request->area_id;
-        $customer->router_id = $request->router_id;
-        $customer->status = $request->status;
-        $customer->remarks = $request->remarks;
-        $customer->liabilities = $request->liabilities;
+        DB::beginTransaction();
 
-        /* Save to the database table*/
-        $customer->save();
-        session()->forget('sidebar_customers');
-        /* Create Customer Log */
-        customer_log($customer->id, 'edit', auth()->guard('admin')->user()->id, 'Customer Update Successfully!');
-        return response()->json([
-            'success' => true,
-            'message' => 'Update successfully!',
-        ]);
+        try {
+            /* update Customer */
+            $customer = Customer::findOrFail($id);
+            $customer->fullname = $request->fullname;
+            $customer->phone = $request->phone;
+            $customer->nid = $request->nid;
+            $customer->address = $request->address;
+            $customer->con_charge = $request->con_charge ?? 0;
+            $customer->amount = $request->amount ?? 0;
+            $customer->username = $request->username;
+            $customer->password = $request->password;
+            $customer->package_id = $request->package_id;
+            $customer->pop_id = $request->pop_id;
+            $customer->area_id = $request->area_id;
+            $customer->router_id = $request->router_id;
+            $customer->status = $request->status;
+            $customer->remarks = $request->remarks;
+            $customer->liabilities = $request->liabilities;
+
+            /*********** Mikrotik Info ***************/
+            $router = Mikrotik_router::where('status', 'active')->where('id', $request->router_id)->first();
+
+            if (!$router) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Router not found or inactive.',
+                ]);
+            }
+
+            $client = new Client([
+                'host' => $router->ip_address,
+                'user' => $router->username,
+                'pass' => $router->password,
+                'port' => (int) $router->port ?? 8728,
+            ]);
+
+            /*Load MikroTik profile list*/
+            $profileQuery = new Query('/ppp/profile/print');
+            $profiles = $client->query($profileQuery)->read();
+
+            /*Get profile name from selected package*/
+            $profileName = Branch_package::find($request->package_id)->name;
+
+            /*Check if profile exists in MikroTik*/
+            $profileExists = collect($profiles)->pluck('name')->contains($profileName);
+
+            if (!$profileExists) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package setup.",
+                ]);
+            }
+
+            /*Find user in MikroTik*/
+            $check_Query = new Query('/ppp/secret/print');
+            $check_Query->where('name', $request->username);
+            $check_customer = $client->query($check_Query)->read();
+
+            if (empty($check_customer)) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Customer '{$request->username}' not found in MikroTik router.",
+                ]);
+            }
+
+            /*Update the MikroTik user's profile*/
+            $secretId = $check_customer[0]['.id'];
+            $updateQuery = new Query('/ppp/secret/set');
+            $updateQuery->equal('.id', $secretId);
+            $updateQuery->equal('profile', $profileName);
+            $client->query($updateQuery)->read();
+
+            // Optional: Update password too
+            $updateQuery->equal('password', $request->password ?? '12345');
+
+            /* Save to database */
+            $customer->save();
+
+            DB::commit();
+
+            session()->forget('sidebar_customers');
+
+            // Log
+            customer_log($customer->id, 'edit', auth()->guard('admin')->user()->id, 'Customer updated successfully!');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update successfully!',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed: ' . $e->getMessage(),
+            ]);
+        }
     }
+
     public function customer_credit_recharge_list()
     {
         return view('Backend.Pages.Customer.Credit.recharge_list');
