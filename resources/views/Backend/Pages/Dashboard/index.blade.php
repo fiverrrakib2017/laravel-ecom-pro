@@ -359,7 +359,7 @@
                                         <tr>
                                             <td>{{ $number++ }}</td>
                                             @if($showBranchColumn)
-                                                <td>{{ $item->pop->name ?? 'N/A' }}</td>
+                                                <td><a target="__blank" href="{{ route('admin.pop.view',$item->pop->id) }}"><i class="nav-icon fas fa-broadcast-tower text-success"></i>&nbsp; {{ $item->pop->name ?? 'N/A' }}</a></td>
                                             @endif
                                             <td>
                                                 {{ date('d F Y', strtotime($item->created_at)) }}
