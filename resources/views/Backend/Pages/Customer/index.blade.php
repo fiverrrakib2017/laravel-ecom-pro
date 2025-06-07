@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', 'Dashboard | Admin Panel')
+@section('title', 'Customer List | Admin Panel')
 @section('style')
 
 {{-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css"> --}}

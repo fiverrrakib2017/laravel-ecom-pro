@@ -1,6 +1,6 @@
 <div class="row mt-4">
     <div class="col-md-12">
-         <div id="customer_googleMap" style="height: 500px; width: 100%;"></div>
+         <div id="customer_googleMap" style="height: 400px; width: 100%;"></div>
     </div>
 </div>
 
@@ -28,7 +28,6 @@
             'address' => $faker->streetAddress . ', Cumilla',
         ];
     }
-@endphp
 
 
 @endphp

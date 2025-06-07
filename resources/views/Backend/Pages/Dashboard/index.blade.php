@@ -315,10 +315,10 @@
     </div>
     <!----- Google Map  Start ------>
       @include('Backend.Component.Customer.Google_map')
-
     <!----- Google Map  End ------>
 
     <div class="row mt-4">
+        <!----- Recent Pop/Branch Transactions ------>
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-info text-white">Recent Pop/Branch Transactions</div>
@@ -394,7 +394,7 @@
                 </div>
             </div>
         </div>
-
+        <!----- New Customers by Month ------>
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
@@ -462,8 +462,20 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $data['month'] }}</td>
-                                    <td><span class="badge bg-success text-dark">{{ $data['new'] }}</span></td>
-                                    <td><span class="badge bg-danger">{{ $data['expired'] }}</span></td>
+                                    <td>
+                                        <span class="badge bg-success text-dark">
+                                            <a target="__blank" href="{{ route('admin.customer.index', ['year' => $selectedYear, 'month' => $data['month'] , 'type' => 'expired']) }}">
+                                                {{ $data['new'] }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">
+                                            <a target="__blank" href="{{ route('admin.customer.index', ['year' => $selectedYear, 'month' => $data['month'], 'type' => 'expired']) }}">
+                                                {{ $data['expired'] }}
+                                            </a>
+                                        </span>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
