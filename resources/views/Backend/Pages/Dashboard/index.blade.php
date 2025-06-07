@@ -315,103 +315,109 @@
     </div>
 
 
-    @if ($branch_user_id != null)
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-info text-white">Recent Transactions</div>
-                    <div class="card-body">
-                        @php
-                            $branch_pacakges = App\Models\Branch_transaction::where('pop_id', $branch_user_id)->get();
-                        @endphp
-                        @if (!empty($branch_pacakges))
-                            <div class="table-responsive">
-                                <table id="branch_recharge_datatable" class="table table-bordered dt-responsive nowrap"
-                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                    <thead>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">Recent Pop/Branch Transactions</div>
+                <div class="card-body">
+                    @php
+                        use App\Models\Branch_transaction;
+                        use App\Models\User;
+
+                        if (!empty($branch_user_id) ) {
+                            $branch_recharge = Branch_transaction::with('pop')->where('pop_id', $branch_user_id)->get();
+                            $showBranchColumn = false;
+                        } else {
+                            $branch_recharge = Branch_transaction::with('pop')->latest()->get();
+                            $showBranchColumn = true;
+                        }
+
+
+                        $number = 1;
+                    @endphp
+                    @if (!empty($branch_recharge))
+                        <div class="table-responsive">
+                            <table id="branch_recharge_datatable" class="table table-bordered dt-responsive nowrap"
+                                style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        @if(empty($branch_user_id) || $branch_user_id=NULL)
+                                        <th>Pop/Branch Name</th>
+                                        @endif
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Transaction</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="">
+                                    @foreach ($branch_recharge as $item)
                                         <tr>
-                                            <th>No.</th>
-                                            <th>Date</th>
-                                            <th>Amount</th>
-                                            <th>Transaction</th>
-                                            <th>Note</th>
+                                            <td>{{ $number++ }}</td>
+                                            @if($showBranchColumn)
+                                                <td>{{ $item->pop->name ?? 'N/A' }}</td>
+                                            @endif
+                                            <td>
+                                                {{ date('d F Y', strtotime($item->created_at)) }}
+                                            </td>
+                                            <td>{{ $item->amount }}</td>
+                                            <td>
+                                                @php
+                                                    $type = $item->transaction_type;
+                                                    $badge = match ($type) {
+                                                        'cash' => 'success',
+                                                        'credit' => 'danger',
+                                                        'bkash' => 'success',
+                                                        'nagad' => 'primary',
+                                                        'bank' => 'success',
+                                                        'due_paid' => 'success',
+                                                        'other' => 'success',
+                                                        default => 'danger',
+                                                    };
+                                                @endphp
+                                                <span class="badge bg-{{ $badge }}">{{ ucfirst($type ?? 'N/A') }}</span>
+                                            </td>
+                                            <td>{{ $item->note }}</td>
+
                                         </tr>
-                                    </thead>
-                                    <tbody id="">
-                                        @php
-                                            $branch_recharge = App\Models\Branch_transaction::where(
-                                                'pop_id',
-                                                $branch_user_id,
-                                            )->get();
-                                            $number = 1;
-                                        @endphp
-                                        @foreach ($branch_recharge as $item)
-                                            <tr>
-                                                <td>{{ $number++ }}</td>
-                                                <td>
-                                                    {{ date('d F Y', strtotime($item->created_at)) }}
-                                                </td>
-                                                <td>{{ $item->amount }}</td>
-                                                <td>
-                                                    @if ($item->transaction_type == 'cash')
-                                                        <span class="badge bg-success">Cash</span>
-                                                    @elseif($item->transaction_type == 'credit')
-                                                        <span class="badge bg-danger">Credit</span>
-                                                    @elseif($item->transaction_type == 'bkash')
-                                                        <span class="badge bg-success">Bkash</span>
-                                                    @elseif($item->transaction_type == 'nagad')
-                                                        <span class="badge bg-primary">Nagad</span>
-                                                    @elseif($item->transaction_type == 'bank')
-                                                        <span class="badge bg-success">Bank</span>
-                                                    @elseif($item->transaction_type == 'due_paid')
-                                                        <span class="badge bg-success">Due Paid</span>
-                                                    @elseif($item->transaction_type == 'other')
-                                                        <span class="badge bg-success">Other</span>
-                                                    @else
-                                                        <span class="badge bg-danger">N/A</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $item->note }}</td>
-
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <h4 class="text-center text-danger">Not Found</h4>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-warning text-white">New Customers by months</div>
-                    <div class="card-body">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>NO.</th>
-                                    <th>Months</th>
-                                    <th>New Conn.</th>
-                                    <th>Expired Conn.</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>January</td>
-                                    <td><span class="badge bg-success">23</span></td>
-                                    <td><span class="badge bg-danger">52</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <h4 class="text-center text-danger">Not Found</h4>
+                    @endif
                 </div>
             </div>
         </div>
-    @endif
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">New Customers by months</div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>NO.</th>
+                                <th>Months</th>
+                                <th>New Conn.</th>
+                                <th>Expired Conn.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>January</td>
+                                <td><span class="badge bg-success">23</span></td>
+                                <td><span class="badge bg-danger">52</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     @include('Backend.Modal.Customer.customer_modal')
     @include('Backend.Modal.Tickets.ticket_modal')
     @include('Backend.Modal.Sms.send_modal')
