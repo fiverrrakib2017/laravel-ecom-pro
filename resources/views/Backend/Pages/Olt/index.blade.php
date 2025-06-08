@@ -7,16 +7,16 @@
     <div class="row">
 
         @php
-            // $devices = [
-            //     ['id' => 1, 'name' => 'Huawei OLT 1234', 'ip' => '192.168.1.100', 'status' => 'active', 'brand' => 'Huawei', 'model' => 'HG8245H', 'location' => 'Dhaka', 'cpu' => 55, 'ram' => 70],
+            $devices = [
+                ['id' => 1, 'name' => 'Huawei OLT 1234', 'ip_address' => '192.168.1.100', 'status' => 'active', 'brand' => 'Huawei', 'model' => 'HG8245H', 'location' => 'Dhaka', 'cpu' => 55, 'ram' => 70],
 
-            //     ['id' => 2, 'name' => 'ZTE OLT 5678', 'ip' => '192.168.1.101', 'status' => 'inactive', 'brand' => 'ZTE', 'model' => 'ZXA10', 'location' => 'Chittagong', 'cpu' => 30, 'ram' => 45],
+                ['id' => 2, 'name' => 'ZTE OLT 5678', 'ip_address' => '192.168.1.101', 'status' => 'inactive', 'brand' => 'ZTE', 'model' => 'ZXA10', 'location' => 'Chittagong', 'cpu' => 30, 'ram' => 45],
 
-            //     ['id' => 3, 'name' => 'Fiberhome OLT 9012', 'ip' => '192.168.1.102', 'status' => 'maintenance', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Khulna', 'cpu' => 80, 'ram' => 60],
+                ['id' => 3, 'name' => 'Fiberhome OLT 9012', 'ip_address' => '192.168.1.102', 'status' => 'maintenance', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Khulna', 'cpu' => 80, 'ram' => 60],
 
-            //     ['id' => 4, 'name' => 'Viewsonic OLT 9012', 'ip' => '192.168.1.102', 'status' => 'active', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Cumilla', 'cpu' => 80, 'ram' => 60],
-            // ];
-            $devices = App\Models\Olt_device::get()->toArray();
+                ['id' => 4, 'name' => 'Viewsonic OLT 9012', 'ip_address' => '192.168.1.102', 'status' => 'active', 'brand' => 'Fiberhome', 'model' => 'AN5506-04', 'location' => 'Cumilla', 'cpu' => 80, 'ram' => 60],
+            ];
+           // $devices = App\Models\Olt_device::get()->toArray();
         @endphp
 
         @foreach($devices as $device)

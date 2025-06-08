@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use phpseclib3\Net\SSH2;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,21 +20,23 @@ class Olt_controller extends Controller
         $username = $device->username;
         $password = $device->password;
 
-
-
-        $ssh = new SSH2($ip, $port);
-
-        if (!$ssh->login($username, $password)) {
-            return response()->json(['error' => 'SSH Login failed'], 500);
+        if (!$device) {
+            return response()->json(['error' => 'No active OLT device found.']);
         }
-        $command = 'display ont info 0 0';
-        $output = $ssh->exec($command);
 
-        return response()->json([
-            'output' => nl2br($output),
-        ]);
+        // $ip = $device->ip_address;
+        // $community = $device->community ?? 'public';
+        // $oid = '1.3.6.1.2.1.1.1.0';
 
+        // // SNMP GET
+        // $result = @snmpget($ip, $community, $oid);
 
+        // if ($result === false) {
+        //     Log::error("SNMP failed for IP: $ip with community: $community and OID: $oid");
+        //     return response()->json(['error' => 'SNMP request failed.']);
+        // }
+
+        // return response()->json(['snmp_result' => $result]);
         return view('Backend.Pages.Olt.index');
     }
     public function create(){
