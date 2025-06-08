@@ -25,22 +25,30 @@
                             <select name="customer_id" class="form-select" type="text" style="width: 100%;" required>
                                 <option value="">---Select---</option>
                                 @php
-                                    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-                                    if ($branch_user_id != null) {
-                                        $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
+                                    if (!Cache::has('sidebar_customers')) {
+                                        if (!empty($branch_user_id)) {
+                                            $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
+                                        } else {
+                                            $customers = \App\Models\Customer::latest()->get();
+                                        }
+
+                                        Cache::put('sidebar_customers', $customers, now()->addHours(2));
                                     } else {
-                                        $customers = \App\Models\Customer::latest()->get();
+                                        $customers = Cache::get('sidebar_customers');
                                     }
                                 @endphp
-                                @if ($customers->isNotEmpty())
-                                    @foreach ($customers as $item)
-                                        @php
-                                            $status_icon = $item->status == 'online' ? '🟢' : '🔴';
-                                        @endphp
-                                        <option value="{{ $item->id }}" {{ (isset($customer_id) && $item->id == $customer_id) ? 'selected' : '' }} > {!! $status_icon !!} [{{ $item->id }}] -
-                                            {{ $item->username }} || ({{ $item->phone }})</option>
-                                    @endforeach
 
+                                {{-- Check if customers are not empty --}}
+
+                                    @if ($customers->isNotEmpty())
+                                        @foreach ($customers as $item)
+                                            @php
+                                                $status_icon = $item->status == 'online' ? '🟢' : '🔴';
+                                            @endphp
+
+                                        <option value="{{ $item->id }}">{!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})</option>
+                                        @endforeach
+                                    @else
                                 @endif
                             </select>
 
@@ -307,7 +315,7 @@
             $('#deleteModal').find('input[name="id"]').val(id);
             $('#deleteModal').modal('show');
         });
-       
+
         /*GET Customer Ticket*/
         $(document).on('change','#ticketForm select[name="customer_id"]',function(){
             var customer_id = $(this).val();
