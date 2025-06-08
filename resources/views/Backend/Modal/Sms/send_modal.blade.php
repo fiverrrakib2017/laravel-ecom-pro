@@ -16,25 +16,32 @@
                     <div class="form-group mb-2">
                         <label>Customer Name</label>
                         <select name="customer_id" class="form-control" type="text" required>
-                            <option value="">---Select---</option>
+                            <option >---Select---</option>
                             @php
-                                $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-                                if ($branch_user_id != null) {
-                                    $customers = \App\Models\Customer::where('pop_id', $branch_user_id)
-                                        ->where('is_delete', '!=', '1')
-                                        ->latest()
-                                        ->get();
+                                if (!Cache::has('sidebar_customers')) {
+                                    if (!empty($branch_user_id)) {
+                                        $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
+                                    } else {
+                                        $customers = \App\Models\Customer::latest()->get();
+                                    }
+
+                                    Cache::put('sidebar_customers', $customers, now()->addHours(2));
                                 } else {
-                                    $customers = \App\Models\Customer::latest()->where('is_delete', '!=', '1')->get();
+                                    $customers = Cache::get('sidebar_customers');
                                 }
                             @endphp
-                            @if ($customers->isNotEmpty())
-                                @foreach ($customers as $item)
-                                    <option value="{{ $item->id }}" > [{{ $item->id }}] -
-                                        {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})
-                                    </option>
-                                @endforeach
 
+                            {{-- Check if customers are not empty --}}
+
+                                @if ($customers->isNotEmpty())
+                                    @foreach ($customers as $item)
+                                        @php
+                                            $status_icon = $item->status == 'online' ? '🟢' : '🔴';
+                                        @endphp
+
+                                    <option value="{{ $item->id }}">{!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})</option>
+                                    @endforeach
+                                @else
                             @endif
                         </select>
                     </div>
@@ -50,30 +57,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
-                    <script type="text/javascript">
-                        $(document).ready(function() {
-                            $("select[name='template_id']").on('change', function() {
-                                var template_id = $(this).val();
-                                if (template_id) {
-                                    $.ajax({
-                                        url: "{{ route('admin.sms.template_get', ':id') }}".replace(':id',
-                                            template_id),
-                                        type: "GET",
-                                        dataType: "json",
-                                        success: function(response) {
-                                            $("textarea[name='message']").val(response.data.message);
-                                        },
-                                        error: function(xhr, status, error) {
-                                            console.log("Error:", error);
-                                        }
-                                    });
-                                } else {
-                                    $("textarea[name='message']").val('');
-                                }
-                            });
-                        });
-                    </script>
+
 
                     <div class="form-group mb-2">
                         <label>SMS </label>
@@ -81,10 +65,81 @@
                     </div>
                     <div class="modal-footer ">
                         <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
-                        <button type="submit" class="btn btn-success">Save Changes</button>
+                        <button type="submit" class="btn btn-success send_message_button">Save Changes</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("select[name='template_id']").on('change', function() {
+            var template_id = $(this).val();
+            if (template_id) {
+                $.ajax({
+                    url: "{{ route('admin.sms.template_get', ':id') }}".replace(':id',
+                        template_id),
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        $("textarea[name='message']").val(response.data.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("Error:", error);
+                    }
+                });
+            } else {
+                $("textarea[name='message']").val('');
+            }
+        });
+        $("#SendMessageForm").submit(function(event){
+                event.preventDefault();
+
+                var button = $('.send_message_button');
+                button.html(`<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...`);
+                button.attr('disabled', true);
+                if(!selectedCustomers){
+                    var selectedCustomers=[];
+                }
+                /*Get Message Data Value*/
+                var customer_id = $("#SendMessageForm select[name='customer_id']").val();
+                var message = $("#SendMessageForm textarea[name='message']").val();
+
+                selectedCustomers.push(customer_id);
+
+                /*Check Select Customer Logic*/
+                if(selectedCustomers.length==0){
+                    toastr.error('Please Selete Customer');
+                    button.html('Send Message');
+                    button.attr('disabled', false);
+                    return false;
+                }
+                $.ajax({
+                    url: "{{ route('admin.sms.send_message_store') }}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {  _token: "{{ csrf_token() }}", message: message, customer_ids:selectedCustomers },
+                    success: function(response) {
+                        if(response.success==true){
+                            toastr.success(response.message);
+                            $('#addSendMessageModal').modal('hide');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+
+                        if(response.success==false) {
+                            toastr.error(response.message);
+                        }
+                    },
+                    complete: function() {
+                        button.html('Send Message');
+                        button.attr('disabled', false);
+                    }
+                });
+            });
+
+    });
+</script>

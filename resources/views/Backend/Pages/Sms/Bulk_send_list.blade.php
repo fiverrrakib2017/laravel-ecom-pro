@@ -282,7 +282,7 @@
                     $("textarea[name='message']").val('');
                 }
             });
-            /*Load Message Template*/
+            /*Send Message Template*/
             $("#send_bulk_message_form").submit(function(event){
                 event.preventDefault();
                 var button = $('.send_message_button');
