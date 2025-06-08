@@ -51,6 +51,9 @@
                             <p class="text-muted text-center">
                                 <i class="fas fa-user-tag"></i> User ID: {{ $data->id ?? 'N/A' }}
                             </p>
+                            <p class="text-muted text-center">
+                                <i class="fas fa-box"></i> Package: {{ $data->package->name ?? 'N/A' }}
+                            </p>
                             @php
                                 $expireDate = $data->expire_date;
                                 $today_date = date('Y-m-d');

@@ -447,14 +447,15 @@
                                 <p>{{ __('menu.sms_report') }}</p>
                             </a>
                         </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sms.config') }}"
-                                class="nav-link {{ $route == 'admin.sms.config' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.sms_config') }}</p>
-                            </a>
-                        </li>
+                        @if (empty($branch_user_id))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.sms.config') }}"
+                                    class="nav-link {{ $route == 'admin.sms.config' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.sms_config') }}</p>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
 
