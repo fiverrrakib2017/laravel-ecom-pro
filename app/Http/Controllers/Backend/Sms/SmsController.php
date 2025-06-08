@@ -142,7 +142,6 @@ class SmsController extends Controller
     public function send_message_store(Request $request){
         /*Validate the form data*/
         $rules = [
-            'customer_id' => 'required|integer',
             'message' => 'required|string',
         ];
         $validator = Validator::make($request->all(), $rules);
@@ -157,21 +156,28 @@ class SmsController extends Controller
             );
         }
 
-        /*Get POP ID From Customer table*/
-        $customer=Customer::find($request->customer_id);
-        /* Create a new Instance*/
-        $object =new Send_message();
-        $object->pop_id = $customer->pop_id;;
-        $object->customer_id = $request->customer_id;
-        $object->message = $request->message;
-        $object->sent_at = Carbon::now();
+        if(empty($request->customer_ids) && isset($request->customer_ids)){
+            return response()->json(['success'=>false, 'message'=>'Customer Not Found']);
+        }
+        foreach($request->customer_ids as $customer_id){
+            /*Get POP ID From Customer table*/
+            $customer=Customer::find($customer_id);
+            /* Create a new Instance*/
+            $object =new Send_message();
+            $object->pop_id = $customer->pop_id;
+            $object->area_id = $customer->area_id;
+            $object->customer_id = $customer_id;
+            $object->message = $request->message;
+            $object->sent_at = Carbon::now();
 
 
-         /*Call Send Message Function */
-        send_message($customer->phone, $request->message);
+            /*Call Send Message Function */
+           send_message($customer->phone, $request->message);
+            /* Save to the database table*/
+            $object->save();
+        }
 
-        /* Save to the database table*/
-        $object->save();
+
         return response()->json([
             'success' => true,
             'message' => 'Added successfully!',

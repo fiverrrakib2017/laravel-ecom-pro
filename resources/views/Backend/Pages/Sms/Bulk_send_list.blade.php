@@ -141,7 +141,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-success" id="selectedCustomerCount"></div>
-                    <form id="paymentForm" method="POST">
+                    <form id="send_bulk_message_form" action="{{ route('admin.sms.send_message_store') }}" method="POST"> @csrf
 
                         <div class="form-group mb-2">
                             <label>Message Template </label>
@@ -161,8 +161,7 @@
                         </div>
                         <div class="modal-footer ">
                             <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
-                            <button type="button" name="send_message_btn" class="btn btn-success">Send
-                                Message</button>
+                            <button type="submit" class="btn btn-success send_message_button">Send Message</button>
                         </div>
                     </form>
                 </div>
@@ -173,6 +172,7 @@
 
 @section('script')
     <script type="text/javascript">
+        var selectedCustomers = [];
         /** Handle pop branch button click **/
         $(document).on('change', 'select[name="pop_id"]', function() {
             var pop_id = $(this).val();
@@ -254,7 +254,7 @@
             });
             $(document).on('click', '#send_message_btn', function(event) {
                 event.preventDefault();
-                var selectedCustomers = [];
+
                 $(".checkSingle:checked").each(function() {
                     selectedCustomers.push($(this).val());
                 });
@@ -281,6 +281,46 @@
                 } else {
                     $("textarea[name='message']").val('');
                 }
+            });
+            /*Load Message Template*/
+            $("#send_bulk_message_form").submit(function(event){
+                event.preventDefault();
+                var button = $('.send_message_button');
+                button.html(`<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...`);
+                button.attr('disabled', true);
+
+                /*Get Message Data Value*/
+                var message = $("#send_bulk_message_form textarea[name='message']").val();
+
+                if(selectedCustomers.length==0){
+                    toastr.error('Please Selete Customer');
+                    button.html('Send Message');
+                    button.attr('disabled', false);
+                    return false;
+                }
+                $.ajax({
+                    url: "{{ route('admin.sms.send_message_store') }}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {  _token: "{{ csrf_token() }}", message: message, customer_ids:selectedCustomers },
+                    success: function(response) {
+                        if(response.success==true){
+                            toastr.success(response.message);
+                            $('#sendMessageModal').modal('hide');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+
+                        if(response.success==false) {
+                            toastr.error(response.message);
+                        }
+                    },
+                    complete: function() {
+                        button.html('Send Message');
+                        button.attr('disabled', false);
+                    }
+                });
             });
     </script>
 

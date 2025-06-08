@@ -446,7 +446,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::controller(SmsController::class)->group(function () {
                 Route::get('/list', 'message_send_list')->name('admin.sms.message_send_list');
                 Route::get('/get_all_data', 'send_message_get_all_data')->name('admin.sms.send_message_get_all_data');
-                Route::post('/Store', 'send_message_store')->name('admin.sms.send_message_store');
+                Route::post('/store', 'send_message_store')->name('admin.sms.send_message_store');
                 Route::post('/delete', 'send_message_delete')->name('admin.sms.send_message_delete');
             });
         });
