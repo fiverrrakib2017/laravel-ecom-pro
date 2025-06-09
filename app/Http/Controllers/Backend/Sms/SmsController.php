@@ -240,5 +240,41 @@ class SmsController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Deleted successfully.']);
     }
+    /*********************** SMS Logs   ******************************/
+    public function sms_logs(){
+        return view('Backend.Pages.Sms.Logs');
+    }
+    public function get_all_sms_logs_data(Request $request){
+        $search = $request->search['value'];
+        $columnsForOrderBy = ['id', 'pop_id', 'name', 'message'];
+        $orderByColumn = $request->order[0]['column'];
+        $orderDirectection = $request->order[0]['dir'];
+
+        $query = Send_message::with(['pop','area','customer', 'customer.package'])->when($search, function ($query) use ($search) {
+            $query
+                ->where('message', 'like', "%$search%")
+                // ->orWhere('message', 'like', "%$search%")
+                ->orWhereHas('pop', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                })
+                ->orWhereHas('customer', function ($query) use ($search) {
+                    $query->where('fullname', 'like', "%$search%");
+                    $query->where('username', 'like', "%$search%");
+                });
+        });
+
+        $total = $query->count();
+
+        $query = $query->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection);
+
+        $items = $query->skip($request->start)->take($request->length)->get();
+
+        return response()->json([
+            'draw' => $request->draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total,
+            'data' => $items,
+        ]);
+    }
 
 }

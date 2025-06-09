@@ -433,6 +433,13 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/config_store', 'config_store')->name('admin.sms.config.store');
             });
         });
+        /*SMS Logs*/
+         Route::prefix('logs')->group(function () {
+            Route::controller(SmsController::class)->group(function () {
+                Route::get('/index', 'sms_logs')->name('admin.sms.logs');
+                Route::get('/get_all_sms_logs_data', 'get_all_sms_logs_data')->name('admin.sms.get_all_sms_logs_data');
+            });
+        });
         /* SMS Template Route */
         Route::prefix('template')->group(function () {
             Route::controller(SmsController::class)->group(function () {

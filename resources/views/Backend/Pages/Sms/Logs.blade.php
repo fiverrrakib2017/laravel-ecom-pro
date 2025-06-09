@@ -19,7 +19,6 @@
                                 <th>Package</th>
                                 <th>Sent Time</th>
                                 <th>message</th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -36,56 +35,55 @@
 @section('script')
   <script type="text/javascript">
     $(document).ready(function(){
+
     var table=$("#datatable1").DataTable({
-    "processing":true,
-    "responsive": true,
-    "serverSide":true,
-    beforeSend: function () {},
-    complete: function(){},
-    ajax: "{{ route('admin.sms.send_message_get_all_data') }}",
-    language: {
-        searchPlaceholder: 'Search...',
-        sSearch: '',
-        lengthMenu: '_MENU_ items/page',
-    },
-    "columns":[
-          {
-            "data":"id"
-          },
-          {
-            "data":"pop.name",
-          },
-          {
-            "data":"customer.fullname",
-          },
-          {
-            "data":"sent_at",
-            "render": function(data, type, row) {
-              return moment(data).format('lll');
-            }
-          },
-          {
-            "data":"message",
-            "render": function(data, type, row) {
-              return row.message.length > 50 ? row.message.substring(0, 50) + "..." : row.message;
-            }
-          },
+        "processing":true,
+        "responsive": true,
+        "serverSide":true,
+        beforeSend: function () {},
+        complete: function(){},
+        ajax: "{{ route('admin.sms.get_all_sms_logs_data') }}",
+        language: {
+            searchPlaceholder: 'Search...',
+            sSearch: '',
+            lengthMenu: '_MENU_ items/page',
+        },
+        "columns":[
+            {
+                "data":"id"
+            },
+            {
+                "data":"pop.name",
+            },
+            {
+                "data":"area.name",
+            },
+            {
+                "data":"customer.fullname",
+            },
+            {
+                "data":"customer.package.name",
+            },
+            {
+                "data":"sent_at",
+                "render": function(data, type, row) {
+                return moment(data).format('lll');
+                }
+            },
+            {
+                "data":"message",
+                "render": function(data, type, row) {
+                return row.message.length > 50 ? row.message.substring(0, 50) + "..." : row.message;
+                }
+            },
 
-          {
-            data:null,
-            render: function (data, type, row) {
 
-              return `
-              <button class="btn btn-danger btn-sm mr-3 delete-btn"  data-id="${row.id}"><i class="fa fa-trash"></i></button> `;
-            }
-
-          },
+            ],
+        order:[
+            [0, "desc"]
         ],
-    order:[
-        [0, "desc"]
-    ],
 
-    });
+        });
 
     });
   </script>
