@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title','Dashboard | SMS Message | Admin Panel')
+@section('title','Dashboard | SMS Logs | Admin Panel')
 @section('style')
 @endsection
 @section('content')
@@ -7,8 +7,6 @@
     <div class="col-md-12 ">
         <div class="card">
             <div class="card-body">
-                <button data-toggle="modal" data-target="#addSendMessageModal" type="button" class=" btn btn-success mb-2"><i class="mdi mdi-account-plus"></i>
-                    Send Message</button>
 
                 <div class="table-responsive" id="tableStyle">
                     <table id="datatable1" class="table table-striped table-bordered    " cellspacing="0" width="100%">
@@ -16,7 +14,9 @@
                             <tr>
                                 <th>ID</th>
                                 <th>POP/Branch</th>
+                                <th>Area</th>
                                 <th>Customer Name</th>
+                                <th>Package</th>
                                 <th>Sent Time</th>
                                 <th>message</th>
                                 <th></th>
@@ -30,19 +30,12 @@
 
     </div>
 </div>
-@include('Backend.Modal.Sms.send_modal')
-@include('Backend.Modal.delete_modal')
-
 
 @endsection
 
 @section('script')
-<script  src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
-<script  src="{{ asset('Backend/assets/js/delete_data.js') }}"></script>
-
   <script type="text/javascript">
     $(document).ready(function(){
-    handleSubmit('#SendMessageForm','#addSendMessageModal');
     var table=$("#datatable1").DataTable({
     "processing":true,
     "responsive": true,
@@ -95,27 +88,5 @@
     });
 
     });
-
-
-
-
-
-
-
-
-    /** Handle Delete button click**/
-    $('#datatable1 tbody').on('click', '.delete-btn', function () {
-        var id = $(this).data('id');
-        var deleteUrl = "{{ route('admin.sms.send_message_delete', ':id') }}".replace(':id', id);
-
-        $('#deleteForm').attr('action', deleteUrl);
-        $('#deleteModal').find('input[name="id"]').val(id);
-        $('#deleteModal').modal('show');
-    });
-
-
-
-
-
   </script>
 @endsection
