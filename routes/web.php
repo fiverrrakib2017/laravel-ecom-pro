@@ -440,6 +440,12 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/get_all_sms_logs_data', 'get_all_sms_logs_data')->name('admin.sms.get_all_sms_logs_data');
             });
         });
+        /*SMS Report*/
+         Route::prefix('report')->group(function () {
+            Route::controller(SmsController::class)->group(function () {
+                Route::get('/index', 'sms_report')->name('admin.sms.report');
+            });
+        });
         /* SMS Template Route */
         Route::prefix('template')->group(function () {
             Route::controller(SmsController::class)->group(function () {

@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 use function App\Helpers\send_message;
 
@@ -244,37 +245,64 @@ class SmsController extends Controller
     public function sms_logs(){
         return view('Backend.Pages.Sms.Logs');
     }
-    public function get_all_sms_logs_data(Request $request){
-        $search = $request->search['value'];
-        $columnsForOrderBy = ['id', 'pop_id', 'name', 'message'];
-        $orderByColumn = $request->order[0]['column'];
-        $orderDirectection = $request->order[0]['dir'];
+    public function get_all_sms_logs_data(Request $request)
+{
+    $pop_id = $request->pop_id;
+    $area_id = $request->area_id;
+    $search = $request->search['value'];
+    $columnsForOrderBy = ['id', 'pop_id', 'name', 'message'];
+    $orderByColumn = $request->order[0]['column'];
+    $orderDirectection = $request->order[0]['dir'];
 
-        $query = Send_message::with(['pop','area','customer', 'customer.package'])->when($search, function ($query) use ($search) {
-            $query
-                ->where('message', 'like', "%$search%")
-                // ->orWhere('message', 'like', "%$search%")
-                ->orWhereHas('pop', function ($query) use ($search) {
-                    $query->where('name', 'like', "%$search%");
-                })
-                ->orWhereHas('customer', function ($query) use ($search) {
-                    $query->where('fullname', 'like', "%$search%");
-                    $query->where('username', 'like', "%$search%");
-                });
+    /*Check if branch user value is empty*/
+    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+
+    $query = Send_message::with(['pop', 'area', 'customer', 'customer.package']);
+
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('message', 'like', "%$search%")
+              ->orWhereHas('pop', function ($q) use ($search) {
+                  $q->where('name', 'like', "%$search%");
+              })
+              ->orWhereHas('customer', function ($q) use ($search) {
+                  $q->where('fullname', 'like', "%$search%")
+                    ->orWhere('username', 'like', "%$search%");
+              });
         });
+    }
 
-        $total = $query->count();
+    if ($pop_id) {
+        $query->where('pop_id', $pop_id);
+    }
 
-        $query = $query->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection);
+    if ($branch_user_id) {
+        $query->where('pop_id', $branch_user_id);
+    }
 
-        $items = $query->skip($request->start)->take($request->length)->get();
+    // Filter by area
+    if ($area_id) {
+        $query->where('area_id', $area_id);
+    }
 
-        return response()->json([
-            'draw' => $request->draw,
-            'recordsTotal' => $total,
-            'recordsFiltered' => $total,
-            'data' => $items,
-        ]);
+    $total = $query->count();
+
+    $items = $query->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection)
+                   ->skip($request->start)
+                   ->take($request->length)
+                   ->get();
+
+    return response()->json([
+        'draw' => $request->draw,
+        'recordsTotal' => $total,
+        'recordsFiltered' => $total,
+        'data' => $items,
+    ]);
+}
+
+    /*********************** SMS Report   ******************************/
+    public function sms_report(){
+          return view('Backend.Pages.Sms.Report');
     }
 
 }
