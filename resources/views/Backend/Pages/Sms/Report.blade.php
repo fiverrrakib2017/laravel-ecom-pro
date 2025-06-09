@@ -35,6 +35,55 @@
 @section('script')
   <script type="text/javascript">
     $(document).ready(function(){
+    const from_date = `
+            <div class="form-group mb-0 mr-2">
+                <label for="from_date" class="sr-only">From</label>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                    <input type="date" id="from_date" class="form-control from_date" placeholder="From Date">
+                </div>
+            </div>`;
+
+        const to_date = `
+            <div class="form-group mb-0 mr-2">
+                <label for="to_date" class="sr-only">To</label>
+                <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <i class="fas fa-calendar-alt"></i>
+                        </span>
+                    </div>
+                    <input type="date" id="to_date" class="form-control to_date" placeholder="To Date">
+                </div>
+            </div>`;
+
+        setTimeout(() => {
+            const filters_wrapper = `
+                <div class="row align-items-center mb-3">
+                    <!-- Left: Per Page -->
+                    <div class="col-12 col-md-auto dataTables_length_container mb-2 mb-md-0"></div>
+
+                    <!-- Middle: Date Filters -->
+                    <div class="col-12 col-md-auto d-flex flex-wrap align-items-center mb-2 mb-md-0">
+                        ${from_date + to_date}
+                    </div>
+
+                    <!-- Right: Search -->
+                    <div class="col-12 col-md dataTables_filter_container d-flex justify-content-md-end mb-2 mb-md-0"></div>
+                </div>
+            `;
+
+            const tableWrapper = $('#datatable1').closest('.dataTables_wrapper');
+            tableWrapper.prepend(filters_wrapper);
+
+            tableWrapper.find('.dataTables_length').appendTo(tableWrapper.find('.dataTables_length_container'));
+
+            tableWrapper.find('.dataTables_filter').appendTo(tableWrapper.find('.dataTables_filter_container'));
+        }, 300);
 
       var table=$("#datatable1").DataTable({
         "processing":true,
@@ -46,8 +95,8 @@
                 url: "{{ route('admin.sms.get_all_sms_logs_data') }}",
                 type: "GET",
                 data: function(d) {
-                    d.pop_id        = $('#search_pop_id').val() ;
-                    d.area_id       = $('#search_area_id').val() ;
+                    d.from_date = $('.from_date').val();
+                    d.to_date = $('.to_date').val();
                 }
             },
             language: {
@@ -127,6 +176,10 @@
             [0, "desc"]
         ],
 
+        });
+         /* Filter Change Event*/
+        $(document).on('change','.from_date, .to_date',function(){
+            $('#datatable1').DataTable().ajax.reload();
         });
 
     });

@@ -284,6 +284,13 @@ class SmsController extends Controller
     if ($area_id) {
         $query->where('area_id', $area_id);
     }
+     if ($request->from_date) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+
+    if ($request->to_date) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
 
     $total = $query->count();
 
