@@ -722,97 +722,97 @@
             }
         });
 
-        // function fetch_live_bandwidth_data() {
-        //     $.ajax({
-        //         url: "{{ route('admin.customer.live_bandwith_update', ':id') }}".replace(':id',
-        //             "{{ $data->id }}"),
-        //         method: 'GET',
-        //         success: function(response) {
-        //              console.log(response);
-        //             if (response.success) {
-        //                 const downloadSpeed = response.rx_mb;
-        //                 const uploadSpeed = response.tx_mb;
-        //                 // const rx_speed_kbps = response.rx_speed_kbps;
-        //                 // const tx_speed_kbps = response.tx_speed_kbps;
-
-        //                 const user_uptime = response.uptime;
-        //                 const user_interface_name = response.interface_name;
-        //                 const user_ip_address = response.ip_address;
-        //                 const user_mac_address = response.mac_address;
-
-        //                 /* Update graph data with new point (slide effect)*/
-        //                 downloadData.push(downloadSpeed);
-        //                 downloadData.shift();
-
-        //                 uploadData.push(uploadSpeed);
-        //                 uploadData.shift();
-
-        //                 bandwidthChart.update();
-
-        //                 /* Update Client Data*/
-        //                 $("#customer_upload_speed").html(uploadSpeed);
-        //                 $("#customer_download_speed").html(downloadSpeed);
-        //                 $("#customer_uptime").html(user_uptime);
-        //                 $("#customer_mac_address").html(user_mac_address);
-        //                 $("#customer_ip_address").html(user_ip_address);
-        //                 $("#customer_interface").html($('<div>').text(user_interface_name).html());
-        //             }
-        //         }
-        //     });
-
-
-        // }
-
-        // fetch_live_bandwidth_data();
-        // setInterval(fetch_live_bandwidth_data, 1000);
-
-        /************** Customer Bandwidth Graph End **************************/
-
-        Pusher.logToConsole = true;
-
-        var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
-        cluster: 'mt1'
-        });
-
-        const channel = pusher.subscribe("bandwidth.{{ $data->id }}");
-        channel.bind("bandwidth.updated", function (e) {
-            const response = e.data;
-            if (response.success) {
-                const downloadSpeed = response.rx_mb;
-                const uploadSpeed = response.tx_mb;
-                const user_uptime = response.uptime;
-                const user_interface_name = response.interface_name;
-                const user_ip_address = response.ip_address;
-                const user_mac_address = response.mac_address;
-
-                // Update graph
-                downloadData.push(downloadSpeed);
-                downloadData.shift();
-
-                uploadData.push(uploadSpeed);
-                uploadData.shift();
-
-                bandwidthChart.update();
-
-                // Update HTML
-                $("#customer_upload_speed").html(uploadSpeed);
-                $("#customer_download_speed").html(downloadSpeed);
-                $("#customer_uptime").html(user_uptime);
-                $("#customer_mac_address").html(user_mac_address);
-                $("#customer_ip_address").html(user_ip_address);
-                $("#customer_interface").html(
-                    $("<div>").text(user_interface_name).html()
-                );
-            }
-        });
-        setInterval(() => {
-                $.ajax({
+        function fetch_live_bandwidth_data() {
+            $.ajax({
                 url: "{{ route('admin.customer.live_bandwith_update', ':id') }}".replace(':id',
                     "{{ $data->id }}"),
                 method: 'GET',
-                success: function(response) {}
+                success: function(response) {
+                     console.log(response);
+                    if (response.success) {
+                        const downloadSpeed = response.rx_mb;
+                        const uploadSpeed = response.tx_mb;
+                        // const rx_speed_kbps = response.rx_speed_kbps;
+                        // const tx_speed_kbps = response.tx_speed_kbps;
+
+                        const user_uptime = response.uptime;
+                        const user_interface_name = response.interface_name;
+                        const user_ip_address = response.ip_address;
+                        const user_mac_address = response.mac_address;
+
+                        /* Update graph data with new point (slide effect)*/
+                        downloadData.push(downloadSpeed);
+                        downloadData.shift();
+
+                        uploadData.push(uploadSpeed);
+                        uploadData.shift();
+
+                        bandwidthChart.update();
+
+                        /* Update Client Data*/
+                        $("#customer_upload_speed").html(uploadSpeed);
+                        $("#customer_download_speed").html(downloadSpeed);
+                        $("#customer_uptime").html(user_uptime);
+                        $("#customer_mac_address").html(user_mac_address);
+                        $("#customer_ip_address").html(user_ip_address);
+                        $("#customer_interface").html($('<div>').text(user_interface_name).html());
+                    }
+                }
             });
-        }, 1000);
+
+
+        }
+
+        fetch_live_bandwidth_data();
+        setInterval(fetch_live_bandwidth_data, 1000);
+
+        /************** Customer Bandwidth Graph End **************************/
+
+        // Pusher.logToConsole = true;
+
+        // var pusher = new Pusher("{{ env('PUSHER_APP_KEY') }}", {
+        // cluster: 'mt1'
+        // });
+
+        // const channel = pusher.subscribe("bandwidth.{{ $data->id }}");
+        // channel.bind("bandwidth.updated", function (e) {
+        //     const response = e.data;
+        //     if (response.success) {
+        //         const downloadSpeed = response.rx_mb;
+        //         const uploadSpeed = response.tx_mb;
+        //         const user_uptime = response.uptime;
+        //         const user_interface_name = response.interface_name;
+        //         const user_ip_address = response.ip_address;
+        //         const user_mac_address = response.mac_address;
+
+        //         // Update graph
+        //         downloadData.push(downloadSpeed);
+        //         downloadData.shift();
+
+        //         uploadData.push(uploadSpeed);
+        //         uploadData.shift();
+
+        //         bandwidthChart.update();
+
+        //         // Update HTML
+        //         $("#customer_upload_speed").html(uploadSpeed);
+        //         $("#customer_download_speed").html(downloadSpeed);
+        //         $("#customer_uptime").html(user_uptime);
+        //         $("#customer_mac_address").html(user_mac_address);
+        //         $("#customer_ip_address").html(user_ip_address);
+        //         $("#customer_interface").html(
+        //             $("<div>").text(user_interface_name).html()
+        //         );
+        //     }
+        // });
+        // setInterval(() => {
+        //         $.ajax({
+        //         url: "{{ route('admin.customer.live_bandwith_update', ':id') }}".replace(':id',
+        //             "{{ $data->id }}"),
+        //         method: 'GET',
+        //         success: function(response) {}
+        //     });
+        // }, 1000);
     </script>
 
 @endsection

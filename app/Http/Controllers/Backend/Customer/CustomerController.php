@@ -747,37 +747,37 @@ class CustomerController extends Controller
                     $rx_speed = isset($monitor[0]['rx-bits-per-second']) ? round($monitor[0]['rx-bits-per-second'] / 1024, 2) : 0; // in Kbps
                     $tx_speed = isset($monitor[0]['tx-bits-per-second']) ? round($monitor[0]['tx-bits-per-second'] / 1024, 2) : 0; // in Kbps
 
-                    // return response()->json([
-                    //     'success' => true,
-                    //     'interface_name' => $intf['name'],
-                    //     'type' => $intf['type'],
-                    //     'mac_address' => $mac_address,
-
-                    //     'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2), // total downloaded
-                    //     'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2), // total uploaded
-
-                    //     'rx_speed_kbps' => $rx_speed,
-                    //     'tx_speed_kbps' => $tx_speed,
-
-                    //     'rx_packet' => $intf['rx-packet'],
-                    //     'tx_packet' => $intf['tx-packet'],
-                    //     'ip_address' => $ip_address,
-                    //     'uptime' => formate_uptime($uptime),
-                    // ]);
-                    event(new customer_bandwith_update($id, [
+                    return response()->json([
                         'success' => true,
                         'interface_name' => $intf['name'],
                         'type' => $intf['type'],
                         'mac_address' => $mac_address,
-                        'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2),
-                        'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2),
+
+                        'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2), // total downloaded
+                        'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2), // total uploaded
+
                         'rx_speed_kbps' => $rx_speed,
                         'tx_speed_kbps' => $tx_speed,
+
                         'rx_packet' => $intf['rx-packet'],
                         'tx_packet' => $intf['tx-packet'],
                         'ip_address' => $ip_address,
                         'uptime' => formate_uptime($uptime),
-                    ]));
+                    ]);
+                    // event(new customer_bandwith_update($id, [
+                    //     'success' => true,
+                    //     'interface_name' => $intf['name'],
+                    //     'type' => $intf['type'],
+                    //     'mac_address' => $mac_address,
+                    //     'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2),
+                    //     'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2),
+                    //     'rx_speed_kbps' => $rx_speed,
+                    //     'tx_speed_kbps' => $tx_speed,
+                    //     'rx_packet' => $intf['rx-packet'],
+                    //     'tx_packet' => $intf['tx-packet'],
+                    //     'ip_address' => $ip_address,
+                    //     'uptime' => formate_uptime($uptime),
+                    // ]));
 
                 }
             }
