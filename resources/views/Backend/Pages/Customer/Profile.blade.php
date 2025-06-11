@@ -317,6 +317,7 @@
                                         History</a></li>
                                 <li class="nav-item"><a class="nav-link" href="#onu_details" data-toggle="tab">Onu
                                         Information</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#liabilities_table" data-toggle="tab">Liabilities</a></li>
 
                             </ul>
                         </div><!-- /.card-header -->
@@ -483,6 +484,97 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Customer Liabilities Section -->
+                                <div class="tab-pane fade show " id="liabilities_table" role="tabpanel">
+                                    <div class="table table-responsive">
+                                        <table id="customer_device_table"class="table table-bordered dt-responsive nowrap"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                            <thead class="">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Device Type</th>
+                                                    <th>Name</th>
+                                                    <th>Serial No</th>
+                                                    <th>Assign Date</th>
+                                                    <th>Return Date</th>
+                                                    <th>Status</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $total_customer_device_data = App\Models\Customer_device::where('customer_id',$data->id)
+                                                        ->latest()
+                                                        ->get();
+                                                @endphp
+                                                @foreach ($total_customer_device_data as $item)
+                                                    <tr>
+                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                                        </td>
+                                                        <td>
+                                                            @if ($item->device_type == 'onu')
+                                                                <span
+                                                                    class="badge bg-success">Onu</span>
+                                                            @elseif($item->device_type == 'router')
+                                                                <span
+                                                                    class="badge bg-danger">Router</span>
+                                                            @elseif($item->device_type == 'fiber')
+                                                                <span
+                                                                    class="badge bg-success">Fiber</span>
+                                                            @else
+                                                                <span
+                                                                    class="badge bg-danger">Other</span>
+                                                            @endif
+                                                        </td>
+
+                                                        <td>{{ ucfirst($item->device_name) }}</td>
+                                                        <td>{{ ucfirst($item->serial_number) }}</td>
+                                                        <td>
+                                                            @if ($item->assigned_date)
+                                                                {{ \Carbon\Carbon::parse($item->assigned_date)->format('d M Y') }}
+                                                            @else
+                                                                <span class="text-muted">N/A</span>
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if ($item->returned_date)
+                                                                {{ \Carbon\Carbon::parse($item->returned_date)->format('d M Y') }}
+                                                            @else
+                                                                <span class="text-muted">N/A</span>
+                                                            @endif
+                                                        </td>
+
+                                                        <td>
+                                                            @if ($item->status == 'assigned')
+                                                                <span
+                                                                    class="badge bg-success">Assigned</span>
+                                                            @elseif($item->device_type == 'returned')
+                                                                <span
+                                                                    class="badge bg-success">Returned</span>
+                                                            @elseif($item->device_type == 'damaged')
+                                                                <span
+                                                                    class="badge bg-danger">Damaged</span>
+                                                            @else
+                                                                <span
+                                                                    class="badge bg-danger">N/A</span>
+                                                            @endif
+                                                        </td>
+
+                                                        <td>
+
+                                                            @if ($item->status == 'assigned')
+                                                                <button class="btn btn-danger btn-sm customer_device_change_status_btn"
+                                                                data-id="{{ $item->id }}"><i class="fas fa-back"></i>Return Now</button>
+                                                            @endif
+
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
                             </div>
                             <!-- /.tab-content -->
@@ -522,6 +614,16 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            $("#customer_device_table").DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "lengthMenu": [10, 25, 50, 100],
+                "language": {
+                    "emptyTable": "No recharge data available",
+                    "zeroRecords": "No matching records found"
+                },
+                "order": [[0, 'desc']],
+            });
             $("#recharge_datatable").DataTable({
                 "responsive": true,
                 "autoWidth": false,
