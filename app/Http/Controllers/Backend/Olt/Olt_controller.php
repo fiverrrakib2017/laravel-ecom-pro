@@ -24,20 +24,20 @@ class Olt_controller extends Controller
             return response()->json(['error' => 'No active OLT device found.']);
         }
 
-        // $ip = $device->ip_address;
-        // $community = $device->community ?? 'public';
-        // $oid = '1.3.6.1.2.1.1.1.0';
+        $ip = $device->ip_address;
+        $community = $device->community ?? 'public';
+        $oid = '1.3.6.1.2.1.1.1.0';
 
-        // // SNMP GET
-        // $result = @snmpget($ip, $community, $oid);
+        // SNMP GET
+       $result = @snmp2_get('103.115.252.52', 'public', $oid);
 
-        // if ($result === false) {
-        //     Log::error("SNMP failed for IP: $ip with community: $community and OID: $oid");
-        //     return response()->json(['error' => 'SNMP request failed.']);
-        // }
 
-        // return response()->json(['snmp_result' => $result]);
-        return view('Backend.Pages.Olt.index');
+        if ($result === false) {
+            return response()->json(['error' => 'SNMP request failed.']);
+        }
+
+         return response()->json(['snmp_result' => $result]);
+        //return view('Backend.Pages.Olt.index');
     }
     public function create(){
         return view('Backend.Pages.Olt.create');

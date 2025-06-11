@@ -104,20 +104,20 @@
                                         @php
                                             $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
                                             $datas = collect();
-                                    
+
                                             if(isset($pop_id) || $branch_user_id){
                                                 $search_pop_id = $pop_id ?? $branch_user_id;
                                                 $datas = App\Models\Branch_package::where('pop_id', $search_pop_id)->latest()->get();
                                             }else{
                                                 $datas = App\Models\Branch_package::latest()->get();
                                             }
-                    
+
                                         @endphp
                                         @foreach ($datas as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
-                                    
+
 
                                 </div>
                             </div>
@@ -360,6 +360,48 @@
                                     <textarea name="remarks" class="form-control"
                                         placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন"
                                         style="height: 123px;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <!--Device  Information -->
+                    <fieldset class="border p-3 mb-4">
+                        <legend class="w-auto px-2 text-primary">Device Information</legend>
+                         <div class="row">
+                            <div class="col-md-12">
+                                <div id="liability_device_table" class="mt-3" style="display: ;">
+                                    <h6>Device Information</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="device_table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Device Type</th>
+                                                    <th>Name</th>
+                                                    <th>Serial No</th>
+                                                    <th>Assign Date</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <select class="form-select" name="device_type[]" style="width: 100%;">
+                                                            <option >---Select---</option>
+                                                            <option value="router">Router</option>
+                                                            <option value="onu">Onu</option>
+                                                            <option value="fiber">Fiber</option>
+                                                            <option value="other">Others</option>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" class="form-control" placeholder="Enter Device Name" name="device_name[]"></td>
+                                                    <td><input type="text" class="form-control" placeholder="Example: K5453110" name="serial_no[]"></td>
+                                                    <td><input type="date" class="form-control" name="assign_date[]"></td>
+                                                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" id="add_row">+ Add Row</button>
                                 </div>
                             </div>
                         </div>
