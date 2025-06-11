@@ -73,14 +73,14 @@
                     'title' => 'Current Balance',
                     'value' => $current_balance,
                     'bg' => 'success',
-                    'icon' => 'fas fa-solid fa-dollar-sign',
+                    'icon' => 'fas fa-money-bill',
                 ],
                 [
                     'id' => 7,
                     'title' => 'Total Paid',
                     'value' => $total_paid,
                     'bg' => 'success',
-                    'icon' => 'fas fa-solid fa-dollar-sign',
+                    'icon' => 'fas fa-hand-holding-usd',
                 ],
                 [
                     'id' => 8,
@@ -93,7 +93,7 @@
                     'id' => 9,
                     'title' => 'Due Paid',
                     'value' => $due_paid,
-                    'bg' => 'success',
+                    'bg' => 'warning',
                     'icon' => 'fas fa-hand-holding-usd',
                 ],
                 [
@@ -358,6 +358,97 @@
     <div class="row mt-4">
         @include('Backend.Component.Chart.Customer_yearly_static',['pop_id'=>$pop->id])
         @include('Backend.Component.Chart.Online_offline_chart',['pop_id'=>$pop->id])
+    </div>
+    <div class="row mt-4">
+        <!----- Ticket Chart------>
+        @include('Backend.Component.Chart.Ticket.Yearly_chart',['pop_id'=>$pop->id])
+        <!----- New Customers by Month ------>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+                    @php
+                        $selectedYear = request()->get('year', date('Y'));
+                        $endYear = date('Y');
+                        $startYear = 2000;
+                    @endphp
+                    <span>New Customers by Month ({{ $selectedYear }})</span>
+                    <form method="GET" action="" id="yearForm" class="d-flex align-items-center" style="width: 50%;">
+                        <select name="year" class="form-control ms-2"  onchange="document.getElementById('yearForm').submit();">
+
+                            @for ($y = $endYear; $y >= $startYear; $y--)
+                                <option value="{{ $y }}" {{ $y == $selectedYear ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+
+                    </form>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>NO.</th>
+                                <th>Months</th>
+                                <th>New Conn.</th>
+                                <th>Expired Conn.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                use App\Models\Customer;
+                                use Illuminate\Support\Carbon;
+
+                                $monthlyData = [];
+
+                                for ($month = 1; $month <= 12; $month++) {
+                                    $monthName = Carbon::createFromDate($selectedYear, $month, 1)->format('F');
+
+                                    $query = Customer::query();
+
+                                    $query->where('pop_id', $pop->id);
+
+                                    $newCustomers = (clone $query)
+                                        ->whereYear('created_at', $selectedYear)
+                                        ->whereMonth('created_at', $month)
+                                        ->count();
+
+                                    $expiredCustomers = (clone $query)
+                                        ->whereYear('expire_date', $selectedYear)
+                                        ->whereMonth('expire_date', $month)
+                                        ->count();
+
+                                    $monthlyData[] = [
+                                        'month' => $monthName,
+                                        'new' => $newCustomers,
+                                        'expired' => $expiredCustomers,
+                                    ];
+                                }
+                            @endphp
+
+                            @foreach ($monthlyData as $index => $data)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $data['month'] }}</td>
+                                    <td>
+                                        <span class="badge bg-success text-dark">
+                                            <a target="__blank" href="{{ route('admin.customer.index', ['year' => $selectedYear, 'month' => $data['month'] , 'type' => 'expired']) }}">
+                                                {{ $data['new'] }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">
+                                            <a target="__blank" href="{{ route('admin.customer.index', ['year' => $selectedYear, 'month' => $data['month'], 'type' => 'expired']) }}">
+                                                {{ $data['expired'] }}
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
 

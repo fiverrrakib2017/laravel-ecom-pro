@@ -503,30 +503,7 @@
         var totalDue = <?php echo json_encode($totalDue); ?>;
         var duePaid = <?php echo json_encode($duePaid); ?>;
 
-
-
-
-
-
-
-        /*************************** Customer Payment Status Chart ***************************************/
-
-        var ctx4 = document.getElementById('paymentChart').getContext('2d');
-        new Chart(ctx4, {
-            type: 'doughnut',
-            data: {
-                labels: ['Recharged', 'Total Paid', 'Total Due', 'Due Paid'],
-                datasets: [{
-                    data: [total_recharged, totalPaid, totalDue, duePaid],
-                    backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#17a2b8']
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-
-        /************************** Card Move Another Place*****************************************/
+        /************************** Card Move Another Place Start*****************************************/
         function saveOrder() {
             let order = [];
             $(".card-item").each(function() {
@@ -578,7 +555,11 @@
             btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop("disabled", true);
             resetOrder();
         });
-        /************************** Card Move Another Place*****************************************/
+        /************************** Card Move Another Place End*****************************************/
+
+
+
+
         /************************** Server Information Start*****************************************/
         function __load_server_stats() {
             fetch('/server-information')
