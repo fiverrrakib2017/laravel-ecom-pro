@@ -546,17 +546,13 @@
 
                                                         <td>
                                                             @if ($item->status == 'assigned')
-                                                                <span
-                                                                    class="badge bg-success">Assigned</span>
-                                                            @elseif($item->device_type == 'returned')
-                                                                <span
-                                                                    class="badge bg-success">Returned</span>
-                                                            @elseif($item->device_type == 'damaged')
-                                                                <span
-                                                                    class="badge bg-danger">Damaged</span>
+                                                                <span class="badge bg-dark">Assigned</span>
+                                                            @elseif($item->status == 'returned')
+                                                                <span class="badge bg-success">Returned</span>
+                                                            @elseif($item->status == 'damaged')
+                                                                <span class="badge bg-danger">Damaged</span>
                                                             @else
-                                                                <span
-                                                                    class="badge bg-danger">N/A</span>
+                                                                <span class="badge bg-danger">N/A</span>
                                                             @endif
                                                         </td>
 
@@ -564,7 +560,7 @@
 
                                                             @if ($item->status == 'assigned')
                                                                 <button class="btn btn-danger btn-sm customer_device_change_status_btn"
-                                                                data-id="{{ $item->id }}"><i class="fas fa-back"></i>Return Now</button>
+                                                                data-id="{{ $item->id }}"><i class="fas fa-arrow-left"></i> Return Now</button>
                                                             @endif
 
                                                         </td>
@@ -636,70 +632,50 @@
             });
             /************** Customer Enable And Disabled Start**************************/
             $(document).on("click", ".change-status", function() {
-                let id = $(this).data('id');
-                let username = $(this).data('username');
-                let btn = $(this);
-                let originalHtml = btn.html();
-                btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop("disabled", true);
-                $.ajax({
+               __handle_custom_ajax_action({
+                    id: $(this).data("id"),
+                    button: this,
                     url: "{{ route('admin.customer.change_status') }}",
-                    type: "POST",
+                    method: "POST",
                     data: {
-                        username: username,
-                        id: id,
+                        id: $(this).data("id"),
+                        username: $(this).data("username"),
                         _token: '{{ csrf_token() }}'
                     },
-                    success: function(response) {
-                        if (response.success == true) {
-                            toastr.success(response.message);
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1000);
-                        }
-                        if (response.success == false) {
-                            toastr.error(response.message);
-                        }
-                    },
-                    error: function() {
-                        toastr.error("Something went wrong!");
-                    },
-                    complete: function() {
-                        btn.prop("disabled", false);
-                    }
+                    confirmMessage: "Are you sure you want to change status?",
+                    loadingText: "Processing...",
+                    successMessage: "Status changed successfully!",
+                    buttonText: '<i class="fas fa-sync"></i> Change Status',
+                    reload: true
+                });
+            });
+            /** Handle Customer Device return button click **/
+            $(document).on('click', '.customer_device_change_status_btn', function() {
+                __handle_custom_ajax_action({
+                    id: $(this).data('id'),
+                    button: this,
+                    url: "{{ route('admin.customer.device.return', ':id') }}",
+                    confirmMessage: 'Are you sure you want to return customer device this action?',
+                    loadingText: 'Please Wait...',
+                    successMessage: 'Successfully Undo!',
+                    buttonText: '<i class="fas fa-arrow-left"></i> Return Now'
                 });
             });
             /** Handle Customer Undo Recharge button click **/
             $(document).on('click', '.customer_recharge_undo_btn', function() {
-                if (confirm('Are you sure you want to undo this action?')) {
-                    var id = $(this).data('id');
-                    var button = $(this);
-                    var row = button.closest('tr');
-                    var originalContent = button.html();
-                    button.html('<i class="fas fa-spinner fa-spin"></i> Undoing...').prop('disabled', true);
-                    $.ajax({
-                        url: "{{ route('admin.customer.recharge.undo', ':id') }}".replace(':id',
-                            id),
-                        method: 'GET',
-                        success: function(response) {
-                            if (response.success) {
-                                row.fadeOut(300, function() {
-                                    $(this).remove();
-                                    toastr.success('Successfully Undo!');
-                                });
-                            }
-                            if (response.success == false) {
-                                toastr.error(response.message);
-                            }
-                        },
-                        error: function() {
-                            toastr.error('An error occurred. Please try again.');
-                        },
-                        complete: function() {
-                            button.html('Recharge Now').prop('disabled', false);
-                        }
-                    });
-                }
+                __handle_custom_ajax_action({
+                    id: $(this).data('id'),
+                    button: this,
+                    url: "{{ route('admin.customer.recharge.undo', ':id') }}",
+                    confirmMessage: 'Are you sure you want to Undo Recharge this action?',
+                    loadingText: 'Undoing...',
+                    successMessage: 'Successfully Undo!',
+                    buttonText: 'Recharge Now'
+                });
             });
+
+
+
             /** Handle Customer Recharge Print click **/
             $(document).on('click', '.customer_recharge_print_btn', function() {
                 var id = $(this).data('id');
@@ -750,34 +726,61 @@
 
             /** Customer Re-connect button click **/
             $(document).on('click', 'button[name="customer_re_connect_btn"]', function() {
-                if (confirm('Are you sure you want to undo this action?')) {
-                    var id = $(this).data('id');
-                    let button = $(this);
-                    button.prop('disabled', true).html(
-                        '<i class="fas fa-spinner fa-spin"></i> Reconnecting...');
-                    $.ajax({
-                        url: "{{ route('admin.customer.mikrotik.reconnect', ':id') }}".replace(
-                            ':id', id),
-                        method: 'GET',
-                        success: function(response) {
-                            if (response.success) {
-                                toastr.success(response.message);
+                __handle_custom_ajax_action({
+                    id: $(this).data('id'),
+                    button: this,
+                    url: "{{ route('admin.customer.mikrotik.reconnect', ':id') }}",
+                    confirmMessage: 'Are you sure you want to Customer Re-connect this action?',
+                    loadingText: 'Reconnecting...',
+                    successMessage: 'Successfully reconnected!',
+                    buttonText: '<i class="fas fa-undo-alt"></i> Re-Connect',
+                    reload: true
+                });
+            });
+
+        });
+        /*Handle Customer Device return and Customer Recharge undo*/
+        function __handle_custom_ajax_action(options) {
+            if (confirm(options.confirmMessage)) {
+                let button = $(options.button);
+                let originalHtml = button.html();
+                let row = button.closest("tr");
+
+                button.html('<i class="fas fa-spinner fa-spin"></i> ' + options.loadingText)
+                    .prop("disabled", true);
+
+                $.ajax({
+                    url: options.url.replace(':id', options.id || ''),
+                    type: options.method || "GET",
+                    data: options.data || {},
+                    success: function(response) {
+                        if (response.success) {
+                            if (options.reload) {
+                                toastr.success(response.message || options.successMessage);
                                 setTimeout(() => {
                                     location.reload();
                                 }, 1000);
+                            } else if (options.removeRow) {
+                                row.fadeOut(300, () => {
+                                    row.remove();
+                                    toastr.success(options.successMessage);
+                                });
+                            } else {
+                                toastr.success(response.message || options.successMessage);
                             }
-                        },
-                        error: function() {
-                            toastr.error('An error occurred. Please try again.');
-                        },
-                        complete: function() {
-                            button.html('<i class="fas fa-undo-alt"> Ree-Connect').prop(
-                                'disabled', false);
+                        } else {
+                            toastr.error(response.message || 'Operation failed.');
                         }
-                    });
-                }
-            });
-        });
+                    },
+                    error: function() {
+                        toastr.error("Something went wrong!");
+                    },
+                    complete: function() {
+                        button.html(options.buttonText || originalHtml).prop("disabled", false);
+                    }
+                });
+            }
+        }
         /************** Customer Bandwidth Graph Start **************************/
         const ctx = document.getElementById('liveBandwidthChart').getContext('2d');
 

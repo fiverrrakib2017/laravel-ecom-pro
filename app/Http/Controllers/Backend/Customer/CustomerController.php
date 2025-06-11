@@ -262,7 +262,7 @@ class CustomerController extends Controller
             if (!empty($request->device_type) && is_array($request->device_type)) {
                 foreach ($request->device_type as $index => $type) {
                     $customer_device = new Customer_device();
-                    $customer_device->customer_id=$customer->id; 
+                    $customer_device->customer_id=$customer->id;
                     $customer_device->user_id = auth()->guard('admin')->user()->id;
                     $customer_device->device_type = $type;
                     $customer_device->device_name = $request->device_name[$index] ?? null;
@@ -699,6 +699,26 @@ class CustomerController extends Controller
                 'success' => true,
                 'message' => 'Successfully Changed',
                 'new_status' => $object->status,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+    public function customer_device_return($id){
+        try {
+
+            $customer_device = Customer_device::where('id', $id)->first();
+            if (!$customer_device) {
+                return response()->json(['success' => false, 'message' => 'Customer Device not found']);
+            }
+            $customer_device->returned_date=date('Y-m-d');
+            $customer_device->status='returned';
+
+            $customer_device->update();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully Changed',
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
