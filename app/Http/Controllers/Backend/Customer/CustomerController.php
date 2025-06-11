@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Branch_package;
 use App\Models\Branch_transaction;
 use App\Models\Customer;
+use App\Models\Customer_device;
 use App\Models\Customer_log;
 use App\Models\Customer_recharge;
 use App\Models\Router as Mikrotik_router;
@@ -257,6 +258,22 @@ class CustomerController extends Controller
             $object->amount = $request->amount;
             $object->note = 'Created';
             $object->save();
+
+            if (!empty($request->device_type) && is_array($request->device_type)) {
+                foreach ($request->device_type as $index => $type) {
+                    $customer_device = new Customer_device();
+                    $customer_device->customer_id=$customer->id; 
+                    $customer_device->user_id = auth()->guard('admin')->user()->id;
+                    $customer_device->device_type = $type;
+                    $customer_device->device_name = $request->device_name[$index] ?? null;
+                    $customer_device->serial_number = $request->serial_no[$index] ?? null;
+                    $customer_device->assigned_date = $request->assign_date[$index] ?? null;
+                    $customer_device->pop_id = $request->pop_id;
+                    $customer_device->area_id = $request->area_id;
+                    $customer_device->save();
+                }
+            }
+
 
             /* Create Customer Log */
             customer_log($customer->id, 'add', auth()->guard('admin')->user()->id, 'Customer Created Successfully!');

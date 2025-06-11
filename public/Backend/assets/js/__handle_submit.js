@@ -32,6 +32,10 @@ function handleSubmit(formSelector, modalSelector) {
                     submitBtn.prop('disabled', false);
                     form.find(':input').prop('disabled', false);
                 }
+                if(response.success==false){
+                    toastr.error(response.message);
+                    return false; 
+                }
             },
             error: function(xhr) {
                 if (xhr.status === 422) {

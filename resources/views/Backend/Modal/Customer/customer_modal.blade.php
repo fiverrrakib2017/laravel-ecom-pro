@@ -183,6 +183,53 @@
                             </div>
                         </div>
                     </fieldset>
+                    <!--Device  Information -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="liability_device_table" class="mt-3" style="display: none;">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Device Information</h3>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover mb-0" id="device_table">
+                                                    <thead class="">
+                                                        <tr>
+                                                            <th style="min-width: 120px;">Device Type</th>
+                                                            <th style="min-width: 140px;">Name</th>
+                                                            <th style="min-width: 140px;">Serial No</th>
+                                                            <th style="min-width: 140px;">Assign Date</th>
+                                                            <th style="min-width: 80px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <select class="form-control" name="device_type[]">
+                                                                    <option>---Select---</option>
+                                                                    <option value="router">Router</option>
+                                                                    <option value="onu">Onu</option>
+                                                                    <option value="fiber">Fiber</option>
+                                                                    <option value="other">Others</option>
+                                                                </select>
+                                                            </td>
+                                                            <td><input type="text" class="form-control" placeholder="Enter Device Name" name="device_name[]"></td>
+                                                            <td><input type="text" class="form-control" placeholder="Example: K5453110" name="serial_no[]"></td>
+                                                            <td><input type="date" class="form-control" name="assign_date[]"></td>
+                                                            <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fas fa-trash-alt"></i></button></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer text-left">
+                                            <button type="button" class="btn btn-sm btn-primary" id="add_row"><i class="fas fa-plus"></i> Add Row</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
@@ -364,48 +411,7 @@
                             </div>
                         </div>
                     </fieldset>
-                    <!--Device  Information -->
-                    <fieldset class="border p-3 mb-4">
-                        <legend class="w-auto px-2 text-primary">Device Information</legend>
-                         <div class="row">
-                            <div class="col-md-12">
-                                <div id="liability_device_table" class="mt-3" style="display: ;">
-                                    <h6>Device Information</h6>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="device_table">
-                                            <thead>
-                                                <tr>
-                                                    <th>Device Type</th>
-                                                    <th>Name</th>
-                                                    <th>Serial No</th>
-                                                    <th>Assign Date</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <select class="form-select" name="device_type[]" style="width: 100%;">
-                                                            <option >---Select---</option>
-                                                            <option value="router">Router</option>
-                                                            <option value="onu">Onu</option>
-                                                            <option value="fiber">Fiber</option>
-                                                            <option value="other">Others</option>
-                                                        </select>
-                                                    </td>
-                                                    <td><input type="text" class="form-control" placeholder="Enter Device Name" name="device_name[]"></td>
-                                                    <td><input type="text" class="form-control" placeholder="Example: K5453110" name="serial_no[]"></td>
-                                                    <td><input type="date" class="form-control" name="assign_date[]"></td>
-                                                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <button type="button" class="btn btn-primary btn-sm" id="add_row">+ Add Row</button>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
+
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
@@ -464,6 +470,42 @@
                     '<option value="">Select Package</option>');
             }
 
+        });
+        /** Handle Liablities button click **/
+        $(document).on('change', '#addCustomerModal select[name="liabilities"]', function() {
+            if ($(this).val() === 'YES') {
+                $('#liability_device_table').show();
+            } else {
+                $('#liability_device_table').hide();
+            }
+        });
+        /* Add new row For Include Device*/
+        $(document).on('click', '#addCustomerModal #add_row', function() {
+            var newRow = `
+                <tr>
+                    <td>
+                        <select class="form-control" name="device_type[]">
+                            <option>---Select---</option>
+                            <option value="router">Router</option>
+                            <option value="onu">Onu</option>
+                            <option value="fiber">Fiber</option>
+                            <option value="other">Others</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" placeholder="Enter Device Name" name="device_name[]"></td>
+                    <td><input type="text" class="form-control" placeholder="Example: K5453110" name="serial_no[]"></td>
+                    <td><input type="date" class="form-control" name="assign_date[]"></td>
+                    <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>
+            `;
+            $('#device_table tbody').append(newRow);
+        });
+        $(document).find('.device-type-select').last().select2({
+            width: '100%'
+        });
+        /* Remove row*/
+        $(document).on('click', '.remove-row', function () {
+            $(this).closest('tr').remove();
         });
         /** Handle Amount when package button click **/
         $(document).on('change', '#addCustomerModal select[name="package_id"]', function() {
