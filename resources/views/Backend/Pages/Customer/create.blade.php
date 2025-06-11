@@ -8,133 +8,193 @@
             <form action="{{ route('admin.customer.store') }}" method="post" id="addStudentForm" enctype="multipart/form-data">
                 @csrf
             <div class="card-body ">
-
-
-                    <!-- Personal Information -->
-                    <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
-                        <legend class="w-auto px-3 text-primary fw-bold">Personal Information</legend>
-                        <div class="row">
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" name="fullname" class="form-control" placeholder="Enter Fullname" required>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Username <span class="text-danger">*</span></label>
-                                <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Phone <span class="text-danger">*</span></label>
-                                <input type="text" name="phone" class="form-control" placeholder="Enter Phone" required>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Password <span class="text-danger">*</span></label>
-                                <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">NID</label>
-                                <input type="text" name="nid" class="form-control" placeholder="Enter NID">
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Address</label>
-                                <input name="address" class="form-control" placeholder="Enter Address">
-                            </div>
+                <!-- Personal Information -->
+                <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
+                    <legend class="w-auto px-3 text-primary fw-bold">Personal Information</legend>
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="fullname" class="form-control" placeholder="Enter Fullname" required>
                         </div>
-                    </fieldset>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Username <span class="text-danger">*</span></label>
+                            <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Phone <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control" placeholder="Enter Phone" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">NID</label>
+                            <input type="text" name="nid" class="form-control" placeholder="Enter NID">
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Address</label>
+                            <input name="address" class="form-control" placeholder="Enter Address">
+                        </div>
+                    </div>
+                </fieldset>
 
-                    <!-- Connection Details -->
-                    <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
-                        <legend class="w-auto px-3 text-primary fw-bold">Connection Details</legend>
-                        <div class="row">
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">POP Branch</label>
-                                <select name="pop_id" class="form-control" required>
-                                    <option value="">Select POP Branch</option>
-                                    @php
-                                        $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-                                        if($branch_user_id != null || $branch_user_id != 0){
-                                            $pops = App\Models\Pop_branch::where('id', $branch_user_id)->where('status',1)->latest()->get();
-                                        }else{
-                                            $pops = \App\Models\Pop_branch::where('status',1)->latest()->get();
-                                        }
-                                    @endphp
-                                    @foreach ($pops as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Area</label>
-                                <select name="area_id" class="form-control" required>
-                                    <option value="">Select Area</option>
-                                    @php
+                <!-- Connection Details -->
+                <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
+                    <legend class="w-auto px-3 text-primary fw-bold">Connection Details</legend>
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">POP Branch</label>
+                            <select name="pop_id" class="form-control" required>
+                                <option value="">Select POP Branch</option>
+                                @php
                                     $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
                                     if($branch_user_id != null || $branch_user_id != 0){
-                                        $areas = App\Models\Pop_area::where('pop_id', $branch_user_id)->where('status','active')->latest()->get();
+                                        $pops = App\Models\Pop_branch::where('id', $branch_user_id)->where('status',1)->latest()->get();
                                     }else{
-                                        $areas = \App\Models\Pop_area::where('status','active')->latest()->get();
+                                        $pops = \App\Models\Pop_branch::where('status',1)->latest()->get();
                                     }
                                 @endphp
-                                    @foreach ($areas as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Router</label>
-                                <select name="router_id" class="form-control" required>
-                                    <option value="">Select Router</option>
-                                    @foreach (App\Models\Router::latest()->get() as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Package</label>
-                                <select name="package_id" id="package_id" class="form-control" required>
-                                    <option value="">Select Package</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Connection Charge</label>
-                                <input type="number" name="con_charge" class="form-control" value="500" required>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Amount</label>
-                                <input type="number" name="amount" class="form-control" required>
-                            </div>
+                                @foreach ($pops as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                    </fieldset>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Area</label>
+                            <select name="area_id" class="form-control" required>
+                                <option value="">Select Area</option>
+                                @php
+                                $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+                                if($branch_user_id != null || $branch_user_id != 0){
+                                    $areas = App\Models\Pop_area::where('pop_id', $branch_user_id)->where('status','active')->latest()->get();
+                                }else{
+                                    $areas = \App\Models\Pop_area::where('status','active')->latest()->get();
+                                }
+                            @endphp
+                                @foreach ($areas as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Router</label>
+                            <select name="router_id" class="form-control" required>
+                                <option value="">Select Router</option>
+                                @foreach (App\Models\Router::latest()->get() as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Package</label>
+                            <select name="package_id" id="package_id" class="form-control" required>
+                                <option value="">Select Package</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Connection Charge</label>
+                            <input type="number" name="con_charge" class="form-control" value="500" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Amount</label>
+                            <input type="number" name="amount" class="form-control" required>
+                        </div>
+                    </div>
+                </fieldset>
 
-                    <!-- Additional Information -->
-                    <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
-                        <legend class="w-auto px-3 text-primary fw-bold">Additional Information</legend>
-                        <div class="row">
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Liabilities</label>
-                                <select name="liabilities" class="form-control" required>
-                                    <option>---Select---</option>
-                                    <option value="YES">YES</option>
-                                    <option value="NO">NO</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-6 mb-3">
-                                <label class="form-label">Status</label>
-                                <select name="status" class="form-control" required>
-                                    <option>---Select---</option>
-                                    <option value="active">Active</option>
-                                    <option value="online">Online</option>
-                                    <option value="offline">Offline</option>
-                                    <option value="blocked">Blocked</option>
-                                    <option value="expired">Expired</option>
-                                    <option value="disabled">Disabled</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-12 mb-3">
-                                <label class="form-label">Remarks</label>
-                                <textarea name="remarks" class="form-control" placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন" style="height: 123px;"></textarea>
+                <!-- Additional Information -->
+                <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
+                    <legend class="w-auto px-3 text-primary fw-bold">Additional Information</legend>
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Liabilities</label>
+                            <select name="liabilities" class="form-control" required>
+                                <option>---Select---</option>
+                                <option value="YES">YES</option>
+                                <option value="NO">NO</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-control" required>
+                                <option>---Select---</option>
+                                <option value="active">Active</option>
+                                <option value="online">Online</option>
+                                <option value="offline">Offline</option>
+                                <option value="blocked">Blocked</option>
+                                <option value="expired">Expired</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-12 mb-3">
+                            <label class="form-label">Remarks</label>
+                            <textarea name="remarks" class="form-control" placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন" style="height: 123px;"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
+                <!--Device  Information -->
+                <div class="row">
+                    <div class="col-12">
+                        <div id="liability_device_table" class="mt-3" style="display: none;">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Device Information</h3>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover mb-0" id="device_table">
+                                            <thead class="">
+                                                <tr>
+                                                    <th style="min-width: 120px;">Device Type</th>
+                                                    <th style="min-width: 140px;">Name</th>
+                                                    <th style="min-width: 140px;">Serial No</th>
+                                                    <th style="min-width: 140px;">Assign Date</th>
+                                                    <th style="min-width: 80px;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <select class="form-control" name="device_type[]">
+                                                            <option>---Select---</option>
+                                                            <option value="router">Router</option>
+                                                            <option value="onu">Onu</option>
+                                                            <option value="fiber">Fiber</option>
+                                                            <option value="other">Others</option>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" class="form-control" placeholder="Enter Device Name" name="device_name[]"></td>
+                                                    <td><input type="text" class="form-control" placeholder="Example: K5453110" name="serial_no[]"></td>
+                                                    <td><input type="date" class="form-control" name="assign_date[]"></td>
+                                                    <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fas fa-trash-alt"></i></button></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer text-left">
+                                    <button type="button" class="btn btn-sm btn-primary" id="add_row"><i class="fas fa-plus"></i> Add Row</button>
+                                </div>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
+                </div>
+                <!-- Checkbox Message -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" id="sendMessageCheckbox" name="send_message" value="1">
+                                <label for="sendMessageCheckbox">
+                                    Send message to the Customer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
             <div class="card-footer">
                 <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
@@ -148,7 +208,7 @@
 
 
 @section('script')
-<script>
+<script type="text/javascript">
     $(document).ready(function(){
         function load_dropdown(url,target_url){
             $.ajax({
@@ -195,11 +255,42 @@
             }
 
         });
-    });
-</script>
-<script type="text/javascript">
-    $(document).ready(function(){
-
+        /** Handle Liablities button click **/
+        $(document).on('change', ' select[name="liabilities"]', function() {
+            if ($(this).val() === 'YES') {
+                $('#liability_device_table').show();
+            } else {
+                $('#liability_device_table').hide();
+            }
+        });
+        /* Add new row For Include Device*/
+        $(document).on('click', ' #add_row', function() {
+            var newRow = `
+                <tr>
+                    <td>
+                        <select class="form-control" name="device_type[]">
+                            <option>---Select---</option>
+                            <option value="router">Router</option>
+                            <option value="onu">Onu</option>
+                            <option value="fiber">Fiber</option>
+                            <option value="other">Others</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" placeholder="Enter Device Name" name="device_name[]"></td>
+                    <td><input type="text" class="form-control" placeholder="Example: K5453110" name="serial_no[]"></td>
+                    <td><input type="date" class="form-control" name="assign_date[]"></td>
+                    <td><button type="button" class="btn btn-sm btn-danger remove-row"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>
+            `;
+            $('#device_table tbody').append(newRow);
+        });
+        $(document).find('.device-type-select').last().select2({
+            width: '100%'
+        });
+        /* Remove row*/
+        $(document).on('click', '.remove-row', function () {
+            $(this).closest('tr').remove();
+        });
         $('#addStudentForm').submit(function(e) {
             e.preventDefault();
 
@@ -266,9 +357,6 @@
             });
         });
 
-
     });
-  </script>
-
-
+</script>
 @endsection

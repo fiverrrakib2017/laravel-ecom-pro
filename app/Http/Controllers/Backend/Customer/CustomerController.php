@@ -10,6 +10,7 @@ use App\Models\Customer_device;
 use App\Models\Customer_log;
 use App\Models\Customer_recharge;
 use App\Models\Router as Mikrotik_router;
+use App\Models\Send_message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,8 @@ use function App\Helpers\check_pop_balance;
 use function App\Helpers\customer_log;
 use function App\Helpers\formate_uptime;
 use function App\Helpers\get_mikrotik_user_info;
+use function App\Helpers\send_message;
+
 use phpseclib3\Net\SSH2;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -259,6 +262,39 @@ class CustomerController extends Controller
             $object->note = 'Created';
             $object->save();
 
+            /* Send Message to the Customer*/
+            if($request->send_message=='1'){
+                //$bill_payment_link = "https://sr-wifi.net?clid={$custID}";
+
+                // $message = 'Thank you for joining SR Wi-Fi.
+                //             Your Customer ID : {customer_id}
+                //             username : {username}
+                //             password : {password}
+                //             HelpLine : 01821600600
+                //             Bill payment link: {bill_payment_link}';
+                $message = 'Thank you for joining SR Wi-Fi.
+                            Your Customer ID : {customer_id}
+                            username : {username}
+                            password : {password}
+                            HelpLine : 01821600600';
+
+                $message = str_replace('{customer_id}', $customer->id, $message);
+                $message = str_replace('{username}', $customer->username, $message);
+                $message = str_replace('{password}', $customer->password, $message);
+                //$message = str_replace('{bill_payment_link}', $bill_payment_link, $message);
+                /* Create a new Instance*/
+                $send_message =new Send_message();
+                $send_message->pop_id = $customer->pop_id;
+                $send_message->area_id = $customer->area_id;
+                $send_message->customer_id = $customer->id;
+                $send_message->message =$message;
+                $send_message->sent_at = Carbon::now();
+                /*Call Send Message Function */
+                send_message($customer->phone, $message);
+                /* Save to the database table*/
+                $send_message->save();
+            }
+            /* Customer Device Liabilities store database table*/
             if (!empty($request->device_type) && is_array($request->device_type)) {
                 foreach ($request->device_type as $index => $type) {
                     $customer_device = new Customer_device();
