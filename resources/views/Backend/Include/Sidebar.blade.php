@@ -101,13 +101,6 @@
                                 <p>{{ __('menu.add_customer') }}</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.customer.onu_list') }}"
-                            class="nav-link {{ $route == 'admin.customer.onu_list' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Customer Onu</p>
-                            </a>
-                        </li>
 
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_import') }}"

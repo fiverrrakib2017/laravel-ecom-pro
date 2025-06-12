@@ -464,7 +464,7 @@
                                     <td>{{ $data['month'] }}</td>
                                     <td>
                                         <span class="badge bg-success text-dark">
-                                            <a target="__blank" href="{{ route('admin.customer.index', ['year' => $selectedYear, 'month' => $data['month'] , 'type' => 'expired']) }}">
+                                            <a target="__blank" href="{{ route('admin.customer.index', ['year' => $selectedYear, 'month' => $data['month'] , 'type' => 'new']) }}">
                                                 {{ $data['new'] }}
                                             </a>
                                         </span>

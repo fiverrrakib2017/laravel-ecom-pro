@@ -83,11 +83,22 @@
         var area_id = @json($area_id ?? '');
         var status = @json($status ?? '');
 
+
+        /*Year Month  examample :20 JUN 2025 Type="new or expired"*/
+        let get_year = null;
+        let get_month = null;
+        let get_type = null;
+
         if(status == null || status == ''){
             const urlParams = new URLSearchParams(window.location.search);
             status = urlParams.get('status');
         }
-
+        if(get_year ==null || get_month==null || get_type== null){
+            const urlParams = new URLSearchParams(window.location.search);
+            get_year = urlParams.get('year');
+            get_month = urlParams.get('month');
+            get_type = urlParams.get('type');
+        }
 
         /*When Request Get Area Page*/
        var  filter_dropdown = @json($filter_dropdown ?? true);
@@ -238,6 +249,9 @@
                     d.pop_id        = $('#search_pop_id').val() || pop_id;
                     d.area_id       = $('#search_area_id').val() || area_id;
                     d.status        = $('.status_filter').val() || status;
+                    d.year          = get_year || null;
+                    d.month         = get_month || null;
+                    d.type          = get_type || null;
                 }
             },
             language: {
