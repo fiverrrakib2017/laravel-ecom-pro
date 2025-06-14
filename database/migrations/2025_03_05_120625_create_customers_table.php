@@ -25,11 +25,11 @@ return new class extends Migration
             $table->unsignedBigInteger('pop_id');
             $table->unsignedBigInteger('area_id');
             $table->unsignedBigInteger('router_id');
-            $table->enum('status', ['active','online', 'offline', 'blocked', 'expired','disabled'])->default('active');
+            $table->enum('status', ['active','online', 'offline', 'blocked', 'expired','disabled', 'discontinue'])->default('active');
+            $table->enum('connection_type', ['pppoe', 'hotspot', 'radius'])->default('pppoe');
             $table->date('expire_date')->nullable();
             $table->text('remarks')->nullable();
             $table->enum('liabilities', ['YES', 'NO'])->default('NO');
-            $table->enum('onu_type', ['customer', 'company'])->default('customer');
             $table->integer('is_delete')->default('0');
             $table->timestamps();
 

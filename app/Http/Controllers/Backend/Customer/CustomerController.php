@@ -262,6 +262,7 @@ class CustomerController extends Controller
             $customer->status = $request->status;
             $customer->expire_date = date('Y-m-d', strtotime('+1 month'));
             $customer->remarks = $request->remarks;
+            $customer->connection_type = $request->connection_type;
             $customer->liabilities = $request->liabilities;
             $customer->save();
 
@@ -329,64 +330,76 @@ class CustomerController extends Controller
 
             /* Create Customer Log */
             customer_log($customer->id, 'add', auth()->guard('admin')->user()->id, 'Customer Created Successfully!');
+            /*Check Customer Connection Type*/
+            if(!empty($request->connection_type) && isset($request->connection_type)){
 
-            /* Create Customer Radius Server */
-            // $existing_racheck= \App\Models\Radius\Radcheck::where('username', $request->username)->first();
-            // if(!$existing_racheck){
-            //     $radius = new \App\Models\Radius\Radcheck();
-            //     $radius->username = $request->username;
-            //     $radius->attribute = 'Cleartext-Password';
-            //     $radius->op = ':=';
-            //     $radius->value = $request->password;
-            //     $radius->save();
-            // }
-            // $existing_radreply= \App\Models\Radius\Radreply::where('username', $request->username)->first();
-            // if(!$existing_radreply){
-            //     $radreply = new \App\Models\Radius\Radreply();
-            //     $radreply->username = $request->username;
-            //     $radreply->attribute = 'MikroTik-Group';
-            //     $radreply->op = ':=';
-            //     $radreply->value = Branch_package::find($request->package_id)->name;
-            //     $radreply->save();
-            // }
+                /*********** Radius Customer Store ****************/
+                if($request->connection_type=='radius'){
+                    /* Create Customer Radius Server */
+                        $existing_racheck= \App\Models\Radius\Radcheck::where('username', $request->username)->first();
+                        if(!$existing_racheck){
+                            $radius = new \App\Models\Radius\Radcheck();
+                            $radius->username = $request->username;
+                            $radius->attribute = 'Cleartext-Password';
+                            $radius->op = ':=';
+                            $radius->value = $request->password;
+                            $radius->save();
+                        }
+                        $existing_radreply= \App\Models\Radius\Radreply::where('username', $request->username)->first();
+                        if(!$existing_radreply){
+                            $radreply = new \App\Models\Radius\Radreply();
+                            $radreply->username = $request->username;
+                            $radreply->attribute = 'MikroTik-Group';
+                            $radreply->op = ':=';
+                            $radreply->value = Branch_package::find($request->package_id)->name;
+                            $radreply->save();
+                        }
+                }
 
-            $router = Mikrotik_router::where('status', 'active')->where('id', $request->router_id)->first();
-            $client = new Client([
-                'host' => $router->ip_address,
-                'user' => $router->username,
-                'pass' => $router->password,
-                'port' => (int) $router->port ?? 8728,
-            ]);
-            /*Load MikroTik Profile list*/
-            $mikrotik_profile_list = new Query('/ppp/profile/print');
-            $profiles = $client->query($mikrotik_profile_list)->read();
-            /*Find profile name from Branch Package*/
-            $profileName = Branch_package::find($request->package_id)->name;
-            /* Check if the profile name exists in MikroTik*/
-            $profileExists = collect($profiles)->pluck('name')->contains($profileName);
+                /*********** PPPOE Customer Store ****************/
+                if($request->connection_type=='pppoe'){
+                    $router = Mikrotik_router::where('status', 'active')->where('id', $request->router_id)->first();
+                    $client = new Client([
+                        'host' => $router->ip_address,
+                        'user' => $router->username,
+                        'pass' => $router->password,
+                        'port' => (int) $router->port ?? 8728,
+                    ]);
+                    /*Load MikroTik Profile list*/
+                    $mikrotik_profile_list = new Query('/ppp/profile/print');
+                    $profiles = $client->query($mikrotik_profile_list)->read();
+                    /*Find profile name from Branch Package*/
+                    $profileName = Branch_package::find($request->package_id)->name;
+                    /* Check if the profile name exists in MikroTik*/
+                    $profileExists = collect($profiles)->pluck('name')->contains($profileName);
 
-            if (!$profileExists) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package configuration.",
-                ]);
-                exit;
+                    if (!$profileExists) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package configuration.",
+                        ]);
+                        exit;
+                    }
+                    /*Check if alreay exist*/
+                    $check_Query = new Query('/ppp/secret/print');
+                    $check_Query->where('name', $request->username);
+                    $check_customer = $client->query($check_Query)->read();
+
+                    if (empty($check_customer)) {
+                        $query = new Query('/ppp/secret/add');
+                        $query->equal('name', $request->username);
+                        $query->equal('password', $request->password);
+                        $query->equal('service', 'pppoe');
+                        $query->equal('profile', Branch_package::find($request->package_id)->name);
+                        $client->query($query)->read();
+                    }
+                }
+                /*********** Hotspot Customer Store ****************/
+                if($request->connection_type=='hotspot'){
+
+                }
             }
-            /*Check if alreay exist*/
-            $check_Query = new Query('/ppp/secret/print');
-            $check_Query->where('name', $request->username);
-            $check_customer = $client->query($check_Query)->read();
-
-            if (empty($check_customer)) {
-                $query = new Query('/ppp/secret/add');
-                $query->equal('name', $request->username);
-                $query->equal('password', $request->password);
-                $query->equal('service', 'pppoe');
-                $query->equal('profile', Branch_package::find($request->package_id)->name);
-                $client->query($query)->read();
-            }
-
             DB::commit();
             Cache::forget('sidebar_customers');
             return response()->json([

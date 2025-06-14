@@ -144,6 +144,17 @@
                     <option value="free">Free</option>
                     <option value="active">Active</option>
                     <option value="disabled">Disabled</option>
+                    <option value="discontinue">Discontinue</option>
+                </select>
+            </div>`;
+        /* connection_type_filter  Filter */
+        var connection_type_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select class="connection_type_filter form-control form-control-sm select2">
+                    <option value="">Connection Type</option>
+                    <option value="pppoe">PPPOE</option>
+                    <option value="radius">Radius</option>
+                    <option value="hostpot">Hostpot</option>
                 </select>
             </div>`;
 
@@ -155,7 +166,7 @@
 
                     <!-- Middle: Filters -->
                     <div class="col-12 col-md d-flex flex-wrap align-items-center mb-2 mb-md-0" style="gap: 0.5rem;">
-                        ${pop_filter + area_filter + status_filter}
+                        ${pop_filter + area_filter + status_filter + connection_type_filter}
                     </div>
 
                     <!-- Right: Search Input -->
@@ -176,6 +187,7 @@
             $('#search_pop_id').select2({ width: 'resolve' });
             $('#search_area_id').select2({ width: 'resolve' });
             $('.status_filter').select2({ width: 'resolve' });
+            $('.customer_type_filter').select2({ width: 'resolve' });
         }, 1000);
 
 

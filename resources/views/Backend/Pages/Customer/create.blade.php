@@ -21,12 +21,12 @@
                             <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Phone <span class="text-danger">*</span></label>
-                            <input type="text" name="phone" class="form-control" placeholder="Enter Phone" required>
-                        </div>
-                        <div class="col-lg-6 mb-3">
                             <label class="form-label">Password <span class="text-danger">*</span></label>
                             <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Phone <span class="text-danger">*</span></label>
+                            <input type="text" name="phone" class="form-control" placeholder="Enter Phone" required>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="form-label">NID</label>
@@ -44,7 +44,7 @@
                     <legend class="w-auto px-3 text-primary fw-bold">Connection Details</legend>
                     <div class="row">
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">POP Branch</label>
+                            <label class="form-label">POP Branch <span class="text-danger">*</span></label>
                             <select name="pop_id" class="form-control" required>
                                 <option value="">Select POP Branch</option>
                                 @php
@@ -61,7 +61,7 @@
                             </select>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Area</label>
+                            <label class="form-label">Area <span class="text-danger">*</span></label>
                             <select name="area_id" class="form-control" required>
                                 <option value="">Select Area</option>
                                 @php
@@ -78,7 +78,7 @@
                             </select>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Router</label>
+                            <label class="form-label">Router <span class="text-danger">*</span></label>
                             <select name="router_id" class="form-control" required>
                                 <option value="">Select Router</option>
                                 @foreach (App\Models\Router::latest()->get() as $item)
@@ -87,14 +87,14 @@
                             </select>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Package</label>
+                            <label class="form-label">Package <span class="text-danger">*</span></label>
                             <select name="package_id" id="package_id" class="form-control" required>
                                 <option value="">Select Package</option>
                             </select>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="form-label">Connection Charge</label>
-                            <input type="number" name="con_charge" class="form-control" value="500" required>
+                            <input type="number" name="con_charge" class="form-control" value="500">
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="form-label">Amount</label>
@@ -108,7 +108,7 @@
                     <legend class="w-auto px-3 text-primary fw-bold">Additional Information</legend>
                     <div class="row">
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Liabilities</label>
+                            <label class="form-label">Liabilities <span class="text-danger">*</span></label>
                             <select name="liabilities" class="form-control" required>
                                 <option>---Select---</option>
                                 <option value="YES">YES</option>
@@ -116,7 +116,7 @@
                             </select>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Status</label>
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
                             <select name="status" class="form-control" required>
                                 <option>---Select---</option>
                                 <option value="active">Active</option>
@@ -125,11 +125,21 @@
                                 <option value="blocked">Blocked</option>
                                 <option value="expired">Expired</option>
                                 <option value="disabled">Disabled</option>
+                                <option value="discontinue">Discontinue</option>
                             </select>
                         </div>
-                        <div class="col-lg-12 mb-3">
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Connection Type <span class="text-danger">*</span></label>
+                            <select name="connection_type" class="form-control" required>
+                                  <option>---Select---</option>
+                                <option value="pppoe">PPPOE</option>
+                                <option value="radius">Radius</option>
+                                <option value="hotspot">Hostpot</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
                             <label class="form-label">Remarks</label>
-                            <textarea name="remarks" class="form-control" placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন" style="height: 123px;"></textarea>
+                            <textarea name="remarks" class="form-control" placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন" style="height: 83px;"></textarea>
                         </div>
                     </div>
                 </fieldset>
