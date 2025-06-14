@@ -215,9 +215,16 @@
                     'bg' => 'dark',
                     'icon' => 'fa-user-edit'
                 ],
-
                 [
                     'id' => 7,
+                    'title' => 'Discontinue',
+                    'value' => 0,
+                    'bg' => 'danger',
+                    'icon' => 'fa-user-times'
+                ],
+
+                [
+                    'id' => 8,
                     'title' => 'Area',
                     'value' => $total_area,
                     'bg' => 'success',
@@ -225,20 +232,12 @@
                     'url' => route('admin.pop.area.index'),
                 ],
                 [
-                    'id' => 8,
+                    'id' => 9,
                     'title' => 'Total Tickets',
                     'value' => $tickets,
                     'bg' => 'success',
                     'icon' => 'fas fa-solid fa-ticket-alt',
                     'url' => route('admin.tickets.index'),
-                ],
-                [
-                    'id' => 9,
-                    'title' => 'Completed Tickets',
-                    'value' => $ticket_completed,
-                    'bg' => 'success',
-                    'icon' => 'fas fa-solid fa-check-circle',
-                     'url' => route('admin.tickets.index',['status' => 'completed']),
                 ],
                 [
                     'id' => 10,
@@ -248,6 +247,15 @@
                     'icon' => 'fas fa-solid fa-exclamation-triangle',
                      'url' => route('admin.tickets.index',['status' => 'pending']),
                 ],
+                [
+                    'id' => 11,
+                    'title' => 'Completed Tickets',
+                    'value' => $ticket_completed,
+                    'bg' => 'success',
+                    'icon' => 'fas fa-solid fa-check-circle',
+                     'url' => route('admin.tickets.index',['status' => 'completed']),
+                ],
+
             ];
         @endphp
         @foreach ($dashboardCards as $card)

@@ -124,6 +124,7 @@ class AdminController extends Controller
             $expire_customer=Customer::where('pop_id',$branch_user_id)->where('status','expire')->count();
             $offline_customer=Customer::where('pop_id',$branch_user_id)->where('status','offline')->count();
             $disable_customer=Customer::where('pop_id',$branch_user_id)->where('status','disabled')->count();
+            $discontinue_customer=Customer::where('pop_id',$branch_user_id)->where('status','discontinue')->count();
               /*Customer Recharge Details*/
             $total_recharged = Customer_recharge::where('pop_id',$branch_user_id)->where('transaction_type', '!=', 'due_paid')
             ->whereMonth('created_at', Carbon::now()->month)
@@ -157,6 +158,7 @@ class AdminController extends Controller
             $expire_customer=Customer::where('status','expire')->count();
             $offline_customer=Customer::where('status','offline')->count();
             $disable_customer=Customer::where('status','disabled')->count();
+            $discontinue_customer=Customer::where('status','discontinue')->count();
               /*Customer Recharge Details*/
             $total_recharged = Customer_recharge::where('transaction_type', '!=', 'due_paid')
             ->whereMonth('created_at', Carbon::now()->month)
@@ -181,7 +183,7 @@ class AdminController extends Controller
 
 
         $totalDue=$get_total_due-$duePaid;
-        return view('Backend.Pages.Dashboard.index',compact('total_area','tickets','ticket_completed','ticket_pending','online_customer','active_customer','expire_customer','offline_customer','disable_customer','total_recharged','totalPaid','totalDue','duePaid'));
+        return view('Backend.Pages.Dashboard.index',compact('total_area','tickets','ticket_completed','ticket_pending','online_customer','active_customer','expire_customer','offline_customer','disable_customer','total_recharged','totalPaid','totalDue','duePaid','discontinue_customer'));
     }
      /*Server Information*/
      public function server_info(){
