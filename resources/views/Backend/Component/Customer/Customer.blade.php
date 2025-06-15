@@ -187,7 +187,7 @@
             $('#search_pop_id').select2({ width: 'resolve' });
             $('#search_area_id').select2({ width: 'resolve' });
             $('.status_filter').select2({ width: 'resolve' });
-            $('.customer_type_filter').select2({ width: 'resolve' });
+            $('.connection_type_filter').select2({ width: 'resolve' });
         }, 1000);
 
 

@@ -135,7 +135,7 @@ Route::group(['middleware' => 'admin'], function () {
 
             /***** Customer Device expire *******/
             Route::get('/device/return/{id}', 'customer_device_return')->name('admin.customer.device.return');
-            
+
             /***** Customer Payment History *******/
             Route::get('/payment/history', 'customer_payment_history')->name('admin.customer.payment.history');
             Route::get('/payment/history/get_all_data', 'customer_payment_history_get_all_data')->name('admin.customer.payment.history.get_all_data');
@@ -694,6 +694,10 @@ Route::group(['middleware' => 'admin'], function () {
     Route::get('/optimize', function () {
         Artisan::call('optimize:clear');
         return 'Optimize Clear Completed';
+    });
+    Route::get('/migrate', function () {
+        Artisan::call('migrate');
+        return 'migrate  Completed';
     });
     Route::get('/lang/{locale}', function ($locale) {
         if (in_array($locale, ['en', 'bn'])) {
