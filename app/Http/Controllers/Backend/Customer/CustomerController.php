@@ -371,7 +371,7 @@ class CustomerController extends Controller
                     /*Find profile name from Branch Package*/
                     $profileName = Branch_package::find($request->package_id)->name;
                     /* Check if the profile name exists in MikroTik*/
-                    $profileExists = collect($profiles)->pluck('name')->contains($profileName);
+                    $profileExists = collect($profiles)->pluck('name')->contains(trim($profileName));
 
                     if (!$profileExists) {
                         DB::rollBack();

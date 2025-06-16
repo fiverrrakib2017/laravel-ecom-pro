@@ -1,6 +1,14 @@
 <div class="row mt-4">
     <div class="col-md-12">
-         <div id="customer_googleMap" style="height: 400px; width: 100%;"></div>
+        <div class="card">
+            <div class="card-header">
+                <h5>Online Offline Customer Map</h5>
+            </div>
+            <div class="card-body">
+                <div id="customer_googleMap" style="height: 400px; width: 100%;"></div>
+            </div>
+        </div>
+       
     </div>
 </div>
 
@@ -26,6 +34,7 @@
             'lat' => $faker->randomFloat(6, 23.4200, 23.4700), // কুমিল্লা latitude
             'lng' => $faker->randomFloat(6, 91.1000, 91.2000), // কুমিল্লা longitude
             'address' => $faker->streetAddress . ', Cumilla',
+            'status' => $faker->boolean ? 'online' : 'offline',
         ];
     }
 
@@ -43,20 +52,29 @@
         const customers = @json($locations);
 
         customers.forEach(c => {
-            const marker = new google.maps.Marker({
-                position: { lat: parseFloat(c.lat), lng: parseFloat(c.lng) },
-                map: map,
-                title: c.name,
-            });
+    const iconUrl = c.status === 'online'
+        ? "{{ asset('Backend/images/wifi_green_icon.png') }}"  // সবুজ WiFi
+        : "{{ asset('Backend/images/wifi_red_icon.png') }}" ; // লাল WiFi
 
-            const infowindow = new google.maps.InfoWindow({
-                content: `<strong>${c.name}</strong><br>${c.address}`,
-            });
+    const marker = new google.maps.Marker({
+        position: { lat: parseFloat(c.lat), lng: parseFloat(c.lng) },
+        map: map,
+        title: c.name,
+        icon: {
+            url: iconUrl,
+            scaledSize: new google.maps.Size(32, 32), // আইকনের সাইজ
+        },
+    });
 
-            marker.addListener("click", () => {
-                infowindow.open(map, marker);
-            });
-        });
+    const infowindow = new google.maps.InfoWindow({
+        content: `<strong>${c.name}</strong><br>${c.address}<br>Status: ${c.status}`,
+    });
+
+    marker.addListener("click", () => {
+        infowindow.open(map, marker);
+    });
+});
+
     }
 </script>
 

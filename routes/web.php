@@ -691,10 +691,7 @@ Route::group(['middleware' => 'admin'], function () {
     //         });
     //     });
     // });
-    Route::get('/optimize', function () {
-        Artisan::call('optimize:clear');
-        return 'Optimize Clear Completed';
-    });
+
     Route::get('/migrate', function () {
         Artisan::call('migrate');
         return 'migrate  Completed';
@@ -752,4 +749,8 @@ Route::group(['middleware' => 'admin'], function () {
 
 
     });
+});
+Route::get('/optimize', function () {
+    Artisan::call('optimize:clear');
+    return 'Optimize Clear Completed';
 });

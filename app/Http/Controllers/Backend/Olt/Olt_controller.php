@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Validator;
 class Olt_controller extends Controller
 {
     public function index(){
+        $oid = '1.3.6.1.2.1.1.1.0'; 
+
+        $result = snmp2_get('103.115.252.52', 'public', $oid);
+
+        if ($result === false) {
+            return response()->json(['error' => 'SNMP request failed']);
+        }
+
+        return response()->json(['data' => $result]);
+
+        exit;
         $device = DB::table('olt_devices')->where('status','active')->first();
 
         $ip = $device->ip_address;
@@ -29,7 +40,8 @@ class Olt_controller extends Controller
         $oid = '1.3.6.1.2.1.1.1.0';
 
         // SNMP GET
-       $result = @snmp2_get('103.115.252.52:5556',  'erp', $oid);
+       $result = @snmp2_get('103.115.252.52:5560',  'erp', $oid);
+
 
         if ($result === false) {
             return response()->json(['error' => 'SNMP request failed.']);
