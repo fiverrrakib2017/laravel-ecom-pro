@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Console\Commands\Customer;
+
+use App\Jobs\check_customer_status;
 use RouterOS\Client;
 use RouterOS\Query;
 use App\Models\Customer;
@@ -32,9 +34,18 @@ class check_status extends Command
     public function handle(SessionService $session_service)
     {
         $this->info('---Tasks Started ---');
-        $this->check_online_offline_status();
-        /* Call the Session Remove method*/
+
+        Customer::where('is_delete', '0')
+            ->whereNotIn('status', ['expired', 'disabled', 'discontinue'])
+            ->chunk(100, function ($customers) {
+                foreach ($customers as $customer) {
+                    dispatch(new check_customer_status($customer));
+                }
+            });
+
+        /*session reset*/
         $session_service->forget_session_sidebar_customer();
+
         $this->info('---Tasks Finished ---');
     }
     protected function check_online_offline_status()
