@@ -34,13 +34,17 @@ class check_status extends Command
     {
         $this->info('---Tasks Started ---');
 
-        Customer::where('is_delete', '0')
-            ->whereNotIn('status', ['expired', 'disabled', 'discontinue'])
-            ->chunk(100, function ($customers) {
-                foreach ($customers as $customer) {
-                    dispatch(new CheckCustomerStatus ($customer->id));
-                }
-            });
+        // Customer::where('is_delete', '0')
+        //     ->whereNotIn('status', ['expired', 'disabled', 'discontinue'])
+        //     ->chunk(100, function ($customers) {
+        //         foreach ($customers as $customer) {
+        //             dispatch(new CheckCustomerStatus ($customer->id));
+        //         }
+        //     });
+            $customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
+            foreach($customers as $customer){
+                  dispatch(new CheckCustomerStatus ($customer->id));
+            }
 
         /*session reset*/
         $session_service->forget_session_sidebar_customer();
