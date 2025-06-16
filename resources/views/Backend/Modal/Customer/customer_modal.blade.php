@@ -147,42 +147,46 @@
                         </div>
                     </fieldset>
 
-                    <!--Additional Information -->
-                    <fieldset class="border p-3 mb-4">
-                        <legend class="w-auto px-2 text-primary">Additional Information</legend>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Liabilities</label>
-                                    <select name="liabilities" class="form-control" required>
-                                        <option>---Select---</option>
-                                        <option value="YES">YES</option>
-                                        <option value="NO">NO</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <select name="status" class="form-control" required>
-                                        <option>---Select---</option>
-                                        <option value="active">Active</option>
-                                        <option value="online">Online</option>
-                                        <option value="offline">Offline</option>
-                                        <option value="blocked">Blocked</option>
-                                        <option value="expired">Expired</option>
-                                        <option value="disabled">Disabled</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Remarks</label>
-                                    <textarea name="remarks" class="form-control"
-                                        placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন"
-                                        style="height: 123px;"></textarea>
-                                </div>
-                            </div>
+                    <!-- Additional Information -->
+                <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
+                    <legend class="w-auto px-3 text-primary fw-bold">Additional Information</legend>
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Liabilities <span class="text-danger">*</span></label>
+                            <select name="liabilities" class="form-control" required>
+                                <option>---Select---</option>
+                                <option value="YES">YES</option>
+                                <option value="NO">NO</option>
+                            </select>
                         </div>
-                    </fieldset>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Status <span class="text-danger">*</span></label>
+                            <select name="status" class="form-control" required>
+                                <option>---Select---</option>
+                                <option value="active">Active</option>
+                                <option value="online">Online</option>
+                                <option value="offline">Offline</option>
+                                <option value="blocked">Blocked</option>
+                                <option value="expired">Expired</option>
+                                <option value="disabled">Disabled</option>
+                                <option value="discontinue">Discontinue</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Connection Type <span class="text-danger">*</span></label>
+                            <select name="connection_type" class="form-control" required>
+                                  <option>---Select---</option>
+                                <option value="pppoe">PPPOE</option>
+                                <option value="radius">Radius</option>
+                                <option value="hotspot">Hostpot</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <label class="form-label">Remarks</label>
+                            <textarea name="remarks" class="form-control" placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন" style="height: 83px;"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
                     <!--Device  Information -->
                     <div class="row">
                         <div class="col-12">

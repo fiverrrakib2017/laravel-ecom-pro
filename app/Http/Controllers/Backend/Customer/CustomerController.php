@@ -91,20 +91,22 @@ class CustomerController extends Controller
                 $query->where('area_id', $area_id);
             })
             /*year month type|| new|| expire*/
-            ->when($request->year, function ($query) use ($request) {
-                $query->whereYear('created_at', $request->year);
-            })
-            ->when($request->month, function ($query) use ($request) {
-                $query->whereMonth('created_at', date('m', strtotime($request->month)));
-            })
+            // ->when($request->year, function ($query) use ($request) {
+            //     $query->whereYear('created_at', $request->year);
+            // })
+            // ->when($request->month, function ($query) use ($request) {
+            //     $query->whereMonth('created_at', date('m', strtotime($request->month)));
+            // })
             ->when($request->type === 'expired', function ($query) use ($request) {
-                $query->whereMonth('expire_date', date('m', strtotime($request->month)))
+                $monthNum = date('m', strtotime($request->month)); // "June" → "06"
+                $query->whereMonth('expire_date', $monthNum)
                     ->whereYear('expire_date', $request->year);
             })
             ->when($request->type === 'new', function ($query) use ($request) {
-                $query->whereMonth('created_at', date('m', strtotime($request->month)))
+               $query->whereMonth('created_at', date('m', strtotime($request->month)))
                     ->whereYear('created_at', $request->year);
             })
+
 
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
