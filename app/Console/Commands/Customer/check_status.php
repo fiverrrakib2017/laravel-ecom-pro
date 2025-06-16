@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Customer;
 
-use App\Jobs\check_customer_status;
+use App\Jobs\CheckCustomerStatus ;
 use RouterOS\Client;
 use RouterOS\Query;
 use App\Models\Customer;
@@ -11,7 +11,6 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Services\SessionService;
-
 class check_status extends Command
 {
     /**
@@ -39,7 +38,7 @@ class check_status extends Command
             ->whereNotIn('status', ['expired', 'disabled', 'discontinue'])
             ->chunk(100, function ($customers) {
                 foreach ($customers as $customer) {
-                    dispatch(new check_customer_status($customer));
+                    dispatch(new CheckCustomerStatus ($customer->id));
                 }
             });
 

@@ -1,6 +1,5 @@
 <?php
 namespace App\Jobs;
-
 use App\Models\Customer;
 use App\Models\Router;
 use App\Models\Radius\Radacct;
@@ -13,7 +12,7 @@ use RouterOS\Client;
 use RouterOS\Query;
 use Illuminate\Support\Facades\Log;
 
-class check_customer_status implements ShouldQueue
+class CheckCustomerStatus  implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -33,7 +32,6 @@ class check_customer_status implements ShouldQueue
     public function handle(): void
     {
         $customer = Customer::find($this->customer_id);
-
         if (!$customer) {
             Log::warning("Customer not found with ID: {$this->customer_id} In Queue Job");
             return;
