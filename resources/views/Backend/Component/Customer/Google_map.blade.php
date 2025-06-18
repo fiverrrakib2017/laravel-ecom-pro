@@ -8,20 +8,11 @@
                 <div id="customer_googleMap" style="height: 400px; width: 100%;"></div>
             </div>
         </div>
-       
+
     </div>
 </div>
 
 @php
-    // $locations = [];
-    // foreach ($customers as $customer) {
-    //     $locations[] = [
-    //         'name' => $customer->name,
-    //         'lat' => $customer->latitude,
-    //         'lng' => $customer->longitude,
-    //         'address' => $customer->address,
-    //     ];
-    // }
 
     use Faker\Factory;
 
