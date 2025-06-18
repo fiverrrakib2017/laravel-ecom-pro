@@ -14,20 +14,20 @@
 
 @php
 
-    use Faker\Factory;
+    // use Faker\Factory;
 
-    $faker = Factory::create();
-    $locations = [];
+    // $faker = Factory::create();
+    // $locations = [];
 
-    for ($i = 0; $i < 500; $i++) {
-        $locations[] = [
-            'name' => $faker->name,
-            'lat' => $faker->randomFloat(6, 23.4200, 23.4700), // কুমিল্লা latitude
-            'lng' => $faker->randomFloat(6, 91.1000, 91.2000), // কুমিল্লা longitude
-            'address' => $faker->streetAddress . ', Cumilla',
-            'status' => $faker->boolean ? 'online' : 'offline',
-        ];
-    }
+    // for ($i = 0; $i < 500; $i++) {
+    //     $locations[] = [
+    //         'name' => $faker->name,
+    //         'lat' => $faker->randomFloat(6, 23.4200, 23.4700), // কুমিল্লা latitude
+    //         'lng' => $faker->randomFloat(6, 91.1000, 91.2000), // কুমিল্লা longitude
+    //         'address' => $faker->streetAddress . ', Cumilla',
+    //         'status' => $faker->boolean ? 'online' : 'offline',
+    //     ];
+    // }
 
 
 @endphp
