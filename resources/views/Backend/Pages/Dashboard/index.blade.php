@@ -570,7 +570,8 @@
 
         /************************** Server Information Start*****************************************/
         function __load_server_stats() {
-            fetch('/server-information')
+            const SERVER_INFO_URL = "{{ route('admin.server_info') }}";
+            fetch(${SERVER_INFO_URL})
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('ram-usage').textContent = data.ram;
