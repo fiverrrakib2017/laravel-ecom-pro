@@ -61,7 +61,7 @@
 
                                 @foreach ($data as $item)
                                     @php
-                                        // Credit month collect
+                                        /* Credit month collect*/
                                         $credit_recharges = App\Models\Customer_recharge::where(
                                             'customer_id',
                                             $item->customer_id,
@@ -69,7 +69,7 @@
                                             ->where('transaction_type', 'credit')
                                             ->get(['recharge_month', 'amount']);
 
-                                        // Due paid month collect
+                                        /*Due paid month collect*/
                                         $due_paids = App\Models\Customer_recharge::where(
                                             'customer_id',
                                             $item->customer_id,
