@@ -15,9 +15,8 @@
                        @php
     $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 
-    $dataQuery = App\Models\Customer_recharge::select('customer_id')
-        ->groupBy('customer_id')
-        ->latest();
+    $dataQuery = App\Models\Customer_recharge::select(DB::raw('MAX(id) as id'))
+    ->groupBy('customer_id');
 
     if ($branch_user_id) {
         $dataQuery->whereHas('customer', function ($query) use ($branch_user_id) {
