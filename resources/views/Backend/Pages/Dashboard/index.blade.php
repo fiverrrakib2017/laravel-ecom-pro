@@ -322,10 +322,7 @@
         @include('Backend.Component.Chart.Customer_payment_chart')
     </div>
     <!----- Google Map  Start ------>
-
-{{-- include('Backend.Component.Customer.Google_map') --}}
-    
-
+    @include('Backend.Component.Customer.Google_map')
     <!----- Google Map  End ------>
 
     <div class="row mt-4">

@@ -14,20 +14,37 @@
 
 @php
 
-    // use Faker\Factory;
 
-    // $faker = Factory::create();
-    // $locations = [];
-
-    // for ($i = 0; $i < 500; $i++) {
-    //     $locations[] = [
-    //         'name' => $faker->name,
-    //         'lat' => $faker->randomFloat(6, 23.4200, 23.4700), // কুমিল্লা latitude
-    //         'lng' => $faker->randomFloat(6, 91.1000, 91.2000), // কুমিল্লা longitude
-    //         'address' => $faker->streetAddress . ', Cumilla',
-    //         'status' => $faker->boolean ? 'online' : 'offline',
-    //     ];
-    // }
+    $locations = [
+        [
+            'name' => 'Customer 1',
+            'lat' => 23.456789,
+            'lng' => 91.123456,
+            'address' => 'Shasangacha, Cumilla',
+            'status' => 'online',
+        ],
+        [
+            'name' => 'Customer 2',
+            'lat' => 23.460000,
+            'lng' => 91.130000,
+            'address' => 'Kandirpar, Cumilla',
+            'status' => 'offline',
+        ],
+        [
+            'name' => 'Customer 3',
+            'lat' => 23.465000,
+            'lng' => 91.135000,
+            'address' => 'Court Road, Cumilla',
+            'status' => 'online',
+        ],
+        [
+            'name' => 'Customer 4',
+            'lat' => 23.470000,
+            'lng' => 91.140000,
+            'address' => 'Racecourse, Cumilla',
+            'status' => 'offline',
+        ],
+    ];
 
 
 @endphp
