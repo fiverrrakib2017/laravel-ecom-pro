@@ -291,11 +291,7 @@ class CustomerController extends Controller
                 //             password : {password}
                 //             HelpLine : 01821600600
                 //             Bill payment link: {bill_payment_link}';
-                $message = 'Thank you for joining SR Wi-Fi.
-                            Your Customer ID : {customer_id}
-                            username : {username}
-                            password : {password}
-                            HelpLine : 01821600600';
+                $message = 'Thank you for joining SR Wi-Fi.Your Customer ID : {customer_id} username : {username} password : {password} HelpLine : 01821600600';
 
                 $message = str_replace('{customer_id}', $customer->id, $message);
                 $message = str_replace('{username}', $customer->username, $message);
@@ -314,8 +310,12 @@ class CustomerController extends Controller
                 $send_message->save();
             }
             /* Customer Device Liabilities store database table*/
-            if (!empty($request->device_type) && is_array($request->device_type)) {
+            if (!empty($request->device_type) && count($request->device_type) > 0) {
                 foreach ($request->device_type as $index => $type) {
+                    /*check customer device validation ---select--- null data*/
+                    if ($type === '---Select---' || empty($type)) {
+                        continue;
+                    }
                     $customer_device = new Customer_device();
                     $customer_device->customer_id=$customer->id;
                     $customer_device->user_id = auth()->guard('admin')->user()->id;

@@ -12,18 +12,28 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" id="tableStyle">
+
                         @php
+                            use App\Models\Customer;
+                            use App\Models\Customer_recharge;
+                            use Illuminate\Support\Facades\Auth;
+                            use Illuminate\Support\Carbon;
+
                             $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 
-                            $dataQuery = App\Models\Customer_recharge::select(DB::raw('MAX(id) as id'))->groupBy('customer_id',);
+                            // Distinct customer IDs
+                            $customerIdsQuery = Customer_recharge::select('customer_id')->distinct();
 
                             if ($branch_user_id) {
-                                $dataQuery->whereHas('customer', function ($query) use ($branch_user_id) {
+                                $customerIdsQuery->whereHas('customer', function ($query) use ($branch_user_id) {
                                     $query->where('pop_id', $branch_user_id);
                                 });
                             }
 
-                            $data = $dataQuery->get();
+                            $customerIds = $customerIdsQuery->pluck('customer_id')->toArray();
+
+                            // Load customers with pop & area relations
+                            $customers = Customer::with(['pop', 'area'])->whereIn('id', $customerIds)->get()->keyBy('id');
                         @endphp
 
                         <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap"
@@ -41,35 +51,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @php
-                                    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-
-                                    $dataQuery = App\Models\Customer_recharge::select(DB::raw('MAX(id) as id'))->groupBy('customer_id');
-
-                                    if ($branch_user_id) {
-                                        $dataQuery->whereHas('customer', function ($query) use ($branch_user_id) {
-                                            $query->where('pop_id', $branch_user_id);
-                                        });
-                                    }
-
-                                    $data = $dataQuery->get();
-                                @endphp
-
-                                @foreach ($data as $item)
+                                @foreach ($customerIds as $customer_id)
                                     @php
-                                        /* Credit month collect*/
-                                        $credit_recharges = App\Models\Customer_recharge::where(
-                                            'customer_id',
-                                            $item->customer_id,
-                                        )
+                                        $customer = $customers[$customer_id] ?? null;
+                                        if (!$customer) continue;
+
+                                        $credit_recharges = Customer_recharge::where('customer_id', $customer_id)
                                             ->where('transaction_type', 'credit')
                                             ->get(['recharge_month', 'amount']);
 
-                                        /*Due paid month collect*/
-                                        $due_paids = App\Models\Customer_recharge::where(
-                                            'customer_id',
-                                            $item->customer_id,
-                                        )
+                                        $due_paids = Customer_recharge::where('customer_id', $customer_id)
                                             ->where('transaction_type', 'due_paid')
                                             ->get(['recharge_month', 'amount']);
 
@@ -85,43 +76,38 @@
                                             }
                                         }
 
-                                        $total_recharge = App\Models\Customer_recharge::where(
-                                            'customer_id',
-                                            $item->customer_id,
-                                        )
+                                        $total_recharge = Customer_recharge::where('customer_id', $customer_id)
                                             ->where('transaction_type', '!=', 'due_paid')
                                             ->sum('amount');
 
-                                        $total_paid = App\Models\Customer_recharge::where(
-                                            'customer_id',
-                                            $item->customer_id,
-                                        )
+                                        $total_paid = Customer_recharge::where('customer_id', $customer_id)
                                             ->where('transaction_type', '!=', 'credit')
                                             ->sum('amount');
                                     @endphp
 
-                                    @if ($total_due !== 0)
+                                    @if ($total_due > 0)
                                         <tr>
                                             <td>
-                                                <a href="{{ route('admin.customer.view', $item->customer->id) }}"
+                                                <a href="{{ route('admin.customer.view', $customer->id) }}"
                                                     style="display: flex; align-items: center; text-decoration: none; color: #333;">
-                                                    @if ($item->customer->status == 'online')
+                                                    @if ($customer->status == 'online')
                                                         <i class="fas fa-unlock"
                                                             style="font-size: 15px; color: green; margin-right: 8px;"></i>
                                                     @else
                                                         <i class="fas fa-lock"
                                                             style="font-size: 15px; color: red; margin-right: 8px;"></i>
                                                     @endif
-                                                    &nbsp;<span
-                                                        style="font-size: 16px; font-weight: bold;">{{ $item->customer->username }}</span>
+                                                    &nbsp;<span style="font-size: 16px; font-weight: bold;">
+                                                        {{ $customer->username }}
+                                                    </span>
                                                 </a>
                                             </td>
-                                            <td>{{ $item->customer->pop->name }}</td>
-                                            <td>{{ $item->customer->area->name }}</td>
-                                            <td>{{ $item->customer->phone }}</td>
+                                            <td>{{ $customer->pop->name ?? '-' }}</td>
+                                            <td>{{ $customer->area->name ?? '-' }}</td>
+                                            <td>{{ $customer->phone ?? '-' }}</td>
                                             <td>
                                                 @foreach ($unpaid_credits as $month)
-                                                    {{ \Carbon\Carbon::parse($month)->format('F Y') }}<br>
+                                                    {{ Carbon::parse($month)->format('F Y') }}<br>
                                                 @endforeach
                                             </td>
                                             <td>{{ $total_recharge }}</td>
@@ -130,7 +116,6 @@
                                         </tr>
                                     @endif
                                 @endforeach
-
                             </tbody>
                         </table>
 
