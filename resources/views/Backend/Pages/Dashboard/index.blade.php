@@ -568,21 +568,27 @@
 
 
 
-        /************************** Server Information Start*****************************************/
         function __load_server_stats() {
             const SERVER_INFO_URL = "{{ route('admin.server_info') }}";
-            fetch(${SERVER_INFO_URL})
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('ram-usage').textContent = data.ram;
-                    document.getElementById('cpu-usage').textContent = data.cpu;
-                    document.getElementById('disk-usage').textContent = data.disk;
-                })
-                .catch(error => console.error('Error fetching server stats:', error));
+
+            $.ajax({
+                url: SERVER_INFO_URL,
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#ram-usage').text(data.ram);
+                    $('#cpu-usage').text(data.cpu);
+                    $('#disk-usage').text(data.disk);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching server stats:', error);
+                }
+            });
         }
 
         setInterval(__load_server_stats, 1000);
         __load_server_stats();
+
         /************************** Server Information End*****************************************/
     </script>
 @endsection
