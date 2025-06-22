@@ -77,7 +77,17 @@ class RouterController extends Controller
         $object->api_version = $request->api_version;
         $object->location = $request->location;
         $object->remarks = $request->remarks;
-
+        // if ($object->connection_type === 'radius') {
+        //     Nas::updateOrCreate([
+        //         'nasname' => $router->ip_address,
+        //     ], [
+        //         'shortname' => $router->name,
+        //         'type' => 'mikrotik',
+        //         'secret' => $router->password,
+        //         'description' => $router->remarks,
+        //     ]);
+        // }
+        // if($object->connection_type=='pppoe', 'hotspot')
         /* Save to the database table*/
         $object->save();
         return response()->json([

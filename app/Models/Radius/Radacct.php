@@ -9,7 +9,7 @@ class Radacct extends Model
 {
     use HasFactory;
 
-    protected $connection = 'radiusdb'; // <-- IMPORTANT
+    protected $connection = 'radius'; // <-- IMPORTANT
     protected $table = 'radacct';
     public $timestamps = false;
 
