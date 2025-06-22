@@ -78,6 +78,7 @@
 <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
 <script type="text/javascript">
     $(document).ready(function() {
+        var filter_dropdown = true;
         /*Get Url Param Recevied*/
         var pop_id = @json($pop_id ?? '');
         var area_id = @json($area_id ?? '');
@@ -101,7 +102,7 @@
         }
 
         /*When Request Get Area Page*/
-       var  filter_dropdown = @json($filter_dropdown ?? true);
+         filter_dropdown = @json($filter_dropdown ?? true);
         // if (area_page) {
         //     pop_id = @json($pop_id ?? '');
         //     area_id = @json($area_id ?? '');
@@ -225,6 +226,10 @@
         $(document).on('change', '.status_filter', function() {
             $('#customer_datatable1').DataTable().ajax.reload(null, false);
         });
+        /*Handle Connection Type filter change*/
+        $(document).on('change', '.connection_type_filter', function() {
+            $('#customer_datatable1').DataTable().ajax.reload(null, false);
+        });
         /*Check Box Selected*/
         $(document).on('change', '#customer_select_all', function() {
             let checked = $(this).is(':checked');
@@ -258,12 +263,13 @@
                 url: "{{ route('admin.customer.get_all_data') }}",
                 type: "GET",
                 data: function(d) {
-                    d.pop_id        = $('#search_pop_id').val() || pop_id;
-                    d.area_id       = $('#search_area_id').val() || area_id;
-                    d.status        = $('.status_filter').val() || status;
-                    d.year          = get_year || null;
-                    d.month         = get_month || null;
-                    d.type          = get_type || null;
+                    d.pop_id            = $('#search_pop_id').val() || pop_id;
+                    d.area_id           = $('#search_area_id').val() || area_id;
+                    d.status            = $('.status_filter').val() || status;
+                    d.connection_type   = $('.connection_type_filter').val();
+                    d.year              = get_year || null;
+                    d.month             = get_month || null;
+                    d.type              = get_type || null;
                 }
             },
             language: {

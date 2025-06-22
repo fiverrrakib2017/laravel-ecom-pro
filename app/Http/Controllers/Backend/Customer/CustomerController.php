@@ -52,6 +52,7 @@ class CustomerController extends Controller
         $pop_id = $request->pop_id;
         $area_id = $request->area_id;
         $status = $request->status;
+        $connection_type = $request->connection_type;
         $search = $request->search['value'];
         $columnsForOrderBy = ['id', 'id', 'fullname', 'package', 'amount', 'created_at', 'expire_date', 'username', 'phone', 'pop_id', 'area_id', 'created_at', 'created_at'];
 
@@ -89,6 +90,9 @@ class CustomerController extends Controller
             })
             ->when($area_id, function ($query) use ($area_id) {
                 $query->where('area_id', $area_id);
+            })
+            ->when($connection_type, function ($query) use($connection_type) {
+                $query->where('connection_type', $connection_type);
             })
             /*year month type|| new|| expire*/
             // ->when($request->year, function ($query) use ($request) {
