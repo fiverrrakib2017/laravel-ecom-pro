@@ -1,17 +1,19 @@
 <?php
 
 namespace App\Http\Controllers\Backend\Tickets;
-
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Customer_Invoice;
 use App\Models\Customer_Transaction_History;
 use App\Models\Ticket;
+use App\Models\Send_message;
 use App\Models\Ticket_complain_type;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use function App\Helpers\send_message;
 
 class Ticket_controller extends Controller
 {
@@ -103,40 +105,78 @@ class Ticket_controller extends Controller
         ]);
     }
 
+
+
     public function store(Request $request)
     {
-        /*GET Customer POP & Area ID*/
-        $customer = Customer::find($request->customer_id);
-        $request->merge(['pop_id' => $customer->pop_id]);
-        $request->merge(['area_id' => $customer->area_id]);
-        /*Validate the form data*/
-        $this->validateForm($request);
-        $object = new Ticket();
-        $object->customer_id = $request->customer_id;
-        $object->ticket_for = $request->ticket_for;
-        $object->ticket_assign_id = $request->ticket_assign_id;
-        $object->ticket_complain_id = $request->ticket_complain_id;
-        $object->priority_id = $request->priority_id;
-        $object->pop_id = $request->pop_id;
-        $object->area_id = $request->area_id;
-        $object->note = $request->note;
-        $object->percentage = $request->percentage ?? '0%';
-        $object->status = $request->status_id;
-        /*Check Ticket Already Exist*/
-        $check=Ticket::where('customer_id',$request->customer_id)->where('status',0)->first();
-        if($check){
+        DB::beginTransaction();
+
+        try {
+            /*GET Customer POP & Area ID*/
+            $customer = Customer::find($request->customer_id);
+            $request->merge(['pop_id' => $customer->pop_id]);
+            $request->merge(['area_id' => $customer->area_id]);
+
+            /*Validate the form data*/
+            $this->validateForm($request);
+
+            /*Check Ticket Already Exist*/
+            $check = Ticket::where('customer_id', $request->customer_id)->where('status', 0)->first();
+            if ($check) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ticket already exists!',
+                ]);
+            }
+
+            /* Save Ticket */
+            $object = new Ticket();
+            $object->customer_id = $request->customer_id;
+            $object->ticket_for = $request->ticket_for;
+            $object->ticket_assign_id = $request->ticket_assign_id;
+            $object->ticket_complain_id = $request->ticket_complain_id;
+            $object->priority_id = $request->priority_id;
+            $object->pop_id = $request->pop_id;
+            $object->area_id = $request->area_id;
+            $object->note = $request->note;
+            $object->percentage = $request->percentage ?? '0%';
+            $object->status = $request->status_id;
+            $object->save();
+
+            /* Send Message to the Customer */
+            if ($request->send_message == '1') {
+                $message = "আপনার টিকিট (#{ticket_id}) গ্রহণ করা হয়েছে। আমরা খুব দ্রুত আপনার সাথে যোগাযোগ করব।";
+                $message = str_replace('{ticket_id}', $object->id, $message);
+                $message = str_replace('{customer_id}', $customer->id, $message);
+
+                $send_message = new Send_message();
+                $send_message->pop_id = $customer->pop_id;
+                $send_message->area_id = $customer->area_id;
+                $send_message->customer_id = $customer->id;
+                $send_message->message = $message;
+                $send_message->sent_at = now();
+                $send_message->save();
+
+                send_message($customer->phone, $message);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Added successfully!',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Ticket already exist!',
-            ]);
+                'message' => 'Something went wrong.',
+                'error'   => $e->getMessage()
+            ], 500);
         }
-        /* Save to the database table*/
-        $object->save();
-        return response()->json([
-            'success' => true,
-            'message' => 'Added successfully!',
-        ]);
     }
+
     public function change_status($id)
     {
         $object = Ticket::find($id);

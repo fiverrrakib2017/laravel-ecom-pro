@@ -137,7 +137,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-6 mb-3">
                             <label>Percentage</label>
                             <select name="percentage" class="form-select" type="text" style="width: 100%;" required>
                                 <option value="0%">0%</option>
@@ -154,13 +154,20 @@
                             </select>
 
                         </div>
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-6 mb-3">
                             <label>Note</label>
                             <input name="note" class="form-control" type="text" placeholder="Enter Note" />
 
                         </div>
                         <div class="col-md-6 mb-2">
-
+                            <div class="form-group clearfix">
+                                <div class="icheck-primary d-inline">
+                                    <input type="checkbox" id="sendMessageCheckbox" name="send_message" value="1">
+                                    <label for="sendMessageCheckbox">
+                                        Send message to the Customer
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <!-- Previous Tickets Table -->
                     <div class="mt-3 col-md-12 mb-2 d-none" id="previous_tickets">
