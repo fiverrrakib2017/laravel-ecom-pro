@@ -145,8 +145,9 @@ class Ticket_controller extends Controller
 
             /* Send Message to the Customer */
             if ($request->send_message == '1') {
-                $message = "আপনার টিকিট (#{ticket_id}) গ্রহণ করা হয়েছে। আমরা খুব দ্রুত আপনার সাথে যোগাযোগ করব।";
+                $message = "প্রিয় {username}, আপনার টিকিট (#{ticket_id}) গ্রহণ করা হয়েছে। আমরা খুব দ্রুত আপনার সাথে যোগাযোগ করব।";
                 $message = str_replace('{ticket_id}', $object->id, $message);
+                $message = str_replace('{username}', $customer->username, $message);
                 $message = str_replace('{customer_id}', $customer->id, $message);
 
                 $send_message = new Send_message();

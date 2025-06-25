@@ -203,7 +203,6 @@
 </div>
 <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
-<script src="{{ asset('Backend/assets/js/delete_data.js') }}"></script>
 <script src="{{ asset('Backend/assets/js/custom_select.js') }}"></script>
 <script type="text/javascript">
     __handleSubmit('#ticketForm', '#ticketModal');
@@ -239,7 +238,7 @@
                         form[0].reset();
                         /* Hide the modal */
                         $(modalSelector).modal('hide');
-                        $('#datatable1').DataTable().ajax.reload(null, false);
+                        $('#tickets_datatable1').DataTable().ajax.reload(null, false);
                         submitBtn.html(originalBtnText);
                         submitBtn.prop('disabled', false);
                         form.find(':input').prop('disabled', false);
@@ -311,16 +310,6 @@
                     toastr.error('An error occurred. Please try again.');
                 }
             });
-        });
-
-        /** Handle Delete button click**/
-        $(document).on('click', '.tickets_delete_btn', function() {
-            var id = $(this).data('id');
-            var deleteUrl = "{{ route('admin.tickets.delete', ':id') }}".replace(':id', id);
-
-            $('#deleteForm').attr('action', deleteUrl);
-            $('#deleteModal').find('input[name="id"]').val(id);
-            $('#deleteModal').modal('show');
         });
 
         /*GET Customer Ticket*/

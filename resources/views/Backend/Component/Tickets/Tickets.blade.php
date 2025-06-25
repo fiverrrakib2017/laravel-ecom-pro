@@ -43,7 +43,7 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
     <tbody></tbody>
 </table>
 <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
-<script  src="{{ asset('Backend/assets/js/delete_data.js') }}"></script>
+
 
 <script>
 
@@ -411,7 +411,7 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                     if (response.success) {
                         btn.html(originalHtml).prop("disabled", false);
                         toastr.success(response.message);
-                        $('#datatable1').DataTable().ajax.reload(null, false);
+                        $('#tickets_datatable1').DataTable().ajax.reload(null, false);
                     } else if (response.success == false) {
                         toastr.error(response.message);
                     }
@@ -429,6 +429,55 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         $(document).on("click", ".tickets_view_btn", function() {
              let id = $(this).data("id");
 
+        });
+        /** Handle Delete button click**/
+        $('#tickets_datatable1 tbody').on('click', '.tickets_delete_btn', function() {
+            var id = $(this).data('id');
+            var deleteUrl = "{{ route('admin.tickets.delete', ':id') }}".replace(':id', id);
+
+            $('#deleteForm').attr('action', deleteUrl);
+            $('#deleteModal').find('input[name="id"]').val(id);
+            $('#deleteModal').modal('show');
+        });
+
+        /** Handle form submission for delete **/
+        $('#deleteModal form').submit(function(e) {
+            e.preventDefault();
+            /*Get the submit button*/
+            var submitBtn = $('#deleteModal form').find('button[type="submit"]');
+
+            /* Save the original button text*/
+            var originalBtnText = submitBtn.html();
+
+            /*Change button text to loading state*/
+            submitBtn.html(
+                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>`
+            );
+
+            var form = $(this);
+            var url = form.attr('action');
+            var formData = form.serialize();
+            /** Use Ajax to send the delete request **/
+            $.ajax({
+                type: 'POST',
+                'url': url,
+                data: formData,
+                success: function(response) {
+                    $('#deleteModal').modal('hide');
+                    if (response.success) {
+                        toastr.success(response.message);
+                        $('#tickets_datatable1').DataTable().ajax.reload(null, false);
+                    }
+                },
+
+                error: function(xhr, status, error) {
+                    /** Handle  errors **/
+                    toastr.error(xhr.responseText);
+                },
+                complete: function() {
+                    submitBtn.html(originalBtnText);
+                }
+            });
         });
 
     });
