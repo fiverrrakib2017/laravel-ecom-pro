@@ -85,6 +85,9 @@ class RouterController extends Controller
             $nas->shortname=$request->ip_address;
             $nas->ports=$request->port;
             $nas->secret=$request->password;
+            $nas->api_user=$request->username;
+            $nas->api_password=$request->password;
+            $nas->api_ip=$request->ip_address;
             $nas->server=$request->ip_address;
             $nas->save();
         }
@@ -222,6 +225,50 @@ class RouterController extends Controller
         if(!isset($pop_id) && empty($pop_id)){
             return response()->json(['success' => false, 'message' => 'Not found.']);
         }
+    }
+    public function show_nas_server(){
+        $routers = nas_server::get();
+
+        $mikrotik_data = [];
+
+        foreach ($routers as $router) {
+            try {
+                $client = new Client([
+                    'host'     => $router->api_ip,
+                    'user'     => $router->api_user,
+                    'pass'     => $router->api_password,
+                    'port'     => (int) $router->ports,
+                    'timeout'  => 3,
+                    'attempts' => 1
+                ]);
+
+
+                $query = new Query('/ppp/active/print');
+                $activeUsers = $client->query($query)->read();
+
+
+                $resourceQuery = new Query('/system/resource/print');
+                $resourceDetails = $client->query($resourceQuery)->read();
+
+                $mikrotik_data[] = [
+                    'router_id' => $router->id,
+                    'router_name' => $router->nasname,
+                    'online_users' => count($activeUsers),
+                    'uptime' => $resourceDetails[0]['uptime'] ?? 'N/A',
+                    'version' => $resourceDetails[0]['version'] ?? 'N/A',
+                    'hardware' => $resourceDetails[0]['hardware'] ?? 'N/A',
+                    'cpu' => $resourceDetails[0]['cpu'] ?? 'N/A',
+                    'offline_users' => 0,
+                ];
+            } catch (\Exception $e) {
+                $mikrotik_data[] = [
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+        $mikrotik_data = collect($mikrotik_data);
+        // return $mikrotik_data;
+        return view('Backend.Pages.Router.nas', compact('routers', 'mikrotik_data'));
     }
 
     private function validateForm($request)

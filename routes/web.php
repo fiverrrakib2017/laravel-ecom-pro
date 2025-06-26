@@ -676,6 +676,8 @@ Route::group(['middleware' => 'admin'], function () {
                 /* mikrotik Log */
                 Route::get('/log', 'router_log')->name('admin.router.log.index');
                 Route::get('/user-list/{router_id}', 'router_user_list')->name('admin.router.ppp.users.index');
+                /* nas server */
+                Route::get('/nas/server','show_nas_server')->name('admin.router.nas.show_nas_server');
             });
         });
     });

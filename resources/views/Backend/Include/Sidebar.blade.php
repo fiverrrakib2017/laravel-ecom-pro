@@ -804,18 +804,18 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href=""
-                                class="nav-link ">
+                            <a href="{{ route('admin.router.nas.show_nas_server') }}"
+                                class="nav-link {{ $route == 'admin.router.nas.show_nas_server' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>NAS Server</p>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Settings</p>
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
                 @endif
