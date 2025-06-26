@@ -224,6 +224,76 @@ class Ticket_controller extends Controller
             return response()->json(['success' => false, 'message' => 'Not found.']);
         }
     }
+    public function add_ticekts_activity(Request $request){
+        /*Validate the form data*/
+        $rules = [
+            'ticket_id' => 'required|integer',
+            'title' => 'required',
+            'description' => 'required',
+            'status' => 'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
+        }
+        DB::beginTransaction();
+
+        try {
+
+            /* Save Ticket */
+            $object = new Ticket_details();
+            $object->ticket_id = $request->ticket_id;
+            $object->action_title = $request->title;
+            $object->description = $request->description;
+            $object->status = $request->status;
+            $object->save();
+
+            /*Message Rule Validation*/
+            if ($request->send_message == '1' && empty($request->message)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please type a message!',
+                ]);
+            }
+
+
+            /* Send Message to the Customer */
+            if ($request->send_message == '1') {
+                $customer=Customer::find($request->customer_id);
+                $send_message = new Send_message();
+                $send_message->pop_id = $customer->pop_id;
+                $send_message->area_id = $customer->area_id;
+                $send_message->customer_id = $customer->id;
+                $send_message->message = $request->message;
+                $send_message->sent_at = now();
+                $send_message->save();
+
+                send_message($customer->phone, $request->message);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank You.',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
     public function get_customer_tickets($customer_id){
         if(!empty($customer_id) && isset($customer_id)){
           $data=  Ticket::with(['customer', 'assign', 'complain_type', 'pop', 'area'])->where('customer_id',$customer_id)->latest()->get();
@@ -262,7 +332,7 @@ class Ticket_controller extends Controller
     {
         /*Validate the form data*/
         $rules = [
-            'student_id' => 'required|integer',
+            'customer_id' => 'required|integer',
             'ticket_for' => 'required|integer',
             'ticket_assign_id' => 'required|integer',
             'ticket_complain_id' => 'required|integer',
