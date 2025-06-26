@@ -19,7 +19,7 @@ class SettingsController extends Controller
     {
         //return $request->all();
         $request->validate([
-            'school_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'address' => 'nullable|string|max:500',
             'phone_number' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -27,7 +27,7 @@ class SettingsController extends Controller
         ]);
 
         $object = Website_information::firstOrNew([]);
-        $object->name = $request->school_name;
+        $object->name = $request->name;
         $object->address = $request->address;
         $object->phone_number = $request->phone_number;
         $object->email = $request->email;
