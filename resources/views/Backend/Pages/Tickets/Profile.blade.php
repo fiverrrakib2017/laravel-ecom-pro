@@ -156,7 +156,7 @@
                                             <i class="fas fa-map-marker-alt bg-info"></i>
                                             <div class="timeline-item">
                                                 <span class="time"><i class="far fa-clock"></i>
-                                                    {{ \Carbon\Carbon::parse($data->created_at)->format('h:i A') }}</span>
+                                                    {{ \Carbon\Carbon::parse($item->created_at)->format('h:i A') }}</span>
                                                 <h3 class="timeline-header">Visited Customer Location</h3>
                                                 <div class="timeline-body">
                                                     Technician <b>{{ $data->assign->name ?? '' }}</b> visited the customer
@@ -169,7 +169,7 @@
                                             <i class="fas fa-tools bg-primary"></i>
                                             <div class="timeline-item">
                                                 <span class="time"><i class="far fa-clock"></i>
-                                                    {{ \Carbon\Carbon::parse($data->created_at)->format('h:i A') }}</span>
+                                                    {{ \Carbon\Carbon::parse($item->created_at)->format('h:i A') }}</span>
                                                 <h3 class="timeline-header">Work in Progress</h3>
                                                 <div class="timeline-body">
                                                     Technician <b>{{ $data->assign->name ?? '' }}</b> is currently working
@@ -182,7 +182,7 @@
                                             <i class="fas fa-check-circle bg-success"></i>
                                             <div class="timeline-item">
                                                 <span class="time"><i class="far fa-clock"></i>
-                                                    {{ \Carbon\Carbon::parse($data->created_at)->format('h:i A') }}</span>
+                                                    {{ \Carbon\Carbon::parse($item->created_at)->format('h:i A') }}</span>
                                                 <h3 class="timeline-header">Ticket Completed</h3>
                                                 <div class="timeline-body">
                                                     The ticket has been successfully resolved and closed.
@@ -197,8 +197,11 @@
 
                             <div class="mt-4">
                                 {{-- <button type="button" class="btn btn-warning"><i class="fas fa-check-circle"></i> Close Ticket</button> --}}
-                                
-                                <button type="button"  data-toggle="modal" data-target="#addModal" class="btn btn-success"> <i class="fas fa-plus-circle"></i> Add Activity</button>
+                                @if($data->status =='0')
+                                    <button type="button"  data-toggle="modal" data-target="#addModal" class="btn btn-success"> <i class="fas fa-plus-circle"></i> Add Activity</button>
+
+                                @endif
+
 
                                 <button type="button" onclick="history.back()" class="btn btn-danger"><i class="fas fa-arrow-left"></i> Back</button>
                             </div>
@@ -309,7 +312,7 @@
                             submitBtn.prop('disabled', false);
                             form.find(':input').prop('disabled', false);
                         }else if(response.success == false){
-                            toastr.error(response.message || response.error);
+                            toastr.error(response.message);
                         }
                     },
                     error: function(xhr) {
