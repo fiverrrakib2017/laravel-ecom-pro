@@ -1,7 +1,23 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ route('admin.dashboard') }}" class="brand-link">
-        <img src="{{ asset('Backend/images/it-fast.png') }}" alt="AdminLTE Logo" class="brand-image elevation-3"
-            style="">
+        @php
+            $user = auth()->guard('admin')->user();
+
+            $data = \App\Models\Website_information::where('pop_id', $user->pop_id)->latest()->first();
+
+            if ($user->pop_id === null) {
+                $data = \App\Models\Website_information::whereNull('pop_id')->latest()->first();
+            }
+        @endphp
+
+        @if (!empty($data) && $data->logo)
+            <img src="{{ asset('Backend/uploads/photos/' . $data->logo) }}" alt="Logo" class="brand-image elevation-3">
+        @else
+            <img src="{{ asset('Backend/img/default-logo.png') }}" alt="Default Logo" class="brand-image elevation-3">
+        @endif
+
+
+
 
     </a>
     <!-- Sidebar -->
