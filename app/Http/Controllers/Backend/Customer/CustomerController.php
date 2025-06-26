@@ -54,7 +54,7 @@ class CustomerController extends Controller
         $status = $request->status;
         $connection_type = $request->connection_type;
         $search = $request->search['value'];
-        $columnsForOrderBy = ['id', 'id', 'fullname', 'package', 'amount', 'created_at', 'expire_date', 'username', 'phone', 'pop_id', 'area_id', 'created_at', 'created_at'];
+        $columnsForOrderBy = [ 'id', 'fullname', 'package_id', 'amount', 'expire_date', 'username', 'phone', 'pop_id', 'area_id', 'created_at', 'id'];
 
         $orderByColumn = $request->order[0]['column'] ?? 0;
         $orderDirection = $request->order[0]['dir'] ?? 'desc';
