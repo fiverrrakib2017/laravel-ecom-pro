@@ -11,8 +11,14 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $data = Website_information::latest()->first();
-        return view('Backend.Pages.Settings.information', compact('data'));
+        if (auth()->guard('admin')->user()->pop_id == null) {
+            $data = Website_information::latest()->where('pop_id',null)->first();
+            return view('Backend.Pages.Settings.information', compact('data'));
+        }else{
+            $data = Website_information::where('pop_id',auth()->guard('admin')->user()->pop_id)->latest()->first();
+            return view('Backend.Pages.Settings.information', compact('data'));
+        }
+        abort(403);
     }
 
     public function store(Request $request)
@@ -26,7 +32,11 @@ class SettingsController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $object = Website_information::firstOrNew([]);
+        $object = Website_information::find($request->id) ?? new Website_information();
+
+        if (auth()->guard('admin')->user()->pop_id !== null) {
+            $object->pop_id = auth()->guard('admin')->user()->pop_id;
+        }
         $object->name = $request->name;
         $object->address = $request->address;
         $object->phone_number = $request->phone_number;
@@ -39,7 +49,7 @@ class SettingsController extends Controller
         }
         $object->save();
 
-        return back()->with('success', 'Settings updated successfully');
+        return response(['success'=>true,'message'=>'Settings updated successfully']);
     }
 
     private function validateForm($request)

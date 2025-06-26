@@ -17,7 +17,7 @@
                 <!--  Information Form -->
                 <form id="informationForm" action="{{ route('admin.settings.information.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-
+                    <input type="hidden" name="id" value="{{ $data->id ?? '' }}">
                     <div class="form-group row">
                         <label for="logo" class="col-md-3 col-form-label">App Logo</label>
                         <div class="col-md-9">
@@ -75,10 +75,7 @@
 @section('script')
 <script type="text/javascript">
     $(document).ready(function () {
-        __handleSubmit('#activityForm', '#addModal');
-
-        function __handleSubmit(formSelector, modalSelector) {
-            $(formSelector).submit(function(e) {
+        $("#informationForm").submit(function(e) {
                 e.preventDefault();
 
                 /* Get the submit button */
@@ -105,8 +102,7 @@
                     success: function(response) {
                         if (response.success == true) {
                             toastr.success(response.message);
-                            form[0].reset();
-                            /* Hide the modal */
+
                             setTimeout(() => {
                                 location.reload();
                             }, 500);
@@ -138,7 +134,6 @@
                     }
                 });
             });
-        }
     });
 </script>
 @endsection
