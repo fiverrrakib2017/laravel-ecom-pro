@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use function App\Helpers\check_pop_balance;
 use function App\Helpers\customer_log;
-// use function App\Helpers\formate_uptime;
-// use function App\Helpers\get_mikrotik_user_info;
+use function App\Helpers\formate_uptime;
+use function App\Helpers\get_mikrotik_user_info;
 use function App\Helpers\send_message;
 
 use phpseclib3\Net\SSH2;
