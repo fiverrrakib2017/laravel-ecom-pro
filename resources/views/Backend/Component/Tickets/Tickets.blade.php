@@ -380,7 +380,9 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
                             <button class="btn btn-danger btn-sm mr-3 tickets_delete_btn"  data-id="${row.id}"><i class="fa fa-trash"></i></button>
 
-                            <button class=" btn btn-info btn-sm mr-3 tickets_completed_btn" data-id="${row.id}"> <i class="fas fa-check-circle"></i> </button>
+                            <button class=" btn btn-info btn-sm mr-3 tickets_completed_btn" data-id="${row.id}"> <i class="fas fa-check-circle"></i></button>
+
+                             <button class="btn btn-success btn-sm mr-3 tickets_view_btn"  data-id="${row.id}"><i class="fa fa-eye"></i></button>
 
                             `;
                         }
@@ -427,8 +429,9 @@ style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         /** Handle ticket view button click**/
 
         $(document).on("click", ".tickets_view_btn", function() {
-             let id = $(this).data("id");
-
+            let id = $(this).data("id");
+            var viewUrl="{{route('admin.tickets.view', ':id')}}".replace(':id',id);
+            window.location.href = viewUrl;
         });
         /** Handle Delete button click**/
         $('#tickets_datatable1 tbody').on('click', '.tickets_delete_btn', function() {
