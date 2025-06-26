@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Backend\Router;
 use App\Http\Controllers\Controller;
 use App\Models\Pop_branch;
 use App\Models\Router;
+use App\Models\Radius\Nas as nas_server;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
@@ -77,19 +78,19 @@ class RouterController extends Controller
         $object->api_version = $request->api_version;
         $object->location = $request->location;
         $object->remarks = $request->remarks;
-        // if ($object->connection_type === 'radius') {
-        //     Nas::updateOrCreate([
-        //         'nasname' => $router->ip_address,
-        //     ], [
-        //         'shortname' => $router->name,
-        //         'type' => 'mikrotik',
-        //         'secret' => $router->password,
-        //         'description' => $router->remarks,
-        //     ]);
-        // }
-        // if($object->connection_type=='pppoe', 'hotspot')
+
+        if ($request->radius_server === '1') {
+            $nas=new nas_server();
+            $nas->nasname=$request->name;
+            $nas->shortname=$request->ip_address;
+            $nas->ports=$request->port;
+            $nas->secret=$request->password;
+            $nas->server=$request->ip_address;
+            $nas->save();
+        }
         /* Save to the database table*/
         $object->save();
+
         return response()->json([
             'success' => true,
             'message' => 'Added successfully!'

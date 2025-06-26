@@ -792,7 +792,7 @@
                     <a href="#"
                         class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cogs"></i>
-                        <p>Mikrotik Router <i class="right fas fa-angle-left"></i></p>
+                        <p>Mikrotik Server <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
@@ -800,7 +800,14 @@
                             <a href="{{ route('admin.router.index') }}"
                                 class="nav-link {{ $route == 'admin.router.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Router Add</p>
+                                <p>Mikrotik Router Add</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href=""
+                                class="nav-link ">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>NAS Server</p>
                             </a>
                         </li>
                         <li class="nav-item">

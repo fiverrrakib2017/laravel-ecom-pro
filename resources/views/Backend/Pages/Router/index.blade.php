@@ -16,7 +16,7 @@
                             <thead class="">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Nas Details</th>
+                                    <th>Details</th>
                                     <th>Online User</th>
                                     <th>Location</th>
                                     <th>IP</th>
@@ -148,11 +148,7 @@
                                     <input type="password" class="form-control" id="password" name="password"
                                         placeholder="Enter Password" required>
                                 </div>
-                                <div class="form-group mb-3">
-                                    <label for="port">API Port</label>
-                                    <input type="text" class="form-control" id="port" name="port" value="8728"
-                                        placeholder="Enter Port" required>
-                                </div>
+
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
@@ -168,13 +164,31 @@
                                         placeholder="e.g., 6.48">
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="location">Location (POP/Branch)</label>
+                                    <label for="location">Location</label>
                                     <input type="text" class="form-control" id="location" name="location"
                                         placeholder="Enter Location">
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="remarks">Remarks</label>
-                                    <textarea class="form-control" id="remarks" name="remarks" rows="3" placeholder="Any additional remarks"></textarea>
+                                    <textarea class="form-control" id="remarks" style="height: 38px;" name="remarks" rows="3" placeholder="Any additional remarks"></textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="port">API Port</label>
+                                    <input type="text" class="form-control" id="port" name="port" value="8728"
+                                        placeholder="Enter Port" required>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Checkbox Use Radius -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group clearfix">
+                                    <div class="icheck-primary d-inline">
+                                        <input type="checkbox" id="sendMessageCheckbox" name="radius_server" value="1">
+                                        <label for="sendMessageCheckbox">
+                                            Use Radius Server
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

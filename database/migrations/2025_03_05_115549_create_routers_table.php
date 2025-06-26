@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('port')->default('8728');
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->enum('connection_type', ['pppoe', 'hotspot', 'radius']);
+            $table->enum('is_radius', ['yes', 'no']);
             $table->string('api_version')->nullable();
             $table->string('location')->nullable();
             $table->text('remarks')->nullable();
