@@ -324,7 +324,11 @@
                     success: function (response) {
                         if (response.success == true) {
                             let tickets = response.data;
-                            let tableBody = $("#customer_tickets_table tbody");
+                            let table = $("#customer_tickets_table");
+                            if ($.fn.DataTable.isDataTable("#customer_tickets_table")) {
+                                table.DataTable().clear().destroy();
+                            }
+                            let tableBody = table.find("tbody");
                             tableBody.empty();
                             if (tickets.length > 0) {
                                 $("#previous_tickets").removeClass('d-none');
@@ -392,10 +396,12 @@
                                             <td>${ticket_status}</td>
                                         </tr>`;
                                     tableBody.append(row);
+
                                 });
                             } else {
                                 tableBody.append(`<tr><td colspan="6" class="text-center text-danger">No tickets found</td></tr>`);
                             }
+                            table.DataTable({ responsive: true});
                         }
                     }
                 });
