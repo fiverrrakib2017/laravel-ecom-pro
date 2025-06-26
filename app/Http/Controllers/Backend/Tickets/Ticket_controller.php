@@ -256,10 +256,12 @@ class Ticket_controller extends Controller
             $object->save();
 
             /*Update Ticket Table When status is completed*/
-            if(!empty($request->status) && $request->status=='completed')
-            $tickets=Ticket::find($request->ticket_id);
-            $tickets->status=1;
-            $tickets->update();
+            if($request->status=='completed'){
+                $tickets=Ticket::find($request->ticket_id);
+                $tickets->status=1;
+                $tickets->update();
+            }
+
 
             /*Message Rule Validation*/
             if ($request->send_message == '1' && empty($request->message)) {
