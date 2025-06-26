@@ -33,7 +33,7 @@
                                         required>
                                 </div>
                                 <div class="form-group">
-                                    <label>NID</label>
+                                    <label>NID <span class="text-danger">*</span></label>
                                     <input type="text" name="nid" class="form-control" placeholder="Enter NID">
                                 </div>
 
@@ -46,7 +46,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Password <span class="text-danger">*</span></label>
-                                    <input type="password" name="password" class="form-control"
+                                    <input type="text" name="password" class="form-control"
                                         placeholder="Enter Password" required>
                                 </div>
                                 <div class="form-group">
@@ -63,7 +63,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>POP Branch</label>
+                                    <label>POP Branch <span class="text-danger">*</span></label>
                                     <select name="pop_id" id="pop_id" class="form-control" required>
                                         <option value="">Select POP Branch</option>
                                         @php
@@ -83,7 +83,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Area</label>
+                                    <label>Area <span class="text-danger">*</span></label>
                                     <select name="area_id" id="area_id" class="form-control" required>
                                         <option value="">Select Area</option>
                                         @php
@@ -98,7 +98,7 @@
 
                                 </div>
                                 <div class="form-group">
-                                    <label>Package</label>
+                                    <label>Package <span class="text-danger">*</span></label>
                                     <select name="package_id" id="package_id" class="form-control" required>
                                         <option value="">Select Package</option>
                                         @php
@@ -114,24 +114,28 @@
 
                                         @endphp
                                         @foreach ($datas as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            {{-- <option value="{{ $item->id }}">{{ $item->name }}</option> --}}
                                         @endforeach
                                     </select>
 
 
                                 </div>
+                                <div class="form-group">
+                                    <label class="form-label">Connection Type <span class="text-danger">*</span></label>
+                                    <select name="connection_type" class="form-control" required>
+                                        <option>---Select---</option>
+                                        <option value="pppoe">PPPOE</option>
+                                        <option value="radius">Radius</option>
+                                        <option value="hotspot">Hostpot</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Router</label>
+                                    <label>Router <span class="text-danger">*</span></label>
                                     <select name="router_id" class="form-control" required>
                                         <option value="">Select Router</option>
-                                        @php
-                                            $datas = App\Models\Router::latest()->get();
-                                        @endphp
-                                        @foreach ($datas as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                        @endforeach
+
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -141,7 +145,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Amount</label>
-                                    <input type="number" name="amount" class="form-control" required>
+                                    <input type="number" name="amount" placeholder="Enter Amount" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -172,16 +176,7 @@
                                 <option value="discontinue">Discontinue</option>
                             </select>
                         </div>
-                        <div class="col-lg-6 mb-3">
-                            <label class="form-label">Connection Type <span class="text-danger">*</span></label>
-                            <select name="connection_type" class="form-control" required>
-                                  <option>---Select---</option>
-                                <option value="pppoe">PPPOE</option>
-                                <option value="radius">Radius</option>
-                                <option value="hotspot">Hostpot</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label class="form-label">Remarks</label>
                             <textarea name="remarks" class="form-control" placeholder="কাস্টমার এর সম্পর্কে যদি কোণ নোট রাখতে হয় তাহলে এইখানে লিখে রাখুন , পরবর্তীতে আপনি সেটা কাস্টমার এর প্রোফাইল এ দেখতে পারবেন" style="height: 83px;"></textarea>
                         </div>
@@ -365,6 +360,15 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="form-group">
+                                    <label class="form-label">Connection Type <span class="text-danger">*</span></label>
+                                    <select name="connection_type" class="form-control" required>
+                                        <option>---Select---</option>
+                                        <option value="pppoe">PPPOE</option>
+                                        <option value="radius">Radius</option>
+                                        <option value="hotspot">Hostpot</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -451,25 +455,16 @@
 <script  src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
 <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
 <script type="text/javascript">
+
     /*Add Modal Submit*/
     handleSubmit('#addCustomerForm','#addCustomerModal');
     /*update Modal Submit*/
     handleSubmit('#editCustomerForm','#editCustomerModal');
     $(document).ready(function() {
-        function load_dropdown(url, target_url) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                    $(target_url).empty().append('<option value="">---Select---</option>');
-                    $.each(data.data, function(key, value) {
-                        $(target_url).append('<option value="' + value.id + '">' + value
-                            .name + '</option>');
-                    });
-                }
-            });
-        }
+        /*initial select2 */
+        $('#addCustomerModal select[name="pop_id"]').select2();
+        $('#addCustomerModal select[name="area_id"]').select2();
+        $('#addCustomerModal select[name="package_id"]').select2();
         /** Handle pop branch button click **/
         $(document).on('change', '#addCustomerModal select[name="pop_id"]', function() {
             var pop_id = $(this).val();
@@ -478,13 +473,19 @@
                     pop_id);
                 var $package_url = "{{ route('admin.pop.branch.get_pop_wise_package', ':id') }}"
                     .replace(':id', pop_id);
+                var $router_url="{{ route('admin.router.get_router_with_pop', ':id') }}".replace(':id', pop_id);
+
                 load_dropdown($area_url, '#addCustomerModal select[name="area_id"]');
                 load_dropdown($package_url, '#addCustomerModal select[name="package_id"]');
+                load_dropdown($router_url, '#addCustomerModal select[name="router_id"]');
+
             } else {
                 $('#addCustomerModal select[name="area_id"]').html(
                     '<option value="">Select Area</option>');
                 $('#addCustomerModal select[name="package_id"]').html(
                     '<option value="">Select Package</option>');
+                $('#addCustomerModal select[name="router_id"]').html(
+                    '<option value="">Select Router</option>');
             }
 
         });
@@ -624,13 +625,12 @@
                             .area_id).select2();
                         $('#editCustomerModal select[name="package_id"]').val(response.data
                             .package_id).select2();
+                        $('#editCustomerModal select[name="connection_type"]').val(response.data
+                            .connection_type).select2();
                         $('#editCustomerModal select[name="liabilities"]').val(response.data
                             .liabilities).select2();
                         $('#editCustomerModal select[name="status"]').val(response.data
                             .status).trigger('change');
-
-
-
                         // Show the modal
                         $('#editCustomerModal').modal('show');
                     } else {
@@ -642,7 +642,20 @@
                 }
             });
         });
-
+        function load_dropdown(url, target_url) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $(target_url).empty().append('<option value="">---Select---</option>');
+                    $.each(data.data, function(key, value) {
+                        $(target_url).append('<option value="' + value.id + '">' + value
+                            .name + '</option>');
+                    });
+                }
+            });
+        }
 
 
     });

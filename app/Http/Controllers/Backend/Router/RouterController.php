@@ -210,7 +210,18 @@ class RouterController extends Controller
         ]);
     }
 
-
+    public function get_router_with_pop($pop_id){
+        if(isset($pop_id) && !empty($pop_id)){
+            $routers=Router::where('status', 'active')->where('pop_id', $pop_id)->get();
+            if ($routers) {
+                return response()->json(['success' => true, 'data' => $routers]);
+                exit;
+            }
+        }
+        if(!isset($pop_id) && empty($pop_id)){
+            return response()->json(['success' => false, 'message' => 'Not found.']);
+        }
+    }
 
     private function validateForm($request)
     {
