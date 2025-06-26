@@ -39,6 +39,10 @@
                             <h5 class="mt-4"><strong>Ticket Details</strong></h5>
                             <table class="table table-bordered">
                                 <tr>
+                                    <th>Create Time</th>
+                                    <td>{{ \Carbon\Carbon::parse($data->created_at)->format('d M Y h:i A') }}</td>
+                                </tr>
+                                <tr>
                                     <th>Complain Type</th>
                                     <td>{{ $data->complain_type->name ?? '' }}</td>
                                 </tr>
