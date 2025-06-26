@@ -10,6 +10,7 @@ use App\Models\Ticket;
 use App\Models\Send_message;
 use App\Models\Ticket_complain_type;
 use App\Models\User;
+use App\Models\Ticket_details;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -214,9 +215,10 @@ class Ticket_controller extends Controller
     }
     public function view($id)
     {
-        $data = Ticket::find($id);
+        $data = Ticket::with('customer', 'assign','complain_type', 'pop', 'area')->find($id);
+        $ticekts_details=Ticket_details::where('ticket_id', $id)->get();
         if ($data) {
-           return view('Backend.Pages.Tickets.Profile',compact('data'));
+           return view('Backend.Pages.Tickets.Profile',compact('data','ticekts_details'));
             exit();
         } else {
             return response()->json(['success' => false, 'message' => 'Not found.']);
