@@ -85,7 +85,7 @@
             <button type="button" data-toggle="modal" data-target="#ticketModal" class="btn btn-info m-1"><i
                     class="fas fa-ticket-alt"></i> Add Ticket</button>
             <button type="button" data-toggle="modal" data-target="#addSendMessageModal"
-                class="btn btn-primary text-white m-1"><i class="fas fa-envelope"></i> SMS Notification</button>
+                class="btn btn-primary text-white m-1"><i class="fas fa-envelope"></i>&nbsp; Send Message</button>
             <button class="btn btn-dark m-1 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false"><i class="fas fa-chart-line"></i> Reports</button>
             <div class="dropdown-menu custom-dropdown-menu">
@@ -222,9 +222,16 @@
                     'bg' => 'danger',
                     'icon' => 'fa-user-times'
                 ],
-
                 [
                     'id' => 8,
+                    'title' => 'Total Customer',
+                    'value' => 0,
+                    'bg' => 'success',
+                    'icon' => 'fa-user-check'
+                ],
+
+                [
+                    'id' => 9,
                     'title' => 'Area',
                     'value' => $total_area,
                     'bg' => 'success',
@@ -232,7 +239,7 @@
                     'url' => route('admin.pop.area.index'),
                 ],
                 [
-                    'id' => 9,
+                    'id' => 10,
                     'title' => 'Total Tickets',
                     'value' => $tickets,
                     'bg' => 'success',
@@ -240,7 +247,7 @@
                     'url' => route('admin.tickets.index'),
                 ],
                 [
-                    'id' => 10,
+                    'id' => 11,
                     'title' => 'Pending Tickets',
                     'value' => $ticket_pending,
                     'bg' => 'danger',
@@ -248,7 +255,7 @@
                      'url' => route('admin.tickets.index',['status' => 'pending']),
                 ],
                 [
-                    'id' => 11,
+                    'id' => 12,
                     'title' => 'Completed Tickets',
                     'value' => $ticket_completed,
                     'bg' => 'success',
@@ -302,6 +309,15 @@
                 <div class="info-box-content">
                     <span class="info-box-text">Disk Usage</span>
                     <span class="info-box-number" id="disk-usage">Loading...</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-12">
+            <div class="info-box bg-dark">
+                <span class="info-box-icon"><i class="fas fa-hdd"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Others Disk Usage</span>
+                    <span class="info-box-number" id="disk-usage-others">Loading...</span>
                 </div>
             </div>
         </div>
