@@ -43,7 +43,7 @@
                 <div class="modal-body">
 
                     <div class="form-group">
-                         <label>Transaction Type:</label>
+                        <label class="font-weight-bold">Transaction Type <span class="text-danger">*</span></label>
                         <select name="transaction_type" required>
                              <option value="">---Select---</option>
                             <option value="payment">Payment</option>
