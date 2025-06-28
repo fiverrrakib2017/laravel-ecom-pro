@@ -7,7 +7,7 @@
         <div class="card">
         <div class="card-header">
           <button data-toggle="modal" data-target="#addModal"  class="btn btn-success "><i class="mdi mdi-account-plus"></i>
-          Add New Account</button>
+          Add New Transaction</button>
           </div>
             <div class="card-body">
                 <div class="table-responsive" id="tableStyle">
