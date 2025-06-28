@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('website_informations', function (Blueprint $table) {
             $table->id();
+            $table->integer('pop_id')->nullable();
             $table->string('name')->nullable();
             $table->string('address')->nullable();
             $table->string('phone_number')->nullable();
