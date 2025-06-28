@@ -218,14 +218,14 @@
                 [
                     'id' => 7,
                     'title' => 'Discontinue',
-                    'value' => 0,
+                    'value' => $discontinue_customer,
                     'bg' => 'danger',
                     'icon' => 'fa-user-times'
                 ],
                 [
                     'id' => 8,
                     'title' => 'Total Customer',
-                    'value' => 0,
+                    'value' => $total_customer,
                     'bg' => 'success',
                     'icon' => 'fa-user-check'
                 ],
