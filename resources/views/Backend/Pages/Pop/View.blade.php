@@ -204,11 +204,10 @@
                                                         'pop_id',
                                                         $pop->id,
                                                     )->get();
-                                                    $number=1;
                                                 @endphp
                                                 @foreach ($branch_pacakges as $item)
                                                     <tr>
-                                                        <td>{{ $number++ }}</td>
+                                                        <td>{{ $item->id }}</td>
                                                         <td>{{ $item->name }}</td>
                                                         <td>{{ $item->purchase_price }}</td>
                                                         <td>{{ $item->sales_price }}</td>
