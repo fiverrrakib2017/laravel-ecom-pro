@@ -371,7 +371,8 @@ button#submitButton {
                     }
                 });
             });
-            $(document).on('click','button[name="finished_btn"]',function(){
+            $(document).on('click','button[name="finished_btn"]',function(e){
+                 e.preventDefault();
                 $('#invoiceModal').modal('show');
             });
         });

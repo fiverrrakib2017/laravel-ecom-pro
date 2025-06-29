@@ -15,159 +15,137 @@ button#submitButton {
     <div class="container-fluid">
         <form id="form-data" action="{{ route('admin.supplier.invoice.update_invoice') }}" method="post">
             @csrf
-            <input type="text" value="{{ $invoice_data->id }}" name="id" class="d-none">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header">
-                        <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="refer_no" class="form-label">Refer No:</label>
-                                        <input class="form-control" type="text" placeholder="Type Your Refer No" id="refer_no" name="refer_no">
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group mt-2">
-                                        <label>Supplier Name</label>
-                                        <div class="d-flex">
-                                        <select type="text" id="client_name" name="client_id" class="form-select select2">
-                                            <option value="">---Select---</option>
-                                            @php
-                                            $suppliers = \App\Models\Supplier::latest()->get();
-                                            @endphp
-                                            @if($suppliers->isNotEmpty())
-                                                @foreach($suppliers as $item)
-                                                <option value="{{ $item->id }}" {{ $item->id == $invoice_data->supplier_id ? 'selected' : '' }}>
-                                                    {{ $item->fullname }}
-                                                </option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supplierModal"><span>+</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="note" class="form-label">Note:</label>
-                                        <input class="form-control" type="text" placeholder="Notes" id="note" name="note" value="{{ $invoice_data->note }}">
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="currentDate" class="form-label">Invoice Date</label>
-                                        <input class="form-control" type="date" id="currentDate" name="date" value="{{ $invoice_data->invoice_date }}">
-                                    </div>
-                                </div>
+            <input type="hidden" name="id" value="{{ $invoice_data->id }}">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-3 col-12 mb-3">
+                            <label for="refer_no">Refer No:</label>
+                            <input class="form-control" type="text" placeholder="Type Your Refer No" id="refer_no" name="refer_no" value="{{ $invoice_data->refer_no }}">
+                        </div>
+                        <div class="col-md-3 col-12 mb-3">
+                            <label>Supplier Name</label>
+                            <div class="d-flex align-items-center gap-2 w-100">
+                                <select id="client_name" name="client_id" class="form-select select2 w-100" style="width: 100%;">
+                                    <option value="">---Select---</option>
+                                    @php $suppliers = \App\Models\Supplier::latest()->get(); @endphp
+                                    @foreach($suppliers as $item)
+                                        <option value="{{ $item->id }}" {{ $item->id == $invoice_data->supplier_id ? 'selected' : '' }}>
+                                            {{ $item->fullname }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#supplierModal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="col-md-3 col-12 mb-3">
+                            <label for="note">Note:</label>
+                            <input class="form-control" type="text" placeholder="Notes" id="note" name="note" value="{{ $invoice_data->note }}">
+                        </div>
+                        <div class="col-md-3 col-12 mb-3">
+                            <label for="currentDate">Invoice Date</label>
+                            <input class="form-control" type="date" id="currentDate" name="date" value="{{ $invoice_data->invoice_date }}">
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="product_item" class="form-label">Product</label>
-                                        <div class="d-flex">
-                                            <select id="product_name" class="form-select select2" aria-label="Product Name">
-                                                <option value="">---Select---</option>
-                                                @php
-                                                $products = \App\Models\Product::latest()->get();
-                                                @endphp
-                                                @if($products->isNotEmpty())
-                                                    @foreach($products as $item)
-                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            <button type="button" class="btn btn-primary add-product-btn" data-bs-toggle="modal" data-bs-target="#productModal">
-                                                <span>+</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-1">
-                                    <div class="form-group">
-                                        <label for="qty" class="form-label">Quantity</label>
-                                        <input type="number" id="qty" class="form-control" min="1" value="1">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="price" class="form-label">Price</label>
-                                        <input type="text" class="form-control price" id="price" placeholder="00">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="total_price" class="form-label">Total Price</label>
-                                        <input id="total_price" type="text" class="form-control total_price" placeholder="00">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="details" class="form-label">Notes</label>
-                                        <input id="details" type="text" class="form-control" placeholder="Notes">
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group ">
-                                    <button type="button" id="submitButton" class="btn btn-primary">Add Now</button>
-                                    </div>
-                                </div>
+                <div class="card-body pb-0">
+                    <div class="row align-items-end">
+                        <div class="col-md-3 col-12 mb-3">
+                            <label for="product_name">Product</label>
+                            <div class="d-flex align-items-center gap-2 w-100">
+                                <select id="product_name" class="form-select select2 w-100" style="width: 100%;">
+                                    <option value="">---Select---</option>
+                                    @php $products = \App\Models\Product::latest()->get(); @endphp
+                                    @foreach($products as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#productModal">
+                                    <i class="fas fa-plus"></i>
+                                </button>
                             </div>
+                        </div>
+                        <div class="col-md-1 col-6 mb-3">
+                            <label for="qty">Qty</label>
+                            <input type="number" id="qty" class="form-control" min="1" value="1">
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label for="price">Price</label>
+                            <input type="text" id="price" class="form-control" placeholder="00">
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label for="total_price">Total Price</label>
+                            <input id="total_price" type="text" class="form-control" placeholder="00">
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <label for="details">Notes</label>
+                            <input id="details" type="text" class="form-control" placeholder="Notes">
+                        </div>
+                        <div class="col-md-2 col-12 mb-3 text-right">
+                            <button type="button" id="submitButton" class="btn btn-success w-100">
+                                <i class="fas fa-plus-circle"></i> Add Now
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="table table-bordered" id="invoiceTable">
-                    <thead class="bg bg-info text-white">
-                        <th>Product List</th>
-                        <th>Qty</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th></th>
-                    </thead>
-                    <tbody id="tableRow">
-                        @foreach ($invoice_data->items  as $item)
-                        <tr>
-                            <td>
-                                <input type="hidden" name="table_product_id[]" value="{{ $item->product_id }}" class="d-none">
-                                {{ $item->product->name }}
-                            </td>
-                            <td>
-                                <input type="hidden" name="table_qty[]" value="{{ $item->qty }}" class="d-none">
-                                {{ $item->qty }}
-                            </td>
-                            <td>
-                                <input type="hidden" name="table_price[]" value="{{ $item->price }}" class="d-none">
-                                {{ intval($item->price) }}
-                            </td>
-                            <td>
-                                <input type="hidden" name="table_total_price[]" value="{{ intval($item->total_price) }}" class="d-none">
-                                {{ intval($item->total_price) }}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm removeRow">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
 
+            <!-- Table Section -->
+            <div class="card shadow-sm">
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-bordered table-hover mb-0" id="invoiceTable">
+                        <thead class="bg-info text-white">
+                            <tr>
+                                <th>Product List</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableRow">
+                            @foreach ($invoice_data->items as $item)
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="table_product_id[]" value="{{ $item->product_id }}">
+                                    {{ $item->product->name }}
+                                </td>
+                                <td>
+                                    <input type="hidden" name="table_qty[]" value="{{ $item->qty }}">
+                                    {{ $item->qty }}
+                                </td>
+                                <td>
+                                    <input type="hidden" name="table_price[]" value="{{ intval($item->price) }}">
+                                    {{ intval($item->price) }}
+                                </td>
+                                <td>
+                                    <input type="hidden" name="table_total_price[]" value="{{ intval($item->total_price) }}">
+                                    {{ intval($item->total_price) }}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm removeRow">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
                     </table>
-                    <div class="form-group text-end">
-                        <button type="button" name="finished_btn" class="btn btn-success"><i class="fe fe-dollar"></i>Process</button>
-                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button type="submit" name="finished_btn" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Invoice
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
 @include('Backend.Modal.supplier_modal')
 @include('Backend.Modal.product_modal')
 @include('Backend.Modal.invoice_modal')
@@ -365,7 +343,8 @@ button#submitButton {
                     }
                 });
             });
-            $(document).on('click','button[name="finished_btn"]',function(){
+            $(document).on('click','button[name="finished_btn"]',function(e){
+                  e.preventDefault();
                 $('#invoiceModal').modal('show');
             });
         });
