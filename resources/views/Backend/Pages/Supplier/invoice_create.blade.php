@@ -16,129 +16,117 @@ button#submitButton {
         <form id="form-data" action="{{ route('admin.supplier.invoice.store_invoice') }}" method="post">
             @csrf
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-12">
                     <div class="card shadow-sm mb-4">
                         <div class="card-header">
-                        <div class="row">
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="refer_no" class="form-label">Refer No:</label>
-                                        <input class="form-control" type="text" placeholder="Type Your Refer No" id="refer_no" name="refer_no">
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label for="refer_no">Refer No:</label>
+                                    <input class="form-control" type="text" placeholder="Type Your Refer No" id="refer_no" name="refer_no">
                                 </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label>Supplier Name</label>
-                                        <div class="d-flex">
-                                        <select type="text" id="client_name" name="client_id" class="form-select select2" style="width: 100%">
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label>Supplier Name</label>
+                                    <div class="d-flex align-items-center gap-2 w-100">
+                                        <select id="client_name" name="client_id" class="form-select select2 w-100" style="width: 100%;">
                                             <option value="">---Select---</option>
                                             @php
-                                            $suppliers = \App\Models\Supplier::latest()->get();
+                                                $suppliers = \App\Models\Supplier::latest()->get();
                                             @endphp
-                                            @if($suppliers->isNotEmpty())
-                                                @foreach($suppliers as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->fullname }}</option>
-                                                @endforeach
-                                            @endif
+                                            @foreach($suppliers as $item)
+                                                <option value="{{ $item->id }}">{{ $item->fullname }}</option>
+                                            @endforeach
                                         </select>
-                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#supplierModal"><span>+</span>
-                                            </button>
-                                        </div>
+                                        <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#supplierModal">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="note" class="form-label">Note:</label>
-                                        <input class="form-control" type="text" placeholder="Notes" id="note" name="note">
-                                    </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label for="note">Note:</label>
+                                    <input class="form-control" type="text" placeholder="Notes" id="note" name="note">
                                 </div>
-                                <div class="col">
-                                    <div class="form-group">
-                                        <label for="currentDate" class="form-label">Invoice Date</label>
-                                        <input class="form-control" type="date" id="currentDate" name="date">
-                                    </div>
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label for="currentDate">Invoice Date</label>
+                                    <input class="form-control" type="date" id="currentDate" name="date">
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
-
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="product_item" class="form-label">Product</label>
-                                        <div class="d-flex">
-                                            <select id="product_name" class="form-select select2" aria-label="Product Name" style="width: 100%">
-                                                <option value="">---Select---</option>
-                                                @php
+                        <div class="card-body pb-0">
+                            <div class="row align-items-end">
+                                <div class="col-md-3 col-12 mb-3">
+                                    <label for="product_name">Product</label>
+                                    <div class="d-flex align-items-center gap-2 w-100">
+                                        <select id="product_name" class="form-select select2 w-100" style="width: 100%;">
+                                            <option value="">---Select---</option>
+                                            @php
                                                 $products = \App\Models\Product::latest()->get();
-                                                @endphp
-                                                @if($products->isNotEmpty())
-                                                    @foreach($products as $item)
-                                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                                    @endforeach
-                                                @endif
-                                            </select>
-                                            <button type="button" class="btn btn-primary add-product-btn" data-toggle="modal" data-target="#productModal">
-                                                <span>+</span>
-                                            </button>
-                                        </div>
+                                            @endphp
+                                            @foreach($products as $item)
+                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#productModal">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="col-md-1">
-                                    <div class="form-group">
-                                        <label for="qty" class="form-label">Quantity</label>
-                                        <input type="number" id="qty" class="form-control" min="1" value="1">
-                                    </div>
+                                <div class="col-md-1 col-6 mb-3">
+                                    <label for="qty">Qty</label>
+                                    <input type="number" id="qty" class="form-control" min="1" value="1">
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="price" class="form-label">Price</label>
-                                        <input type="text" class="form-control price" id="price" placeholder="00">
-                                    </div>
+                                <div class="col-md-2 col-6 mb-3">
+                                    <label for="price">Price</label>
+                                    <input type="text" class="form-control" id="price" placeholder="00">
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="total_price" class="form-label">Total Price</label>
-                                        <input id="total_price" type="text" class="form-control total_price" placeholder="00">
-                                    </div>
+                                <div class="col-md-2 col-6 mb-3">
+                                    <label for="total_price">Total Price</label>
+                                    <input id="total_price" type="text" class="form-control" placeholder="00">
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        <label for="details" class="form-label">Notes</label>
-                                        <input id="details" type="text" class="form-control" placeholder="Notes">
-                                    </div>
+                                <div class="col-md-2 col-6 mb-3">
+                                    <label for="details">Notes</label>
+                                    <input id="details" type="text" class="form-control" placeholder="Notes">
                                 </div>
-                                <div class="col-md-2">
-                                    <div class="form-group ">
-                                    <button type="button" id="submitButton" class="btn btn-primary">Add Now</button>
-                                    </div>
+                                <div class="col-md-2 col-12 mb-3 text-right">
+                                    <button type="button" id="submitButton" class="btn btn-success w-100">
+                                        <i class="fas fa-plus-circle"></i> Add Now
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="table table-bordered" id="invoiceTable">
-                    <thead class="bg bg-info text-white">
-                        <th>Product List</th>
-                        <th>Qty</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <th></th>
-                    </thead>
-                    <tbody id="tableRow"></tbody>
 
-                    </table>
-                    <div class="form-group text-end">
-                        <button type="button" name="finished_btn" class="btn btn-success"><i class="fe fe-dollar"></i>Process</button>
+            <!-- Table Section -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-bordered table-hover mb-0" id="invoiceTable">
+                                <thead class="bg-info text-white">
+                                    <tr>
+                                        <th>Product List</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableRow"></tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-right">
+                            <button type="button" name="finished_btn" class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Process
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
 @include('Backend.Modal.supplier_modal')
 @include('Backend.Modal.product_modal')
 @include('Backend.Modal.invoice_modal')
