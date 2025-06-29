@@ -78,7 +78,7 @@
                                             }
                                         @endphp
                                         @foreach ($pops as $item)
-                                            <option value="{{ $item->id }}"  @if($item->id == $pop_id) selected @endif>{{ $item->name }}</option>
+                                            <option value="{{ $item->id }}" >{{ $item->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -92,7 +92,7 @@
                                             })->latest()->get();
                                         @endphp
                                         @foreach ($datas as $item)
-                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            {{-- <option value="{{ $item->id }}">{{ $item->name }}</option> --}}
                                         @endforeach
                                     </select>
 
