@@ -37,7 +37,7 @@ button#submitButton {
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#CustomerModal">
+                                        <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#CustomerModal">
                                             <i class="fas fa-plus"></i>
                                         </button>
                                     </div>
@@ -64,7 +64,7 @@ button#submitButton {
                                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                                             @endforeach
                                         </select>
-                                        <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#productModal">
+                                        <button type="button" class="btn btn-primary ml-2" data-toggle="modal" data-target="#productModal">
                                             <i class="fas fa-plus"></i>
                                         </button>
                                     </div>
