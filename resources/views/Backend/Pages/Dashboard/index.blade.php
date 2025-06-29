@@ -227,7 +227,8 @@
                     'title' => 'Total Customer',
                     'value' => $total_customer,
                     'bg' => 'success',
-                    'icon' => 'fa-user-check'
+                    'icon' => 'fa-user-check',
+                    'url' => route('admin.customer.index'),
                 ],
 
                 [
