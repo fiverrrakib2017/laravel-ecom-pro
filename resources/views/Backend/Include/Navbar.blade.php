@@ -92,11 +92,11 @@
                 <i class="fa fa-angle-down ml-2"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right border-0 shadow" aria-labelledby="account_settings">
-                <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)" id="manage_account">
+                <a class="dropdown-item d-flex align-items-center" href="{{route('admin.settings.information.index')}}">
                     <i class="fa fa-cog mr-2 text-muted"></i> Manage Account
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item d-flex align-items-center" href="">
+                <a class="dropdown-item d-flex align-items-center" href="{{route('admin.settings.passowrd.change.index')}}">
                     <i class="fa fa-key mr-2 text-muted"></i> Change Password
                 </a>
                 <div class="dropdown-divider"></div>
