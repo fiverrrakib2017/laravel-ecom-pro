@@ -563,7 +563,7 @@
                             </a>
                         </li>
 
-                        {{-- <li class="nav-item">
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Employee Promotions</p>
@@ -599,7 +599,7 @@
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Notice Board</p>
                             </a>
-                        </li> --}}
+                        </li>
 
 
                     </ul>

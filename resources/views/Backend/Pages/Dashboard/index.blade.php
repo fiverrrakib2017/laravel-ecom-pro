@@ -291,7 +291,8 @@
                 <span class="info-box-icon"><i class="fas fa-memory"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">RAM Usage</span>
-                    <span class="info-box-number" id="ram-usage">Loading...</span>
+                    <span class="info-box-number" id="ram-usage-text">Loading...</span>
+                    <small>Used: <span id="ram-used">--</span> / <span id="ram-total">--</span></small>
                 </div>
             </div>
         </div>
@@ -300,7 +301,9 @@
                 <span class="info-box-icon"><i class="fas fa-microchip"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">CPU Usage</span>
-                    <span class="info-box-number" id="cpu-usage">Loading...</span>
+                    <span class="info-box-number" id="cpu-usage-text">Loading...</span>
+                    {{-- <small><span id="cpu-cores">--</span> Cores</small><br>
+                    <small><span id="cpu-model">--</span></small> --}}
                 </div>
             </div>
         </div>
@@ -309,7 +312,8 @@
                 <span class="info-box-icon"><i class="fas fa-hdd"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Disk Usage</span>
-                    <span class="info-box-number" id="disk-usage">Loading...</span>
+                    <span class="info-box-number" id="disk-usage-text">Loading...</span>
+                    <small>Used: <span id="disk-used">--</span> / <span id="disk-total">--</span></small>
                 </div>
             </div>
         </div>
@@ -317,8 +321,9 @@
             <div class="info-box bg-dark">
                 <span class="info-box-icon"><i class="fas fa-hdd"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-text">Others Disk Usage</span>
-                    <span class="info-box-number" id="disk-usage-others">Loading...</span>
+                   <span class="info-box-text">Server Uptime</span>
+                    <span class="info-box-number" id="server-uptime">Loading...</span>
+                    {{-- <small>Host: <span id="server-hostname">--</span></small> --}}
                 </div>
             </div>
         </div>
@@ -593,9 +598,24 @@
                 method: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    $('#ram-usage').text(data.ram);
-                    $('#cpu-usage').text(data.cpu);
-                    $('#disk-usage').text(data.disk);
+                    /*******RAM Usages**********/
+                    $('#ram-usage-text').text(data.ram_usage);
+                    $('#ram-used').text(data.ram_used);
+                    $('#ram-total').text(data.ram_total);
+
+                    /*******CPU Usages**********/
+                     $('#cpu-usage-text').text(data.cpu_usage);
+                    $('#cpu-model').text(data.cpu_model);
+                    //$('#cpu-cores').text(data.cpu_cores);
+
+                    /*******CPU Usages**********/
+                    $('#disk-usage-text').text(data.disk_usage);
+                    $('#disk-used').text(data.disk_used);
+                    $('#disk-total').text(data.disk_total);
+
+                    /*******Server Usages**********/
+                    $('#server-uptime').text(data.uptime);
+                    // $('#server-hostname').text(data.hostname);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching server stats:', error);
