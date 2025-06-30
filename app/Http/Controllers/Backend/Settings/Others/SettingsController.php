@@ -20,6 +20,10 @@ class SettingsController extends Controller
         }
         abort(403);
     }
+    public function password_change_index()
+    {
+        return view('Backend.Pages.Settings.password_change');
+    }
 
     public function store(Request $request)
     {

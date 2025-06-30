@@ -660,8 +660,11 @@ Route::group(['middleware' => 'admin'], function () {
     /** Settings Management  Route **/
     Route::prefix('admin/settings/')->group(function () {
         Route::controller(SettingsController::class)->group(function () {
+            /**Information Route **/
             Route::get('/information', 'index')->name('admin.settings.information.index');
             Route::post('/store', 'store')->name('admin.settings.information.store');
+            /** Password Change  Route **/
+            Route::get('/passowrd/change', 'password_change_index')->name('admin.settings.passowrd.change.index');
         });
     });
     /* Mikrotik Router Management Route */

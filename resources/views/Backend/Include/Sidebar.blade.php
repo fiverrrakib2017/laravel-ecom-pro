@@ -778,7 +778,7 @@
                 @endif
                 <!-----------------Settings--------------------->
                 @php
-                    $active_prefix = ['admin.settings.information.index'];
+                    $active_prefix = ['admin.settings.information.index','admin.settings.passowrd.change.index'];
                 @endphp
                 <li class="nav-item">
                     <a href="#"
@@ -794,6 +794,13 @@
                                 class="nav-link {{ $route == 'admin.settings.information.index' ? 'active' : '' }}"><i
                                     class="far fa-circle nav-icon"></i>
                                 <p>Application Information</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.settings.passowrd.change.index') }}"
+                                class="nav-link {{ $route == 'admin.settings.passowrd.change.index' ? 'active' : '' }}"><i
+                                    class="far fa-circle nav-icon"></i>
+                                <p>Chagne Password</p>
                             </a>
                         </li>
 
