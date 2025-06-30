@@ -138,6 +138,14 @@ class PopController extends Controller
                 422,
             );
         }
+        if (Branch_package::where('package_id', $request->package_id)
+        ->where('pop_id', $request->pop_id)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Package Already Added',
+            ]);
+        }
+
 
         /* Create a new Supplier*/
         $object = new Branch_package();
@@ -284,6 +292,15 @@ class PopController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Package Update successfully!',
+        ]);
+    }
+
+    public function branch_package_delete(Request $request){
+        $object = Branch_package::find($request->id);
+        $object->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Package Delete successfully!',
         ]);
     }
 

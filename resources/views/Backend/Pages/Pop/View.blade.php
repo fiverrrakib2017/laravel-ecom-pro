@@ -212,7 +212,8 @@
                                                         <td>{{ $item->purchase_price }}</td>
                                                         <td>{{ $item->sales_price }}</td>
                                                         <td>
-                                                            <button class="btn btn-primary edit_branch_pacakge_btn" data-id="{{ $item->id }}"><i class="fas fa-edit"></i></button>
+                                                            <button class="btn-sm btn btn-primary edit_branch_pacakge_btn" data-id="{{ $item->id }}"><i class="fas fa-edit"></i></button>
+                                                            <button class="btn-sm btn btn-danger delete_branch_pacakge_btn" data-id="{{ $item->id }}"><i class="fas fa-trash"></i></button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -601,14 +602,52 @@
         });
 
         /** Handle Delete button click**/
-        $('#datatable1 tbody').on('click', '.delete-btn', function() {
-            var id = $(this).data('id');
-            var deleteUrl = "{{ route('admin.pop.delete', ':id') }}".replace(':id', id);
+        // $('#datatable1 tbody').on('click', '.delete-btn', function() {
+        //     var id = $(this).data('id');
+        //     var deleteUrl = "{{ route('admin.pop.delete', ':id') }}".replace(':id', id);
 
-            $('#deleteForm').attr('action', deleteUrl);
-            $('#deleteModal').find('input[name="id"]').val(id);
-            $('#deleteModal').modal('show');
+        //     $('#deleteForm').attr('action', deleteUrl);
+        //     $('#deleteModal').find('input[name="id"]').val(id);
+        //     $('#deleteModal').modal('show');
+        // });
+        /** Handle Delete button click**/
+        $('#branch_package_datatable tbody').on('click', '.delete_branch_pacakge_btn', function() {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+
+            var id = $(this).data('id');
+            let btn = $(this);
+            let originalHtml = btn.html();
+            btn.html('<i class="fas fa-spinner fa-spin"></i> Processing...').prop("disabled", true);
+
+            $.ajax({
+                url: "{{ route('admin.pop.branch_package_delete', ':id') }}".replace(':id', id),
+                method: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        toastr.error(response.message || 'Something went wrong.');
+                    }
+                },
+                error: function() {
+                    toastr.error('An error occurred. Please try again.');
+                },
+                complete: function() {
+                    btn.prop("disabled", false);
+                    btn.html(originalHtml);
+                }
+            });
         });
+
 
         /************************** Card Move Another Place*****************************************/
         function saveOrder() {

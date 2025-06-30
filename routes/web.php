@@ -381,6 +381,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/package/store', 'branch_package_store')->name('admin.pop.brnach.package.store');
             Route::get('/package/view/{id}', 'branch_package_edit')->name('admin.pop.branch.package.edit');
             Route::post('/package/update/{id}', 'branch_package_update')->name('admin.pop.branch.package.update');
+            Route::post('/package/delete', 'branch_package_delete')->name('admin.pop.branch_package_delete');
             /*GET POP/BRANCH Area */
             Route::get('/package/{id}', 'get_pop_wise_package')->name('admin.pop.branch.get_pop_wise_package');
             Route::get('/package/price/{id}', 'get_pop_wise_package_price')->name('admin.pop.branch.get_pop_wise_package_price');
