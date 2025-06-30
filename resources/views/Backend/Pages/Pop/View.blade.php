@@ -475,6 +475,8 @@
             handleSubmit('#popForm', '#addModal');
             /*****Brnach Package Add****/
             handleSubmit('#BranchPackageForm', '#addBranchPackageModal');
+            /*****Brnach Package Update****/
+            handleSubmit('#editBranchPackageForm', '#editBranchPackageModal');
 
             /*****Branch Recharge ****/
             handleSubmit('#popRechargeForm', '#PopRechargeModal');
