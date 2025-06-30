@@ -81,7 +81,12 @@
                             <label class="form-label">Router <span class="text-danger">*</span></label>
                             <select name="router_id" class="form-control" required>
                                 <option value="">Select Router</option>
-
+                                    @php
+                                        $datas = App\Models\Router::where('status', 'active')->latest()->get();
+                                    @endphp
+                                    @foreach ($datas as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                    @endforeach
                             </select>
                         </div>
                         <div class="col-lg-6 mb-3">
@@ -226,14 +231,14 @@
             if(pop_id){
                 var $area_url="{{ route('admin.pop.area.get_pop_wise_area', ':id') }}".replace(':id', pop_id);
                 var $package_url="{{ route('admin.pop.branch.get_pop_wise_package', ':id') }}".replace(':id', pop_id);
-                var $router_url="{{ route('admin.router.get_router_with_pop', ':id') }}".replace(':id', pop_id);
+                //var $router_url="{{ route('admin.router.get_router_with_pop', ':id') }}".replace(':id', pop_id);
                 load_dropdown($area_url,'select[name="area_id"]');
                 load_dropdown($package_url,'select[name="package_id"]');
-                load_dropdown($router_url,'select[name="router_id"]');
+                //load_dropdown($router_url,'select[name="router_id"]');
             }else{
                 $(' select[name="area_id"]').html('<option value="">Select Area</option>');
                 $(' select[name="package_id"]').html('<option value="">Select Package</option>');
-                $(' select[name="router_id"]').html('<option value="">Select Router</option>');
+                //$(' select[name="router_id"]').html('<option value="">Select Router</option>');
             }
 
         });
