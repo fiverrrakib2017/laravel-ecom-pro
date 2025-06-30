@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', 'Application Settings | Admin Panel')
+@section('title', 'Password Change | Admin Panel')
 
 
 @section('content')
@@ -11,11 +11,8 @@
             </div>
             <div class="card-body">
                 <!--  Information Form -->
-                <form id="informationForm" action="{{ route('admin.settings.information.store') }}" method="POST" enctype="multipart/form-data">
+                <form id="informationForm" action="{{ route('admin.settings.passowrd.change.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <input type="hidden" name="id" value="{{ $data->id ?? '' }}">
-
-
                     <div class="form-group row">
                         <label for="" class="col-md-3 col-form-label">Current Password</label>
                         <div class="col-md-9">

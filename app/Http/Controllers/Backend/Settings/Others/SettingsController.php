@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Website_information;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
@@ -23,6 +24,31 @@ class SettingsController extends Controller
     public function password_change_index()
     {
         return view('Backend.Pages.Settings.password_change');
+    }
+    public function password_change_store(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string|max:255',
+            'new_password' => 'required|string|max:255|min:6',
+            'confirm_new_password' => 'required|string|same:new_password',
+        ]);
+
+        $admin = auth()->guard('admin')->user();
+
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return response([
+                'success' => false,
+                'message' => 'Current password is incorrect.'
+            ]);
+        }
+
+        $admin->password = Hash::make($request->new_password);
+        $admin->save();
+
+        return response([
+            'success' => true,
+            'message' => 'Password changed successfully.'
+        ]);
     }
 
     public function store(Request $request)
