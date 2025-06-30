@@ -1594,20 +1594,24 @@ class CustomerController extends Controller
             }
 
             /* Check Pop Balance */
-            $pop_balance = check_pop_balance($data['pop_id']);
-            if ($pop_balance < $data['amount']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pop balance is not enough',
-                ]);
-            }
+            // $pop_balance = check_pop_balance($data['pop_id']);
+            // if ($pop_balance < $data['amount']) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Pop balance is not enough',
+            //     ]);
+            // }
 
             DB::beginTransaction();
             /* Create a new Customer*/
             $customer = new Customer();
             $customer->fullname = $data['fullname'];
-            $customer->phone = $data['phone'];
-            $customer->nid = $data['nid'] ?? null;
+            $customer->phone = !empty($data['phone']) ? $data['phone'] : '01' . rand(3, 9) . rand(10000000, 99999999);
+            if (!empty($data['nid'])) {
+                $customer->nid = $data['nid'];
+            } else {
+                $customer->nid = rand(4,6) . str_pad(rand(0, 99999999), 8, '0', STR_PAD_LEFT);
+            }
             $customer->address = $data['address'] ?? null;
             $customer->con_charge = $data['con_charge'] ?? 0;
             $customer->amount = $data['amount'] ?? 0;
@@ -1618,22 +1622,23 @@ class CustomerController extends Controller
             $customer->area_id = $data['area_id'];
             $customer->router_id = $data['router_id'];
             $customer->status = $data['status'] ?? 'active';
+            $customer->connection_type = $data['connection_type'] ?? 'pppoe';
             $customer->expire_date = $data['expire_date'] ?? date('Y-m-d', strtotime('+1 month'));
             $customer->remarks = $data['remarks'] ?? null;
             $customer->liabilities = $data['liabilities'] ?? 'NO';
             $customer->save();
             /* Store recharge data */
-            $object = new Customer_recharge();
-            $object->user_id = auth()->guard('admin')->user()->id;
-            $object->customer_id = $customer->id;
-            $object->pop_id = $data['pop_id'];
-            $object->area_id = $data['area_id'];
-            $object->recharge_month = implode(',', [date('F')]);
-            $object->transaction_type = 'cash';
-            $object->paid_until = date('Y-m-d', strtotime('+1 month'));
-            $object->amount = $data['amount'];
-            $object->note = 'Created';
-            $object->save();
+            // $object = new Customer_recharge();
+            // $object->user_id = auth()->guard('admin')->user()->id;
+            // $object->customer_id = $customer->id;
+            // $object->pop_id = $data['pop_id'];
+            // $object->area_id = $data['area_id'];
+            // $object->recharge_month = implode(',', [date('F')]);
+            // $object->transaction_type = 'cash';
+            // $object->paid_until = date('Y-m-d', strtotime('+1 month'));
+            // $object->amount = $data['amount'];
+            // $object->note = 'Created';
+            // $object->save();
             /* Create Customer Log */
             customer_log($customer->id, 'add', auth()->guard('admin')->user()->id, 'Customer Created Successfully!');
             DB::commit();
