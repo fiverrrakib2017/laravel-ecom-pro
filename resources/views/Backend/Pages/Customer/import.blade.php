@@ -64,59 +64,69 @@
                 </div>
                 <div class="card-body">
                     <table id="customer_import_datatable" class="table table-bordered dt-responsive nowrap"
-        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
     <thead>
         <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Package</th>
             <th>Amount</th>
-            {{-- <th>Create Date</th>
-            <th>Expired Date</th> --}}
             <th>User Name</th>
             <th>Mobile no.</th>
             <th>POP/Branch</th>
             <th>Area/Location</th>
+            <th>Create Date</th>
+            <th>Expire Date</th>
         </tr>
     </thead>
     <tbody>
         @php
-            $directory = public_path('uploads/csv/'); // Path to the CSV files
+            $directory = public_path('uploads/csv/');
             $files = scandir($directory);
             $upldNo = 1;
 
             foreach ($files as $file) {
-                // Check if the file is a CSV file
-                if (pathinfo($file, PATHINFO_EXTENSION) === "csv") {
-                    $CSVvar = fopen($directory . $file, "r");
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'csv') {
+                    $CSVvar = fopen($directory . $file, 'r');
 
-                    if ($CSVvar !== FALSE) {
+                    if ($CSVvar !== false) {
                         $i = 0;
-                        // Read each row of the CSV file
-                        while ($data = fgetcsv($CSVvar)) {
-                            if ($i > 0) {  // Skip the header row
-                                echo '<tr>';
-                                echo '<td>' . $upldNo++ . '</td>';
-                                echo '<td>' . htmlspecialchars($data[0]) . '</td>';  // Name
-                                echo '<td>' . htmlspecialchars($data[8]) . '</td>';  // Package
-                                echo '<td>' . htmlspecialchars($data[5]) . '</td>';  // Amount
-                                // echo '<td></td>';  // Create Date
-                                // echo '<td></td>';  // Expired Date
-                                echo '<td>' . htmlspecialchars($data[6]) . '</td>';  // User Name
-                                echo '<td>' . htmlspecialchars($data[1]) . '</td>';  // Mobile No.
-                                echo '<td>' . htmlspecialchars($data[9]) . '</td>';  // POP/Branch
-                                echo '<td>' . htmlspecialchars($data[10]) . '</td>';  // Area/Location
-                                echo '</tr>';
+
+                        while (($data = fgetcsv($CSVvar)) !== false) {
+                            // Skip empty lines
+                            if (!array_filter($data)) {
+                                continue;
+                            }
+
+                            if ($i > 0) {
+                                if (count($data) < 12) {
+                                    echo '<tr style="color:red;"><td colspan="8">Invalid row at line ' . $i . ' (only ' . count($data) . ' columns)</td></tr>';
+                                } else {
+                                    echo '<tr>';
+                                    echo '<td>' . $upldNo++ . '</td>';
+                                    echo '<td>' . htmlspecialchars($data[0] ?? '') . '</td>';  // Name
+                                    echo '<td>' . htmlspecialchars($data[7] ?? '') . '</td>';  // Package
+                                    echo '<td>' . htmlspecialchars($data[4] ?? '') . '</td>';  // Amount
+                                    echo '<td>' . htmlspecialchars($data[5] ?? '') . '</td>';  // Username
+                                    echo '<td>' . htmlspecialchars($data[1] ?? '') . '</td>';  // Mobile
+                                    echo '<td>' . htmlspecialchars($data[8] ?? '') . '</td>';  // POP
+                                    echo '<td>' . htmlspecialchars($data[9] ?? '') . '</td>'; // Area
+                                    echo '<td>' . htmlspecialchars($data[11] ?? '') . '</td>'; // Create DATE
+                                    echo '<td>' . htmlspecialchars($data[12] ?? '') . '</td>'; // Expire date
+                                    echo '</tr>';
+                                }
                             }
                             $i++;
                         }
+
+                        fclose($CSVvar);
                     }
-                    fclose($CSVvar);
                 }
             }
         @endphp
     </tbody>
 </table>
+
 <!-- CSV Files List with Delete Option -->
 <table class="table table-bordered mt-4">
     <thead>
