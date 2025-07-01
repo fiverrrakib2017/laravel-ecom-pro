@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use App\Services\DateService;
+use Illuminate\Support\Facades\Cache;
 class AdminController extends Controller
 {
     protected $dateService;
@@ -104,6 +105,7 @@ class AdminController extends Controller
         ]);
 
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            Cache::flush();
             return redirect()->intended(route('admin.dashboard'));
         }else{
             return redirect()->back()->with('error-message','Invalid Email or Password');
