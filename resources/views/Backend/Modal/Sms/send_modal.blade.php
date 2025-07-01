@@ -18,16 +18,10 @@
                         <select name="customer_id" class="form-control" type="text" required>
                             <option >---Select---</option>
                             @php
-                                if (!Cache::has('sidebar_customers')) {
-                                    if (!empty($branch_user_id)) {
-                                        $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
-                                    } else {
-                                        $customers = \App\Models\Customer::latest()->get();
-                                    }
-
-                                    Cache::put('sidebar_customers', $customers, now()->addHours(2));
+                               if (!empty($branch_user_id)) {
+                                    $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
                                 } else {
-                                    $customers = Cache::get('sidebar_customers');
+                                    $customers = \App\Models\Customer::latest()->get();
                                 }
                             @endphp
 

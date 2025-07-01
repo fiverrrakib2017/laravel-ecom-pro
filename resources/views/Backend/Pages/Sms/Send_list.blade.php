@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title','Dashboard | SMS Message | Admin Panel')
+@section('title','SMS Message | Admin Panel')
 @section('style')
 @endsection
 @section('content')
