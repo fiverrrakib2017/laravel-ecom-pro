@@ -23,33 +23,7 @@
                         <div class="col-md-6 mb-2">
                             <label>Customer Name</label>
                             <select name="customer_id" class="form-select" type="text" style="width: 100%;" required>
-                                <option value="">---Select---</option>
-                                @php
-                                    if (!Cache::has('sidebar_customers')) {
-                                        if (!empty($branch_user_id)) {
-                                            $customers = \App\Models\Customer::where('pop_id', $branch_user_id)->latest()->get();
-                                        } else {
-                                            $customers = \App\Models\Customer::latest()->get();
-                                        }
-
-                                        Cache::put('sidebar_customers', $customers, now()->addHours(2));
-                                    } else {
-                                        $customers = Cache::get('sidebar_customers');
-                                    }
-                                @endphp
-
-                                {{-- Check if customers are not empty --}}
-
-                                    @if ($customers->isNotEmpty())
-                                        @foreach ($customers as $item)
-                                            @php
-                                                $status_icon = $item->status == 'online' ? '🟢' : '🔴';
-                                            @endphp
-
-                                        <option value="{{ $item->id }}">{!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})</option>
-                                        @endforeach
-                                    @else
-                                @endif
+                                @include('Backend.Component.Common.Customer')
                             </select>
 
                         </div>
