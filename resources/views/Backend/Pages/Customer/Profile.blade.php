@@ -66,8 +66,11 @@
                             <p class="text-muted text-center">
                                 <i class="fas fa-calendar-alt"></i>
                                 <strong>Expire Date:</strong>
-                                <span class="{{ $isExpired ? 'text-danger' : 'text-success' }}">
+                                {{-- <span class="{{ $isExpired ? 'text-danger' : 'text-success' }}">
                                     {{ $isExpired ? 'Expired' : $formattedDate }}
+                                </span> --}}
+                                <span class="{{ $isExpired ? 'text-danger' : 'text-success' }}">
+                                     {{  $formattedDate }}
                                 </span>
                             </p>
 
@@ -99,7 +102,7 @@
                                             break;
                                         case 'expired':
                                             $icon = 'fas fa-clock text-secondary';
-                                            $badgeColor = 'secondary';
+                                            $badgeColor = 'danger';
                                             break;
                                         case 'disabled':
                                             $icon = 'fas fa-lock text-danger';
@@ -821,7 +824,7 @@
                     },
                     y: {
                         beginAtZero: true,
-                        suggestedMax: 1000,
+                        suggestedMax: 5,
                     }
                 }
             }
