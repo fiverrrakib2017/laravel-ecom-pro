@@ -47,7 +47,7 @@ class check_status extends Command
             }
 
         /*session reset*/
-        $session_service->forget_session_sidebar_customer();
+        //$session_service->forget_session_sidebar_customer();
 
         $this->info('---Tasks Finished ---');
     }
