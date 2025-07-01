@@ -190,7 +190,7 @@
                     'value' => $active_customer,
                     'bg' => 'primary',
                     'icon' => 'fa-users',
-                    'url' => route('admin.customer.index', ['status' => 'active']),
+                    //'url' => route('admin.customer.index', ['status' => 'active']),
                 ],
                 [
                     'id' => 4,
