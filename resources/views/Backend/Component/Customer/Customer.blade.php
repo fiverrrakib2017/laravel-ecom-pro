@@ -1,7 +1,7 @@
 @php
-   //$branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+   $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
     if(!empty($branch_user_id) && $branch_user_id > 0){
-        $pop_branches = \App\Models\Pop_branch::where('id',$branch_user_id)->first();
+        $pop_branches = \App\Models\Pop_branch::where('id',$branch_user_id)->get();
         $areas=\App\Models\Pop_area::where('status','active')->where('pop_id',$branch_user_id)->get();
     }else{
         $pop_branches=\App\Models\Pop_branch::where('status',1)->get();
@@ -12,9 +12,6 @@
     if(!empty($pop_id) && $pop_id > 0 && isset($pop_id)){
         $pop_branches = \App\Models\Pop_branch::where('id',$pop_id)->get();
         $areas = \App\Models\Pop_area::where('status','active')->where('pop_id',$pop_id)->get();
-    }else{
-        $pop_branches = \App\Models\Pop_branch::where('status',1)->get();
-        $areas = \App\Models\Pop_area::where('status','active')->get();
     }
 
 
