@@ -19,9 +19,9 @@
                                             @php
                                             $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
                                                 if($branch_user_id != null){
-                                                    $pops = \App\Models\Pop_branch::where('id', $branch_user_id)->get();
+                                                    $pops = \App\Models\Pop_branch::where('status','1')->where('id', $branch_user_id)->get();
                                                 }else{
-                                                    $pops = \App\Models\Pop_branch::latest()->get();
+                                                    $pops = \App\Models\Pop_branch::where('status','1')->latest()->get();
                                                 }
                                             @endphp
                                             @foreach ($pops as $item)
