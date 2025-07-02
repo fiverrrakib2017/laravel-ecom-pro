@@ -1,48 +1,40 @@
 @extends('Backend.Layout.App')
-@section('title', 'Dashboard | Admin Panel')
-@section('style')
-
-{{-- <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css"> --}}
-@endsection
+@section('title', 'Mikrotik Logs | Admin Panel')
 @section('content')
-    <div class="row">
-        <div class="col-md-12 ">
-            <div class="card">
-                <div class="card-header">Mikrotik Logs</div>
-                <div class="card-body">
-                    <div class="table-responsive" id="tableStyle">
-                        <table id="customers_log_datatable1" class="table table-bordered dt-responsive nowrap"
-                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                        <thead>
-                            <tr>
-                                <th>Mikrotik Router</th>
-                                <th>Time</th>
-                                <th>Topics</th>
-                                <th>Message</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($allLogs as $log)
-                            <tr>
-                                <td>{{ $log['router_name'] }}</td>
-                                <td>{{ $log['time'] }}</td>
-
-                                <td>{{ $log['topics'] }}</td>
-                                <td>{{ $log['message'] }}</td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card bg-dark text-white">
+            <div class="card-header border-bottom border-secondary">
+                <i class="fas fa-terminal"></i> Mikrotik Log Terminal
             </div>
+            <div class="card-body p-3" style="background-color: #121212; font-family: monospace; font-size: 14px; max-height: 600px; overflow-y: auto;">
+               @foreach ($allLogs as $log)
+                    @php
+                    $isError = false;
+                    $errorKeywords = ['error', 'fail', 'invalid', 'timeout', 'disconnected'];
+                    foreach ($errorKeywords as $word) {
+                        if (stripos($log['topics'], $word) !== false || stripos($log['message'], $word) !== false) {
+                            $isError = true;
+                            break;
+                        }
+                    }
+                    @endphp
 
+                    <div style="margin-bottom: 6px;">
+                        <span class="text-success">[{{ $log['time'] }}]</span>
+                        <span class="text-warning">({{ strtoupper($log['topics']) }})</span>
+                        <span class="text-info">{{ $log['router_name'] }}</span> :
+                        <span class="{{ $isError ? 'text-danger' : 'text-white' }}">
+                            {{ $log['message'] }}
+                        </span>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
-
-
-
+</div>
 @endsection
+
 
 @section('script')
     <script>
