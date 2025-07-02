@@ -17,7 +17,7 @@
 										<select name="pop_id" class="form-control" type="text" required>
                                             <option value="">---Select---</option>
                                             @php
-                                                $pops = \App\Models\Pop_branch::all();
+                                                $pops = \App\Models\Pop_branch::where('status','1')->latest()->get();
                                             @endphp
                                             @foreach ($pops as $item)
                                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
