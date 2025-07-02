@@ -4,7 +4,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-9">
-        <div class="card  " style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: 20px; border-radius: 10px;">
+        <div class="card  " style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: 20px; ">
             <form action="{{ route('admin.customer.store') }}" method="post" id="addStudentForm" enctype="multipart/form-data">
                 @csrf
             <div class="card-body ">
@@ -109,8 +109,8 @@
                             <input type="number" name="con_charge" class="form-control" value="500">
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label class="form-label">Amount</label>
-                            <input type="number" name="amount" class="form-control" placeholder="Enter Amount" required>
+                            <label class="form-label">Package Price <span class="text-danger">*</span></label>
+                            <input type="number" name="amount" class="form-control" placeholder="Enter Package Price" required>
                         </div>
                     </div>
                 </fieldset>
