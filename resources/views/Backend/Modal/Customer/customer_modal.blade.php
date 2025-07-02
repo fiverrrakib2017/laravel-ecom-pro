@@ -13,7 +13,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: 20px; ">
                 <form id="addCustomerForm" action="{{ route('admin.customer.store') }}" method="POST">
                     @csrf
 
@@ -149,8 +149,8 @@
                                         required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Amount</label>
-                                    <input type="number" name="amount" placeholder="Enter Amount" class="form-control" required>
+                                    <label>Package Price <span class="text-danger">*</span></label>
+                                    <input type="number" name="amount" placeholder="Enter Package Price" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -269,7 +269,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: 20px; ">
                 <form id="editCustomerForm" action="{{ route('admin.customer.store') }}" method="POST">
                     @csrf
 
@@ -303,7 +303,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Password <span class="text-danger">*</span></label>
-                                    <input type="password" name="password" class="form-control"
+                                    <input type="text" name="password" class="form-control"
                                         placeholder="Enter Password" required>
                                 </div>
                                 <div class="form-group">
@@ -394,7 +394,7 @@
                                         required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Amount</label>
+                                    <label>Package Price <span class="text-danger">*</span></label>
                                     <input type="number" name="amount" class="form-control" required>
                                 </div>
                             </div>
