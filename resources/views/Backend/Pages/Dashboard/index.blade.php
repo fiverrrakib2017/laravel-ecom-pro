@@ -309,7 +309,8 @@
         </div>
         <div class="col-lg-3 col-12">
             <div class="info-box bg-success">
-                <span class="info-box-icon"><i class="fas fa-hdd"></i></span>
+                <span class="info-box-icon"><i class="fas fa-database"></i></span>
+
                 <div class="info-box-content">
                     <span class="info-box-text">Disk Usage</span>
                     <span class="info-box-number" id="disk-usage-text">Loading...</span>
