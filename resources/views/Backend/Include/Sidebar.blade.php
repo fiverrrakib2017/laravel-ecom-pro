@@ -44,16 +44,48 @@
                     <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
                     <script src="{{ asset('Backend/plugins/select2/js/select2.full.min.js') }}"></script>
                     <script>
-                        $(document).ready(function() {
-                            $('select').select2();
-                            $("select[name='sidebar_customer_id']").change(function() {
-                                var customer_id = $(this).val();
-                                if (customer_id) {
-                                    window.location.href = "{{ route('admin.customer.view', ':id') }}".replace(':id',
-                                        customer_id);
-                                }
-                            });
+                    $(document).ready(function() {
+                        function formatCustomerOption(option) {
+                            if (!option.id) return option.text;
+
+                            var status = $(option.element).data('status');
+                            var icon = '';
+
+
+
+                            if (status === 'online') {
+                                icon = '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;" title="Online"></i>';
+                            } else if (status === 'offline') {
+                                icon = '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;" title="Offline"></i>';
+                            } else if (status === 'expired') {
+                                icon = '<i class="fas fa-clock" style="font-size: 15px; color: orange; margin-right: 8px;" title="Expired"></i>';
+                            } else if (status === 'blocked') {
+                                icon = '<i class="fas fa-ban" style="font-size: 15px; color: darkred; margin-right: 8px;" title="Blocked"></i>';
+                            } else if (status === 'disabled') {
+                                icon = '<i class="fas fa-user-slash" style="font-size: 15px; color: gray; margin-right: 8px;" title="Disabled"></i>';
+                            } else if (status === 'discontinue') {
+                                icon = '<i class="fas fa-times-circle" style="font-size: 15px; color: #ff6600; margin-right: 8px;" title="Discontinue"></i>';
+                            } else {
+                                icon = '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;" title="Unknown"></i>';
+                            }
+
+
+                            return $(`<span>${icon}${option.text}</span>`);
+                        }
+
+                        $("select[name='sidebar_customer_id']").select2({
+                            templateResult: formatCustomerOption,
+                            templateSelection: formatCustomerOption,
+                            width: '100%'
                         });
+
+                        $("select[name='sidebar_customer_id']").change(function() {
+                            var customer_id = $(this).val();
+                            if (customer_id) {
+                                window.location.href = "{{ route('admin.customer.view', ':id') }}".replace(':id', customer_id);
+                            }
+                        });
+                    });
                     </script>
                 </li>
                 @php

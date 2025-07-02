@@ -20,11 +20,20 @@
 @if ($customers->isNotEmpty())
     @foreach ($customers as $item)
         @php
-            $status_icon = $item->status == 'online' ? '🟢' : '🔴';
+             if ($item->status == 'online') {
+                $status_icon = '<i class="fas fa-unlock text-success"></i>';
+            } elseif ($item->status == 'offline') {
+                $status_icon = '<i class="fas fa-circle text-danger"></i>';
+            } elseif ($item->status == 'expired') {
+                $status_icon = '<i class="fas fa-clock text-warning"></i>';
+            } else {
+                $status_icon = '<i class="fas fa-circle text-secondary"></i>';
+            }
         @endphp
 
-        <option value="{{ $item->id }}">{!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} ||
-            {{ $item->fullname }}, ({{ $item->phone }})</option>
+        <option value="{{ $item->id }}" data-status="{{ $item->status }}">
+            [{{ $item->id }}] - {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})
+        </option>
     @endforeach
 @else
 @endif

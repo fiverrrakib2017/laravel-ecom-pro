@@ -312,17 +312,21 @@
                         var color = '';
 
                         if (row.status === 'online') {
-                            icon =
-                                '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;"></i>';
+                            icon = '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;" title="Online"></i>';
                         } else if (row.status === 'offline') {
-                            icon =
-                                '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;"></i>';
-                        }else if(row.status === 'expired'){
-                                icon = '<i class="fas fa-clock" style="font-size: 15px; color: red; margin-right: 8px;" title="Expired"></i>';
-                        }else {
-                            icon =
-                                '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;"></i>';
+                            icon = '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;" title="Offline"></i>';
+                        } else if (row.status === 'expired') {
+                            icon = '<i class="fas fa-clock" style="font-size: 15px; color: orange; margin-right: 8px;" title="Expired"></i>';
+                        } else if (row.status === 'blocked') {
+                            icon = '<i class="fas fa-ban" style="font-size: 15px; color: darkred; margin-right: 8px;" title="Blocked"></i>';
+                        } else if (row.status === 'disabled') {
+                            icon = '<i class="fas fa-user-slash" style="font-size: 15px; color: gray; margin-right: 8px;" title="Disabled"></i>';
+                        } else if (row.status === 'discontinue') {
+                            icon = '<i class="fas fa-times-circle" style="font-size: 15px; color: #ff6600; margin-right: 8px;" title="Discontinue"></i>';
+                        } else {
+                            icon = '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;" title="Unknown"></i>';
                         }
+
 
                         return '<a href="' + viewUrl +
                             '" style="display: flex; align-items: center; text-decoration: none; color: #333;">' +
