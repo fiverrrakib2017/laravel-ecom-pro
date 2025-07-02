@@ -16,7 +16,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: 20px; ">
                 <form action="{{ route('admin.tickets.store') }}" method="POST" id="ticketForm">
                     @csrf
                     <div class="row">
