@@ -89,6 +89,24 @@
                             <option value="due_paid">Due Paid</option>
                         </select>
                     </div>
+                    <div class="form-group mb-2" id="voucherField" style="display: none;">
+                        <label>Voucher No.</label>
+                        <input name="voucher_no" placeholder="Enter Voucher No." class="form-control" type="text">
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('select[name="transaction_type"]').on('change', function() {
+                                var selectedType = $(this).val();
+                                if (selectedType === 'cash') {
+                                    $('#voucherField').show();
+                                } else {
+                                    $('#voucherField').hide();
+                                    $('input[name="voucher_no"]').val(''); 
+                                }
+                            });
+                        });
+                    </script>
+
                     <div class="form-group mb-2">
                         <label>Remarks</label>
                         <input name="note" placeholder="Enter Remarks" class="form-control" type="text">

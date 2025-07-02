@@ -1056,6 +1056,7 @@ class CustomerController extends Controller
             'payable_amount'    => 'required|numeric',
             'recharge_month'    => 'required|array',
             'transaction_type'  => 'required',
+            'voucher_no'        => 'nullable',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -1180,6 +1181,7 @@ class CustomerController extends Controller
             $object->transaction_type   = $request->transaction_type;
             $object->amount             = $request->payable_amount;
             $object->note               = $request->note;
+            $object->voucher_no         = $request->voucher_no;
 
             $customer = Customer::find($request->customer_id);
 

@@ -347,6 +347,7 @@
                                                     <th>Remarks</th>
                                                     <th>Paid until</th>
                                                     <th>Amount</th>
+                                                    <th>Vouchar No.</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -405,6 +406,7 @@
 
 
                                                         <td>{{ number_format($item->amount, 2) }} BDT</td>
+                                                        <td>{{ $item->voucher_no ?? ''}} </td>
                                                         <td>
 
                                                             @if ($item->note !== 'Created')
@@ -412,9 +414,8 @@
                                                                 data-id="{{ $item->id }}"><i class="fas fa-undo"></i></button>
                                                             @endif
                                                             <button class="btn btn-success btn-sm customer_recharge_print_btn" data-id="{{ $item->id }}"><i class="fas fa-print"></i></button>
-
-
                                                         </td>
+
                                                     </tr>
                                                 @endforeach
                                             </tbody>

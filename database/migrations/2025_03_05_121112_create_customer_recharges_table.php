@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('recharge_month')->nullable();
             $table->date('paid_until')->nullable();
             $table->text('note')->nullable();
+            $table->text('voucher_no')->nullable();
             $table->enum('transaction_type', ['cash', 'credit', 'bkash', 'nagad', 'due_paid', 'other']);
             $table->timestamps();
 
