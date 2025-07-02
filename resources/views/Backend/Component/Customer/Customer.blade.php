@@ -317,7 +317,9 @@
                         } else if (row.status === 'offline') {
                             icon =
                                 '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;"></i>';
-                        } else {
+                        }else if(row.status === 'expired'){
+                                icon = '<i class="fas fa-clock" style="font-size: 15px; color: red; margin-right: 8px;" title="Expired"></i>';
+                        }else {
                             icon =
                                 '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;"></i>';
                         }
