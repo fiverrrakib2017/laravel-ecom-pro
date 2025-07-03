@@ -123,7 +123,7 @@ class AdminController extends Controller
             /*Customer Details*/
             $online_customer=Customer::where('pop_id',$branch_user_id)->where('status','online')->count();
             $active_customer=Customer::where('pop_id',$branch_user_id)->where('status','!=', 'disabled')->where('status','!=', 'discontinue')->where('is_delete', '0')->count();
-            $expire_customer=Customer::where('pop_id',$branch_user_id)->where('status','expire')->where('is_delete', '0')->count();
+            $expire_customer=Customer::where('pop_id',$branch_user_id)->where('status','expired')->where('is_delete', '0')->count();
             $offline_customer=Customer::where('pop_id',$branch_user_id)->where('status','offline')->where('is_delete', '0')->count();
             $disable_customer=Customer::where('pop_id',$branch_user_id)->where('status','disabled')->where('is_delete', '0')->count();
             $discontinue_customer=Customer::where('pop_id',$branch_user_id)->where('status','discontinue')->where('is_delete', '0')->count();
@@ -158,7 +158,7 @@ class AdminController extends Controller
             /*Customer Details*/
             $online_customer=Customer::where('status','online')->where('is_delete', '0')->count();
             $active_customer=Customer::where('status','!=', 'disabled')->where('status','!=', 'discontinue')->where('is_delete', '0')->count();
-            $expire_customer=Customer::where('status','expire')->where('is_delete', '0')->count();
+            $expire_customer=Customer::where('status','expired')->where('is_delete', '0')->count();
             $offline_customer=Customer::where('status','offline')->where('is_delete', '0')->count();
             $disable_customer=Customer::where('status','disabled')->where('is_delete', '0')->count();
             $discontinue_customer=Customer::where('status','discontinue')->count();
