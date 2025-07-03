@@ -35,7 +35,7 @@ class check_expire extends Command
         $this->check_expire_customer();
 
         /* Call the Session Remove method*/
-        $session_service->forget_session_sidebar_customer();
+        //$session_service->forget_session_sidebar_customer();
         $this->info('---Tasks Finished ---');
     }
     protected function check_expire_customer()
