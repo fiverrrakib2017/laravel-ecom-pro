@@ -117,8 +117,8 @@ class AreaController extends Controller
 
         /*Customer Details*/
         $online_customer=Customer::where('area_id',$id)->where('status','online')->count();
-        $active_customer=Customer::where('area_id',$id)->where('status','active')->count();
-        $expire_customer=Customer::where('area_id',$id)->where('status','expire')->count();
+        $active_customer=Customer::where('area_id', $id)->where('status','!=', 'disabled')->where('status','!=', 'discontinue')->where('is_delete', '0')->count();
+        $expire_customer=Customer::where('area_id',$id)->where('status','expired')->count();
         $offline_customer=Customer::where('area_id',$id)->where('status','offline')->count();
         $disable_customer=Customer::where('area_id',$id)->where('status','disabled')->count();
         return view('Backend.Pages.Pop.Area.View',compact('data','total_area','tickets','ticket_completed','ticket_pending','online_customer','active_customer','expire_customer','offline_customer','disable_customer'));
