@@ -48,7 +48,6 @@ class check_expire extends Command
             ->get();
 
         foreach ($expire_customers as $customer) {
-
             if ($customer->connection_type == 'pppoe') {
                 $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
                 if (!$router) {
@@ -96,7 +95,7 @@ class check_expire extends Command
                     $this->error("Router connection failed for {$customer->username}: " . $e->getMessage());
                 }
             }
-            if($customer->connection_type == 'radius'){
+            if ($customer->connection_type == 'radius') {
                 \App\Models\Radius\Radcheck::where('username', $customer->username)->delete();
                 \App\Models\Radius\Radreply::where('username', $customer->username)->delete();
 
@@ -105,10 +104,39 @@ class check_expire extends Command
                 $customer->update(['status' => 'expired']);
                 $this->info("Customer {$customer->username} is (Expired)");
             }
-            if($customer->connection_type=='hotspot'){
+            if ($customer->connection_type == 'hotspot') {
+                $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
+                if (!$router) {
+                    $this->error("Router not found for customer {$customer->username}");
+                    return;
+                }
 
+                try {
+                    $client = new Client([
+                        'host' => $router->ip_address,
+                        'user' => $router->username,
+                        'pass' => $router->password,
+                        'port' => (int) $router->port,
+                        'timeout' => 3,
+                        'attempts' => 1,
+                    ]);
+
+                    // Remove active user
+                    $query = new Query('/ip/hotspot/active/remove');
+                    $query->equal('user', $customer->username);
+                    $client->query($query)->read();
+
+                    // Disable user
+                    $query = new Query('/ip/hotspot/user/set');
+                    $query->equal('disabled', 'yes')->equal('.id', $user_id); 
+                    $client->query($query)->read();
+
+                    $customer->update(['status' => 'expired']);
+                    $this->info("Hotspot user {$customer->username} expired and disabled.");
+                } catch (\Exception $e) {
+                    $this->error('Hotspot error: ' . $e->getMessage());
+                }
             }
-
         }
     }
 }
