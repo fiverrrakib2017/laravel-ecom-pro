@@ -66,34 +66,39 @@ class check_expire extends Command
                     ]);
                     $client->connect();
 
-                    /* Find PPP secret*/
                     $query = new Query('/ppp/secret/print');
                     $query->where('name', $customer->username);
                     $secrets = $client->query($query)->read();
 
                     if (!empty($secrets)) {
                         $secretId = $secrets[0]['.id'];
+                        $this->info('Secret ID: ' . $secretId);
 
-                        /* Remove from active list*/
-                        $removeActive = new Query('/ppp/active/remove');
-                        $removeActive->equal('name', $customer->username);
-                        $client->query($removeActive)->read();
+                        // Remove all active sessions
+                        $activeQuery = new Query('/ppp/active/print');
+                        $activeQuery->where('name', $customer->username);
+                        $activeUsers = $client->query($activeQuery)->read();
 
-                        /*Disable the secret*/
+                        foreach ($activeUsers as $activeUser) {
+                            $removeActive = new Query('/ppp/active/remove');
+                            $removeActive->equal('.id', $activeUser['.id']);
+                            $client->query($removeActive)->read();
+                            $this->info("Removed active PPP session for {$customer->username}");
+                        }
+
+                        // Disable PPP Secret
                         $disableSecret = new Query('/ppp/secret/set');
                         $disableSecret->equal('.id', $secretId)->equal('disabled', 'yes');
                         $client->query($disableSecret)->read();
+                        $this->info("Disabled PPP secret for {$customer->username}");
 
-                        $this->info("MikroTik: Customer {$customer->username} is now DISABLED & REMOVED.");
+                        $customer->update(['status' => 'expired']);
+                        $this->info("Customer {$customer->username} marked as expired in DB");
                     } else {
-                        $this->warn("MikroTik: PPP secret not found for {$customer->username}");
+                        $this->warn("PPP secret not found for {$customer->username}");
                     }
-
-                    /* Now update DB*/
-                    $customer->update(['status' => 'expired']);
-                    $this->info("Customer {$customer->username} is (Expired)");
                 } catch (\Exception $e) {
-                    $this->error("Router connection failed for {$customer->username}: " . $e->getMessage());
+                    $this->error("Error for {$customer->username}: " . $e->getMessage());
                 }
             }
             if ($customer->connection_type == 'radius') {
