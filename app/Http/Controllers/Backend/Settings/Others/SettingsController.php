@@ -44,6 +44,11 @@ class SettingsController extends Controller
 
         $admin->password = Hash::make($request->new_password);
         $admin->save();
+        if($admin->pop_id !=null){
+            $pop_branch=Pop_branch::where('status','1')->where('id',$admin->pop_id)->first();
+            $pop_branch->password=$request->new_password;
+            $pop_branch->save();
+        }
 
         return response([
             'success' => true,
