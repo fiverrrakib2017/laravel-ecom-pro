@@ -373,7 +373,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/view/{id}', 'view')->name('admin.pop.view');
             Route::post('/delete', 'delete')->name('admin.pop.delete');
             Route::post('/store', 'store')->name('admin.pop.store');
-            Route::post('/update/{id}', 'update')->name('admin.pop.update');
+            Route::post('/update', 'update')->name('admin.pop.update');
 
             Route::post('/change/status/{id}', 'pop_change_status')->name('admin.pop.change_status');
 

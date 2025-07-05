@@ -358,14 +358,14 @@ class PopController extends Controller
         return view('Backend.Pages.Pop.View', compact('pop', 'due_paid', 'total_paid', 'total_due', 'total_area', 'tickets', 'ticket_completed', 'ticket_pending', 'online_customer', 'active_customer', 'expire_customer', 'offline_customer', 'disable_customer', 'current_balance'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $this->validateForm($request);
 
-        $object = Pop_branch::findOrFail($id);
+        $object = Pop_branch::findOrFail($request->id);
         $object->name = $request->name;
         $object->username = $request->username;
-        $object->password = $request->password;
+        //$object->password = $request->password;
         $object->phone = $request->phone;
         $object->email = $request->email;
         $object->address = $request->address;

@@ -48,6 +48,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             handleSubmit('#popForm', '#addModal');
+            handleSubmit('#popEditForm', '#editPopBranchModal');
             var table = $("#datatable1").DataTable({
                 "processing": true,
                 "responsive": true,
@@ -148,21 +149,23 @@
                 method: 'GET',
                 success: function(response) {
                     if (response.success) {
-                        $('#popForm').attr('action', "{{ route('admin.pop.update', ':id') }}".replace(
-                            ':id', id));
-                        $('#ModalLabel').html(
-                            '<span class="mdi mdi-account-edit mdi-18px"></span> &nbsp;Edit POP/Branch'
-                            );
-                        $('#popForm input[name="name"]').val(response.data.name);
-                        $('#popForm input[name="username"]').val(response.data.username);
-                        $('#popForm input[name="password"]').val(response.data.password);
-                        $('#popForm input[name="phone"]').val(response.data.phone);
-                        $('#popForm input[name="email"]').val(response.data.email);
-                        $('#popForm input[name="address"]').val(response.data.address);
-                        $('#popForm select[name="status"]').val(response.data.status).trigger('change');
+
+
+                        $('#popEditForm input[name="id"]').val(response.data.id);
+                        $('#popEditForm input[name="name"]').val(response.data.name);
+                        $('#popEditForm input[name="username"]').val(response.data.username);
+
+                        $('#popEditForm input[name="password"]')
+                        .val(response.data.password)
+                        .prop('readonly', true);
+
+                        $('#popEditForm input[name="phone"]').val(response.data.phone);
+                        $('#popEditForm input[name="email"]').val(response.data.email);
+                        $('#popEditForm input[name="address"]').val(response.data.address);
+                        $('#popEditForm select[name="status"]').val(response.data.status).trigger('change');
 
                         // Show the modal
-                        $('#addModal').modal('show');
+                        $('#editPopBranchModal').modal('show');
                     } else {
                         toastr.error('Failed to fetch Supplier data.');
                     }
