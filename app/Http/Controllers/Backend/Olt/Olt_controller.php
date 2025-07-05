@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Validator;
 class Olt_controller extends Controller
 {
     public function index(){
-        $oid = '1.3.6.1.2.1.1.1.0'; 
+        return view('Backend.Pages.Olt.index');
+        $oid = '1.3.6.1.2.1.1.1.0';
 
         $result = snmp2_get('103.115.252.52', 'public', $oid);
 

@@ -64,6 +64,7 @@ class check_expire extends Command
                         'timeout' => 3,
                         'attempts' => 1,
                     ]);
+                    $client->connect();
 
                     /* Find PPP secret*/
                     $query = new Query('/ppp/secret/print');
@@ -120,15 +121,15 @@ class check_expire extends Command
                         'timeout' => 3,
                         'attempts' => 1,
                     ]);
-
-                    // Remove active user
+                    $client->connect();
+                    /* Remove active user*/
                     $query = new Query('/ip/hotspot/active/remove');
                     $query->equal('user', $customer->username);
                     $client->query($query)->read();
 
                     // Disable user
                     $query = new Query('/ip/hotspot/user/set');
-                    $query->equal('disabled', 'yes')->equal('.id', $user_id); 
+                    $query->equal('disabled', 'yes')->equal('.id', $user_id);
                     $client->query($query)->read();
 
                     $customer->update(['status' => 'expired']);
