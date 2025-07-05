@@ -355,7 +355,7 @@
                         todayDate.setHours(0, 0, 0, 0);
 
                         if (todayDate > expireDate) {
-                            return '<span class="badge bg-danger">Expire</span>';
+                            return '<span class="badge bg-danger">Expire (' + data + ')</span>';
                         } else {
                             return data;
                         }
