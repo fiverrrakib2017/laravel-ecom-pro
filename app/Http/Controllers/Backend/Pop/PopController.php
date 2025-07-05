@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 class PopController extends Controller
 {
     public function index()
@@ -43,9 +44,10 @@ class PopController extends Controller
 
     /*Get Branch Customer Details*/
     $item->transform(function ($branch) {
-        $branch->active_customer =Customer::where('pop_id', $branch->id)
-            ->where('status', 'active')
-            ->count();
+        // $branch->active_customer =Customer::where('pop_id', $branch->id)
+        //     ->where('status', 'active')
+        //     ->count();
+         $branch->active_customer=Customer::where('pop_id', $branch->id)->where('status','!=', 'disabled')->where('status','!=', 'discontinue')->where('is_delete', '0')->count();
 
         $branch->online = Customer::where('pop_id', $branch->id)
             ->where('status', 'online')
@@ -356,6 +358,25 @@ class PopController extends Controller
         $offline_customer = Customer::where('pop_id', $id)->where('status', 'offline')->count();
         $disable_customer = Customer::where('pop_id', $id)->where('status', 'disabled')->count();
         return view('Backend.Pages.Pop.View', compact('pop', 'due_paid', 'total_paid', 'total_due', 'total_area', 'tickets', 'ticket_completed', 'ticket_pending', 'online_customer', 'active_customer', 'expire_customer', 'offline_customer', 'disable_customer', 'current_balance'));
+    }
+    public function auto_login($pop_id){
+        if (auth()->guard('admin')->user()->user_type != 1) {
+            abort(404);
+        }
+
+        if(!isset($pop_id) && empty($pop_id)){
+            abort(404);
+        }
+
+        $pop_branch=Pop_branch::where('status','1')->where('id',$pop_id)->first();
+       // auth()->guard('admin')->logout();
+        if (Auth::guard('admin')->attempt(['email' => $pop_branch->email, 'password' => $pop_branch->password])) {
+            Cache::flush();
+            return redirect()->intended(route('admin.dashboard'));
+        }else{
+            return redirect()->back()->with('error-message','Invalid Email or Password');
+        }
+
     }
 
     public function update(Request $request)

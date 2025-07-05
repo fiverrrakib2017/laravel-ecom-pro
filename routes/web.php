@@ -389,6 +389,10 @@ Route::group(['middleware' => 'admin'], function () {
             /*****Branch Recharge *******/
             Route::post('/recharge/store', 'branch_recharge_store')->name('admin.pop.brnach.recharge.store');
             Route::get('/recharge/undo/{id}', 'branch_recharge_undo')->name('admin.pop.brnach.recharge.undo');
+            /*****Branch Auto Login  *******/
+            Route::get('/branch/login/{pop_id}', [PopController::class, 'auto_login'])->name('admin.pop.branch.auto_login');
+
+
         });
 
         /* POP/Area Route */
@@ -763,3 +767,4 @@ Route::get('/optimize', function () {
     Artisan::call('optimize:clear');
     return 'Optimize Clear Completed';
 });
+

@@ -114,6 +114,7 @@
                             var viewUrl = "{{ route('admin.pop.view', ':id') }}".replace(':id', row
                                 .id);
 
+
                             return `
                                 <button  class="btn btn-primary btn-sm mr-3 edit-btn" data-id="${row.id}">
                                     <i class="fa fa-edit"></i>
@@ -121,6 +122,9 @@
                                 <a href="${viewUrl}" class="btn btn-success btn-sm mr-3 ">
                                     <i class="fa fa-eye"></i>
                                 </a>
+                                <button type="button" name="pop_login_button" data-id="${row.id}" class="btn btn-warning btn-sm">
+                                    <i class="fa fa-sign-in-alt"></i>
+                                </button>
                                 `;
                         }
                     }
@@ -184,6 +188,20 @@
             $('#deleteForm').attr('action', deleteUrl);
             $('#deleteModal').find('input[name="id"]').val(id);
             $('#deleteModal').modal('show');
+        });
+        /*Handle Pop Branch Login */
+        $("#datatable1 tbody").on('click', 'button[name="pop_login_button"]',function(){
+            var $button = $(this);
+            var id = $button.data('id');
+
+            /* Show spinner*/
+            $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging in...');
+            $button.prop('disabled', true);
+
+            var login_url = "{{ route('admin.pop.branch.auto_login', ':id') }}".replace(':id', id);
+            setTimeout(function () {
+                window.location.href = login_url;
+            }, 500);
         });
     </script>
 @endsection
