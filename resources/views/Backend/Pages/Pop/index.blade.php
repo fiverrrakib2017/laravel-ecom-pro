@@ -200,7 +200,7 @@
 
             var login_url = "{{ route('admin.pop.branch.auto_login', ':id') }}".replace(':id', id);
             setTimeout(function () {
-                window.location.href = login_url;
+                //window.location.href = login_url;
             }, 500);
         });
     </script>
