@@ -1221,18 +1221,43 @@ class CustomerController extends Controller
                         'port' => (int) $router->port ?? 8728,
                     ]);
 
-                    $checkQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
-                    $existingUsers = $client->query($checkQuery)->read();
+                    try {
+                        $client->connect();
 
-                    if (empty($existingUsers)) {
-                        $enableQuery = new Query('/ppp/secret/enable');
-                        $enableQuery->equal('numbers', $customer->username);
-                        $client->query($enableQuery)->read();
+                        // Find secret
+                        $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
+                        $secrets = $client->query($secretQuery)->read();
 
-                        $customer->status = 'online';
-                        $customer->update();
+                        if (!empty($secrets)) {
+                            $secretId = $secrets[0]['.id'];
+                            $isDisabled = $secrets[0]['disabled'] ?? 'false';
+
+                            if ($isDisabled === 'true') {
+                                /* Enable secret*/
+                                $enableQuery = (new Query('/ppp/secret/set'))
+                                    ->equal('.id', $secretId)
+                                    ->equal('disabled', 'no');
+                                $client->query($enableQuery)->read();
+                            }
+
+                            $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
+                            $activeUser = $client->query($activeQuery)->read();
+
+                            if (!empty($activeUser)) {
+                                $activeId = $activeUser[0]['.id'];
+                                $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
+                                $client->query($removeQuery)->read();
+                            }
+
+                            /* Status update*/
+                            $customer->status = 'online';
+                            $customer->save();
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error("Router connection or enabling failed: " . $e->getMessage());
                     }
                 }
+
 
                 DB::commit();
                 return response()->json([
@@ -1254,118 +1279,118 @@ class CustomerController extends Controller
         return view('Backend.Pages.Customer.bulk_recharge');
     }
     public function customer_bulk_recharge_store(Request $request)
-{
-    $rules = [
-        'customer_ids'      => 'required|array|min:1',
-        'recharge_month'    => 'required|array|min:1',
-        'transaction_type'  => 'required',
-    ];
+    {
+        $rules = [
+            'customer_ids'      => 'required|array|min:1',
+            'recharge_month'    => 'required|array|min:1',
+            'transaction_type'  => 'required',
+        ];
 
-    $validator = Validator::make($request->all(), $rules);
-    if ($validator->fails()) {
-        return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
-    }
-
-    // Validate months
-    $validMonths = [];
-    foreach ($request->recharge_month as $monthYear) {
-        if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $monthYear)) {
-            return response()->json([
-                'success' => false,
-                'message' => "Invalid month format: $monthYear. Use YYYY-MM.",
-            ]);
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
-        $validMonths[] = $monthYear;
-    }
 
-    if ($request->transaction_type !== 'due_paid') {
-        DB::beginTransaction();
-
-        foreach ($request->customer_ids as $customer_id) {
-            $customer = Customer::find($customer_id);
-            if (!$customer) {
-                DB::rollBack();
+        // Validate months
+        $validMonths = [];
+        foreach ($request->recharge_month as $monthYear) {
+            if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $monthYear)) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Customer with ID $customer_id not found.",
+                    'message' => "Invalid month format: $monthYear. Use YYYY-MM.",
                 ]);
             }
+            $validMonths[] = $monthYear;
+        }
 
-            $totalAmount = $customer->amount * count($validMonths);
-            $pop_balance = check_pop_balance($customer->pop_id);
+        if ($request->transaction_type !== 'due_paid') {
+            DB::beginTransaction();
 
-            if ($pop_balance < $totalAmount) {
-                DB::rollBack();
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pop balance is not enough',
-                ]);
-            }
-
-            foreach ($validMonths as $monthYear) {
-                $exists = Customer_recharge::where('customer_id', $customer_id)
-                    ->where('pop_id', $customer->pop_id)
-                    ->where('area_id', $customer->area_id)
-                    ->where('recharge_month', $monthYear)
-                    ->exists();
-
-                if ($exists) {
+            foreach ($request->customer_ids as $customer_id) {
+                $customer = Customer::find($customer_id);
+                if (!$customer) {
                     DB::rollBack();
                     return response()->json([
                         'success' => false,
-                        'message' => "Recharge for $monthYear already exists.",
+                        'message' => "Customer with ID $customer_id not found.",
                     ]);
                 }
 
-                $object = new Customer_recharge();
-                $object->user_id          = auth()->guard('admin')->id();
-                $object->customer_id      = $customer_id;
-                $object->pop_id           = $customer->pop_id;
-                $object->area_id          = $customer->area_id;
-                $object->recharge_month   = $monthYear;
-                $object->transaction_type = $request->transaction_type;
-                $object->amount           = $customer->amount;
-                $object->note             = $request->note ?? 'Bulk Recharge';
+                $totalAmount = $customer->amount * count($validMonths);
+                $pop_balance = check_pop_balance($customer->pop_id);
 
-                $base_date = strtotime($customer->expire_date) > time()
-                    ? $customer->expire_date
-                    : now()->toDateString();
-
-                $new_expire_date = date('Y-m-d', strtotime("+".count($validMonths)." months", strtotime($base_date)));
-                $object->paid_until = $new_expire_date;
-                $customer->expire_date = $new_expire_date;
-
-                $customer->save();
-                $object->save();
-
-                customer_log($customer_id, 'recharge', auth()->guard('admin')->id(), 'Customer Recharge Completed!');
-
-                // Router activation
-                $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
-                if ($router) {
-                    $client = new Client([
-                        'host' => $router->ip_address,
-                        'user' => $router->username,
-                        'pass' => $router->password,
-                        'port' => (int) $router->port ?? 8728,
+                if ($pop_balance < $totalAmount) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Pop balance is not enough',
                     ]);
+                }
 
-                    $active = $client->query((new Query('/ppp/active/print'))->where('name', $customer->username))->read();
-                    if (empty($active)) {
-                        $client->query((new Query('/ppp/secret/enable'))->equal('numbers', $customer->username))->read();
-                        $customer->status = 'online';
-                        $customer->save();
+                foreach ($validMonths as $monthYear) {
+                    $exists = Customer_recharge::where('customer_id', $customer_id)
+                        ->where('pop_id', $customer->pop_id)
+                        ->where('area_id', $customer->area_id)
+                        ->where('recharge_month', $monthYear)
+                        ->exists();
+
+                    if ($exists) {
+                        DB::rollBack();
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Recharge for $monthYear already exists.",
+                        ]);
+                    }
+
+                    $object = new Customer_recharge();
+                    $object->user_id          = auth()->guard('admin')->id();
+                    $object->customer_id      = $customer_id;
+                    $object->pop_id           = $customer->pop_id;
+                    $object->area_id          = $customer->area_id;
+                    $object->recharge_month   = $monthYear;
+                    $object->transaction_type = $request->transaction_type;
+                    $object->amount           = $customer->amount;
+                    $object->note             = $request->note ?? 'Bulk Recharge';
+
+                    $base_date = strtotime($customer->expire_date) > time()
+                        ? $customer->expire_date
+                        : now()->toDateString();
+
+                    $new_expire_date = date('Y-m-d', strtotime("+".count($validMonths)." months", strtotime($base_date)));
+                    $object->paid_until = $new_expire_date;
+                    $customer->expire_date = $new_expire_date;
+
+                    $customer->save();
+                    $object->save();
+
+                    customer_log($customer_id, 'recharge', auth()->guard('admin')->id(), 'Customer Recharge Completed!');
+
+                    // Router activation
+                    $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
+                    if ($router) {
+                        $client = new Client([
+                            'host' => $router->ip_address,
+                            'user' => $router->username,
+                            'pass' => $router->password,
+                            'port' => (int) $router->port ?? 8728,
+                        ]);
+
+                        $active = $client->query((new Query('/ppp/active/print'))->where('name', $customer->username))->read();
+                        if (empty($active)) {
+                            $client->query((new Query('/ppp/secret/enable'))->equal('numbers', $customer->username))->read();
+                            $customer->status = 'online';
+                            $customer->save();
+                        }
                     }
                 }
             }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Recharge successfully.']);
         }
 
-        DB::commit();
-        return response()->json(['success' => true, 'message' => 'Recharge successfully.']);
+        return response()->json(['success' => false, 'message' => 'Invalid transaction type.']);
     }
-
-    return response()->json(['success' => false, 'message' => 'Invalid transaction type.']);
-}
 
 
     public function customer_recharge_undo($id)
