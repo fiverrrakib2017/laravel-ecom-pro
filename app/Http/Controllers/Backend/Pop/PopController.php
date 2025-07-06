@@ -18,8 +18,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
 class PopController extends Controller
 {
+    
     public function index()
     {
+        if (auth()->guard('admin')->check() && auth()->guard('admin')->user()->pop_id !== null) {
+            abort(403);
+        }
         return view('Backend.Pages.Pop.index');
     }
 
