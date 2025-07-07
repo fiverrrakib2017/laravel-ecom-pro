@@ -1375,11 +1375,40 @@ class CustomerController extends Controller
                             'port' => (int) $router->port ?? 8728,
                         ]);
 
-                        $active = $client->query((new Query('/ppp/active/print'))->where('name', $customer->username))->read();
-                        if (empty($active)) {
-                            $client->query((new Query('/ppp/secret/enable'))->equal('numbers', $customer->username))->read();
-                            $customer->status = 'online';
-                            $customer->save();
+                        try {
+                            $client->connect();
+
+                            // Find secret
+                            $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
+                            $secrets = $client->query($secretQuery)->read();
+
+                            if (!empty($secrets)) {
+                                $secretId = $secrets[0]['.id'];
+                                $isDisabled = $secrets[0]['disabled'] ?? 'false';
+
+                                if ($isDisabled === 'true') {
+                                    /* Enable secret*/
+                                    $enableQuery = (new Query('/ppp/secret/set'))
+                                        ->equal('.id', $secretId)
+                                        ->equal('disabled', 'no');
+                                    $client->query($enableQuery)->read();
+                                }
+
+                                $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
+                                $activeUser = $client->query($activeQuery)->read();
+
+                                if (!empty($activeUser)) {
+                                    $activeId = $activeUser[0]['.id'];
+                                    $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
+                                    $client->query($removeQuery)->read();
+                                }
+
+                                /* Status update*/
+                                $customer->status = 'online';
+                                $customer->save();
+                            }
+                        } catch (\Exception $e) {
+                            \Log::error("Router connection or enabling failed: " . $e->getMessage());
                         }
                     }
                 }
