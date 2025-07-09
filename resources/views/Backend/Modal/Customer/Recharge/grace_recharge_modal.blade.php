@@ -21,7 +21,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Recharge</button>
+          <button type="submit" class="btn btn-success"><i class="fas fa-battery-full" style="font-size: 18px; color: rgb(255, 255, 255);"></i> Recharge</button>
           <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
         </div>
       </div>

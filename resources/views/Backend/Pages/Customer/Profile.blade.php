@@ -37,10 +37,13 @@
                     <button type="button" class="btn btn-sm btn-primary m-1 customer_edit_btn"
                         data-id="{{ $data->id }}"><i class="fas fa-edit"></i> Edit Profile</button>
 
-                    <button type="button" class="btn btn-sm btn-warning m-1 grace_recharge_btn"
-                            data-id="{{ $data->id }}" data-username="{{$data->fullname}}">
-                        <i class="fas fa-coins"></i> Grace Recharge
+                    <button type="button"
+                        class="btn btn-sm btn-success m-1 grace_recharge_btn"
+                        data-id="{{ $data->id }}"
+                        data-username="{{ $data->fullname }}">
+                        <i class="fas fa-bolt fa-pulse text-warning"></i>Grace Recharge
                     </button>
+
 
                 </div>
             </div>
