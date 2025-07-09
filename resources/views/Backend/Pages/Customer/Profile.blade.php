@@ -80,6 +80,26 @@
                                 </span>
                             </p>
 
+                            @php
+                                $grace = \App\Models\Grace_recharge::where('customer_id', $data->id)->first();
+                            @endphp
+
+                            @if($grace)
+                                <p class="text-muted text-center">
+                                    <i class="fas fa-gift"></i>
+                                    <strong>Grace Recharge:</strong>
+                                    <span id="grace_days_text" class="text-info">{{ $grace->days }} day{{ $grace->days > 1 ? 's' : '' }}</span>
+
+                                    <a href="javascript:void(0);"
+                                    class="text-danger ml-2"
+                                    id="delete_grace_btn"
+                                    data-id="{{ $data->id }}"
+                                    title="Remove Grace Recharge">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>
+                                </p>
+                            @endif
+
 
 
 
@@ -679,6 +699,18 @@
                 $('#grace_customer_id').val(id);
                 $('#grace_customer_name').text(username);
                 $('#graceRechargeModal').modal('show');
+            });
+            /** Handle Customer Grace Recharge Remove button click **/
+            $(document).on('click', '#delete_grace_btn', function() {
+                __handle_custom_ajax_action({
+                    id: $(this).data('id'),
+                    button: this,
+                    url: "{{ route('admin.customer.grace.recharge.remove', ':id') }}",
+                    confirmMessage: 'Are you sure you want to Delete Grace Recharge this action?',
+                    loadingText: 'Loading...',
+                    successMessage: 'Successfully Done!',
+                    reload: true
+                });
             });
             /** Handle Customer Undo Recharge button click **/
             $(document).on('click', '.customer_recharge_undo_btn', function() {

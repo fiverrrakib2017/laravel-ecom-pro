@@ -132,6 +132,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/recharge/bulk-recharge', 'customer_bulk_recharge')->name('admin.customer.bulk.recharge');
             Route::post('/recharge/bulk-recharge-store', 'customer_bulk_recharge_store')->name('admin.customer.bulk.recharge.store');
             Route::post('/recharge/grace-recharge-store', 'customer_grace_recharge_store')->name('admin.customer.grace.recharge.store');
+            Route::get('/recharge/grace-recharge/remove/{customer_id}', 'customer_grace_recharge_remove')->name('admin.customer.grace.recharge.remove');
 
             /***** Customer comming expire *******/
             Route::get('/comming-expire', 'customer_comming_expire')->name('admin.customer.customer_comming_expire');

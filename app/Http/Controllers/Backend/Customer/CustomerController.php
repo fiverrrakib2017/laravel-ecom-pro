@@ -1460,6 +1460,36 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+    public function customer_grace_recharge_remove($customer_id)
+    {
+        if(empty($customer_id)){
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer id Require.'
+            ]);
+        }
+        try {
+            DB::beginTransaction();
+            $data = Grace_recharge::where('customer_id', $customer_id)->first();
+            $data->delete();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Delete successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong!',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     public function customer_recharge_undo($id)
     {
