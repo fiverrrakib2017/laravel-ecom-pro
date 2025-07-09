@@ -332,167 +332,103 @@
                     }
                 });
             });
-            $(document).on('click', '#bulk_recharge_btn', function(event) {
-                event.preventDefault();
-                var selectedCustomers = [];
-                $(".checkSingle:checked").each(function() {
-                    selectedCustomers.push($(this).val());
+            /******When Bulk Recharge Button Clicked**********/
+            handle_bulk_recharge_trigger('#bulk_recharge_btn', '#bulk_rechargeModal', '#selectedCustomerCount');
+            /******When Grace Recharge Button Clicked**********/
+            handle_bulk_recharge_trigger('#grace_recharge_btn', '#graceRechargeModal', '#grace_recharge_customer_Count');
+            /***Bulk Recharge Trigger****/
+            function handle_bulk_recharge_trigger(button_selector, modalId, textSelector) {
+                $(document).on('click', button_selector, function (event) {
+                    event.preventDefault();
+
+                    var __selected_customers = [];
+                    $(".checkSingle:checked").each(function () {
+                        __selected_customers.push($(this).val());
+                    });
+
+                    if (__selected_customers.length === 0) {
+                        toastr.error('Please select at least one customer.');
+                        return;
+                    }
+
+                    var countText = "You have selected " + __selected_customers.length + " customers.";
+                    $(textSelector).text(countText);
+                    $(modalId).modal('show');
                 });
-                if(selectedCustomers.length === 0) {
-                    toastr.error('Please select at least one customer.');
-                    return;
-                }
-                var countText = "You have selected " + selectedCustomers.length + " customers.";
-                $("#selectedCustomerCount").text(countText);
-                $('#bulk_rechargeModal').modal('show');
+            }
+
+            /*Call bulk recharge Function*/
+            handle_ajax_submit('#bulk_rechargeForm');
+            /*Call Grace recharge Function*/
+            handle_ajax_submit('#grace_rechargeForm', function () {
+                $('#graceRechargeModal').modal('hide');
+                setTimeout(() => location.reload(), 500);
             });
-            $(document).on('click', '#grace_recharge_btn', function(event) {
-                event.preventDefault();
-                var selectedCustomers = [];
-                $(".checkSingle:checked").each(function() {
-                    selectedCustomers.push($(this).val());
-                });
-                if(selectedCustomers.length === 0) {
-                    toastr.error('Please select at least one customer.');
-                    return;
-                }
-                var countText = "You have selected " + selectedCustomers.length + " customers.";
-                $("#grace_recharge_customer_Count").text(countText);
-                $('#graceRechargeModal').modal('show');
-            });
-            $("#bulk_rechargeForm").submit(function(e) {
-                e.preventDefault();
+            function handle_ajax_submit(formId, __success_call_back = null) {
+                $(formId).submit(function (e) {
+                    e.preventDefault();
 
-                /* Get the submit button */
-                var submitBtn = $(this).find('button[type="submit"]');
-                var originalBtnText = submitBtn.html();
+                    let form = $(this);
+                    let submitBtn = form.find('button[type="submit"]');
+                    let originalBtnText = submitBtn.html();
 
-                submitBtn.html(
-                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden"></span>'
-                    );
-                submitBtn.prop('disabled', true);
+                    submitBtn.html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                    ).prop('disabled', true);
 
-                var form = $(this);
-                var formData = new FormData(this);
-                var customer_ids = [];
-                $(".checkSingle:checked").each(function() {
-                    customer_ids.push($(this).val());
-                });
-                customer_ids.forEach(function(customerId) {
-                    formData.append('customer_ids[]', customerId);
-                });
-                $.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    beforeSend: function() {
-                        form.find(':input').prop('disabled', true);
-                    },
-                    success: function(response) {
-                        if (response.success == true) {
-                            toastr.success(response.message);
-                            form[0].reset();
-                            setTimeout(() => {
-                                location.reload();
-                            }, 500);
-                            submitBtn.html(originalBtnText);
-                            submitBtn.prop('disabled', false);
+                    let formData = new FormData(this);
+
+                    let customer_ids = [];
+                    $(".checkSingle:checked").each(function () {
+                        customer_ids.push($(this).val());
+                    });
+                    customer_ids.forEach(function (id) {
+                        formData.append('customer_ids[]', id);
+                    });
+
+                    $.ajax({
+                        type: form.attr('method'),
+                        url: form.attr('action'),
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function () {
+                            form.find(':input').prop('disabled', true);
+                        },
+                        success: function (response) {
+                            if (response.success === true) {
+                                toastr.success(response.message);
+                                form[0].reset();
+
+                                if (typeof __success_call_back === "function") {
+                                    __success_call_back();
+                                } else {
+                                    setTimeout(() => location.reload(), 500);
+                                }
+
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                $.each(errors, function (field, messages) {
+                                    $.each(messages, function (index, message) {
+                                        toastr.error(message);
+                                    });
+                                });
+                            } else {
+                                toastr.error('An error occurred. Please try again.');
+                            }
+                        },
+                        complete: function () {
+                            submitBtn.html(originalBtnText).prop('disabled', false);
                             form.find(':input').prop('disabled', false);
-                        } else if (response.success == false) {
-                            toastr.error(response.message);
                         }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            /* Validation error*/
-                            var errors = xhr.responseJSON.errors;
-
-                            /* Loop through the errors and show them using toastr*/
-                            $.each(errors, function(field, messages) {
-                                $.each(messages, function(index, message) {
-                                    /* Display each error message*/
-                                    toastr.error(message);
-                                });
-                            });
-                        } else {
-                            /*General error message*/
-                            toastr.error('An error occurred. Please try again.');
-                        }
-                    },
-                    complete: function() {
-                        submitBtn.html(originalBtnText);
-                        submitBtn.prop('disabled', false);
-                        form.find(':input').prop('disabled', false);
-                    }
+                    });
                 });
-            });
-            $("#grace_rechargeForm").submit(function(e) {
-                e.preventDefault();
-
-                /* Get the submit button */
-                var submitBtn = $(this).find('button[type="submit"]');
-                var originalBtnText = submitBtn.html();
-
-                submitBtn.html(
-                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden"></span>'
-                    );
-                submitBtn.prop('disabled', true);
-
-                var form = $(this);
-                var formData = new FormData(this);
-                var customer_ids = [];
-                $(".checkSingle:checked").each(function() {
-                    customer_ids.push($(this).val());
-                });
-                customer_ids.forEach(function(customerId) {
-                    formData.append('customer_ids[]', customerId);
-                });
-                $.ajax({
-                    type: form.attr('method'),
-                    url: form.attr('action'),
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        if (response.success == true) {
-                            $('#graceRechargeModal').modal('hide');
-                            toastr.success(response.message);
-                            form[0].reset();
-                            setTimeout(() => {
-                                location.reload();
-                            }, 500);
-                            submitBtn.html(originalBtnText);
-                            submitBtn.prop('disabled', false);
-                        } else if (response.success == false) {
-                            toastr.error(response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 422) {
-                            /* Validation error*/
-                            var errors = xhr.responseJSON.errors;
-
-                            /* Loop through the errors and show them using toastr*/
-                            $.each(errors, function(field, messages) {
-                                $.each(messages, function(index, message) {
-                                    /* Display each error message*/
-                                    toastr.error(message);
-                                });
-                            });
-                        } else {
-                            /*General error message*/
-                            toastr.error('An error occurred. Please try again.');
-                        }
-                    },
-                    complete: function() {
-                        submitBtn.html(originalBtnText);
-                        submitBtn.prop('disabled', false);
-                        form.find(':input').prop('disabled', false);
-                    }
-                });
-            });
+            }
     </script>
 
 @endsection
