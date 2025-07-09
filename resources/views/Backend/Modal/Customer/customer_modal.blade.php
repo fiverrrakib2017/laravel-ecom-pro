@@ -39,11 +39,47 @@
 
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Username <span class="text-danger">*</span></label>
-                                    <input type="text" name="username" class="form-control"
-                                        placeholder="Enter Username" required>
+                                <div class="form-group position-relative">
+                                    <label class="form-label">Username <span class="text-danger">*</span></label>
+                                    <input type="text" name="username" id="username_input" class="form-control" placeholder="Enter Username" required>
+
+                                    <!-- Tick or cross icon -->
+                                    <span id="username_status_icon" style="position:absolute; right:10px; top:38px;"></span>
+
+                                    <!-- Message -->
+                                    <small id="username_status_msg" class="form-text text-muted"></small>
                                 </div>
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#username_input').on('input', function () {
+                                            let username = $(this).val().trim();
+
+                                            if (username.length >= 3) {
+                                                $.ajax({
+                                                    url: '{{ route("admin.customer.check.username") }}',
+                                                    method: 'POST',
+                                                    data: {
+                                                        _token: '{{ csrf_token() }}',
+                                                        username: username
+                                                    },
+                                                    success: function (response) {
+                                                        if (response.available) {
+                                                            $('#username_status_icon').html('<i class="fas fa-check-circle text-success"></i>');
+                                                            $('#username_status_msg').text('Username is available').css('color', 'green');
+                                                        } else {
+                                                            $('#username_status_icon').html('<i class="fas fa-times-circle text-danger"></i>');
+                                                            $('#username_status_msg').text('Username already taken').css('color', 'red');
+                                                        }
+                                                    }
+                                                });
+                                            } else {
+                                                $('#username_status_icon').html('');
+                                                $('#username_status_msg').text('');
+                                            }
+                                        });
+                                    });
+                                </script>
+
                                 <div class="form-group">
                                     <label>Password <span class="text-danger">*</span></label>
                                     <input type="text" name="password" class="form-control"
