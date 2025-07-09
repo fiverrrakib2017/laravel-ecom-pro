@@ -8,7 +8,7 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">
-                        <i class="fas fa-cogs"></i> Bulk Recharge
+                     <i class="fas fa-coins"></i> Bulk/Grace Recharge
                     </h4>
 
                 </div>
@@ -92,7 +92,10 @@
                     <div class="row">
                         <div class="col-md-12 text-right">
                             <button type="button" id="bulk_recharge_btn" class="btn btn-primary mb-2">
-                                <i class="fas fa-cogs"></i> Process
+                             <i class="fas fa-credit-card"></i>&nbsp; Bulk Recharge
+                            </button>
+                            <button type="button" id="grace_recharge_btn" class="btn btn-success mb-2">
+                              <i class="fas fa-bolt fa-pulse text-warning"></i>&nbsp; Grace Recharge
                             </button>
 
                         </div>
@@ -131,7 +134,38 @@
         </div>
     </div>
 
+  <!-- Modal for Grace Recharge -->
+    <div class="modal fade" id="graceRechargeModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
 
+            <form action="{{route('admin.customer.grace.recharge.store')}}" id="grace_rechargeForm" method="POST">
+            @csrf
+
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Grace Recharge </h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                <div class="alert alert-success" id="grace_recharge_customer_Count"></div>
+                <div class="form-group">
+                    <label>Days</label>
+                    <select type="text" name="days" class="form-control">
+                        <option >---Select Days---</option>
+                        @for($i = 1; $i <= 15; $i++)
+                            <option value="{{ $i }}">{{ $i }} day{{ $i > 1 ? 's' : '' }}</option>
+                        @endfor
+                    </select>
+                </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-success"><i class="fas fa-battery-full"></i> Recharge</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
 
 
 
@@ -312,6 +346,20 @@
                 $("#selectedCustomerCount").text(countText);
                 $('#bulk_rechargeModal').modal('show');
             });
+            $(document).on('click', '#grace_recharge_btn', function(event) {
+                event.preventDefault();
+                var selectedCustomers = [];
+                $(".checkSingle:checked").each(function() {
+                    selectedCustomers.push($(this).val());
+                });
+                if(selectedCustomers.length === 0) {
+                    toastr.error('Please select at least one customer.');
+                    return;
+                }
+                var countText = "You have selected " + selectedCustomers.length + " customers.";
+                $("#grace_recharge_customer_Count").text(countText);
+                $('#graceRechargeModal').modal('show');
+            });
             $("#bulk_rechargeForm").submit(function(e) {
                 e.preventDefault();
 
@@ -352,6 +400,71 @@
                             submitBtn.html(originalBtnText);
                             submitBtn.prop('disabled', false);
                             form.find(':input').prop('disabled', false);
+                        } else if (response.success == false) {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            /* Validation error*/
+                            var errors = xhr.responseJSON.errors;
+
+                            /* Loop through the errors and show them using toastr*/
+                            $.each(errors, function(field, messages) {
+                                $.each(messages, function(index, message) {
+                                    /* Display each error message*/
+                                    toastr.error(message);
+                                });
+                            });
+                        } else {
+                            /*General error message*/
+                            toastr.error('An error occurred. Please try again.');
+                        }
+                    },
+                    complete: function() {
+                        submitBtn.html(originalBtnText);
+                        submitBtn.prop('disabled', false);
+                        form.find(':input').prop('disabled', false);
+                    }
+                });
+            });
+            $("#grace_rechargeForm").submit(function(e) {
+                e.preventDefault();
+
+                /* Get the submit button */
+                var submitBtn = $(this).find('button[type="submit"]');
+                var originalBtnText = submitBtn.html();
+
+                submitBtn.html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden"></span>'
+                    );
+                submitBtn.prop('disabled', true);
+
+                var form = $(this);
+                var formData = new FormData(this);
+                var customer_ids = [];
+                $(".checkSingle:checked").each(function() {
+                    customer_ids.push($(this).val());
+                });
+                customer_ids.forEach(function(customerId) {
+                    formData.append('customer_ids[]', customerId);
+                });
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success == true) {
+                            $('#graceRechargeModal').modal('hide');
+                            toastr.success(response.message);
+                            form[0].reset();
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                            submitBtn.html(originalBtnText);
+                            submitBtn.prop('disabled', false);
                         } else if (response.success == false) {
                             toastr.error(response.message);
                         }

@@ -212,13 +212,36 @@ class CustomerController extends Controller
             $package_name = $row->package ? $row->package->name : 'N/A';
             $get_pop_name = $row->pop ? $row->pop->name : 'N/A';
             $get_area_name = $row->area ? $row->area->name : 'N/A';
-            $status_icon = $row->status == 'online'? '<span style="color:green; font-size:20px; margin-right:5px;">&#9679;</span>': '<span style="color:red; font-size:20px; margin-right:5px;">&#9679;</span>';
+            //$status_icon = $row->status == 'online'? '<span style="color:green; font-size:20px; margin-right:5px;">&#9679;</span>': '<span style="color:red; font-size:20px; margin-right:5px;">&#9679;</span>';
             $url = route('admin.customer.view', $row->id);
-
+            $status_icon = '';
+            switch ($row->status) {
+                case 'online':
+                    $status_icon = '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;" title="Online"></i>';
+                    break;
+                case 'offline':
+                    $status_icon = '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;" title="Offline"></i>';
+                    break;
+                case 'expired':
+                    $status_icon = '<i class="fas fa-clock" style="font-size: 15px; color: orange; margin-right: 8px;" title="Expired"></i>';
+                    break;
+                case 'blocked':
+                    $status_icon = '<i class="fas fa-ban" style="font-size: 15px; color: darkred; margin-right: 8px;" title="Blocked"></i>';
+                    break;
+                case 'disabled':
+                    $status_icon = '<i class="fas fa-user-slash" style="font-size: 15px; color: gray; margin-right: 8px;" title="Disabled"></i>';
+                    break;
+                case 'discontinue':
+                    $status_icon = '<i class="fas fa-times-circle" style="font-size: 15px; color: #ff6600; margin-right: 8px;" title="Discontinue"></i>';
+                    break;
+                default:
+                    $status_icon = '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;" title="Unknown"></i>';
+                    break;
+            }
             $html .= '<tr>';
             $html .= '<td><input type="checkbox" class="customer-checkbox checkSingle" value="' . $row->id . '"></td>';
             $html .= '<td>' . $row->id . '</td>';
-           $html .= '<td>' . $status_icon . '<a href="' . $url . '" style="text-decoration:none; color:#007bff;">' . $row->username . '</a></td>';
+            $html .= '<td>' . $status_icon . '<a href="' . $url . '" style="text-decoration:none; color:#007bff;">' . $row->username . '</a></td>';
             $html .= '<td>' . $package_name . '</td>';
             $html .= '<td>' . $row->amount . '</td>';
             $html .= '<td>' . $row->expire_date . '</td>';
@@ -1338,29 +1361,36 @@ class CustomerController extends Controller
     public function customer_grace_recharge_store(Request $request)
     {
         $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'days'        => 'required|integer|min:1',
+            'days' => 'required|integer|min:1',
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id'
         ]);
 
         try {
             DB::beginTransaction();
-            $existing = Grace_recharge::where('customer_id', $request->customer_id)->first();
-            if (!$existing) {
-                $existing = new Grace_recharge();
-                $existing->customer_id = $request->customer_id;
-                $existing->days = $request->days;
-                $existing->save();
-            } else {
-                $existing->days = $request->days;
-                $existing->updated_at = now();
-                $existing->save();
+
+            foreach ($request->customer_ids as $customer_id) {
+                $existing = Grace_recharge::where('customer_id', $customer_id)->first();
+
+                if (!$existing) {
+                    $existing = new Grace_recharge();
+                    $existing->customer_id = $customer_id;
+                    $existing->days = $request->days;
+                    $existing->save();
+                } else {
+                    $existing->days = $request->days;
+                    $existing->updated_at = now();
+                    $existing->save();
+                }
+                /*Activate rouater customer*/
+                $this->router_activation($customer_id);
             }
-            /*Call Router activation Function*/
-            $this->router_activation($request->customer_id);
+
             DB::commit();
+
             return response()->json([
                 'success' => true,
-                'message' => 'Recharge successfully.'
+                'message' => 'Recharge Successfully completed.'
             ]);
 
         } catch (\Exception $e) {
@@ -1368,11 +1398,12 @@ class CustomerController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Something went wrong!',
+                'message' => 'Something went wrong during bulk recharge.',
                 'error'   => $e->getMessage()
             ], 500);
         }
     }
+
     public function customer_grace_recharge_remove($customer_id)
     {
         if(empty($customer_id)){
