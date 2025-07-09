@@ -48,6 +48,7 @@ use App\Http\Controllers\Backend\Hrm\Shift_controller;
 use App\Http\Controllers\Backend\Olt\Olt_controller;
 use App\Http\Controllers\Backend\Onu\Onu_controller;
 use App\Http\Controllers\Backend\Tickets\Ticket_controller;
+use App\Http\Controllers\Backend\Admin\UserController;
 use App\Models\Product_Category;
 use App\Models\Router;
 use Illuminate\Support\Facades\Artisan;
@@ -689,6 +690,14 @@ Route::group(['middleware' => 'admin'], function () {
                 /* nas server */
                 Route::get('/nas/server','show_nas_server')->name('admin.router.nas.show_nas_server');
             });
+        });
+    });
+
+    /** User Management  Route **/
+    Route::prefix('admin/user')->group(function () {
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/list', 'index')->name('admin.user.index');
+            Route::post('/store', 'store')->name('admin.user.store');
         });
     });
     /* Network Diagram Router Management Route */

@@ -816,6 +816,44 @@
                     </ul>
                 </li>
                 @endif
+                 @php
+                    $active_prefix = ['admin.user.index','admin.user.store'];
+                @endphp
+                <li class="nav-item has-treeview ">
+                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users-cog"></i>
+                        <p>User Management <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.user.index')}}"
+                            class="nav-link {{ $route == 'admin.user.index' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Users</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href=""
+                            class="nav-link ">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Roles</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href=""
+                            class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Permissions</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
 
 
 
