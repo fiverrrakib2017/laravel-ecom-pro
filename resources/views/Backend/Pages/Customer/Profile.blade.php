@@ -36,6 +36,12 @@
 
                     <button type="button" class="btn btn-sm btn-primary m-1 customer_edit_btn"
                         data-id="{{ $data->id }}"><i class="fas fa-edit"></i> Edit Profile</button>
+
+                    <button type="button" class="btn btn-sm btn-warning m-1 grace_recharge_btn"
+                            data-id="{{ $data->id }}" data-username="{{$data->fullname}}">
+                        <i class="fas fa-coins"></i> Grace Recharge
+                    </button>
+
                 </div>
             </div>
             <div class="row">
@@ -595,6 +601,7 @@
         </div>
     </section>
     @include('Backend.Modal.Customer.Recharge.Recharge_modal')
+    @include('Backend.Modal.Customer.Recharge.grace_recharge_modal')
     @include('Backend.Modal.Tickets.ticket_modal', [
         'customer_id' => $data->id,
         'pop_id' => $data->pop_id,
@@ -665,6 +672,14 @@
                     buttonText: '<i class="fas fa-arrow-left"></i> Return Now'
                 });
             });
+            /** Handle Customer Grace Recharge button click **/
+            $(document).on('click', '.grace_recharge_btn', function() {
+                let id = $(this).data('id');
+                let username = $(this).data('username');
+                $('#grace_customer_id').val(id);
+                $('#grace_customer_name').text(username);
+                $('#graceRechargeModal').modal('show');
+            });
             /** Handle Customer Undo Recharge button click **/
             $(document).on('click', '.customer_recharge_undo_btn', function() {
                 __handle_custom_ajax_action({
@@ -677,9 +692,6 @@
                     buttonText: 'Recharge Now'
                 });
             });
-
-
-
             /** Handle Customer Recharge Print click **/
             $(document).on('click', '.customer_recharge_print_btn', function() {
                 var id = $(this).data('id');
