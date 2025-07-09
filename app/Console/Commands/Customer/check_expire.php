@@ -48,6 +48,22 @@ class check_expire extends Command
             ->get();
 
         foreach ($expire_customers as $customer) {
+            $grace = Grace_recharge::where('customer_id', $customer->id)->first();
+            $is_grace_valid = false;
+
+            if ($grace) {
+                $grace_expire_date = Carbon::parse($customer->expire_date)->addDays($grace->days)->format('Y-m-d');
+
+                if ($today <= $grace_expire_date) {
+                    $is_grace_valid = true;
+                }
+            }
+
+            if ($is_grace_valid) {
+                /*Grace valid → skip*/
+                $this->info("Grace active for {$customer->username} until {$grace_expire_date}, skipping...");
+                continue;
+            }
             if ($customer->connection_type == 'pppoe') {
                 $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
                 if (!$router) {
