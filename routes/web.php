@@ -117,6 +117,8 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/edit/{id}', 'edit')->name('admin.customer.edit');
             Route::get('/view/{id}', 'view')->name('admin.customer.view');
             Route::post('/delete', 'delete')->name('admin.customer.delete');
+            Route::post('/check-username', 'check_customer_user')->name('admin.customer.check.username');
+
             Route::post('/store', 'store')->name('admin.customer.store');
             Route::post('/update/{id}', 'update')->name('admin.customer.update');
             Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');

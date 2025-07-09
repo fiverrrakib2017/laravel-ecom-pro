@@ -258,7 +258,13 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function check_customer_user(Request $request){
+        $exists = DB::table('customers')->where('username', $request->username)->exists();
 
+        return response()->json([
+            'available' => !$exists
+        ]);
+    }
     public function store(Request $request)
     {
         /* Validate the form data */
