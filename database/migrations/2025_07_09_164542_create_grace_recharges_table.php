@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('grace_recharges', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('customer_id');
+            $table->integer('days');
             $table->timestamps();
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
         });
     }
 

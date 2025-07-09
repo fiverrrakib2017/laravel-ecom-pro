@@ -1,6 +1,6 @@
 <div class="modal fade" id="graceRechargeModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <form action="{{route('admin.customer.grace.recharge.store')}}" method="POST">
+    <form action="{{route('admin.customer.grace.recharge.store')}}" id="graceRechargeForm" method="POST">
       @csrf
       <input type="hidden" name="customer_id" id="grace_customer_id">
       <div class="modal-content">
@@ -28,3 +28,45 @@
     </form>
   </div>
 </div>
+<script>
+$(document).ready(function () {
+    $('#graceRechargeForm').on('submit', function (e) {
+        e.preventDefault();
+
+        var form = $(this);
+        var submitButton = form.find('button[type="submit"]');
+        submitButton.prop('disabled', true).text('Processing...');
+
+        var formData = new FormData(this);
+        $.ajax({
+            url: form.attr('action'),
+            type: form.attr('method'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#graceRechargeModal').modal('hide');
+                    form[0].reset();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    toastr.warning(response.message);
+                }
+            },
+            error: function (xhr) {
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    toastr.error(xhr.responseJSON.message);
+                } else {
+                    toastr.error('Something went wrong.');
+                }
+            },
+            complete: function () {
+                submitButton.prop('disabled', false).text('Recharge');
+            }
+        });
+    });
+});
+</script>

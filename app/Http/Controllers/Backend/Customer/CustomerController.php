@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Customer_device;
 use App\Models\Customer_log;
 use App\Models\Customer_recharge;
+use App\Models\Grace_recharge;
 use App\Models\Router as Mikrotik_router;
 use App\Models\Send_message;
 use Illuminate\Http\Request;
@@ -1421,6 +1422,44 @@ class CustomerController extends Controller
         return response()->json(['success' => false, 'message' => 'Invalid transaction type.']);
     }
 
+
+
+    public function customer_grace_recharge_store(Request $request)
+    {
+        $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'days'        => 'required|integer|min:1',
+        ]);
+
+        try {
+            DB::beginTransaction();
+            $existing = Grace_recharge::where('customer_id', $request->customer_id)->first();
+            if (!$existing) {
+                $existing = new Grace_recharge();
+                $existing->customer_id = $request->customer_id;
+                $existing->days = $request->days;
+                $existing->save();
+            } else {
+                $existing->days = $request->days;
+                $existing->updated_at = now();
+                $existing->save();
+            }
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Recharge successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong!',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
 
     public function customer_recharge_undo($id)
     {
