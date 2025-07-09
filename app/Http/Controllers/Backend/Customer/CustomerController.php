@@ -1212,52 +1212,8 @@ class CustomerController extends Controller
             if ($object->save()) {
                 customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');
 
-                $router = Mikrotik_router::where('status', 'active')->where('id', $customer->router_id)->first();
-
-                if ($router) {
-                    $client = new Client([
-                        'host' => $router->ip_address,
-                        'user' => $router->username,
-                        'pass' => $router->password,
-                        'port' => (int) $router->port ?? 8728,
-                    ]);
-
-                    try {
-                        $client->connect();
-
-                        // Find secret
-                        $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
-                        $secrets = $client->query($secretQuery)->read();
-
-                        if (!empty($secrets)) {
-                            $secretId = $secrets[0]['.id'];
-                            $isDisabled = $secrets[0]['disabled'] ?? 'false';
-
-                            if ($isDisabled === 'true') {
-                                /* Enable secret*/
-                                $enableQuery = (new Query('/ppp/secret/set'))
-                                    ->equal('.id', $secretId)
-                                    ->equal('disabled', 'no');
-                                $client->query($enableQuery)->read();
-                            }
-
-                            $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
-                            $activeUser = $client->query($activeQuery)->read();
-
-                            if (!empty($activeUser)) {
-                                $activeId = $activeUser[0]['.id'];
-                                $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
-                                $client->query($removeQuery)->read();
-                            }
-
-                            /* Status update*/
-                            $customer->status = 'online';
-                            $customer->save();
-                        }
-                    } catch (\Exception $e) {
-                        \Log::error("Router connection or enabling failed: " . $e->getMessage());
-                    }
-                }
+                /*Call Router activation Function*/
+                $this->router_activation($object->customer_id);
 
 
                 DB::commit();
@@ -1365,53 +1321,8 @@ class CustomerController extends Controller
                     $object->save();
 
                     customer_log($customer_id, 'recharge', auth()->guard('admin')->id(), 'Customer Recharge Completed!');
-
-                    // Router activation
-                    $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
-                    if ($router) {
-                        $client = new Client([
-                            'host' => $router->ip_address,
-                            'user' => $router->username,
-                            'pass' => $router->password,
-                            'port' => (int) $router->port ?? 8728,
-                        ]);
-
-                        try {
-                            $client->connect();
-
-                            // Find secret
-                            $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
-                            $secrets = $client->query($secretQuery)->read();
-
-                            if (!empty($secrets)) {
-                                $secretId = $secrets[0]['.id'];
-                                $isDisabled = $secrets[0]['disabled'] ?? 'false';
-
-                                if ($isDisabled === 'true') {
-                                    /* Enable secret*/
-                                    $enableQuery = (new Query('/ppp/secret/set'))
-                                        ->equal('.id', $secretId)
-                                        ->equal('disabled', 'no');
-                                    $client->query($enableQuery)->read();
-                                }
-
-                                $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
-                                $activeUser = $client->query($activeQuery)->read();
-
-                                if (!empty($activeUser)) {
-                                    $activeId = $activeUser[0]['.id'];
-                                    $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
-                                    $client->query($removeQuery)->read();
-                                }
-
-                                /* Status update*/
-                                $customer->status = 'online';
-                                $customer->save();
-                            }
-                        } catch (\Exception $e) {
-                            \Log::error("Router connection or enabling failed: " . $e->getMessage());
-                        }
-                    }
+                    /*Call Router activation Function*/
+                    $this->router_activation($customer_id);
                 }
             }
 
@@ -1444,6 +1355,8 @@ class CustomerController extends Controller
                 $existing->updated_at = now();
                 $existing->save();
             }
+            /*Call Router activation Function*/
+            $this->router_activation($request->customer_id);
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -1761,6 +1674,54 @@ class CustomerController extends Controller
             'message' => 'Server Uploaded CSV file successfully.',
         ]);
         exit();
+    }
+    private function router_activation($customer_id){
+        $customer=Customer::find($customer_id);
+        $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
+        if ($router) {
+            $client = new Client([
+                'host' => $router->ip_address,
+                'user' => $router->username,
+                'pass' => $router->password,
+                'port' => (int) $router->port ?? 8728,
+            ]);
+
+            try {
+                $client->connect();
+
+                // Find secret
+                $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
+                $secrets = $client->query($secretQuery)->read();
+
+                if (!empty($secrets)) {
+                    $secretId = $secrets[0]['.id'];
+                    $isDisabled = $secrets[0]['disabled'] ?? 'false';
+
+                    if ($isDisabled === 'true') {
+                        /* Enable secret*/
+                        $enableQuery = (new Query('/ppp/secret/set'))
+                            ->equal('.id', $secretId)
+                            ->equal('disabled', 'no');
+                        $client->query($enableQuery)->read();
+                    }
+
+                    $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
+                    $activeUser = $client->query($activeQuery)->read();
+
+                    if (!empty($activeUser)) {
+                        $activeId = $activeUser[0]['.id'];
+                        $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
+                        $client->query($removeQuery)->read();
+                    }
+
+                    /* Status update*/
+                    $customer->status = 'online';
+                    $customer->save();
+                }
+            } catch (\Exception $e) {
+                \Log::error("Router connection or enabling failed: " . $e->getMessage());
+            }
+        }
     }
 
     private function validateForm($request)
