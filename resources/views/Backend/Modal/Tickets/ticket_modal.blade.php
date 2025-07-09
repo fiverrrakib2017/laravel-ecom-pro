@@ -133,16 +133,21 @@
                             <input name="note" class="form-control" type="text" placeholder="Enter Note" />
 
                         </div>
+                       @php
+                            $checkbox_id = 'sendMessageCheckbox_' . uniqid();
+                        @endphp
+
                         <div class="col-md-6 mb-2">
                             <div class="form-group clearfix">
                                 <div class="icheck-primary d-inline">
-                                    <input type="checkbox" id="sendMessageCheckbox" name="send_message" value="1">
-                                    <label for="sendMessageCheckbox">
+                                    <input type="checkbox" id="{{ $checkbox_id }}" name="send_message" value="1">
+                                    <label for="{{ $checkbox_id }}">
                                         Send message to the Customer
                                     </label>
                                 </div>
                             </div>
                         </div>
+
                         <!-- Previous Tickets Table -->
                     <div class="mt-3 col-md-12 mb-2 d-none" id="previous_tickets">
                         <h6>Previous Tickets</h6>
