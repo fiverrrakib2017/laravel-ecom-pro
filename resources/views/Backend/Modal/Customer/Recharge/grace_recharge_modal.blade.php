@@ -38,6 +38,10 @@ $(document).ready(function () {
         submitButton.prop('disabled', true).text('Processing...');
 
         var formData = new FormData(this);
+        var customer_ids = [$("#grace_customer_id").val()];
+        customer_ids.forEach(function(customerId) {
+            formData.append('customer_ids[]', customerId);
+        });
         $.ajax({
             url: form.attr('action'),
             type: form.attr('method'),

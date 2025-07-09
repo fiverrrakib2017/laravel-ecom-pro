@@ -41,7 +41,7 @@
                         class="btn btn-sm btn-success m-1 grace_recharge_btn"
                         data-id="{{ $data->id }}"
                         data-username="{{ $data->fullname }}">
-                        <i class="fas fa-bolt fa-pulse text-warning"></i>Grace Recharge
+                        <i class="fas fa-bolt fa-pulse text-warning"></i>&nbsp; Grace Recharge
                     </button>
 
 
