@@ -125,6 +125,81 @@
                         </li>
                     </ul>
                 </li>
+                {{-- Hotspot Management --}}
+                @php
+                    $hotspot_active_routes = [
+                        'admin.hotspot.user.list',
+                        'admin.hotspot.user.active',
+                        'admin.hotspot.user.recharge',
+                        'admin.hotspot.user.expired',
+                        'admin.hotspot.user.usage',
+                        'admin.hotspot.user.voucher',
+                    ];
+                @endphp
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link {{ in_array($route, $hotspot_active_routes) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-wifi"></i>
+                        <p>
+                            Hotspot Management
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview" style="{{ in_array($route, $hotspot_active_routes) ? 'display: block;' : 'display: none;' }}">
+                        {{-- Active Users --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.active') }}"
+                                class="nav-link {{ $route == 'admin.hotspot.user.active' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Active Hotspot Users</p>
+                            </a>
+                        </li>
+
+                        {{-- User List --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.list') }}"
+                                class="nav-link {{ $route == 'admin.hotspot.user.list' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Hotspot Users</p>
+                            </a>
+                        </li>
+
+                        {{-- Recharge Hotspot --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.recharge') }}"
+                                class="nav-link {{ $route == 'admin.hotspot.user.recharge' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Recharge Hotspot User</p>
+                            </a>
+                        </li>
+
+                        {{-- Expired Users --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.expired') }}"
+                                class="nav-link {{ $route == 'admin.hotspot.user.expired' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Expired Users</p>
+                            </a>
+                        </li>
+
+                        {{-- Usage Report --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.usage') }}"
+                                class="nav-link {{ $route == 'admin.hotspot.user.usage' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Usage Report</p>
+                            </a>
+                        </li>
+
+                        {{-- Voucher Management --}}
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.voucher') }}"
+                                class="nav-link {{ $route == 'admin.hotspot.user.voucher' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Voucher Generator</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
                 {{-- Customer Billings And Payment --}}
                 @php

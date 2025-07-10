@@ -193,6 +193,51 @@ Route::group(['middleware' => 'admin'], function () {
             });
         });
     });
+    /** Hotspot Route **/
+    Route::prefix('admin/hotspot')->group(function () {
+        Route::controller(CustomerController::class)->group(function () {
+
+            // List All Hotspot Users
+            Route::get('/list', 'index')->name('admin.hotspot.user.list');
+
+            // Get All Hotspot Data (for datatable/ajax)
+            Route::get('/all-data', 'get_all_data')->name('admin.hotspot.user.get_all_data');
+
+            // View User Details
+            Route::get('/view/{id}', 'view')->name('admin.hotspot.user.view');
+
+            // Create Hotspot User
+            Route::get('/create', 'create')->name('admin.hotspot.user.create');
+            Route::post('/store', 'store')->name('admin.hotspot.user.store');
+
+            // Edit Hotspot User
+            Route::get('/edit/{id}', 'edit')->name('admin.hotspot.user.edit');
+            Route::post('/update/{id}', 'update')->name('admin.hotspot.user.update');
+
+            // Delete User
+            Route::post('/delete', 'delete')->name('admin.hotspot.user.delete');
+
+            // Recharge User
+            Route::post('/recharge', 'recharge')->name('admin.hotspot.user.recharge');
+
+            // Expired Users
+            Route::get('/expired', 'expired')->name('admin.hotspot.user.expired');
+
+            // Active Users
+            Route::get('/active', 'active')->name('admin.hotspot.user.active');
+
+            // Usage Report
+            Route::get('/usage', 'usage_report')->name('admin.hotspot.user.usage');
+
+            // Voucher Generator
+            Route::get('/voucher', 'voucher')->name('admin.hotspot.user.voucher');
+            Route::post('/voucher/generate', 'voucher_generate')->name('admin.hotspot.user.voucher.generate');
+
+            // Check Username Availability
+            Route::post('/check-username', 'check_username')->name('admin.hotspot.user.check.username');
+        });
+    });
+
     /** Supplier Route **/
     Route::prefix('admin/supplier')->group(function () {
         Route::controller(SupplierController::class)->group(function () {
