@@ -446,7 +446,7 @@
                     </form>
                 </div>
                 <div class="card-body">
-                    <table class="table table-striped">
+                    <table id="monthly_connection" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                         <thead>
                             <tr>
                                 <th>NO.</th>
@@ -515,6 +515,112 @@
             </div>
         </div>
     </div>
+    <div class="row mt-4">
+        <!----- Customer Bill Generate by Month ------>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    @php
+                        $selectedYear = request()->get('year', date('Y'));
+                        $endYear = date('Y');
+                        $startYear = 2000;
+                    @endphp
+                    <span>Bill Generate by Month ({{ $selectedYear }})</span>
+                    <form method="GET" action="" id="bill_generate_yearForm" class="d-flex align-items-center" style="width: 50%;">
+                        <select name="year" class="form-control ms-2"  onchange="document.getElementById('bill_generate_yearForm').submit();">
+
+                            @for ($y = $endYear; $y >= $startYear; $y--)
+                                <option value="{{ $y }}" {{ $y == $selectedYear ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+
+                    </form>
+                </div>
+                <div class="card-body">
+                    <table id="bill_generate" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>NO.</th>
+                                <th>Months</th>
+                                <th>Total Recharge</th>
+                                <th>Total Paid</th>
+                                <th>Total Due</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                use App\Models\Customer_recharge;
+                                $monthlyData = [];
+
+                                for ($month = 1; $month <= 12; $month++) {
+                                    $monthName = Carbon::createFromDate($selectedYear, $month, 1)->format('F');
+
+                                    $query = Customer::query();
+                                    $_recharge_query = Customer_recharge::query();
+
+                                    if (!empty($branch_user_id) && $branch_user_id > 0) {
+                                        $query->where('pop_id', $branch_user_id);
+                                        $_recharge_query->where('pop_id', $branch_user_id);
+                                    }
+
+                                    $credit_recharges = (clone $_recharge_query)
+                                        ->whereYear('created_at', $selectedYear)
+                                        ->whereMonth('created_at', $month)
+                                        ->where('transaction_type', 'credit')
+                                        ->get(['recharge_month', 'amount']);
+
+                                    $due_paids = (clone $_recharge_query)
+                                        ->whereYear('created_at', $selectedYear)
+                                        ->whereMonth('created_at', $month)
+                                        ->where('transaction_type', 'due_paid')
+                                        ->get(['recharge_month', 'amount']);
+
+                                    $paid_months = $due_paids->pluck('recharge_month')->toArray();
+
+                                    $unpaid_credits = [];
+                                    $total_due = 0;
+
+                                    foreach ($credit_recharges as $credit) {
+                                        if (!in_array($credit->recharge_month, $paid_months)) {
+                                            $unpaid_credits[] = $credit->recharge_month;
+                                            $total_due += $credit->amount;
+                                        }
+                                    }
+
+                                    $total_recharge = Customer_recharge::where('transaction_type', '!=', 'due_paid')
+                                        ->whereYear('created_at', $selectedYear)
+                                        ->whereMonth('created_at', $month)
+                                        ->sum('amount');
+
+                                    $total_paid = Customer_recharge::where('transaction_type', '!=', 'credit')
+                                        ->whereYear('created_at', $selectedYear)
+                                        ->whereMonth('created_at', $month)
+                                        ->sum('amount');
+
+                                    $monthlyData[] = [
+                                        'month' => $monthName,
+                                        'total_recharge' => $total_recharge,
+                                        'total_paid' => $total_paid,
+                                        'total_due' => $total_due
+                                    ];
+                                }
+                            @endphp
+
+                            @foreach ($monthlyData as $index => $data)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $data['month'] }}</td>
+                                    <td>{{ $data['total_recharge'] }}</td>
+                                    <td>{{ $data['total_paid'] }}</td>
+                                    <td>{{ $data['total_due'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     @include('Backend.Modal.Customer.customer_modal')
     @include('Backend.Modal.Tickets.ticket_modal')
     @include('Backend.Modal.Sms.send_modal')
@@ -527,6 +633,8 @@
 
     <script type="text/javascript">
         $("#branch_recharge_datatable").DataTable();
+        $("#monthly_connection").DataTable();
+        $("#bill_generate").DataTable();
 
         /*Customer Recharge Details*/
         var total_recharged = <?php echo json_encode($total_recharged); ?>;
