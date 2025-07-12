@@ -75,9 +75,6 @@
                             <p class="text-muted text-center">
                                 <i class="fas fa-calendar-alt"></i>
                                 <strong>Expire Date:</strong>
-                                {{-- <span class="{{ $isExpired ? 'text-danger' : 'text-success' }}">
-                                    {{ $isExpired ? 'Expired' : $formattedDate }}
-                                </span> --}}
                                 <span class="{{ $isExpired ? 'text-danger' : 'text-success' }}">
                                      {{  $formattedDate }}
                                 </span>
@@ -149,64 +146,52 @@
                             <hr>
                             <!-- Additional Information -->
                             <div class="card card-primary card-outline shadow-sm">
-
                                 <div class="card-body">
-
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 text-center border-end">
+                                    <div class="row">
+                                        <div class="col-6 text-center border-end">
                                             <p class="mb-1"><i class="fas fa-clock text-warning fa-lg"></i></p>
                                             <strong>Up Time</strong>
                                             <p class="text-dark"><span id="customer_uptime">0.00</span></p>
                                         </div>
-
-
-                                        <div class="col-md-6 text-center">
+                                        <div class="col-6 text-center">
                                             <p class="mb-1"><i class="fas fa-chart-line text-success"></i></p>
                                             <strong>Monthly Usage</strong>
-                                            <p class="text-primary"> N/A GB</p>
+                                            <p class="text-primary">N/A GB</p>
                                         </div>
-                                    </div>
 
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 text-center border-right">
+                                        <div class="col-6 text-center border-end mt-3">
                                             <p class="mb-1"><i class="fas fa-arrow-up text-success"></i></p>
                                             <strong>Upload</strong>
-                                            <p class="text-danger"><span id="customer_upload_speed"></span> Mbps</p>
+                                            <p class="text-danger"><span id="customer_upload_speed">0</span> Mbps</p>
                                         </div>
-                                        <div class="col-md-6 text-center">
+                                        <div class="col-6 text-center mt-3">
                                             <p class="mb-1"><i class="fas fa-arrow-down text-danger"></i></p>
                                             <strong>Download</strong>
-                                            <p class="text-success"><span id="customer_download_speed"></span> Mbps
-                                            </p>
+                                            <p class="text-success"><span id="customer_download_speed">0</span> Mbps</p>
                                         </div>
-                                    </div>
 
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 text-center border-right">
+                                        <div class="col-6 text-center border-end mt-3">
                                             <p class="mb-1"><i class="fas fa-plug text-info"></i></p>
                                             <strong>Interface</strong>
                                             <p class="text-muted"><span id="customer_interface">N/A</span></p>
                                         </div>
-                                        <div class="col-md-6 text-center">
+                                        <div class="col-6 text-center mt-3">
                                             <p class="mb-1"><i class="fas fa-address-card text-warning"></i></p>
                                             <strong>MAC Address</strong>
                                             <p class="text-muted"><span id="customer_mac_address">N/A</span></p>
                                         </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <div class="col-md-6 text-center border-right">
+                                        <div class="col-6 text-center border-end mt-3">
                                             <p class="mb-1"><i class="fas fa-laptop-code text-secondary"></i></p>
                                             <strong>IP Address</strong>
                                             <p class="text-muted"><span id="customer_ip_address">N/A</span></p>
                                         </div>
-                                        <div class="col-md-6 text-center">
+                                        <div class="col-6 text-center mt-3">
                                             <p class="mb-1"><i class="fas fa-route text-success"></i></p>
                                             <strong>Router Used</strong>
                                             <p class="text-muted">{{ $data->router->name ?? 'N/A' }}</p>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
 
