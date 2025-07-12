@@ -206,37 +206,35 @@
                                         <div>
                                             <i class="fas fa-user-alt text-primary mr-2"></i> <strong>Username:</strong>
                                         </div>
-                                        <span class="badge badge-primary badge-pill">{{ $data->username ?? 'N/A' }}</span>
+                                        <span >{{ $data->username ?? 'N/A' }}</span>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="fas fa-phone-alt text-success mr-2"></i> <strong>Phone:</strong>
                                         </div>
-                                        <span class="badge badge-success badge-pill">{{ $data->phone ?? 'N/A' }}</span>
+                                        <span >{{ $data->phone ?? 'N/A' }}</span>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="fas fa-map-marker-alt text-info mr-2"></i> <strong>Address:</strong>
                                         </div>
-                                        <span class="badge badge-info badge-pill">{{ $data->address ?? 'N/A' }}</span>
+                                        <span >{{ $data->address ?? 'N/A' }}</span>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="fas fa-building text-warning mr-2"></i> <strong>POP Branch:</strong>
                                         </div>
-                                        <span
-                                            class="badge badge-warning badge-pill">{{ $data->pop->name ?? 'N/A' }}</span>
+                                        <span >{{ $data->pop->name ?? 'N/A' }}</span>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
                                             <i class="fas fa-map text-danger mr-2"></i> <strong>Area:</strong>
                                         </div>
-                                        <span
-                                            class="badge badge-danger badge-pill">{{ $data->area->name ?? 'N/A' }}</span>
+                                        <span>{{ $data->area->name ?? 'N/A' }}</span>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -244,8 +242,7 @@
                                             <i class="fas fa-network-wired text-secondary mr-2"></i>
                                             <strong>Package:</strong>
                                         </div>
-                                        <span
-                                            class="badge badge-secondary badge-pill">{{ $data->package->name ?? 'N/A' }}</span>
+                                        <span >{{ $data->package->name ?? 'N/A' }}</span>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -253,7 +250,7 @@
                                             <i class="fas fa-dollar-sign text-primary mr-2"></i> <strong>Monthly
                                                 Charge:</strong>
                                         </div>
-                                        <span class="badge badge-primary badge-pill">{{ number_format($data->amount, 2) }}
+                                        <span class="">{{ number_format($data->amount, 2) }}
                                             ৳</span>
                                     </li>
 
@@ -284,7 +281,7 @@
                                     'title' => 'Recharged',
                                     'value' => $total_recharged,
                                     'bg' => 'success',
-                                    'icon' => 'fas fa-coins',
+                                    'icon' => 'fa-solid fa-money-bill-wave	',
                                 ],
                                 [
                                     'id' => 2,
@@ -311,7 +308,7 @@
                             ];
                         @endphp
                         @foreach ($dashboardCards as $card)
-                            <div class="col-lg-3 col-md-6 col-sm-12 mb-4">
+                             <div class="col-lg-3 col-md-6 col-sm-4 mb-4">
                                 <div class="small-box bg-{{ $card['bg'] }} shadow-lg ">
                                     <div class="inner">
                                         <h3>{{ $card['value'] }}</h3>
