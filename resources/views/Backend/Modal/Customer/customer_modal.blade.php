@@ -38,7 +38,7 @@
                                 </div>
 
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-group position-relative">
                                     <label class="form-label">Username <span class="text-danger">*</span></label>
                                     <input type="text" name="username" id="username_input" class="form-control" placeholder="Enter Username" required>
@@ -54,7 +54,7 @@
                                         $('#username_input').on('input', function () {
                                             let username = $(this).val().trim();
 
-                                            if (username.length >= 3) {
+                                            if (username.length >= 0) {
                                                 $.ajax({
                                                     url: '{{ route("admin.customer.check.username") }}',
                                                     method: 'POST',

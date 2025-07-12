@@ -32,7 +32,7 @@
                                 $('#username_input').on('input', function () {
                                     let username = $(this).val().trim();
 
-                                    if (username.length >= 3) {
+                                    if (username.length >= 0) {
                                         $.ajax({
                                             url: '{{ route("admin.customer.check.username") }}',
                                             method: 'POST',
