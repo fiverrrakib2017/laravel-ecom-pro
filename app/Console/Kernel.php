@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:check_status')->everyFiveMinutes();
         // $schedule->command('app:check_expire')->everyMinute();
         // $schedule->command('app:check_expire')->hourly();
-        $schedule->command('app:check_expire')->dailyAt('13:00');
+        $schedule->command('app:check_expire')->dailyAt('10:00');
 
     }
 
