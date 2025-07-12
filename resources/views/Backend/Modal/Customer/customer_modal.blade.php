@@ -21,22 +21,19 @@
                     <fieldset class="border p-3 mb-4">
                         <legend class="w-auto px-2 text-primary">Personal Information</legend>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Full Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="fullname" class="form-control"
-                                        placeholder="Enter Fullname" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Phone <span class="text-danger">*</span></label>
-                                    <input type="text" name="phone" class="form-control" placeholder="Enter Phone"
-                                        required>
-                                </div>
-                                <div class="form-group">
-                                    <label>NID <span class="text-danger">*</span></label>
-                                    <input type="text" name="nid" class="form-control" placeholder="Enter NID">
-                                </div>
-
+                            <div class="col-md-6 mb-3">
+                                <label>Full Name <span class="text-danger">*</span></label>
+                                <input type="text" name="fullname" class="form-control"
+                                    placeholder="Enter Fullname" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Phone <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" class="form-control" placeholder="Enter Phone"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>NID <span class="text-danger">*</span></label>
+                                <input type="text" name="nid" class="form-control" placeholder="Enter NID">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <div class="form-group position-relative">
@@ -47,7 +44,7 @@
                                     <span id="username_status_icon" style="position:absolute; right:10px; top:38px;"></span>
 
                                     <!-- Message -->
-                                    <small id="username_status_msg" class="form-text text-muted"></small>
+                                    <small id="username_status_msg" class="form-text"></small>
                                 </div>
                                 <script>
                                     $(document).ready(function () {
@@ -80,15 +77,14 @@
                                     });
                                 </script>
 
-                                <div class="form-group">
-                                    <label>Password <span class="text-danger">*</span></label>
-                                    <input type="text" name="password" class="form-control"
-                                        placeholder="Enter Password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label>Address</label>
-                                    <input name="address" class="form-control" placeholder="Enter Address">
-                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Password <span class="text-danger">*</span></label>
+                                <input type="text" name="password" class="form-control" placeholder="Enter Password" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                               <label>Address</label>
+                                <input name="address" class="form-control" placeholder="Enter Address">
                             </div>
                         </div>
                     </fieldset>
