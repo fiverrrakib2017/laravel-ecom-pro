@@ -1388,6 +1388,12 @@ class CustomerController extends Controller
                     $existing->updated_at = now();
                     $existing->save();
                 }
+                /*Increase Customer Expire Date*/
+                $customer = Customer::find($customer_id);
+                if ($customer && $customer->expire_date) {
+                    $customer->expire_date = Carbon::parse($customer->expire_date)->addDays($existing->days);
+                    $customer->save();
+                }
                 /*Activate rouater customer*/
                 $this->router_activation($customer_id);
             }
@@ -1421,8 +1427,13 @@ class CustomerController extends Controller
         try {
             DB::beginTransaction();
             $data = Grace_recharge::where('customer_id', $customer_id)->first();
+            /*Decrease Customer Expire Date*/
+            $customer = Customer::find($customer_id);
+            if ($customer && $customer->expire_date) {
+                $customer->expire_date = Carbon::parse($customer->expire_date)->subDays($data->days);
+                $customer->save();
+            }
             $data->delete();
-
             DB::commit();
             return response()->json([
                 'success' => true,
