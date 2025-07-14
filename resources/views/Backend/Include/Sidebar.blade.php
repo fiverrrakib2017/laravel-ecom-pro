@@ -227,7 +227,7 @@
                             <a href="{{ route('admin.customer.bulk.recharge') }}"
                                 class="nav-link {{ $route == 'admin.customer.bulk.recharge' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Bulk Recharge</p>
+                                <p>Bulk/Grace Recharge</p>
                             </a>
                         </li>
                         <!-- Payment Management -->
