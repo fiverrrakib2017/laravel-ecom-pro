@@ -130,6 +130,9 @@
         area_filter += `</select></div>`;
 
         /* Status Filter */
+        //  <option value="unpaid">Unpaid</option>
+        //             <option value="due">Due</option>
+        //             <option value="free">Free</option>
         var status_filter = `
             <div class="form-group mb-0 mr-2" style="min-width: 150px;">
                 <select class="status_filter form-control form-control-sm select2">
@@ -137,9 +140,8 @@
                     <option value="online">Online</option>
                     <option value="offline">Offline</option>
                     <option value="expired">Expired</option>
-                    <option value="unpaid">Unpaid</option>
-                    <option value="due">Due</option>
-                    <option value="free">Free</option>
+                    <option value="grace">Grace</option>
+
                     <option value="active">Active</option>
                     <option value="disabled">Disabled</option>
                     <option value="discontinue">Discontinue</option>

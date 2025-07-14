@@ -114,7 +114,12 @@ class CustomerController extends Controller
 
 
             ->when($status, function ($query) use ($status) {
-                $query->where('status', $status);
+                if ($status == 'grace') {
+                    $grace_ids = Grace_recharge::pluck('customer_id')->toArray();
+                    $query->whereIn('id', $grace_ids);
+                } else {
+                    $query->where('status', $status);
+                }
             });
         $filteredQuery = clone $baseQuery;
         /*Pagination*/
