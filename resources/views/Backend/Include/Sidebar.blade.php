@@ -883,13 +883,13 @@
                                 <p>Mikrotik Router Add</p>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
+                        <li class="nav-item">
                             <a href="{{ route('admin.router.sync') }}"
                                 class="nav-link {{ $route == 'admin.router.sync' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Mikrotik Sync</p>
                             </a>
-                        </li> --}}
+                        </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.router.nas.show_nas_server') }}"
                                 class="nav-link {{ $route == 'admin.router.nas.show_nas_server' ? 'active' : '' }}">
