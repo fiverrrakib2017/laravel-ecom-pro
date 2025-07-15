@@ -73,59 +73,7 @@
 @endsection
 
 @section('script')
-    <script src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
-    <script src="{{ asset('Backend/assets/js/delete_data.js') }}"></script>
-
     <script type="text/javascript">
-        $(document).ready(function() {
-            // handleSubmit('#routerForm', '#addModal');
-
-
-        });
-
-        /** Handle Edit button click **/
-        $('#datatable1 tbody').on('click', '.edit-btn', function() {
-            var id = $(this).data('id');
-            $.ajax({
-                url: "{{ route('admin.router.edit', ':id') }}".replace(':id', id),
-                method: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        $('#routerForm').attr('action', "{{ route('admin.router.update', ':id') }}"
-                            .replace(':id', id));
-                        $('#ModalLabel').html(
-                            '<span class="mdi mdi-account-edit mdi-18px"></span> &nbsp;Edit Router');
-                        $('#routerForm input[name="name"]').val(response.data.name);
-                        $('#routerForm input[name="name"]').val(response.data.name);
-                        $('#routerForm input[name="ip_address"]').val(response.data.ip_address);
-                        $('#routerForm input[name="api_version"]').val(response.data.api_version);
-                        $('#routerForm input[name="username"]').val(response.data.username);
-                        $('#routerForm input[name="password"]').val(response.data.password);
-                        $('#routerForm input[name="port"]').val(response.data.port);
-                        $('#routerForm select[name="status"]').val(response.data.status);
-                        $('#routerForm input[name="location"]').val(response.data.location);
-                        $('#routerForm textarea[name="remarks"]').val(response.data.remarks);
-                        // Show the modal
-                        $('#addModal').modal('show');
-                    } else {
-                        toastr.error('Failed to fetch data.');
-                    }
-                },
-                error: function() {
-                    toastr.error('An error occurred. Please try again.');
-                }
-            });
-        });
-
-        /** Handle Delete button click**/
-        $('#datatable1 tbody').on('click', '.delete-btn', function() {
-            var id = $(this).data('id');
-            var deleteUrl = "{{ route('admin.router.delete', ':id') }}".replace(':id', id);
-
-            $('#deleteForm').attr('action', deleteUrl);
-            $('#deleteModal').find('input[name="id"]').val(id);
-            $('#deleteModal').modal('show');
-        });
         /** Handle Mikrotik Select**/
         $(document).on('change', '#router_id',function(){
             let mikrotik_id = $(this).val();
@@ -211,6 +159,27 @@
             } else {
                 $amountField.val('');
             }
+        });
+        $(document).on('click', '.add-user-btn', function () {
+            let user = $(this).data('user');
+            console.log(user);
+            return false;
+
+            $.ajax({
+
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    user: user
+                },
+                success: function (res) {
+                    alert(res.message);
+                    // Reload table again if you want
+                },
+                error: function () {
+                    alert('Something went wrong!');
+                }
+            });
         });
 
         /*Create A function for Load DropDown*/
