@@ -329,7 +329,13 @@ class RouterController extends Controller
         $response = $client->query('/ppp/secret/print')->read();
 
         $users = [];
+        $existing_usernames = \App\Models\Customer::pluck('username')->toArray();
         foreach ($response as $item) {
+            $username = $item['name'] ?? '';
+            /* Check if user exists**/
+            $already_exists = in_array($username, $existing_usernames);
+
+            /* GET POP/Branch Area **/
             $_get_all_pop_branch=Pop_branch::where('status', '1')->latest()->get();
             $_get_all_pop_area=Pop_area::latest()->get();
             $_pop_options = '';
@@ -351,7 +357,14 @@ class RouterController extends Controller
                 'pop' => '<select class="form-control pop-select" name="pop_id" style="style:width:100%;">' . $_pop_options . '</select>',
                 'area' => '<select class="form-control area-select" name="area_id" style="style:width:100%;">' . $_pop_areas_options . '</select>',
                 'package' =>'<select class="form-control package-select" name="package_id" style="style:width:100%;">---Select---</select>',
+                'amount' => '<input type="text" name="amount" class="form-control amount-field" value="0"/>',
                 'billing_cycle' => '<input type="text" name="billing_cycle" class="form-control" value="0"/>',
+                'create_date' => '<input type="text" name="create_date" class="form-control" value="' . now()->format('Y-m-d') . '">',
+                'expire_date' => '<input type="text" name="expire_date" class="form-control" value="' . now()->addMonth()->format('Y-m-d') . '">',
+                'add_button' => $already_exists
+                ? '<span class="badge bg-success">Exists</span>'
+                : '<button class="btn btn-sm btn-primary add-user-btn" data-user=\'' . json_encode($item) . '\'>Add</button>',
+
             ];
         }
 
