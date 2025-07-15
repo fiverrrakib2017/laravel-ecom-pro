@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Backend\Router;
 use App\Http\Controllers\Controller;
 use App\Models\Pop_branch;
+use App\Models\Pop_area;
 use App\Models\Router;
 use App\Models\Radius\Nas as nas_server;
 use Illuminate\Http\Request;
@@ -329,16 +330,28 @@ class RouterController extends Controller
 
         $users = [];
         foreach ($response as $item) {
+            $_get_all_pop_branch=Pop_branch::where('status', '1')->latest()->get();
+            $_get_all_pop_area=Pop_area::latest()->get();
+            $_pop_options = '';
+            $_pop_options .= '<option>--Select---</option>';
+            foreach ($_get_all_pop_branch as $pop) {
+                $_pop_options .= '<option value="' . $pop->id . '">' . $pop->name . '</option>';
+            }
+
+            $_pop_areas_options = '';
+             $_pop_areas_options .= '<option>--Select---</option>';
+            foreach ($_get_all_pop_area as $area) {
+                //$_pop_areas_options .= '<option value="' . $area->id . '">' . $area->name . '</option>';
+            }
             $users[] = [
-                'id' => $item['.id'],
                 'username' => $item['name'] ?? '',
                 'password' => $item['password'] ?? '',
                 'profile' => $item['profile'] ?? '',
-                'comment' => $item['comment'] ?? '',
-                'pop' => 'N/A',
-                'area' => 'N/A',
-                'package' => 'N/A',
-                'billing_cycle' => '10',
+                //'comment' => $item['comment'] ?? '',
+                'pop' => '<select class="form-control pop-select" name="pop_id" style="style:width:100%;">' . $_pop_options . '</select>',
+                'area' => '<select class="form-control area-select" name="area_id" style="style:width:100%;">' . $_pop_areas_options . '</select>',
+                'package' =>'<select class="form-control package-select" name="package_id" style="style:width:100%;">---Select---</select>',
+                'billing_cycle' => '<input type="text" name="billing_cycle" class="form-control" value="0"/>',
             ];
         }
 

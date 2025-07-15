@@ -334,7 +334,7 @@ class CustomerController extends Controller
                 //             password : {password}
                 //             HelpLine : 01821600600
                 //             Bill payment link: {bill_payment_link}';
-                $message = 'Thank you for joining SR Wi-Fi.Your Customer ID : {customer_id} username : {username} password : {password} HelpLine : 01821600600';
+                $message = 'Thank you for joining Wi-Fi.Your Customer ID : {customer_id} username : {username} password : {password} HelpLine : 01971768290';
 
                 $message = str_replace('{customer_id}', $customer->id, $message);
                 $message = str_replace('{username}', $customer->username, $message);
