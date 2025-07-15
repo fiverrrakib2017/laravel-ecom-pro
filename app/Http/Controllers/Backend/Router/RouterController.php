@@ -270,7 +270,80 @@ class RouterController extends Controller
         // return $mikrotik_data;
         return view('Backend.Pages.Router.nas', compact('routers', 'mikrotik_data'));
     }
+    public function router_sync(){
+         $routers = Router::where('status', 'active')->get();
 
+        $mikrotik_data = [];
+
+        foreach ($routers as $router) {
+            try {
+                $client = new Client([
+                    'host'     => $router->ip_address,
+                    'user'     => $router->username,
+                    'pass'     => $router->password,
+                    'port'     => (int) $router->port,
+                    'timeout'  => 3,
+                    'attempts' => 1
+                ]);
+
+
+                $query = new Query('/ppp/active/print');
+                $activeUsers = $client->query($query)->read();
+
+
+                $resourceQuery = new Query('/system/resource/print');
+                $resourceDetails = $client->query($resourceQuery)->read();
+
+                $mikrotik_data[] = [
+                    'router_id' => $router->id,
+                    'router_name' => $router->name,
+                    'online_users' => count($activeUsers),
+                    'uptime' => $resourceDetails[0]['uptime'] ?? 'N/A',
+                    'version' => $resourceDetails[0]['version'] ?? 'N/A',
+                    'hardware' => $resourceDetails[0]['hardware'] ?? 'N/A',
+                    'cpu' => $resourceDetails[0]['cpu'] ?? 'N/A',
+                    'offline_users' => 0,
+                ];
+            } catch (\Exception $e) {
+                $mikrotik_data[] = [
+                    'error' => $e->getMessage()
+                ];
+            }
+        }
+        $mikrotik_data = collect($mikrotik_data);
+        // return $mikrotik_data;
+        return view('Backend.Pages.Router.sync', compact('routers', 'mikrotik_data'));
+    }
+    public function get_mikrotik_user($id){
+        $router = Router::findOrFail($id);
+         $client = new Client([
+            'host'     => $router->ip_address,
+            'user'     => $router->username,
+            'pass'     => $router->password,
+            'port'     => (int) $router->port,
+            'timeout'  => 3,
+            'attempts' => 1
+        ]);
+
+        $response = $client->query('/ppp/secret/print')->read();
+
+        $users = [];
+        foreach ($response as $item) {
+            $users[] = [
+                'id' => $item['.id'],
+                'username' => $item['name'] ?? '',
+                'password' => $item['password'] ?? '',
+                'profile' => $item['profile'] ?? '',
+                'comment' => $item['comment'] ?? '',
+                'pop' => 'N/A',
+                'area' => 'N/A',
+                'package' => 'N/A',
+                'billing_cycle' => '10',
+            ];
+        }
+
+        return response()->json(['users' => $users]);
+    }
     private function validateForm($request)
     {
 

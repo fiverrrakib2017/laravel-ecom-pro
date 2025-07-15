@@ -733,6 +733,10 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/delete', 'delete')->name('admin.router.delete');
                 Route::post('/store', 'store')->name('admin.router.store');
                 Route::get('/get_router_with_pop/{pop_id}', 'get_router_with_pop')->name('admin.router.get_router_with_pop');
+                /**Mikrotik SYNC**/
+                Route::get('/sync', 'router_sync')->name('admin.router.sync');
+                Route::get('/get_mikrotik_user/{mikrotik_id}', 'get_mikrotik_user')->name('admin.mikrotik.get_user');
+
                 /* mikrotik Log */
                 Route::get('/log', 'router_log')->name('admin.router.log.index');
                 Route::get('/user-list/{router_id}', 'router_user_list')->name('admin.router.ppp.users.index');

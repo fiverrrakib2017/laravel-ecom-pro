@@ -863,8 +863,8 @@
                 <li class="nav-item has-treeview">
                     <a href="#"
                         class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Mikrotik Server <i class="right fas fa-angle-left"></i></p>
+                        <i class="nav-icon fas fa-server"></i>
+                        <p>Server <i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
@@ -873,6 +873,13 @@
                                 class="nav-link {{ $route == 'admin.router.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Mikrotik Router Add</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.router.sync') }}"
+                                class="nav-link {{ $route == 'admin.router.sync' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Mikrotik Sync</p>
                             </a>
                         </li>
                         <li class="nav-item">
