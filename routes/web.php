@@ -159,6 +159,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/import/store', 'customer_csv_file_import')->name('admin.customer.customer_csv_file_import');
             Route::get('/delete-csv-file/{file}', [CustomerController::class, 'delete_csv_file'])->name('admin.customer.delete_csv_file');
             Route::get('/upload/csv-file', [CustomerController::class, 'upload_csv_file'])->name('admin.customer.upload_csv_file');
+            Route::get('/import/mikrotik', 'customer_import_from_mikrotik')->name('admin.customer.import.mikrotik');
             /***** Customer Mikrotik Re-connect *******/
             Route::get('/mikrotik/reconnect/{customer_id}', 'customer_mikrotik_reconnect')->name('admin.customer.mikrotik.reconnect');
             /***** Customer Change Status *******/

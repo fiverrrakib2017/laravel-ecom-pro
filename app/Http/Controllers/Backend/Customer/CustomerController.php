@@ -48,6 +48,10 @@ class CustomerController extends Controller
     {
         return view('Backend.Pages.Customer.Expire.comming_expire');
     }
+    public function customer_import_from_mikrotik(){
+        return view('Backend.Pages.Customer.Import.import_mikrotik');
+
+    }
     public function get_all_data(Request $request)
     {
         $pop_id = $request->pop_id;
@@ -1638,7 +1642,7 @@ class CustomerController extends Controller
     }
     public function customer_import()
     {
-        return view('Backend.Pages.Customer.import');
+        return view('Backend.Pages.Customer.Import.customer_import');
     }
     public function customer_csv_file_import(Request $request)
     {

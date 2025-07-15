@@ -67,6 +67,7 @@
                         'admin.customer.onu_list',
                         'admin.customer.view',
                         'admin.customer.edit',
+                        'admin.customer.import.mikrotik',
                     ];
                 @endphp
                 <li class="nav-item has-treeview mt-2">
@@ -97,6 +98,13 @@
                             class="nav-link {{ $route == 'admin.customer.customer_import' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>{{ __('menu.customer_import') }}</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customer.import.mikrotik') }}"
+                            class="nav-link {{ $route == 'admin.customer.import.mikrotik' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Import -> Mikrotik</p>
                             </a>
                         </li>
 
