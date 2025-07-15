@@ -6,6 +6,21 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title d-flex align-items-center gap-2 text-primary">
+                        <i class="fas fa-sync fa-spin text-info me-2"></i>&nbsp;&nbsp;
+                        <span>Sync Data to MikroTik Router</span>
+                    </h5>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
                 <div class="card-body ">
                     <form class="row g-3 align-items-end" id="search_box">
                         <div class="col-md-3">
@@ -83,11 +98,11 @@
                 </div>
                 <div class="card-body d-none" id="print_area">
 
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-md-12 text-right">
-                            <button type="button" id="send_message_btn" class="btn btn-danger mb-2"><i
-                                    class="far fa-envelope"></i>
-                                Process </button>
+                            <button type="button" id="sync_btn" class="btn btn-primary">
+                                <i class="fas fa-cloud-upload-alt me-2"></i> Sync to MikroTik
+                            </button>
                         </div>
                     </div>
 
@@ -121,51 +136,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-
-
-
-
-
-    <!-- Modal for Send Message -->
-    <div class="modal fade bs-example-modal-lg" id="sendMessageModal" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog " role="document">
-            <div class="modal-content col-md-12">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ModalLabel"><span class="mdi mdi-account-check mdi-18px"></span> &nbsp;Send Message</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-success" id="selectedCustomerCount"></div>
-                    <form id="send_bulk_message_form" action="{{ route('admin.sms.send_message_store') }}" method="POST"> @csrf
-
-                        <div class="form-group mb-2">
-                            <label>Message Template </label>
-                            <select name="template_id" class="form-control" type="text" required style="width: 100%">
-                                <option value="">---Select---</option>
-                                @php
-                                    $data = \App\Models\Message_template::latest()->get();
-                                @endphp
-                                @foreach ($data as $item)
-                                    <option value="{{ $item->id }}"> {{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>SMS </label>
-                            <textarea name="message" placeholder="Enter SMS" class="form-control" type="text" style="height: 158px;"></textarea>
-                        </div>
-                        <div class="modal-footer ">
-                            <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
-                            <button type="submit" class="btn btn-success send_message_button">Send Message</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 @endsection
@@ -252,46 +222,15 @@
                     }
                 });
             });
-            $(document).on('click', '#send_message_btn', function(event) {
+            $(document).on('click', '#sync_btn', function(event) {
                 event.preventDefault();
 
+                var button = $('#sync_btn');
+                button.html(`<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...`);
+                button.attr('disabled', true);
                 $(".checkSingle:checked").each(function() {
                     selectedCustomers.push($(this).val());
                 });
-                var countText = "You have selected " + selectedCustomers.length + " customers.";
-                $("#selectedCustomerCount").text(countText);
-                $('#sendMessageModal').modal('show');
-            });
-            /*Load Message Template*/
-            $("select[name='template_id']").on('change', function() {
-                var template_id = $(this).val();
-                if (template_id) {
-                    $.ajax({
-                        url: "{{ route('admin.sms.template_get', ':id') }}".replace(':id',
-                            template_id),
-                        type: "GET",
-                        dataType: "json",
-                        success: function(response) {
-                            $("textarea[name='message']").val(response.data.message);
-                        },
-                        error: function(xhr, status, error) {
-                            console.log("Error:", error);
-                        }
-                    });
-                } else {
-                    $("textarea[name='message']").val('');
-                }
-            });
-            /*Send Message Template*/
-            $("#send_bulk_message_form").submit(function(event){
-                event.preventDefault();
-                var button = $('.send_message_button');
-                button.html(`<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...`);
-                button.attr('disabled', true);
-
-                /*Get Message Data Value*/
-                var message = $("#send_bulk_message_form textarea[name='message']").val();
-
                 if(selectedCustomers.length==0){
                     toastr.error('Please Selete Customer');
                     button.html('Send Message');
@@ -322,6 +261,7 @@
                     }
                 });
             });
+
     </script>
 
 @endsection
