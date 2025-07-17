@@ -362,8 +362,8 @@ class RouterController extends Controller
                 'create_date' => '<input type="text" name="create_date" class="form-control" value="' . now()->format('Y-m-d') . '">',
                 'expire_date' => '<input type="text" name="expire_date" class="form-control" value="' . now()->addMonth()->format('Y-m-d') . '">',
                 'add_button' => $already_exists
-                ? '<span class="badge bg-success">Exists</span>'
-                : '<button class="btn btn-sm btn-primary add-user-btn" data-user=\'' . json_encode($item) . '\'>Add</button>',
+                ? '<span class="badge bg-success"><i class="fas fa-check me-1"></i></span>'
+                : '<button class="btn btn-sm btn-primary add-user-btn" data-user=\'' . json_encode($item) . '\'>  <i class="fas fa-user-plus me-1"></i></button>',
 
             ];
         }

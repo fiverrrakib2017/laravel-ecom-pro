@@ -23,6 +23,21 @@
             <div class="card">
                 <div class="card-body">
                     <div class="card-header">
+                        <h5 class="card-title d-flex align-items-center gap-2 text-primary">
+                            <i class="fas fa-sync fa-spin text-info me-2"></i>&nbsp;&nbsp;
+                            <span>Import Data From MikroTik Router</span>
+                        </h5>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-header">
                         <select id="router_id" class="form-control mb-2" style="width: 300px">
                             <option value="">Select MikroTik</option>
                             @php
@@ -36,28 +51,32 @@
 
 
                     <div class="mt-3" id="tableStyle">
-                        <table id="mikrotik_data_table" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                            <thead class="">
-                                <tr>
-                                   <th scope="col" style="width: 100px;">User Name</th>
-                                    <th scope="col" style="width: 100px;">Password</th>
-                                    <th scope="col" style="width: 120px;">Profile Name</th>
-                                    <th scope="col" style="width: 150px;">POP/Branch</th>
-                                    <th scope="col" style="width: 150px;">Area Name</th>
-                                    <th scope="col" style="width: 150px;">Package Name</th>
-                                    <th scope="col" style="width: 150px;">Amount</th>
-                                    <th scope="col" style="width: 100px;">Billing Cycle</th>
-                                    <th scope="col" style="width: 100px;">Create Date</th>
-                                    <th scope="col" style="width: 100px;">Expire Date</th>
-                                    <th scope="col" style="width: 200px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="11" class="text-center">No Data</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                       <div class="table-responsive">
+                            <table id="mikrotik_data_table" class="table table-bordered table-striped align-middle text-nowrap w-100">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th style="min-width: 120px;">User Name</th>
+                                        <th style="min-width: 120px;">Password</th>
+                                        <th style="min-width: 120px;">Profile Name</th>
+                                        <th style="min-width: 150px;">POP/Branch</th>
+                                        <th style="min-width: 150px;">Area Name</th>
+                                        <th style="min-width: 150px;">Package Name</th>
+                                        <th style="min-width: 100px;">Amount</th>
+                                        <th style="min-width: 130px;">Billing Cycle</th>
+                                        <th style="min-width: 150px;">Create Date</th>
+                                        <th style="min-width: 150px;">Expire Date</th>
+                                        <th style="min-width: 100px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="11" class="text-center">No Data</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
                     </div>
                 </div>
             </div>
@@ -97,9 +116,9 @@
                     let tbody = '';
                     $.each(response.users, function (i, user) {
                         tbody += `<tr>
-                            <td>${user.username}</td>
-                            <td>${user.password}</td>
-                            <td>${user.profile}</td>
+                            <td class="username">${user.username}</td>
+                            <td class="password">${user.password}</td>
+                            <td class="profile">${user.profile}</td>
                             <td>${user.pop}</td>
                             <td>${user.area}</td>
                             <td>${user.package}</td>
@@ -161,23 +180,50 @@
             }
         });
         $(document).on('click', '.add-user-btn', function () {
-            let user = $(this).data('user');
-            console.log(user);
-            return false;
+            let $btn = $(this);
+            $btn.html('<i class="fas fa-spinner fa-spin me-1"></i>');
+            $btn.prop('disabled', true);
+            let $row = $(this).closest('tr');
+
+            let userData = {
+                _token: '{{ csrf_token() }}',
+                username: $row.find('td:eq(0)').text().trim(),
+                password: $row.find('td:eq(1)').text().trim(),
+                profile: $row.find('td:eq(2)').text().trim(),
+                pop_id: $row.find('select[name="pop_id"]').val(),
+                area_id: $row.find('select[name="area_id"]').val(),
+                package_id: $row.find('select[name="package_id"]').val(),
+                amount: $row.find('input[name="amount"]').val(),
+                billing_cycle: $row.find('input[name="billing_cycle"]').val(),
+                create_date: $row.find('input[name="create_date"]').val(),
+                expire_date: $row.find('input[name="expire_date"]').val(),
+                router_id : $("#router_id").val(),
+            };
 
             $.ajax({
-
+                url : "{{ route('admin.customer.import.mikrotik.store') }}",
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
-                    user: user
+                    data: userData
                 },
-                success: function (res) {
-                    alert(res.message);
-                    // Reload table again if you want
+                success: function (response) {
+                    if(response.success){
+                        toastr.success(response.message);
+                        let $btnCell = $row.find('td').last();
+                        $btnCell.html('<span class="badge bg-success"><i class="fas fa-check me-1"></i></span>');
+                    }
+                    if(response.success==false){
+                        $btn.html('<i class="fas fa-user-plus me-1"></i>');
+                        toastr.error(response.message || 'Failed to add user');
+                        $btn.prop('disabled', false);
+                    }
+
                 },
                 error: function () {
-                    alert('Something went wrong!');
+                    $btn.html('<i class="fas fa-user-plus me-1"></i>');
+                    toastr.error('Something went wrong!');
+                    $btn.prop('disabled', false);
                 }
             });
         });

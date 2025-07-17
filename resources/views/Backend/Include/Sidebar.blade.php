@@ -104,7 +104,7 @@
                             <a href="{{ route('admin.customer.import.mikrotik') }}"
                             class="nav-link {{ $route == 'admin.customer.import.mikrotik' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Import -> Mikrotik</p>
+                                <p>Import From Mikrotik</p>
                             </a>
                         </li>
 
