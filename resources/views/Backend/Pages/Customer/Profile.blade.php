@@ -8,7 +8,9 @@
 @endsection
 
 @section('content')
-
+    @php
+      $grace = \App\Models\Grace_recharge::where('customer_id', $data->id)->first();
+    @endphp
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -36,13 +38,16 @@
 
                     <button type="button" class="btn btn-sm btn-primary m-1 customer_edit_btn"
                         data-id="{{ $data->id }}"><i class="fas fa-edit"></i> Edit Profile</button>
+                    @if(!$grace)
+                        <button type="button"
+                            class="btn btn-sm btn-success m-1 grace_recharge_btn"
+                            data-id="{{ $data->id }}"
+                            data-username="{{ $data->fullname }}">
+                            <i class="fas fa-bolt fa-pulse text-warning"></i>&nbsp; Grace Recharge
+                        </button>
+                    @endif
 
-                    <button type="button"
-                        class="btn btn-sm btn-success m-1 grace_recharge_btn"
-                        data-id="{{ $data->id }}"
-                        data-username="{{ $data->fullname }}">
-                        <i class="fas fa-bolt fa-pulse text-warning"></i>&nbsp; Grace Recharge
-                    </button>
+
 
 
                 </div>
@@ -80,9 +85,7 @@
                                 </span>
                             </p>
 
-                            @php
-                                $grace = \App\Models\Grace_recharge::where('customer_id', $data->id)->first();
-                            @endphp
+
 
                             @if($grace)
                                 <p class="text-muted text-center">

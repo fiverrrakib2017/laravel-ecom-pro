@@ -64,6 +64,7 @@
             background: #d1d2d3;
             color: rgb(0, 0, 0);
         }
+
     </style>
 @endsection
 @section('content')
@@ -276,7 +277,8 @@
                             <p>{{ $card['title'] }}</p>
                         </div>
                         <div class="icon">
-                            <i class="fas {{ $card['icon'] }} fa-2x text-gray-300"></i>
+                            {{-- <i class="fas {{ $card['icon'] }} fa-2x text-gray-300"></i> --}}
+                            <i class="fas {{ $card['icon'] }} fa-2x text-gray-800" ></i>
                         </div>
                     </div>
                 </a>

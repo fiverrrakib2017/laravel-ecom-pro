@@ -1611,7 +1611,8 @@ class CustomerController extends Controller
             /*Update Customer Table Expire date*/
             $recharge_months = explode(',', $object->recharge_month);
             $months_count = count($recharge_months);
-            $new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime($object->paid_until)));
+            //$new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime($object->paid_until)));
+            $new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime(Customer::find($object->customer_id)->expire_date)));
             $customer = Customer::find($object->customer_id);
             $customer->expire_date = $new_paid_until;
             $customer->update();
