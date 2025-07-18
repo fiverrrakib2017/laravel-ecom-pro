@@ -1356,6 +1356,19 @@ class CustomerController extends Controller
             $object->paid_until     = $new_expire_date;
 
             $customer->update();
+
+            $get_grace_recharge = Grace_recharge::where('customer_id', $customer->id)->first();
+            if ($get_grace_recharge) {
+                $customer_data = Customer::find($customer->id);
+                /*Remove Grace Recharge Days*/
+                if ($customer_data->expire_date) {
+                    $customer_data->expire_date = \Carbon\Carbon::parse($customer_data->expire_date)->subDays($get_grace_recharge->days);
+                    $customer_data->save();
+                }
+                /*Delete Grace Rechage**/
+                $get_grace_recharge->delete();
+                customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Grace Recharge Remove!');
+            }
             if ($object->save()) {
                 customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');
 
@@ -1445,7 +1458,22 @@ class CustomerController extends Controller
                             'message' => "Recharge for $monthYear already exists.",
                         ]);
                     }
+                    /***** Check Customer Grace Recharge Start******/
+                    $get_grace_recharge = Grace_recharge::where('customer_id', $customer->id)->first();
 
+                    if ($get_grace_recharge) {
+                        $customer_data = Customer::find($customer->id);
+
+                        /*Remove Grace Recharge Days*/
+                        if ($customer_data->expire_date) {
+                            $customer_data->expire_date = \Carbon\Carbon::parse($customer_data->expire_date)->subDays($get_grace_recharge->days);
+                            $customer_data->save();
+                        }
+
+                        /*Delete Grace Rechage**/
+                        $get_grace_recharge->delete();
+                    }
+                    /***** Check Customer Grace Recharge End ******/
                     $object = new Customer_recharge();
                     $object->user_id          = auth()->guard('admin')->id();
                     $object->customer_id      = $customer_id;

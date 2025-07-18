@@ -14,7 +14,7 @@
             <label>Days</label>
             <select type="text" name="days" class="form-control">
                 <option >---Select Days---</option>
-                @for($i = 1; $i <= 15; $i++)
+                @for($i = 1; $i <= 3; $i++)
                     <option value="{{ $i }}">{{ $i }} day{{ $i > 1 ? 's' : '' }}</option>
                 @endfor
             </select>
