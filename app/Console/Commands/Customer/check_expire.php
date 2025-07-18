@@ -4,6 +4,7 @@ namespace App\Console\Commands\Customer;
 use RouterOS\Client;
 use RouterOS\Query;
 use App\Models\Customer;
+use App\Models\Grace_recharge;
 use App\Models\Router;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
@@ -43,15 +44,30 @@ class check_expire extends Command
         $today = Carbon::now()->format('Y-m-d');
 
         $expire_customers = Customer::where('is_delete', '0')
-            ->where('expire_date', '<', $today)
+            ->where('expire_date', '<=', $today) 
             ->whereIn('status', ['active', 'online', 'offline'])
             ->get();
-
         foreach ($expire_customers as $customer) {
             if ($customer->connection_type == 'pppoe') {
+                /*** Remove Grace Recharge For this Customer *****/
+               $get_grace_recharge = Grace_recharge::where('customer_id', $customer->id)->first();
+
+                if ($get_grace_recharge) {
+                    $customer_data = Customer::find($customer->id);
+
+                    /*Remove Grace Recharge Days*/
+                    if ($customer_data->expire_date) {
+                        $customer_data->expire_date = \Carbon\Carbon::parse($customer_data->expire_date)->subDays($get_grace_recharge->days);
+                        $customer_data->save();
+                    }
+
+                    /*Delete Grace Rechage**/
+                    $get_grace_recharge->delete();
+                }
+                /*** Find Mikrotik Router For this Customer *****/
                 $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
                 if (!$router) {
-                    $this->error("Router not found for customer {$customer->username}");
+                    //$this->error("Router not found for customer {$customer->username}");
                     continue;
                 }
 
@@ -72,7 +88,7 @@ class check_expire extends Command
 
                     if (!empty($secrets)) {
                         $secretId = $secrets[0]['.id'];
-                        $this->info('Secret ID: ' . $secretId);
+                        //$this->info('Secret ID: ' . $secretId);
 
                         // Remove all active sessions
                         $activeQuery = new Query('/ppp/active/print');
@@ -83,17 +99,17 @@ class check_expire extends Command
                             $removeActive = new Query('/ppp/active/remove');
                             $removeActive->equal('.id', $activeUser['.id']);
                             $client->query($removeActive)->read();
-                            $this->info("Removed active PPP session for {$customer->username}");
+                            //$this->info("Removed active PPP session for {$customer->username}");
                         }
 
                         // Disable PPP Secret
                         $disableSecret = new Query('/ppp/secret/set');
                         $disableSecret->equal('.id', $secretId)->equal('disabled', 'yes');
                         $client->query($disableSecret)->read();
-                        $this->info("Disabled PPP secret for {$customer->username}");
+                        //$this->info("Disabled PPP secret for {$customer->username}");
 
                         $customer->update(['status' => 'expired']);
-                        $this->info("Customer {$customer->username} marked as expired in DB");
+                        //$this->info("Customer {$customer->username} marked as expired in DB");
                     } else {
                         $this->warn("PPP secret not found for {$customer->username}");
                     }
