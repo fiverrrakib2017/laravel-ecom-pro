@@ -120,7 +120,7 @@
                         <i class="fas fa-comment-dots text-info me-2"></i>
                         <span class="text-dark">
                             <strong>Available SMS:</strong>
-                            <strong class="text-danger fw-bold">
+                            <strong class="text-danger fw-bold counter-value">
                                 {{-- Replace 520 with dynamic SMS count --}}
                                 {{ $available_sms ?? 520 }}
                             </strong>
@@ -132,7 +132,7 @@
                         <i class="fas fa-money text-success me-2"></i>
                         <span class="text-dark">
                             <strong>Remaining Balance TK:</strong>
-                            <strong class="text-danger fw-bold">
+                            <strong class="text-danger fw-bold counter-value">
                                 @php
                                     /*Branch Transaction Current Balance*/
                                     $customer_recharge_total = App\Models\Customer_recharge::where(
@@ -273,7 +273,7 @@
                 <a href="{{ $card['url'] ?? '#' }}" style="text-decoration: none;">
                     <div class="small-box bg-{{ $card['bg'] }}">
                         <div class="inner">
-                            <h3>{{ $card['value'] }}</h3>
+                            <h3 class=" counter-value">{{ $card['value'] }}</h3>
                             <p>{{ $card['title'] }}</p>
                         </div>
                         <div class="icon">
