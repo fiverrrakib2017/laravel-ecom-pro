@@ -87,8 +87,8 @@
                             </div>
                         </div>
                     </div>
-                    <button  type="submit" class="btn btn-block btn-success">
-                        Login  <i class="fas fa-sign-in-alt"></i>
+                    <button type="submit" id="loginBtn" class="btn btn-block btn-success">
+                        Login <i class="fas fa-sign-in-alt"></i>
                     </button>
                 </form>
                 <div class="social-auth-links text-center mb-3">
@@ -116,11 +116,15 @@
 
     <!-- jQuery -->
     <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
-    <!-- Bootstrap 4 -->
-    {{-- <script src="https://adminlte.io/themes/v3/"></script> --}}
-    {{-- <script src="{{ asset('Backend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('Backend/dist/js/adminlte.min.js?v=3.2.0') }}"></script> --}}
-
+    <script>
+        $(document).ready(function () {
+            $('form').on('submit', function () {
+                let $btn = $('#loginBtn');
+                $btn.html('<i class="fas fa-spinner fa-spin"></i> Logging in...');
+                $btn.prop('disabled', true);
+            });
+        });
+    </script>
 </body>
 
 </html>
