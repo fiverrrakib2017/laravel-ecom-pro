@@ -738,7 +738,7 @@ Route::group(['middleware' => 'admin'], function () {
                 /**Mikrotik SYNC**/
                 Route::get('/sync', 'router_sync')->name('admin.router.sync');
                 Route::get('/get_mikrotik_user/{mikrotik_id}', 'get_mikrotik_user')->name('admin.mikrotik.get_user');
-
+                Route::post('/sync/store', 'mikrotik_sync')->name('admin.mikrotik.sync.store');
                 /* mikrotik Log */
                 Route::get('/log', 'router_log')->name('admin.router.log.index');
                 Route::get('/user-list/{router_id}', 'router_user_list')->name('admin.router.ppp.users.index');

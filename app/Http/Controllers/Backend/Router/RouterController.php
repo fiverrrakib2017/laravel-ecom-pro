@@ -3,7 +3,9 @@ namespace App\Http\Controllers\Backend\Router;
 use App\Http\Controllers\Controller;
 use App\Models\Pop_branch;
 use App\Models\Pop_area;
-use App\Models\Router;
+use App\Models\Router as Mikrotik_router;
+use App\Models\Customer;
+use App\Models\Branch_package;
 use App\Models\Radius\Nas as nas_server;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -272,48 +274,56 @@ class RouterController extends Controller
         return view('Backend.Pages.Router.nas', compact('routers', 'mikrotik_data'));
     }
     public function router_sync(){
-         $routers = Router::where('status', 'active')->get();
+        $routers = Mikrotik_router::where('status', 'active')->get();
+        return view('Backend.Pages.Router.sync');
+    }
+    public function mikrotik_sync(Request $request){
+       if(!empty($request->customer_ids)){
+            foreach($request->customer_ids as $customer_id){
+                /*Get Customer */
+               $customer= Customer::find($customer_id);
+               if($customer->connection_type='pppoe'){
+                    $router = Mikrotik_router::where('status', 'active')->where('id', $customer->router_id)->first();
+                    $client = new Client([
+                        'host' => $router->ip_address,
+                        'user' => $router->username,
+                        'pass' => $router->password,
+                        'port' => (int) $router->port ?? 8728,
+                    ]);
+                    /*Load MikroTik Profile list*/
+                    $mikrotik_profile_list = new Query('/ppp/profile/print');
+                    $profiles = $client->query($mikrotik_profile_list)->read();
+                    /*Find profile name from Branch Package*/
+                    $profileName = Branch_package::find($customer->package_id)->name;
+                    /* Check if the profile name exists in MikroTik*/
+                    $profileExists = collect($profiles)->pluck('name')->contains(trim($profileName));
 
-        $mikrotik_data = [];
+                    if (!$profileExists) {
+                        DB::rollBack();
+                        // return response()->json([
+                        //     'success' => false,
+                        //     'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package configuration.",
+                        // ]);
+                    continue;
+                    }
+                    /*Check if alreay exist*/
+                    $check_Query = new Query('/ppp/secret/print');
+                    $check_Query->where('name', $customer->username);
+                    $check_customer = $client->query($check_Query)->read();
 
-        foreach ($routers as $router) {
-            try {
-                $client = new Client([
-                    'host'     => $router->ip_address,
-                    'user'     => $router->username,
-                    'pass'     => $router->password,
-                    'port'     => (int) $router->port,
-                    'timeout'  => 3,
-                    'attempts' => 1
-                ]);
-
-
-                $query = new Query('/ppp/active/print');
-                $activeUsers = $client->query($query)->read();
-
-
-                $resourceQuery = new Query('/system/resource/print');
-                $resourceDetails = $client->query($resourceQuery)->read();
-
-                $mikrotik_data[] = [
-                    'router_id' => $router->id,
-                    'router_name' => $router->name,
-                    'online_users' => count($activeUsers),
-                    'uptime' => $resourceDetails[0]['uptime'] ?? 'N/A',
-                    'version' => $resourceDetails[0]['version'] ?? 'N/A',
-                    'hardware' => $resourceDetails[0]['hardware'] ?? 'N/A',
-                    'cpu' => $resourceDetails[0]['cpu'] ?? 'N/A',
-                    'offline_users' => 0,
-                ];
-            } catch (\Exception $e) {
-                $mikrotik_data[] = [
-                    'error' => $e->getMessage()
-                ];
+                    if (empty($check_customer)) {
+                        $query = new Query('/ppp/secret/add');
+                        $query->equal('name', $customer->username);
+                        $query->equal('password', $customer->password);
+                        $query->equal('service', 'pppoe');
+                        $query->equal('profile', Branch_package::find($customer->package_id)->name);
+                        $client->query($query)->read();
+                    }
+               }
             }
-        }
-        $mikrotik_data = collect($mikrotik_data);
-        // return $mikrotik_data;
-        return view('Backend.Pages.Router.sync', compact('routers', 'mikrotik_data'));
+            return response(['success'=>true,'message'=>'synced to MikroTik successfully']);
+       }
+
     }
     public function get_mikrotik_user($id){
         $router = Router::findOrFail($id);

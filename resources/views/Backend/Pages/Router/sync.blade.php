@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', 'Dashboard | SMS Template | Admin Panel')
+@section('title', 'Dashboard | Sync Mikrotik | Admin Panel')
 @section('style')
 @endsection
 @section('content')
@@ -238,14 +238,13 @@
                     return false;
                 }
                 $.ajax({
-                    url: "{{ route('admin.sms.send_message_store') }}",
+                    url: "{{ route('admin.mikrotik.sync.store') }}",
                     type: 'POST',
                     dataType: 'json',
-                    data: {  _token: "{{ csrf_token() }}", message: message, customer_ids:selectedCustomers },
+                    data: {  _token: "{{ csrf_token() }}", customer_ids:selectedCustomers },
                     success: function(response) {
                         if(response.success==true){
                             toastr.success(response.message);
-                            $('#sendMessageModal').modal('hide');
                             setTimeout(() => {
                                 location.reload();
                             }, 2000);
@@ -256,7 +255,7 @@
                         }
                     },
                     complete: function() {
-                        button.html('Send Message');
+                        button.html('<i class="fas fa-cloud-upload-alt me-2"></i> Sync to MikroTik');
                         button.attr('disabled', false);
                     }
                 });
