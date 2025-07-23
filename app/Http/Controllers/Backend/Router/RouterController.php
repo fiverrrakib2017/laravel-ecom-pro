@@ -18,7 +18,7 @@ class RouterController extends Controller
 {
     public function index()
     {
-        $routers = Router::where('status', 'active')->get();
+        $routers = Mikrotik_router::where('status', 'active')->get();
 
         $mikrotik_data = [];
 
@@ -69,8 +69,8 @@ class RouterController extends Controller
         /* Validate the form data*/
         $this->validateForm($request);
 
-        /* Create a new Supplier*/
-        $object = new Router();
+        /* Create a new instance*/
+        $object = new Mikrotik_router();
         $object->name = $request->name;
         $object->pop_id = $request->pop_id;
         $object->ip_address = $request->ip_address;
@@ -103,7 +103,7 @@ class RouterController extends Controller
         ]);
     }
     public function router_log(){
-        $routers=Router::where('status', 'active')->get();
+        $routers=Mikrotik_router::where('status', 'active')->get();
         $allLogs = [];
         foreach ($routers as $router) {
             try {
@@ -140,7 +140,7 @@ class RouterController extends Controller
     }
 
     public function router_user_list($router_id){
-        $routers=Router::where('status', 'active')->where('id',$router_id)->get();
+        $routers=Mikrotik_router::where('status', 'active')->where('id',$router_id)->get();
         $data = [];
         foreach ($routers as $router) {
             try {
@@ -173,7 +173,7 @@ class RouterController extends Controller
 
     public function delete(Request $request)
     {
-        $object = Router::find($request->id);
+        $object = Mikrotik_router::find($request->id);
 
         if (empty($object)) {
             return response()->json(['error' => 'Not found.'], 404);
@@ -186,7 +186,7 @@ class RouterController extends Controller
     }
     public function edit($id)
     {
-        $data = Router::find($id);
+        $data = Mikrotik_router::find($id);
         if ($data) {
             return response()->json(['success' => true, 'data' => $data]);
             exit;
@@ -198,7 +198,7 @@ class RouterController extends Controller
     public function update(Request $request, $id){
         $this->validateForm($request);
 
-        $object = Router::findOrFail($id);
+        $object = Mikrotik_router::findOrFail($id);
         $object->name = $request->name;
         $object->pop_id = $request->pop_id;
         $object->ip_address = $request->ip_address;
@@ -219,7 +219,7 @@ class RouterController extends Controller
 
     public function get_router_with_pop($pop_id){
         if(isset($pop_id) && !empty($pop_id)){
-            $routers=Router::where('status', 'active')->where('pop_id', $pop_id)->get();
+            $routers=Mikrotik_router::where('status', 'active')->where('pop_id', $pop_id)->get();
             if ($routers) {
                 return response()->json(['success' => true, 'data' => $routers]);
                 exit;
@@ -326,7 +326,7 @@ class RouterController extends Controller
 
     }
     public function get_mikrotik_user($id){
-        $router = Router::findOrFail($id);
+        $router = Mikrotik_router::findOrFail($id);
          $client = new Client([
             'host'     => $router->ip_address,
             'user'     => $router->username,
