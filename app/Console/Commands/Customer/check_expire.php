@@ -44,7 +44,7 @@ class check_expire extends Command
         $today = Carbon::now()->format('Y-m-d');
 
         $expire_customers = Customer::where('is_delete', '0')
-            ->where('expire_date', '<=', $today) 
+            ->where('expire_date', '<=', $today)
             ->whereIn('status', ['active', 'online', 'offline'])
             ->get();
         foreach ($expire_customers as $customer) {
@@ -67,7 +67,6 @@ class check_expire extends Command
                 /*** Find Mikrotik Router For this Customer *****/
                 $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
                 if (!$router) {
-                    //$this->error("Router not found for customer {$customer->username}");
                     continue;
                 }
 
@@ -88,7 +87,6 @@ class check_expire extends Command
 
                     if (!empty($secrets)) {
                         $secretId = $secrets[0]['.id'];
-                        //$this->info('Secret ID: ' . $secretId);
 
                         // Remove all active sessions
                         $activeQuery = new Query('/ppp/active/print');
@@ -99,17 +97,14 @@ class check_expire extends Command
                             $removeActive = new Query('/ppp/active/remove');
                             $removeActive->equal('.id', $activeUser['.id']);
                             $client->query($removeActive)->read();
-                            //$this->info("Removed active PPP session for {$customer->username}");
                         }
 
                         // Disable PPP Secret
                         $disableSecret = new Query('/ppp/secret/set');
                         $disableSecret->equal('.id', $secretId)->equal('disabled', 'yes');
                         $client->query($disableSecret)->read();
-                        //$this->info("Disabled PPP secret for {$customer->username}");
 
                         $customer->update(['status' => 'expired']);
-                        //$this->info("Customer {$customer->username} marked as expired in DB");
                     } else {
                         $this->warn("PPP secret not found for {$customer->username}");
                     }
