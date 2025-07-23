@@ -37,7 +37,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item ">
+                {{-- <li class="nav-item ">
                     <select class="form-control" name="sidebar_customer_id" style="width: 100%; font-size: 13px;">
                         @include('Backend.Component.Common.Customer')
                     </select>
@@ -55,7 +55,7 @@
                             });
                         });
                     </script>
-                </li>
+                </li> --}}
                 @php
                     $active_prefix = [
                         'admin.customer.index',

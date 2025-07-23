@@ -5,66 +5,31 @@
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
     </ul>
+    <!-- Responsive Customer Search -->
+     <ul class="navbar-nav ml-2 flex-grow-1">
+        <li class="nav-item w-100">
+            <form class="form-inline w-100">
+               <select class="form-control" name="sidebar_customer_id" id="sidebar_customer_id" style="width: 100%; font-size: 13px; visibility: hidden;">
+                        @include('Backend.Component.Common.Customer')
+                    </select>
+                    <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
+                    <script src="{{ asset('Backend/plugins/select2/js/select2.full.min.js') }}"></script>
+                    <script>
+                        $(document).ready(function() {
+                            $('select').select2();
+                            $("select[name='sidebar_customer_id']").change(function() {
+                                var customer_id = $(this).val();
+                                if (customer_id) {
+                                    window.location.href = "{{ route('admin.customer.view', ':id') }}".replace(':id',
+                                        customer_id);
+                                }
+                            });
+                        });
+                    </script>
+            </form>
+        </li>
+    </ul>
     <ul class="navbar-nav ml-auto">
-       <!-- Messages Dropdown Menu -->
-      {{-- <li class="nav-item dropdown">
-        <a class="nav-link" data-toggle="dropdown" href="#">
-          <i class="far fa-comments"></i>
-          <span class="badge badge-danger navbar-badge">3</span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-          <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="../../dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  Brad Diesel
-                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                </h3>
-                <p class="text-sm">Call me whenever you can...</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="../../dist/img/user8-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  John Pierce
-                  <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
-                </h3>
-                <p class="text-sm">I got your message bro</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item">
-            <!-- Message Start -->
-            <div class="media">
-              <img src="../../dist/img/user3-128x128.jpg" alt="User Avatar" class="img-size-50 img-circle mr-3">
-              <div class="media-body">
-                <h3 class="dropdown-item-title">
-                  Nora Silvester
-                  <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
-                </h3>
-                <p class="text-sm">The subject goes here</p>
-                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-              </div>
-            </div>
-            <!-- Message End -->
-          </a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-        </div>
-      </li> --}}
-
        <!-- Notifications Dropdown Menu -->
        <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
