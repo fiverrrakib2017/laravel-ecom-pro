@@ -18,6 +18,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Full Name</th>
+                                    <th>Username</th>
                                     <th>Mobile</th>
                                     <th>Active Customer</th>
                                     <th>Online</th>
@@ -71,6 +72,9 @@
                         }
                     },
 
+                    {
+                        "data": "username"
+                    },
                     {
                         "data": "phone"
                     },

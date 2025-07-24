@@ -82,11 +82,11 @@
                                                 {{ ucfirst($item->status) }}
                                             </span>
                                         </td>
-                                        {{-- <td>
+                                         <td>
                                             <button class="btn btn-sm btn-primary edit-btn mb-1" data-id="{{ $item->id }}">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button class="btn btn-sm btn-danger delete-btn" data-id="{{ $item->id }}">
+                                           {{-- <button class="btn btn-sm btn-danger delete-btn" data-id="{{ $item->id }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </td> --}}
@@ -226,6 +226,7 @@
                 url: "{{ route('admin.router.edit', ':id') }}".replace(':id', id),
                 method: 'GET',
                 success: function(response) {
+                    console.log(response);
                     if (response.success) {
                         $('#routerForm').attr('action', "{{ route('admin.router.update', ':id') }}"
                             .replace(':id', id));
@@ -233,6 +234,7 @@
                             '<span class="mdi mdi-account-edit mdi-18px"></span> &nbsp;Edit Router');
                         $('#routerForm input[name="name"]').val(response.data.name);
                         $('#routerForm input[name="name"]').val(response.data.name);
+                        $('#routerForm select[name="pop_id"]').val(response.data.pop_id).trigger('change');
                         $('#routerForm input[name="ip_address"]').val(response.data.ip_address);
                         $('#routerForm input[name="api_version"]').val(response.data.api_version);
                         $('#routerForm input[name="username"]').val(response.data.username);
