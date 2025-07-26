@@ -25,7 +25,7 @@
                     <div class="card-header">
                         <h5 class="card-title d-flex align-items-center gap-2 text-primary">
                             <i class="fas fa-sync fa-spin text-info me-2"></i>&nbsp;&nbsp;
-                            <span>Import Data From MikroTik Router</span>
+                            <span>Import Customer From MikroTik</span>
                         </h5>
 
                         <div class="card-tools">
@@ -62,6 +62,7 @@
                                         <th style="min-width: 150px;">Area Name</th>
                                         <th style="min-width: 150px;">Package Name</th>
                                         <th style="min-width: 100px;">Amount</th>
+                                        <th style="min-width: 100px;">Phone Number</th>
                                         <th style="min-width: 130px;">Billing Cycle</th>
                                         <th style="min-width: 150px;">Create Date</th>
                                         <th style="min-width: 150px;">Expire Date</th>
@@ -70,7 +71,7 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td colspan="11" class="text-center">No Data</td>
+                                        <td colspan="12" class="text-center">No Data</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -123,6 +124,7 @@
                             <td>${user.area}</td>
                             <td>${user.package}</td>
                             <td>${user.amount}</td>
+                            <td><input class="form-control" name="phone_number" type="text" placeholder="Enter Phone Number"/></td>
                             <td>${user.billing_cycle}</td>
                             <td>${user.create_date}</td>
                             <td>${user.expire_date}</td>
@@ -194,6 +196,7 @@
                 area_id: $row.find('select[name="area_id"]').val(),
                 package_id: $row.find('select[name="package_id"]').val(),
                 amount: $row.find('input[name="amount"]').val(),
+                phone_number: $row.find('input[name="phone_number"]').val(),
                 billing_cycle: $row.find('input[name="billing_cycle"]').val(),
                 create_date: $row.find('input[name="create_date"]').val(),
                 expire_date: $row.find('input[name="expire_date"]').val(),

@@ -58,7 +58,7 @@ class CustomerController extends Controller
             /* Create a new Customer */
             $customer = new Customer();
             $customer->fullname = $request->data['username'];
-            // $customer->phone = $request->user->phone;
+            $customer->phone = $request->data['phone_number']?? '';
             $customer->con_charge = $request->con_charge ?? 0;
             $customer->amount = $request->amount ?? 0;
             $customer->username = $request->data['username'];
