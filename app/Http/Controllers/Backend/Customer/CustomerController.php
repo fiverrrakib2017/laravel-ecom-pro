@@ -224,8 +224,7 @@ class CustomerController extends Controller
                $query->whereMonth('created_at', date('m', strtotime($request->month)))
                     ->whereYear('created_at', $request->year);
             })
-
-
+            /*Filter Grace Recharge Data From Customer*/
             ->when($status, function ($query) use ($status) {
                 if ($status == 'grace') {
                     $grace_ids = Grace_recharge::pluck('customer_id')->toArray();
@@ -790,6 +789,89 @@ class CustomerController extends Controller
             return response()->json(['success' => false, 'message' => 'Not found.']);
         }
     }
+    public function customer_discountinue($customer_id)
+    {
+        $customers = Customer::where('is_delete', '0')
+            ->where('id', $customer_id)
+            ->where('status', '!=', 'discontinue')
+            ->get();
+
+        foreach ($customers as $customer) {
+
+            // PPPoE Customer
+          if ($customer->connection_type == 'pppoe') {
+                $router = Mikrotik_router::where('status', 'active')
+                    ->where('id', $customer->router_id)
+                    ->first();
+
+                if (!$router) {
+                    $this->error("Router not found for customer {$customer->username}");
+                    continue;
+                }
+
+                try {
+                    $client = new Client([
+                        'host' => $router->ip_address,
+                        'user' => $router->username,
+                        'pass' => $router->password,
+                        'port' => (int) $router->port,
+                        'timeout' => 3,
+                        'attempts' => 1,
+                    ]);
+
+                    /*Remove from PPP Active*/
+                    $activeQuery = new Query('/ppp/active/print');
+                    $activeQuery->where('name', $customer->username);
+                    $activeUsers = $client->query($activeQuery)->read();
+
+                    if (!empty($activeUsers)) {
+                        foreach ($activeUsers as $activeUser) {
+                            if (isset($activeUser['.id'])) {
+                                $removeActive = new Query('/ppp/active/remove');
+                                $removeActive->equal('.id', $activeUser['.id']);
+                                $client->query($removeActive)->read();
+                            }
+                        }
+                    }
+                    $secretQuery = new Query('/ppp/secret/print');
+                    $secretQuery->where('name', $customer->username);
+                    $secretUsers = $client->query($secretQuery)->read();
+
+                    if (!empty($secretUsers)) {
+                        foreach ($secretUsers as $secretUser) {
+                            if (isset($secretUser['.id'])) {
+                                $removeSecret = new Query('/ppp/secret/remove');
+                                $removeSecret->equal('.id', $secretUser['.id']);
+                                $client->query($removeSecret)->read();
+                            }
+                        }
+                    }
+                    $customer->update(['status' => 'discontinue']);
+                } catch (\Exception $e) {
+                    $this->error("Connection error for router {$router->ip_address}: " . $e->getMessage());
+                }
+            }
+            /*Radius Customer*/
+            elseif ($customer->connection_type == 'radius') {
+                $activeSession = \App\Models\Radius\Radacct::where('username', $customer->username)
+                    ->whereNull('acctstoptime')
+                    ->latest('acctstarttime')
+                    ->first();
+
+                if (empty($activeSession)) {
+                    $customer->update(['status' => 'discontinue']);
+                    $this->info("RADIUS Customer {$customer->username} marked as DISCONTINUE (no active session)");
+                } else {
+                    $this->info("RADIUS Customer {$customer->username} is still ONLINE (active session found)");
+                }
+            }
+            elseif ($customer->connection_type == 'hotspot') {
+            }
+        }
+
+        return response(['success' => true, 'message' => 'Successfully Completed']);
+    }
+
     public function view($id)
     {
         $data = Customer::with(['pop', 'area', 'package', 'router'])->find($id);

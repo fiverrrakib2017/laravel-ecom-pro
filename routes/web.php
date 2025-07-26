@@ -127,6 +127,8 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/get_customer_onu_list', 'onu_list')->name('admin.customer.onu_list');
             Route::get('/get_customer_onu_list_data', 'get_customer_onu_list_data')->name('admin.customer.get_customer_onu_list_data');
 
+            /***** Customer Discountinue *******/
+            Route::get('/discountinue/{customer_id}', 'customer_discountinue')->name('admin.customer.discountinue');
             /***** Customer Recharge *******/
             Route::post('/recharge/store', 'customer_recharge')->name('admin.customer.recharge.store');
             Route::get('/recharge/undo/{id}', 'customer_recharge_undo')->name('admin.customer.recharge.undo');

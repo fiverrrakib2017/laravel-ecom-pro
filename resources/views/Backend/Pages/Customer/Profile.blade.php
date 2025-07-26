@@ -46,7 +46,11 @@
                             <i class="fas fa-bolt fa-pulse text-warning"></i>&nbsp; Grace Recharge
                         </button>
                     @endif
-
+                    <button type="button"
+                        class="btn btn-sm btn-danger m-1 discountinue_btn"
+                        data-id="{{ $data->id }}">
+                        <i class="fas fa-ban text-white"></i>&nbsp; Discontinue
+                    </button>
 
 
 
@@ -687,6 +691,19 @@
                 $('#grace_customer_id').val(id);
                 $('#grace_customer_name').text(username);
                 $('#graceRechargeModal').modal('show');
+            });
+            /** Handle Customer Discontinue button click **/
+            $(document).on('click', '.discountinue_btn', function() {
+               // let id = $(this).data('id');
+                __handle_custom_ajax_action({
+                    id: $(this).data('id'),
+                    button: this,
+                    url: "{{ route('admin.customer.discountinue', ':id') }}",
+                    confirmMessage: 'Are you sure you want to Discountinue this Customer?',
+                    loadingText: 'Loading...',
+                    successMessage: 'Successfully Done!',
+                    reload: true
+                });
             });
             /** Handle Customer Grace Recharge Remove button click **/
             $(document).on('click', '#delete_grace_btn', function() {
