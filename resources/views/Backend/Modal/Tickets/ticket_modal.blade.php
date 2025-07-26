@@ -23,7 +23,7 @@
                         <div class="col-md-6 mb-2">
                             <label>Customer Name</label>
                             <select name="customer_id" class="form-select" type="text" style="width: 100%;" required>
-                                @include('Backend.Component.Common.Customer')
+                                @include('Backend.Component.Common.Customer', ['customer_id',$customer_id])
                             </select>
 
                         </div>

@@ -456,6 +456,7 @@
                                         <option value="blocked">Blocked</option>
                                         <option value="expired">Expired</option>
                                         <option value="disabled">Disabled</option>
+                                        <option value="discontinue">Discontinue</option>
                                     </select>
                                 </div>
                             </div>

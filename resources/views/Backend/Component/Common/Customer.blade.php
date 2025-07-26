@@ -30,9 +30,13 @@
                 $status_icon = '⚪';
             }
         @endphp
+        if(!empty($customer_id)){
+                $customer
+            }
+         <option value="{{ $item->id }}" {{ (isset($customer_id) && $customer_id == $item->id) ? 'selected' : '' }}>
+            {!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} || {{ $item->fullname }}, ({{ $item->phone }})
+        </option>
 
-        <option value="{{ $item->id }}">{!! $status_icon !!} [{{ $item->id }}] - {{ $item->username }} ||
-            {{ $item->fullname }}, ({{ $item->phone }})</option>
     @endforeach
 @else
 @endif
