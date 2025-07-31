@@ -168,26 +168,41 @@
                                             <strong>Up Time</strong>
                                             <p class="text-dark"><span id="customer_uptime">0.00</span></p>
                                         </div>
+                                        @php
+                                            use Illuminate\Support\Facades\DB;
+
+                                            $start = \Carbon\Carbon::now()->startOfMonth();
+                                            $end = \Carbon\Carbon::now()->endOfMonth();
+
+                                           $usage = DB::table('daily_usages')
+                                                ->selectRaw('SUM(upload) as total_upload, SUM(download) as total_download')
+                                                ->where('customer_id', $data->id)
+                                                ->whereBetween('created_at', [$start, $end])
+                                                ->first();
+
+                                            $upload_gb = round(($usage->total_upload ?? 0) / 1024, 2);
+                                            $download_gb = round(($usage->total_download ?? 0) / 1024, 2);
+                                        @endphp
+
                                         <div class="col-6 text-center">
                                             <p class="mb-1"><i class="fas fa-chart-line text-success"></i></p>
                                             <strong>Monthly Usage</strong>
-
-                                             <p class="mb-0 small">
-                                                <span class="text-danger"><i class="fas fa-arrow-up"></i> {{ $upload_usage ?? '0' }} GB</span>
-                                                |
-                                                <span class="text-success"><i class="fas fa-arrow-down"></i> {{ $download_usage ?? '0' }} GB</span>
+                                            <p class="mb-0 small">
+                                                <span class="text-danger"><i class="fas fa-arrow-up"></i> {{ $upload_gb }} GB</span> |
+                                                <span class="text-success"><i class="fas fa-arrow-down"></i> {{ $download_gb }} GB</span>
                                             </p>
                                         </div>
+
 
                                         <div class="col-6 text-center border-end mt-3">
                                             <p class="mb-1"><i class="fas fa-arrow-up text-success"></i></p>
                                             <strong>Upload</strong>
-                                            <p class="text-danger"><span id="customer_upload_speed">0</span> Mbps</p>
+                                            <p class="text-danger"><span id="customer_upload_speed">0</span> Mb</p>
                                         </div>
                                         <div class="col-6 text-center mt-3">
                                             <p class="mb-1"><i class="fas fa-arrow-down text-danger"></i></p>
                                             <strong>Download</strong>
-                                            <p class="text-success"><span id="customer_download_speed">0</span> Mbps</p>
+                                            <p class="text-success"><span id="customer_download_speed">0</span> Mb</p>
                                         </div>
 
                                         <div class="col-6 text-center border-end mt-3">
