@@ -171,7 +171,12 @@
                                         <div class="col-6 text-center">
                                             <p class="mb-1"><i class="fas fa-chart-line text-success"></i></p>
                                             <strong>Monthly Usage</strong>
-                                            <p class="text-primary">N/A GB</p>
+
+                                             <p class="mb-0 small">
+                                                <span class="text-danger"><i class="fas fa-arrow-up"></i> {{ $upload_usage ?? '0' }} GB</span>
+                                                |
+                                                <span class="text-success"><i class="fas fa-arrow-down"></i> {{ $download_usage ?? '0' }} GB</span>
+                                            </p>
                                         </div>
 
                                         <div class="col-6 text-center border-end mt-3">
