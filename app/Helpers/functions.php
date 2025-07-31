@@ -190,19 +190,21 @@ if (!function_exists('get_mikrotik_user_info')) {
 }
 
 
-if(!function_exists('formate_uptime')) {
+if (!function_exists('formate_uptime')) {
     function formate_uptime($uptime)
     {
+        $days = 0;
         $hours = 0;
         $minutes = 0;
         $seconds = 0;
 
-        if (preg_match('/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/', $uptime, $matches)) {
-            $hours = isset($matches[1]) ? (int) $matches[1] : 0;
-            $minutes = isset($matches[2]) ? (int) $matches[2] : 0;
-            $seconds = isset($matches[3]) ? (int) $matches[3] : 0;
+        if (preg_match('/(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/', $uptime, $matches)) {
+            $days = isset($matches[1]) ? (int) $matches[1] : 0;
+            $hours = isset($matches[2]) ? (int) $matches[2] : 0;
+            $minutes = isset($matches[3]) ? (int) $matches[3] : 0;
+            $seconds = isset($matches[4]) ? (int) $matches[4] : 0;
         }
 
-        return "{$hours} h {$minutes} m {$seconds} sec";
+        return "{$days} d {$hours} h {$minutes} m {$seconds} sec";
     }
 }
