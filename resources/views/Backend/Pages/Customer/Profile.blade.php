@@ -925,7 +925,6 @@
                     "{{ $data->id }}"),
                 method: 'GET',
                 success: function(response) {
-                     console.log(response);
                     if (response.success) {
                         const downloadSpeed = response.rx_mb;
                         const uploadSpeed = response.tx_mb;

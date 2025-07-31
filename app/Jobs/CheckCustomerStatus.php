@@ -97,7 +97,7 @@ class CheckCustomerStatus  implements ShouldQueue
 
                     $query = new Query('/ip/hotspot/active/print');
                     /* Hotspot user filter*/
-                    $query->where('user', $customer->username); 
+                    $query->where('user', $customer->username);
 
                     $response = $client->query($query)->read();
 
