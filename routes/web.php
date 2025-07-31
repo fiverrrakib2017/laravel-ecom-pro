@@ -171,6 +171,8 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/live-bandwith-update/{customer_id}', 'customer_live_bandwith_update')->name('admin.customer.live_bandwith_update');
              /***** Onu Information *******/
              Route::post('/get-onu-information', 'get_onu_info')->name('admin.customer.get_onu_info');
+             /*****Get Router name *******/
+             Route::post('/get_router_name', 'get_router_name')->name('admin.customer.router.vendor');
         });
         /* IP POOL Route */
         Route::prefix('ip-pool')->group(function () {

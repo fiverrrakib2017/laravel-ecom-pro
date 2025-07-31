@@ -680,6 +680,59 @@ class CustomerController extends Controller
             ]);
         }
     }
+    public function get_router_name(Request $request)
+    {
+        $object = Customer::find($request->customer_id);
+        if (!$object) {
+            return response()->json(['success' => false, 'message' => 'Customer not found']);
+        }
+
+        $router = Mikrotik_router::where('status', 'active')->where('id', $object->router_id)->first();
+        if (!$router) {
+            return response()->json(['success' => false, 'message' => 'Router not found']);
+        }
+
+
+        $client = new Client([
+            'host' => $router->ip_address,
+            'user' => $router->username,
+            'pass' => $router->password,
+            'port' => (int) $router->port ?? 8728,
+        ]);
+
+        $interfaces = $client->query(new Query('/interface/print'))->read();
+        $sessions = $client->query(new Query('/ppp/active/print'))->read();
+
+        $uptime = 'N/A';
+        $ip_address = 'N/A';
+        $mac_address = 'N/A';
+        foreach ($sessions as $session) {
+            if ($session['name'] == $object->username) {
+                $uptime = $session['uptime'] ?? 'N/A';
+                $ip_address = $session['address'] ?? 'N/A';
+                $mac_address = $session['caller-id'] ?? 'N/A';
+                break;
+            }
+        }
+
+
+        $mac = urlencode($mac_address);
+
+        $url = "https://api.macvendors.com/$mac";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $vendor = curl_exec($ch);
+        curl_close($ch);
+
+        $vendor = $this->clean_vendor_name($vendor);
+
+        if ($vendor && !str_contains(strtolower($vendor), 'errors')) {
+            return response()->json(['vendor' => $vendor]);
+        } else {
+            return response()->json(['vendor' => 'Unknown Router']);
+        }
+    }
 
     public function customer_credit_recharge_list()
     {
@@ -2030,5 +2083,29 @@ class CustomerController extends Controller
                 422,
             );
         }
+    }
+
+    private function clean_vendor_name($name)
+    {
+        $name = trim($name);
+
+        $map = [
+            'TP-Link' => ['TP-Link Technologies Co.,Ltd.', 'TP-Link Systems Inc'],
+            'MikroTik' => ['MikroTik', 'MikroTikls SIA'],
+            'Huawei' => ['Huawei Technologies Co.,Ltd'],
+            'Tenda' => ['Shenzhen Tenda Technology Co.,Ltd'],
+            'Netgear' => ['Netgear Inc'],
+            'D-Link' => ['D-Link Corporation'],
+        ];
+
+        foreach ($map as $clean => $patterns) {
+            foreach ($patterns as $p) {
+                if (stripos($name, $p) !== false) {
+                    return $clean;
+                }
+            }
+        }
+
+        return $name;
     }
 }

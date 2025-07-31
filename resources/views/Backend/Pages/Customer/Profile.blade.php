@@ -60,43 +60,54 @@
                 <div class="col-md-4">
                     <div class="card card-danger card-outline shadow-sm">
                         <div class="card-body box-profile">
-                            <div class="text-center">
-                                <img src="{{ asset($data->photo ?? 'Backend/images/avatar.png') }}" alt="Profile Picture"
-                                    class="profile-user-img img-fluid img-circle border border-primary">
+                            <div class="text-center mb-3">
+                                <img src="{{ asset($data->photo ?? 'Backend/images/avatar.png') }}"
+                                    alt="Profile Picture"
+                                    class="profile-user-img img-fluid img-circle border border-primary shadow-sm">
                             </div>
 
-                            <h3 class="profile-username text-center mt-2">{{ $data->fullname ?? 'N/A' }}</h3>
-                            <p class="text-muted text-center">
-                                <i class="fas fa-user-tag"></i> User ID: {{ $data->id ?? 'N/A' }}
+                            <h3 class="profile-username text-center mb-2">
+                                {{ $data->fullname ?? 'N/A' }}
+                            </h3>
+
+                            <p class="text-muted text-center mb-3">
+                                <i class="fas fa-id-badge mr-1 text-primary"></i>
+                                <strong>User ID:</strong> {{ $data->id ?? 'N/A' }}
                             </p>
-                            <p class="text-muted text-center">
-                                <i class="fas fa-box"></i> Package: {{ $data->package->name ?? 'N/A' }}
+
+                            <p class="text-muted text-center mb-3">
+                                <i class="fas fa-box-open mr-1 text-info"></i>
+                                <strong>Package:</strong> {{ $data->package->name ?? 'N/A' }}
                             </p>
+
                             @php
                                 $expireDate = $data->expire_date;
                                 $today_date = date('Y-m-d');
-
                                 $isExpired = $expireDate && strtotime($today_date) > strtotime($expireDate);
-
                                 $formattedDate = $expireDate ? date('d M Y', strtotime($expireDate)) : 'N/A';
                             @endphp
 
-                            <p class="text-muted text-center">
-                                <i class="fas fa-calendar-alt"></i>
+                            <p class="text-muted text-center mb-3">
+                                <i class="fas fa-wifi mr-1 text-success"></i>
+                                <strong>Router:</strong>
+                                <span class="text-success font-weight-bold" id="show_router_name">Loading...</span>
+                            </p>
+
+                            <p class="text-muted text-center mb-3">
+                                <i class="far fa-calendar-alt mr-1 {{ $isExpired ? 'text-danger' : 'text-success' }}"></i>
                                 <strong>Expire Date:</strong>
-                                <span class="{{ $isExpired ? 'text-danger' : 'text-success' }}">
-                                     {{  $formattedDate }}
+                                <span class="{{ $isExpired ? 'text-danger' : 'text-success' }} font-weight-bold">
+                                    {{ $formattedDate }}
                                 </span>
                             </p>
 
-
-
                             @if($grace)
-                                <p class="text-muted text-center">
-                                    <i class="fas fa-gift"></i>
+                                <p class="text-muted text-center mb-2">
+                                    <i class="fas fa-gift mr-1 text-warning"></i>
                                     <strong>Grace Recharge:</strong>
-                                    <span id="grace_days_text" class="text-info">{{ $grace->days }} day{{ $grace->days > 1 ? 's' : '' }}</span>
-
+                                    <span class="text-info font-weight-bold">
+                                        {{ $grace->days }} day{{ $grace->days > 1 ? 's' : '' }}
+                                    </span>
                                     <a href="javascript:void(0);"
                                     class="text-danger ml-2"
                                     id="delete_grace_btn"
@@ -106,9 +117,6 @@
                                     </a>
                                 </p>
                             @endif
-
-
-
 
                             <p class="text-muted text-center">
                                 @php
@@ -652,6 +660,32 @@
                     "zeroRecords": "No matching records found"
                 },
                 "order": [[0, 'desc']],
+            });
+            /************** Customer Router Name Show **************************/
+            $.ajax({
+                url: "{{ route('admin.customer.router.vendor') }}",
+                method: "POST",
+                data: {
+                    customer_id: "{{$data->id}}",
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (response) {
+                    if (!response || !response.vendor || response.vendor === 'Unknown Router') {
+                        $("#show_router_name")
+                            .html('Not found')
+                            .removeClass('text-success')
+                            .addClass('text-danger');
+                    } else {
+                        $("#show_router_name")
+                            .html(response.vendor)
+                            .removeClass('text-danger')
+                            .addClass('text-success');
+                    }
+                },
+
+                error: function () {
+                    $("#show_router_name").html('Not found').addClass('text-danger');
+                }
             });
             /************** Customer Enable And Disabled Start**************************/
             $(document).on("click", ".change-status", function() {
