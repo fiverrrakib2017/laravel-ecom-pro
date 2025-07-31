@@ -590,6 +590,7 @@ class CustomerController extends Controller
             $customer->username = $request->username;
             $customer->password = $request->password;
             $customer->package_id = $request->package_id;
+            $customer->expire_date = $request->expire_date;
             $customer->pop_id = $request->pop_id;
             $customer->area_id = $request->area_id;
             $customer->router_id = $request->router_id;

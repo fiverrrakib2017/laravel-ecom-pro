@@ -161,6 +161,7 @@
                                         <option value="hotspot">Hostpot</option>
                                     </select>
                                 </div>
+
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -183,6 +184,10 @@
                                 <div class="form-group">
                                     <label>Package Price <span class="text-danger">*</span></label>
                                     <input type="number" name="amount" placeholder="Enter Package Price" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Expire Date <span class="text-danger">*</span></label>
+                                    <input type="date" name="expire_date" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -429,6 +434,10 @@
                                     <label>Package Price <span class="text-danger">*</span></label>
                                     <input type="number" name="amount" class="form-control" required>
                                 </div>
+                                <div class="form-group">
+                                    <label class="form-label">Expire Date <span class="text-danger">*</span></label>
+                                    <input type="date" name="expire_date" class="form-control">
+                                </div>
                             </div>
                         </div>
                     </fieldset>
@@ -648,6 +657,8 @@
                         $('#editCustomerModal input[name="nid"]').val(response.data.nid);
                         $('#editCustomerModal input[name="con_charge"]').val(response.data
                             .con_charge);
+                        $('#editCustomerModal input[name="expire_date"]').val(response.data
+                            .expire_date);
                         $('#editCustomerModal input[name="amount"]').val(response.data
                             .amount);
                         $('#editCustomerModal input[name="address"]').val(response.data
