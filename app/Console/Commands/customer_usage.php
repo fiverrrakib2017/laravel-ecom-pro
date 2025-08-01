@@ -31,9 +31,9 @@ class customer_usage extends Command
     public function handle()
     {
         $this->info('--- Customer Daily Usages Started ---');
-        $customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
-            foreach($customers as $customer){
-                dispatch(new Customer_usages ($customer->id));
+       $routers = Router::where('status', 'active')->get();
+            foreach($routers as $item){
+                dispatch(new Customer_usages ($item->id));
            }
         $this->info('--- Customer Daily Usages  Finished ---');
     }
