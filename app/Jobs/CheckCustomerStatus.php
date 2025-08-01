@@ -33,7 +33,7 @@ class CheckCustomerStatus  implements ShouldQueue
     {
         $customer = Customer::find($this->customer_id);
         if (!$customer) {
-            Log::warning("Customer not found with ID: {$this->customer_id} In Queue Job");
+            //Log::warning("Customer not found with ID: {$this->customer_id} In Queue Job");
             return;
         }
 
@@ -42,7 +42,7 @@ class CheckCustomerStatus  implements ShouldQueue
                 $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
 
                 if (!$router) {
-                    Log::error("Router not found for customer {$customer->username}");
+                    //Log::error("Router not found for customer {$customer->username}");
                     return;
                 }
 
@@ -62,26 +62,26 @@ class CheckCustomerStatus  implements ShouldQueue
 
                 if (!empty($response)) {
                     $customer->update(['status' => 'online']);
-                    Log::info("Customer {$customer->username} is ONLINE");
+                    //Log::info("Customer {$customer->username} is ONLINE");
                 } else {
                     $customer->update(['status' => 'offline']);
-                    Log::info("Customer {$customer->username} is OFFLINE");
+                    //Log::info("Customer {$customer->username} is OFFLINE");
                 }
             } elseif ($customer->connection_type == 'radius') {
                 $activeSession = Radacct::where('username', $customer->username)->whereNull('acctstoptime')->latest('acctstarttime')->first();
 
                 if ($activeSession) {
                     $customer->update(['status' => 'online']);
-                    Log::info("RADIUS Customer {$customer->username} is ONLINE (via radacct)");
+                    //Log::info("RADIUS Customer {$customer->username} is ONLINE (via radacct)");
                 } else {
                     $customer->update(['status' => 'offline']);
-                    Log::info("RADIUS Customer {$customer->username} is OFFLINE (via radacct)");
+                    //Log::info("RADIUS Customer {$customer->username} is OFFLINE (via radacct)");
                 }
             } elseif ($customer->connection_type == 'hotspot') {
                 $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
 
                 if (!$router) {
-                    Log::error("Router not found for hotspot customer {$customer->username}");
+                    //Log::error("Router not found for hotspot customer {$customer->username}");
                     return;
                 }
 

@@ -46,15 +46,6 @@ class Customer_usages  implements ShouldQueue
                     return;
                 }
 
-                $client = new Client([
-                    'host' => $router->ip_address,
-                    'user' => $router->username,
-                    'pass' => $router->password,
-                    'port' => (int) $router->port,
-                    'timeout' => 3,
-                    'attempts' => 1,
-                ]);
-
                 try {
                     $client = new Client([
                         'host' => $router->ip_address,
@@ -109,7 +100,6 @@ class Customer_usages  implements ShouldQueue
                             break;
                         }
                     }
-
                     if ($session_id) {
                         Daily_usages::updateOrCreate([
                             'session_id' => $session_id,
@@ -127,7 +117,7 @@ class Customer_usages  implements ShouldQueue
                     }
 
                 } catch (\Exception $e) {
-                    $this->error("Error for {$customer->username}: " . $e->getMessage());
+                     Log::error("Error for {$customer->username}: " . $e->getMessage());
                 }
 
             } elseif ($customer->connection_type == 'radius') {
@@ -136,7 +126,7 @@ class Customer_usages  implements ShouldQueue
 
             }
         } catch (\Exception $e) {
-            Log::error("Status check failed for customer {$customer->username}: " . $e->getMessage());
+            Log::error("Daily Usages check failed for customer {$customer->username}: " . $e->getMessage());
         }
     }
 }
