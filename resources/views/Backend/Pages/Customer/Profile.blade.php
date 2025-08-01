@@ -681,32 +681,7 @@
                 },
                 "order": [[0, 'desc']],
             });
-            /************** Customer Router Name Show **************************/
-            $.ajax({
-                url: "{{ route('admin.customer.router.vendor') }}",
-                method: "POST",
-                data: {
-                    customer_id: "{{$data->id}}",
-                    _token: "{{ csrf_token() }}"
-                },
-                success: function (response) {
-                    if (!response || !response.vendor || response.vendor === 'Unknown Router') {
-                        $("#show_router_name")
-                            .html('Not found')
-                            .removeClass('text-success')
-                            .addClass('text-danger');
-                    } else {
-                        $("#show_router_name")
-                            .html(response.vendor)
-                            .removeClass('text-danger')
-                            .addClass('text-success');
-                    }
-                },
 
-                error: function () {
-                    $("#show_router_name").html('Not found').addClass('text-danger');
-                }
-            });
             /************** Customer Enable And Disabled Start**************************/
             $(document).on("click", ".change-status", function() {
                __handle_custom_ajax_action({
@@ -1024,6 +999,32 @@
         //         success: function(response) {}
         //     });
         // }, 1000);
+        /************** Customer Router Name Show **************************/
+            $.ajax({
+                url: "{{ route('admin.customer.router.vendor') }}",
+                method: "POST",
+                data: {
+                    customer_id: "{{$data->id}}",
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function (response) {
+                    if (!response || !response.vendor || response.vendor === 'Unknown Router') {
+                        $("#show_router_name")
+                            .html('Not found')
+                            .removeClass('text-success')
+                            .addClass('text-danger');
+                    } else {
+                        $("#show_router_name")
+                            .html(response.vendor)
+                            .removeClass('text-danger')
+                            .addClass('text-success');
+                    }
+                },
+
+                error: function () {
+                    $("#show_router_name").html('Not found').addClass('text-danger');
+                }
+            });
     </script>
 
 @endsection
