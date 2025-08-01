@@ -33,19 +33,11 @@ class check_status extends Command
     public function handle(SessionService $session_service)
     {
         $this->info('---Tasks Started ---');
-
-        // Customer::where('is_delete', '0')
-        //     ->whereNotIn('status', ['expired', 'disabled', 'discontinue'])
-        //     ->chunk(100, function ($customers) {
-        //         foreach ($customers as $customer) {
-        //             dispatch(new CheckCustomerStatus ($customer->id));
-        //         }
-        //     });
-            $customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
-            foreach($customers as $customer){
-                  dispatch(new CheckCustomerStatus ($customer->id));
+            //$customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
+            $routers = Router::where('status', 'active')->get();
+            foreach($routers as $item){
+                dispatch(new CheckCustomerStatus ($item->id));
             }
-
         /*session reset*/
         //$session_service->forget_session_sidebar_customer();
 
@@ -84,7 +76,10 @@ class check_status extends Command
                         $customer->update(['status' => 'online']);
                         $this->info("Customer {$customer->username} is ONLINE");
                     } else {
-                        $customer->update(['status' => 'offline']);
+                        $customer->update([
+                            'status' => 'offline',
+                            'last_seen' => now(),
+                        ]);
                         $this->info("Customer {$customer->username} is OFFLINE");
                     }
                 } catch (\Exception $e) {
