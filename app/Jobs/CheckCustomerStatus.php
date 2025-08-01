@@ -12,7 +12,7 @@ use RouterOS\Client;
 use RouterOS\Query;
 use Illuminate\Support\Facades\Log;
 
-class CheckCustomerStatus  implements ShouldQueue
+class CheckCustomerStatus implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -29,7 +29,9 @@ class CheckCustomerStatus  implements ShouldQueue
     public function handle(): void
     {
         $router = Router::find($this->router_id);
-        if (!$router) return;
+        if (!$router) {
+            return;
+        }
 
         try {
             $client = new Client([
@@ -43,37 +45,36 @@ class CheckCustomerStatus  implements ShouldQueue
 
             $activeList = collect($client->query(new Query('/ppp/active/print'))->read());
 
-            $customers = Customer::where('router_id', $router->id)
-                                ->where('connection_type', 'pppoe')
-                                ->get();
+            $customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
 
             foreach ($customers as $customer) {
-                $isOnline = $activeList->contains(function ($item) use ($customer) {
-                    return $item['name'] === $customer->username;
-                });
+                /**For PPPOE customer**/
+                if ($customer->connection_type == 'pppoe') {
+                    $isOnline = $activeList->contains(function ($item) use ($customer) {
+                        return $item['name'] === $customer->username;
+                    });
 
-                if ($isOnline) {
-                    if ($customer->status !== 'online') {
-                        $customer->update(['status' => 'online']);
-                    }
-                } else {
-                    if ($customer->status !== 'offline') {
-                        $customer->update([
-                            'status' => 'offline',
-                            'last_seen' => now(),
-                        ]);
+                    if ($isOnline) {
+                        if ($customer->status !== 'online') {
+                            $customer->update(['status' => 'online']);
+                        }
+                    } else {
+                        if ($customer->status !== 'offline') {
+                            $customer->update([
+                                'status' => 'offline',
+                                'last_seen' => now(),
+                            ]);
+                        }
                     }
                 }
+                else if($customer->connection_type == 'radius'){}
+                else if($customer->connection_type == 'hotspot'){}
+                else{}
             }
         } catch (\Exception $e) {
             \Log::error("Router ({$router->ip_address}) connection failed: " . $e->getMessage());
         }
     }
-
-
-
-
-
 
     // public function handle(): void
     // {
