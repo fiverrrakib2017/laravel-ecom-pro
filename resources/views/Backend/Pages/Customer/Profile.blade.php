@@ -58,7 +58,7 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card card-danger card-outline shadow-sm">
+                    <div class="card card-success card-outline shadow-sm">
                         <div class="card-body box-profile">
                             <div class="text-center mb-3">
                                 <img src="{{ asset($data->photo ?? 'Backend/images/avatar.png') }}"
@@ -118,12 +118,12 @@
                                 </p>
                             @endif
 
-                            <p class="text-muted text-center">
                                 @php
+                                use Carbon\Carbon;
                                     $icon = '';
                                     $statusText = $data->status ?? 'N/A';
                                     $badgeColor = 'secondary';
-
+                                    $offlineAgo = '';
                                     switch ($data->status) {
                                         case 'online':
                                             $icon = 'fas fa-unlock text-success';
@@ -132,6 +132,9 @@
                                         case 'offline':
                                             $icon = 'fas fa-times-circle text-danger';
                                             $badgeColor = 'danger';
+                                            if (!empty($data->last_seen)) {
+                                                $offlineAgo = Carbon::parse($data->last_seen)->diffForHumans();
+                                            }
                                             break;
                                         case 'active':
                                             $icon = 'fas fa-user-circle text-primary';
@@ -155,9 +158,16 @@
                                             break;
                                     }
                                 @endphp
-                                <i class="{{ $icon }}"></i> <span
-                                    class="badge badge-{{ $badgeColor }}">{{ ucfirst($statusText) }}</span>
-                            </p>
+                                <p class="text-muted text-center">
+                                    <i class="{{ $icon }}"></i>
+                                    <span class="badge badge-{{ $badgeColor }}">
+                                        {{ ucfirst($statusText) }}
+                                    </span>
+
+                                    @if ($data->status === 'offline' && !empty($offlineAgo))
+                                        <br><small>Last seen: {{ $offlineAgo }}</small>
+                                    @endif
+                                </p>
                             <hr>
                             <!-- Additional Information -->
                             <div class="card card-primary card-outline shadow-sm">
