@@ -31,6 +31,7 @@ return new class extends Migration
             $table->text('remarks')->nullable();
             $table->enum('liabilities', ['YES', 'NO'])->default('NO');
             $table->integer('is_delete')->default('0');
+            $table->dateTime('last_seen')->nullable();
             $table->timestamps();
 
             $table->foreign('package_id')->references('id')->on('branch_packages')->onDelete('cascade');

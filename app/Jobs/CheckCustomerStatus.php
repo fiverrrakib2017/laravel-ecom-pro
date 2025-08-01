@@ -33,7 +33,6 @@ class CheckCustomerStatus  implements ShouldQueue
     {
         $customer = Customer::find($this->customer_id);
         if (!$customer) {
-            //Log::warning("Customer not found with ID: {$this->customer_id} In Queue Job");
             return;
         }
 
@@ -62,10 +61,11 @@ class CheckCustomerStatus  implements ShouldQueue
 
                 if (!empty($response)) {
                     $customer->update(['status' => 'online']);
-                    //Log::info("Customer {$customer->username} is ONLINE");
                 } else {
-                    $customer->update(['status' => 'offline']);
-                    //Log::info("Customer {$customer->username} is OFFLINE");
+                    $customer->update([
+                        'status' => 'offline',
+                        'last_seen' => now(),
+                    ]);
                 }
             } elseif ($customer->connection_type == 'radius') {
                 $activeSession = Radacct::where('username', $customer->username)->whereNull('acctstoptime')->latest('acctstarttime')->first();

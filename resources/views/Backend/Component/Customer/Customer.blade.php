@@ -312,11 +312,16 @@
                         /*Set the icon based on the status*/
                         var icon = '';
                         var color = '';
+                        var last_seen = '';
 
                         if (row.status === 'online') {
                             icon = '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;" title="Online"></i>';
                         } else if (row.status === 'offline') {
                             icon = '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;" title="Offline"></i>';
+                             /* Show last_seen time if available*/
+                            if (row.last_seen) {
+                                last_seen = `<small style="color: gray; margin-left: 5px;">(${__time_ago(row.last_seen)})</small>`;
+                            }
                         } else if (row.status === 'expired') {
                             icon = '<i class="fas fa-clock" style="font-size: 15px; color: orange; margin-right: 8px;" title="Expired"></i>';
                         } else if (row.status === 'blocked') {
@@ -328,14 +333,11 @@
                         } else {
                             icon = '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;" title="Unknown"></i>';
                         }
-
-
-                        return '<a href="' + viewUrl +
-                            '" style="display: flex; align-items: center; text-decoration: none; color: #333;">' +
-                            icon +
-                            '<span style="font-size: 16px; font-weight: bold;">' + row
-                            .fullname + '</span>' +
-                            '</a>';
+                         return `<a href="${viewUrl}" style="display: flex; align-items: center; text-decoration: none; color: #333;">
+                                    ${icon}
+                                    <span style="font-size: 16px; font-weight: bold;">${row.fullname}</span>
+                                    ${last_seen}
+                                </a>`;
                     }
                 },
 
@@ -494,6 +496,31 @@
             });
         });
 
+        function __time_ago(datetime) {
+            const now = new Date();
+            const then = new Date(datetime);
+            const diff = Math.floor((now - then) / 1000); // diff in seconds
 
+            if (diff < 60) {
+                return `${diff} sec${diff !== 1 ? 's' : ''} ago`;
+            }
+
+            const minutes = Math.floor(diff / 60);
+            if (minutes < 60) {
+                return `${minutes} min${minutes !== 1 ? 's' : ''} ago`;
+            }
+
+            const hours = Math.floor(diff / 3600);
+            if (hours < 24) {
+                return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+            }
+
+            const days = Math.floor(diff / 86400);
+            if (days < 7) {
+                return `${days} day${days !== 1 ? 's' : ''} ago`;
+            }
+
+            return then.toLocaleString();
+        }
     });
 </script>
