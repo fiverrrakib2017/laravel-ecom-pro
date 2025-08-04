@@ -49,6 +49,7 @@ use App\Http\Controllers\Backend\Olt\Olt_controller;
 use App\Http\Controllers\Backend\Onu\Onu_controller;
 use App\Http\Controllers\Backend\Tickets\Ticket_controller;
 use App\Http\Controllers\Backend\Admin\UserController;
+use App\Http\Controllers\Backend\Role\RoleController;
 use App\Models\Product_Category;
 use App\Models\Router;
 use Illuminate\Support\Facades\Artisan;
@@ -757,6 +758,10 @@ Route::group(['middleware' => 'admin'], function () {
         Route::controller(UserController::class)->group(function () {
             Route::get('/list', 'index')->name('admin.user.index');
             Route::post('/store', 'store')->name('admin.user.store');
+        });
+        /*Roles and Permission*/
+        Route::controller(RoleController::class)->group(function(){
+            Route::get('/permission', 'permission')->name('admin.user.permission');
         });
     });
     /* Network Diagram Router Management Route */

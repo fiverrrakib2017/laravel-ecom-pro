@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', ' Role Management List | Admin Panel')
+@section('title', 'Permission List | Admin Panel')
 @section('style')
 @endsection
 @section('content')
@@ -7,7 +7,7 @@
         <div class="col-md-12 ">
             <div class="card">
                 <div class="card-header">
-
+                    <h4> Permission List</h4>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" id="tableStyle">
@@ -45,4 +45,12 @@
 
 
 @endsection
+@section('script')
+<script type="text/javascript">
 
+    $("#role_datatable").DataTable();
+
+</script>
+
+
+@endsection

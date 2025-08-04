@@ -907,7 +907,7 @@
                 </li>
                 @endif
                  @php
-                    $active_prefix = ['admin.user.index','admin.user.store'];
+                    $active_prefix = ['admin.user.index','admin.user.store','admin.user.permission'];
                 @endphp
                 <li class="nav-item has-treeview ">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
@@ -935,8 +935,8 @@
                         </li>
 
                         <li class="nav-item">
-                            <a href=""
-                            class="nav-link">
+                            <a href="{{route('admin.user.permission')}}"
+                            class="nav-link {{ $route == 'admin.user.permission' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Permissions</p>
                             </a>
