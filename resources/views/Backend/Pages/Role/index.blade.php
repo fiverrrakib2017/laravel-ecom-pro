@@ -7,7 +7,7 @@
         <div class="col-md-12 ">
             <div class="card">
                 <div class="card-body">
-                    <button data-toggle="modal" data-target="#addModal" type="button" class=" btn btn-success mb-2"><i class="mdi mdi-account-plus"></i> Add New User</button>
+                    <button data-toggle="modal" data-target="#addModal" type="button" class=" btn btn-success mb-2"><i class="mdi mdi-account-plus"></i> Add New Role</button>
 
                     <div class="table-responsive" id="tableStyle">
                         <table id="role_datatable" class="table table-bordered dt-responsive nowrap"
@@ -32,52 +32,38 @@
     <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalLabel"><i class="mdi mdi-account-check"></i> &nbsp; Create User</h5>
+                <h5 class="modal-title" id="ModalLabel"><i class="mdi mdi-account-check"></i> &nbsp; Create Role</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="" method="POST">
+            <form action="{{route('admin.user.role.store')}}" method="POST" id="add_roll_form">
             @csrf
             <div class="card-body">
                 <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="Enter Name" required>
+                    <label for="role_name">Role Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter role name" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email address</label>
-                    <input type="email" name="email" class="form-control"  placeholder="Enter Email address" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" class="form-control"  placeholder="Enter Password" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Confirm Password</label>
-                    <input type="password" name="password_confirmation" placeholder="Enter Confirm Password" class="form-control" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Select Role</label>
-                    <select name="role" class="form-control" required>
-                        <option value="">Select Role</option>
-                        {{-- @foreach($roles as $role)
-                            <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                        @endforeach --}}
-                    </select>
+                    <label>Assign Permissions</label>
+                    <div class="row">
+                        @foreach(\Spatie\Permission\Models\Permission::where('guard_name', 'admin')->get() as $permission)
+                            <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->name }}" id="perm_{{ $permission->id }}">
+                                <label class="form-check-label" for="perm_{{ $permission->id }}">
+                                {{ $permission->name }}
+                                </label>
+                            </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
             <div class="card-footer">
                 <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
-                <button type="submit" class="btn btn-primary">Create User</button>
+                <button type="submit" class="btn btn-primary">Create Role</button>
             </div>
         </form>
         </div>
@@ -94,8 +80,8 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            handleSubmit('#popForm', '#addModal');
-            handleSubmit('#popEditForm', '#editPopBranchModal');
+            handleSubmit('#add_roll_form', '#addModal');
+            handleSubmit('#edit_roll_form', '#editModal');
 
 
         });
