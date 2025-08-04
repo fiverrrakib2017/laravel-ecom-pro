@@ -25,6 +25,17 @@ class RoleController extends Controller
         }
         return response()->json(['success'=>true, 'message'=>'Role has been created']);
     }
+
+    public function role_delete(Request $request){
+        $role = \Spatie\Permission\Models\Role::findOrFail($request->id);
+
+        if ($role->name === 'Admin') {
+            return response()->json(['success'=>false, 'message'=>'Admin role cannot be deleted.']);
+        }
+
+        $role->delete();
+        return response()->json(['success'=>true, 'message'=>'Role deleted successfully.']);
+    }
     public function permission(){
         return view('Backend.pages.Role.permission');
     }

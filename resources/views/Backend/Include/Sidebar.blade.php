@@ -907,7 +907,7 @@
                 </li>
                 @endif
                  @php
-                    $active_prefix = ['admin.user.index','admin.user.store','admin.user.permission'];
+                    $active_prefix = ['admin.user.index','admin.user.store','admin.user.permission','admin.user.role.index'];
                 @endphp
                 <li class="nav-item has-treeview ">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">

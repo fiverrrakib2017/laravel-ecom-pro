@@ -1,3 +1,6 @@
+@php
+    use Spatie\Permission\Models\Role;
+@endphp
 @extends('Backend.Layout.App')
 @section('title', ' Role Management List | Admin Panel')
 @section('style')
@@ -17,9 +20,47 @@
                                     <th>ID</th>
                                     <th>Role Name</th>
                                     <th>Permission</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                               @foreach(Role::with('permissions')->get() as $role)
+                                    <tr>
+                                        <td>{{ $role->id }}</td>
+                                        <td>{{ $role->name }}</td>
+                                        <td>
+                                            @php
+                                                $colorMap = [
+                                                    'view' => 'info',
+                                                    'edit' => 'warning',
+                                                    'delete' => 'danger',
+                                                    'create' => 'success',
+                                                ];
+                                            @endphp
+                                           @foreach($role->permissions as $perm)
+                                            @php
+                                                $name = strtolower($perm->name);
+                                                $color = 'secondary'; // default
+                                                foreach ($colorMap as $key => $clr) {
+                                                    if (strpos($name, $key) !== false) {
+                                                        $color = $clr;
+                                                        break;
+                                                    }
+                                                }
+                                            @endphp
+                                            <span class="badge badge-{{ $color }}">{{ $perm->name }}</span>
+                                        @endforeach
+                                        </td>
+                                        <td>
+
+                                            <button class="btn btn-sm btn-danger delete-btn" data-id={{$role->id}} type="submit">
+                                                <i class="fas fa-trash-alt"></i> Delete
+                                            </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -69,7 +110,32 @@
         </div>
     </div>
 </div>
-    @include('Backend.Modal.delete_modal')
+  <div id="deleteModal" class="modal fade">
+    <div class="modal-dialog modal-confirm">
+        <form action="{{route('admin.role.delete')}}" method="post" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-content">
+            <div class="modal-header flex-column">
+                <div class="icon-box">
+                    <i class="fas fa-trash"></i>
+                </div>
+                <h4 class="modal-title w-100">Are you sure?</h4>
+                <input type="hidden" name="id" value="">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete these records? This process cannot be undone.</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 @endsection
@@ -80,21 +146,12 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+            $("#role_datatable").DataTable();
             handleSubmit('#add_roll_form', '#addModal');
             handleSubmit('#edit_roll_form', '#editModal');
-
-
         });
-
-
-
-
-
-
-
-
         /** Handle Edit button click **/
-        $('#datatable1 tbody').on('click', '.edit-btn', function() {
+        $('#role_datatable tbody').on('click', '.edit-btn', function() {
             var id = $(this).data('id');
             $.ajax({
                 url: "{{ route('admin.pop.edit', ':id') }}".replace(':id', id),
@@ -129,27 +186,36 @@
         });
 
         /** Handle Delete button click**/
-        $('#datatable1 tbody').on('click', '.delete-btn', function() {
+        $('#role_datatable tbody').on('click', '.delete-btn', function () {
             var id = $(this).data('id');
-            var deleteUrl = "{{ route('admin.pop.delete', ':id') }}".replace(':id', id);
-
-            $('#deleteForm').attr('action', deleteUrl);
-            $('#deleteModal').find('input[name="id"]').val(id);
             $('#deleteModal').modal('show');
+            $("input[name*='id']").val(id);
         });
-        /*Handle Pop Branch Login */
-        $("#datatable1 tbody").on('click', 'button[name="pop_login_button"]',function(){
-            var $button = $(this);
-            var id = $button.data('id');
 
-            /* Show spinner*/
-            $button.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging in...');
-            $button.prop('disabled', true);
-
-            var login_url = "{{ route('admin.pop.branch.auto_login', ':id') }}".replace(':id', id);
-            setTimeout(function () {
-                //window.location.href = login_url;
-            }, 500);
+        $('#deleteModal form').submit(function(e){
+            e.preventDefault();
+            var submitBtn = $(this).find('button[type="submit"]');
+            var originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            var form = $(this);
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        table.ajax.reload(null, false);
+                        $('#deleteModal').modal('hide');
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseText);
+                },
+                complete: function() {
+                    submitBtn.html(originalBtnText);
+                }
+            });
         });
     </script>
 @endsection
