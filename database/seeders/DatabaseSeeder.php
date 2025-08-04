@@ -24,8 +24,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-            AccountSeeder::class,
+            //AccountSeeder::class,
             //AccountTransactionSeeder::class,
+            PermissionSeeder::class,
         ]);
     }
 }
