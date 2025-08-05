@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 class RoleController extends Controller
 {
     public function index(){
-        return view('Backend.pages.Role.index');
+        return view('Backend.Pages.Role.index');
     }
     public function role_rote(Request $request){
         $request->validate([
@@ -37,6 +37,6 @@ class RoleController extends Controller
         return response()->json(['success'=>true, 'message'=>'Role deleted successfully.']);
     }
     public function permission(){
-        return view('Backend.pages.Role.permission');
+        return view('Backend.Pages.Role.permission');
     }
 }
