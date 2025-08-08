@@ -37,25 +37,6 @@
                     </a>
                 </li>
 
-                {{-- <li class="nav-item ">
-                    <select class="form-control" name="sidebar_customer_id" style="width: 100%; font-size: 13px;">
-                        @include('Backend.Component.Common.Customer')
-                    </select>
-                    <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
-                    <script src="{{ asset('Backend/plugins/select2/js/select2.full.min.js') }}"></script>
-                    <script>
-                        $(document).ready(function() {
-                            $('select').select2();
-                            $("select[name='sidebar_customer_id']").change(function() {
-                                var customer_id = $(this).val();
-                                if (customer_id) {
-                                    window.location.href = "{{ route('admin.customer.view', ':id') }}".replace(':id',
-                                        customer_id);
-                                }
-                            });
-                        });
-                    </script>
-                </li> --}}
                 @php
                     $active_prefix = [
                         'admin.customer.index',
