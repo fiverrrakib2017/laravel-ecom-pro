@@ -408,7 +408,7 @@
                 @endif
 
                 <!-- Ticket Management -->
-               <li class="nav-item">
+                <li class="nav-item">
                     <a href="#"
                         class="nav-link {{ Str::startsWith($currentRoute, 'admin.tickets') ? 'active' : '' }}">
                         <i class='nav-icon fas fa-ticket-alt'></i>
@@ -448,7 +448,7 @@
                 @php
                     $active_prefix = ['admin.sms.config', 'admin.sms.template_list', 'admin.sms.message_send_list','admin.sms.bulk.message_send_list','admin.sms.logs','admin.sms.report'];
                 @endphp
-               <li class="nav-item has-treeview">
+                <li class="nav-item has-treeview">
                     <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
                         <i class="nav-icon fas fa-envelope"></i>
                         <p>{{ __('menu.sms') }} <i class="right fas fa-angle-left"></i></p>
