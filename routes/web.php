@@ -762,7 +762,7 @@ Route::group(['middleware' => 'admin'], function () {
         /*Roles and Permission*/
         Route::controller(RoleController::class)->group(function(){
             Route::get('/role', 'index')->name('admin.user.role.index');
-            Route::post('/role/store', 'role_rote')->name('admin.user.role.store');
+            Route::post('/role/store', 'role_store')->name('admin.user.role.store');
             Route::post('/role/delete', 'role_delete')->name('admin.role.delete');
             Route::get('/permission', 'permission')->name('admin.user.permission');
         });

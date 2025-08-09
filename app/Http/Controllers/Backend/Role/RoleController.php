@@ -10,19 +10,21 @@ class RoleController extends Controller
     public function index(){
         return view('Backend.Pages.Role.index');
     }
-    public function role_rote(Request $request){
+    public function role_store(Request $request){
+        // Validate role name
         $request->validate([
-            'name' => 'required|unique:roles,name',
+            'name' => 'required|string|max:255|unique:roles,name',
+            'permissions' => 'array|required'
         ]);
 
+        // Create role
         $role = \Spatie\Permission\Models\Role::create([
             'name' => $request->name,
-            'guard_name' => 'admin',
+            'guard_name' => 'admin'
         ]);
 
-        if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
-        }
+        // Assign permissions
+        $role->syncPermissions($request->permissions);
         return response()->json(['success'=>true, 'message'=>'Role has been created']);
     }
 
