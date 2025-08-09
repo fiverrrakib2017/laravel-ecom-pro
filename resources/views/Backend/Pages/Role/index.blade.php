@@ -11,6 +11,8 @@
             padding: 6px 10px;
             border-radius: 5px;
         }
+
+
     </style>
 
 @endsection
@@ -22,23 +24,23 @@
                     <button data-toggle="modal" data-target="#addModal" type="button" class=" btn btn-success mb-2"><i
                             class="mdi mdi-account-plus"></i> Add New Role</button>
 
-                    <div class="table-responsive" id="tableStyle">
-                        <table id="role_datatable" class="table table-bordered dt-responsive nowrap"
-                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                    <div class="table" id="tableStyle">
+                        <table id="role_datatable" class="table" class="table table-bordered dt-responsive nowrap"
+       style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Role Name</th>
-                                    <th>Permission</th>
-                                    <th>Action</th>
+                                     <th scope="col" style="width: 50px;">ID</th>
+                                    <th scope="col" style="width: 150px;">Role Name</th>
+                                    <th scope="col" style="width: 400px;">Permission</th>
+                                    <th scope="col" style="width: 100px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (Role::with('permissions')->get() as $role)
                                     <tr>
-                                        <td>{{ $role->id }}</td>
-                                        <td>{{ $role->name }}</td>
-                                        <td>
+                                        <td style="width: 50px;">{{ $role->id }}</td>
+                                        <td style="width: 150px;">{{ $role->name }}</td>
+                                        <td class="permission-column" style="width: 400px;">
                                             @php
                                                 $colorMap = [
                                                     'view' => 'info',
@@ -50,7 +52,7 @@
                                             @foreach ($role->permissions as $perm)
                                                 @php
                                                     $name = strtolower($perm->name);
-                                                    $color = 'secondary'; // default
+                                                    $color = 'secondary';
                                                     foreach ($colorMap as $key => $clr) {
                                                         if (strpos($name, $key) !== false) {
                                                             $color = $clr;
@@ -61,11 +63,11 @@
                                                 <span class="badge badge-{{ $color }}">{{ $perm->name }}</span>
                                             @endforeach
                                         </td>
-                                        <td>
+                                        <td style="width: 100px;">
 
                                             <button class="btn btn-sm btn-danger delete-btn" data-id={{ $role->id }}
                                                 type="submit">
-                                                <i class="fas fa-trash-alt"></i> Delete
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                             </form>
                                         </td>

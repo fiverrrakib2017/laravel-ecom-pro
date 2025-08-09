@@ -757,6 +757,7 @@ Route::group(['middleware' => 'admin'], function () {
     Route::prefix('admin/user')->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::get('/list', 'index')->name('admin.user.index');
+            Route::get('/get_user/{id}', 'get_user')->name('admin.user.get_user');
             Route::post('/store', 'store')->name('admin.user.store');
         });
         /*Roles and Permission*/
