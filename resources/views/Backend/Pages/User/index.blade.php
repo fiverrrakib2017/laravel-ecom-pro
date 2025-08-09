@@ -42,7 +42,12 @@
                                         <td>{{$item->email}}</td>
                                         <td>{{$item->phone}}</td>
                                         <td>
-                                            <button class="btn-sm btn btn-success edit-btn" data-id="{{$item->id}}"><i class="fas fa-edit"></i></button>
+                                            @if($item->user_type==1)
+                                                <button class="btn-sm btn btn-success edit-btn" data-id="{{$item->id}}"><i class="fas fa-edit"></i></button>
+
+                                                <button class="btn-sm btn btn-danger delete-btn" data-id="{{$item->id}}"><i class="fas fa-trash"></i></button>
+                                            @endif
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -65,7 +70,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="" method="POST">
+                <form action="{{route('admin.user.store')}}" method="POST" id="addForm">
                     @csrf
                     <div class="modal-body">
                         <div class="row">
@@ -131,7 +136,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="" method="POST">
+                <form action="{{route('admin.user.update')}}" method="POST" id="editForm">
                     @csrf
                     <input type="text" name="id" class="d-none">
                     <div class="modal-body">
@@ -185,22 +190,87 @@
         </div>
     </div>
 
-    @include('Backend.Modal.delete_modal')
+    <div id="deleteModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <form action="{{ route('admin.user.delete') }}" method="post" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header flex-column">
+                        <div class="icon-box">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <h4 class="modal-title w-100">Are you sure?</h4>
+                        <input type="hidden" name="id" value="">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Do you really want to delete these records? This process cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
 
 @endsection
 
 @section('script')
-    <script src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
-    <script src="{{ asset('Backend/assets/js/delete_data.js') }}"></script>
+    {{-- <script  src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
+    <script src="{{ asset('Backend/assets/js/delete_data.js') }}"></script> --}}
 
     <script type="text/javascript">
         $(document).ready(function() {
             $("#user_datatable").Datatable();
-            handleSubmit('#popForm', '#addModal');
-            handleSubmit('#popEditForm', '#editPopBranchModal');
+            handleSubmit('#addForm', '#addModal');
+            handleSubmit('#editForm', '#editModal');
+        });
 
+        $('#addModal form').submit(function(e){
+            e.preventDefault();
+            var submitBtn = $(this).find('button[type="submit"]');
+            var originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            submitBtn.prop('disabled', true);
 
+            var formData = new FormData(this);
+            $.ajax({
+                type: $(this).attr('method'),
+                url: $(this).attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        $("#addModal").modal('hide');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        $.each(errors, function(field, messages) {
+                            $.each(messages, function(index, message) {
+                                toastr.error(message);
+                            });
+                        });
+                    } else {
+                        toastr.error('An error occurred. Please try again.');
+                    }
+                },
+                complete: function() {
+                    submitBtn.html(originalBtnText);
+                    submitBtn.prop('disabled', false);
+                }
+            });
         });
         /** Handle Edit button click **/
         $('#user_datatable tbody').on('click', '.edit-btn', function() {
@@ -246,6 +316,34 @@
             $('#deleteForm').attr('action', deleteUrl);
             $('#deleteModal').find('input[name="id"]').val(id);
             $('#deleteModal').modal('show');
+        });
+        $('#deleteModal form').submit(function(e) {
+            e.preventDefault();
+            var submitBtn = $(this).find('button[type="submit"]');
+            var originalBtnText = submitBtn.html();
+            submitBtn.html(
+                '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            var form = $(this);
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        $('#deleteModal').modal('hide');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error(xhr.responseText);
+                },
+                complete: function() {
+                    submitBtn.html(originalBtnText);
+                }
+            });
         });
     </script>
 @endsection

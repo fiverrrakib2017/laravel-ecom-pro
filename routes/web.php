@@ -759,6 +759,8 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/list', 'index')->name('admin.user.index');
             Route::get('/get_user/{id}', 'get_user')->name('admin.user.get_user');
             Route::post('/store', 'store')->name('admin.user.store');
+            Route::post('/update', 'update')->name('admin.user.update');
+            Route::post('/delete', 'delete')->name('admin.user.delete');
         });
         /*Roles and Permission*/
         Route::controller(RoleController::class)->group(function(){
