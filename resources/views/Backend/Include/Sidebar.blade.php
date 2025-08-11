@@ -1,3 +1,4 @@
+
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ route('admin.dashboard') }}" class="brand-link">
         @php
@@ -51,6 +52,8 @@
                         'admin.customer.import.mikrotik',
                     ];
                 @endphp
+
+                @if(auth()->guard('admin')->user()->can('menu.access.customers'))
                 <li class="nav-item has-treeview mt-2">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
@@ -58,6 +61,9 @@
                     </a>
                     <ul class="nav nav-treeview"
                         style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+
+
+                        @if(auth()->guard('admin')->user()->can('customer.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.index') }}"
                             class="nav-link {{ $route == 'admin.customer.index' ? 'active' : '' }}">
@@ -65,7 +71,9 @@
                                 <p>{{ __('menu.customer_list') }}</p>
                             </a>
                         </li>
+                        @endif
 
+                        @if(auth()->guard('admin')->user()->can('customer.create'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.create') }}"
                             class="nav-link {{ $route == 'admin.customer.create' ? 'active' : '' }}">
@@ -73,7 +81,10 @@
                                 <p>{{ __('menu.add_customer') }}</p>
                             </a>
                         </li>
+                        @endif
 
+
+                        @if(auth()->guard('admin')->user()->can('customer.import'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_import') }}"
                             class="nav-link {{ $route == 'admin.customer.customer_import' ? 'active' : '' }}">
@@ -81,6 +92,10 @@
                                 <p>{{ __('menu.customer_import') }}</p>
                             </a>
                         </li>
+                        @endif
+
+
+                        @if(auth()->guard('admin')->user()->can('customer.import.mikrotik'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.import.mikrotik') }}"
                             class="nav-link {{ $route == 'admin.customer.import.mikrotik' ? 'active' : '' }}">
@@ -88,7 +103,10 @@
                                 <p>Import From Mikrotik</p>
                             </a>
                         </li>
+                        @endif
 
+
+                        @if(auth()->guard('admin')->user()->can('customer.logs.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.log.index') }}"
                             class="nav-link {{ $route == 'admin.customer.log.index' ? 'active' : '' }}">
@@ -96,7 +114,10 @@
                                 <p>{{ __('menu.customer_logs') }}</p>
                             </a>
                         </li>
+                        @endif
 
+
+                        @if(auth()->guard('admin')->user()->can('router.logs.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.router.log.index') }}"
                             class="nav-link {{ $route == 'admin.router.log.index' ? 'active' : '' }}">
@@ -104,7 +125,9 @@
                                 <p>{{ __('menu.mikrotik_logs') }}</p>
                             </a>
                         </li>
+                        @endif
 
+                        @if(auth()->guard('admin')->user()->can('customer.restore'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.restore.index') }}"
                             class="nav-link {{ $route == 'admin.customer.restore.index' ? 'active' : '' }}">
@@ -112,9 +135,11 @@
                                 <p>{{ __('menu.backup_restore') }}</p>
                             </a>
                         </li>
+                        @endif
                     </ul>
                 </li>
-                {{-- Hotspot Management --}}
+                @endif
+
                 @php
                     $hotspot_active_routes = [
                         'admin.hotspot.user.list',
@@ -125,6 +150,8 @@
                         'admin.hotspot.user.voucher',
                     ];
                 @endphp
+
+                @if(auth()->guard('admin')->user()->can('menu.access.hotspot'))
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ in_array($route, $hotspot_active_routes) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-wifi"></i>
@@ -134,84 +161,105 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview" style="{{ in_array($route, $hotspot_active_routes) ? 'display: block;' : 'display: none;' }}">
-                        {{-- Active Users --}}
+
+
+                        @if(auth()->guard('admin')->user()->can('hotspot.user.active.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.active') }}"
-                                class="nav-link {{ $route == 'admin.hotspot.user.active' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.hotspot.user.active' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Active Hotspot Users</p>
                             </a>
                         </li>
+                        @endif
 
-                        {{-- User List --}}
+
+                        @if(auth()->guard('admin')->user()->can('hotspot.user.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.list') }}"
-                                class="nav-link {{ $route == 'admin.hotspot.user.list' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.hotspot.user.list' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Hotspot Users</p>
                             </a>
                         </li>
+                        @endif
 
-                        {{-- Recharge Hotspot --}}
+
+                        @if(auth()->guard('admin')->user()->can('hotspot.user.recharge'))
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.recharge') }}"
-                                class="nav-link {{ $route == 'admin.hotspot.user.recharge' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.hotspot.user.recharge' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Recharge Hotspot User</p>
                             </a>
                         </li>
+                        @endif
 
-                        {{-- Expired Users --}}
+
+                        @if(auth()->guard('admin')->user()->can('hotspot.user.expired.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.expired') }}"
-                                class="nav-link {{ $route == 'admin.hotspot.user.expired' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.hotspot.user.expired' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Expired Users</p>
                             </a>
                         </li>
+                        @endif
 
-                        {{-- Usage Report --}}
+
+                        @if(auth()->guard('admin')->user()->can('hotspot.user.usage.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.usage') }}"
-                                class="nav-link {{ $route == 'admin.hotspot.user.usage' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.hotspot.user.usage' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Usage Report</p>
                             </a>
                         </li>
+                        @endif
 
-                        {{-- Voucher Management --}}
+
+                        @if(auth()->guard('admin')->user()->can('hotspot.voucher.manage'))
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.voucher') }}"
-                                class="nav-link {{ $route == 'admin.hotspot.user.voucher' ? 'active' : '' }}">
+                            class="nav-link {{ $route == 'admin.hotspot.user.voucher' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Voucher Generator</p>
                             </a>
                         </li>
+                        @endif
+
                     </ul>
                 </li>
+                @endif
+
 
                 {{-- Customer Billings And Payment --}}
                 @php
                     $active_prefix = ['admin.customer.payment.history', 'admin.customer.customer_credit_recharge_list','admin.customer.bulk.recharge','admin.customer.customer_comming_expire'];
                 @endphp
-                <li class="nav-item has-treeview">
+                @if(auth()->guard('admin')->user()->can(''))
+                    <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>{{ __('menu.billing_payments') }} <i class="right fas fa-angle-left"></i></p>
+                        <p>
+                            {{ __('menu.billing_payments') }}
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
                     </a>
 
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
-                        <!-- Bulk Recharge -->
+                        @if(auth()->guard('admin')->user()->can('customer.coming.expire'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_comming_expire') }}"
                                 class="nav-link {{ $route == 'admin.customer.customer_comming_expire' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Upcomming Expired </p>
+                                <p>Upcoming Expired</p>
                             </a>
                         </li>
-                        <!-- Bulk Recharge -->
+                        @endif
+
+                        @if(auth()->guard('admin')->user()->can('customer.bulk.recharge'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.bulk.recharge') }}"
                                 class="nav-link {{ $route == 'admin.customer.bulk.recharge' ? 'active' : '' }}">
@@ -219,7 +267,9 @@
                                 <p>Bulk/Grace Recharge</p>
                             </a>
                         </li>
-                        <!-- Payment Management -->
+                        @endif
+
+                        @if(auth()->guard('admin')->user()->can('payment.history.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.payment.history') }}"
                                 class="nav-link {{ $route == 'admin.customer.payment.history' ? 'active' : '' }}">
@@ -227,8 +277,9 @@
                                 <p>{{ __('menu.payment_history') }}</p>
                             </a>
                         </li>
+                        @endif
 
-                        <!-- Credit Recharge -->
+                        @if(auth()->guard('admin')->user()->can('customer.credit.recharge.list'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_credit_recharge_list') }}"
                                 class="nav-link {{ $route == 'admin.customer.customer_credit_recharge_list' ? 'active' : '' }}">
@@ -236,412 +287,500 @@
                                 <p>{{ __('menu.credit_recharge_list') }}</p>
                             </a>
                         </li>
+                        @endif
+
                     </ul>
                 </li>
 
-                {{-- Customer Package --}}
+                @endif
+
+               {{-- Customer Package --}}
                 @php
                     $active_prefix = ['admin.customer.ip_pool.index', 'admin.customer.package.index'];
                 @endphp
-                @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                <li class="nav-item has-treeview">
-                    <a href="#"
-                        class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-gift"></i>
-                        <p>Cusomer Packages <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
-                        <li class="nav-item"><a href="{{ route('admin.customer.ip_pool.index') }}"
-                                class="nav-link {{ $route == 'admin.customer.ip_pool.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>IP Pool</p>
-                            </a></li>
+                @if (empty($branch_user_id) || $branch_user_id == null || $branch_user_id == 0)
+                    @if(auth()->guard('admin')->user()->can('menu.access.customer_package'))
+                    <li class="nav-item has-treeview">
+                        <a href="#"
+                            class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-gift"></i>
+                            <p>Customer Packages <i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview"
+                            style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
-                        <li class="nav-item">
-                            <a href="{{ route('admin.customer.package.index') }}"
+                            @if(auth()->guard('admin')->user()->can('ip_pool.view'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.customer.ip_pool.index') }}"
+                                class="nav-link {{ $route == 'admin.customer.ip_pool.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>IP Pool</p>
+                                </a>
+                            </li>
+                            @endif
+
+                            @if(auth()->guard('admin')->user()->can('package.view'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.customer.package.index') }}"
                                 class="nav-link {{ $route == 'admin.customer.package.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Package </p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Package</p>
+                                </a>
+                            </li>
+                            @endif
+
+                        </ul>
+                    </li>
+                    @endif
                 @endif
+
 
                 {{-- Network Diagram --}}
                 @php
                     $active_prefix = ['admin.network.diagram'];
                 @endphp
-                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                <li class="nav-item has-treeview">
-                    <a href="#"
-                        class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-project-diagram"></i>
-                        <p>Network Diagram <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
-                        <!-- Add Network Diagram menu item here -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.network.diagram') }}"
-                                class="nav-link {{ $route == 'admin.network.diagram' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Network Diagram</p>
+                @if (empty($branch_user_id) || $branch_user_id == null || $branch_user_id == 0)
+                    @if(auth()->guard('admin')->user()->can('menu.access.network_diagram'))
+                        <li class="nav-item has-treeview">
+                            <a href="#"
+                            class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-project-diagram"></i>
+                                <p>Network Diagram <i class="right fas fa-angle-left"></i></p>
                             </a>
+                            <ul class="nav nav-treeview"
+                                style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                                @if(auth()->guard('admin')->user()->can('network.diagram.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.network.diagram') }}"
+                                    class="nav-link {{ $route == 'admin.network.diagram' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Network Diagram</p>
+                                    </a>
+                                </li>
+                                @endif
+                            </ul>
                         </li>
-                    </ul>
-                </li>
+                    @endif
                 @endif
+
+
+
                 @php
                     $active_prefix = ['admin.pop'];
                 @endphp
-                  @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
+
+                @if (empty($branch_user_id) || $branch_user_id == null || $branch_user_id == 0)
+                    @if(auth()->guard('admin')->user()->can('menu.access.pop_branch'))
                     <li class="nav-item has-treeview">
-                    <a href="#"
-                        class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-broadcast-tower"></i>
-                        <p>POP/Branch <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                            <li class="nav-item"><a href="{{ route('admin.pop.index') }}"
-                                class="nav-link  {{ $route == 'admin.pop.index' ? 'active' : '' }}"><i
-                                        class="far fa-circle nav-icon"></i>
-                                    <p>View POP/Branch </p>
+                        <a href="#"
+                        class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-broadcast-tower"></i>
+                            <p>POP/Branch <i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview"
+                            style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                            @can('pop_branch.view')
+                            <li class="nav-item">
+                                <a href="{{ route('admin.pop.index') }}"
+                                class="nav-link {{ $route == 'admin.pop.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>View POP/Branch</p>
                                 </a>
                             </li>
-                            <li class="nav-item"><a href="{{ route('admin.pop.area.index') }}"
-                                class="nav-link {{ $route == 'admin.pop.area.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>POP Area</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                            @endcan
+
+                            @can('pop_branch.area.view')
+                            <li class="nav-item">
+                                <a href="{{ route('admin.pop.area.index') }}"
+                                class="nav-link {{ $route == 'admin.pop.area.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>POP Area</p>
+                                </a>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                    @endif
                 @else
-                    <!-- Branch Area WHEN Branch user lOGIN -->
-                    <li class="nav-item ">
+                    {{-- Branch Area WHEN Branch user LOGIN --}}
+                    {{-- @if(auth()->guard('admin')->user()->can('pop_branch.area.view')) --}}
+                    <li class="nav-item">
                         <a href="{{ route('admin.pop.area.index') }}"
-                            class="nav-link  {{ $route == 'admin.pop.area.index' ? 'active' : '' }}">
+                        class="nav-link {{ $route == 'admin.pop.area.index' ? 'active' : '' }}">
                             <i class="nav-icon fas fa-map-marker-alt"></i>
                             <p>{{ __('menu.branch_area') }}</p>
                         </a>
                     </li>
+                    {{-- @endif --}}
                 @endif
 
                 <!-- OLT Management -->
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                 @php
+                @php
                     $active_prefix = ['admin.olt.index','admin.olt.create','admin.onu.index'];
                 @endphp
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-server"></i>
-                        <p>OLT Management <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                        <!-- OLT Device Configuration -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.olt.index') }}" class="nav-link {{ $route == 'admin.olt.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.olt.create') }}" class="nav-link  {{ $route == 'admin.olt.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
-                        </li>
+                    @if(auth()->guard('admin')->user()->can('menu.access.olt'))
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-server"></i>
+                                <p>OLT Management <i class="right fas fa-angle-left"></i></p>
+                            </a>
+                            <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                                <!-- OLT Device Configuration -->
+                                @if(auth()->guard('admin')->user()->can('olt.device.list'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.olt.index') }}" class="nav-link {{ $route == 'admin.olt.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
+                                </li>
+                                @endif
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.olt.create') }}" class="nav-link  {{ $route == 'admin.olt.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
+                                </li>
 
-                        <!-- ONT (Optical Network Terminal) Management -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.onu.index') }}" class="nav-link {{ $route == 'admin.onu.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>
-                        </li>
+                                <!-- ONT (Optical Network Terminal) Management -->
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.onu.index') }}" class="nav-link {{ $route == 'admin.onu.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>
+                                </li>
 
-                        <!-- GPON Port Management -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>GPON Port Configuration</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Monitor GPON Ports</p></a>
-                        </li>
+                                <!-- GPON Port Management -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>GPON Port Configuration</p></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Monitor GPON Ports</p></a>
+                                </li>
 
-                        <!-- Network Monitoring -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Status</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Traffic Monitoring</p></a>
-                        </li>
+                                <!-- Network Monitoring -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Status</p></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Traffic Monitoring</p></a>
+                                </li>
 
-                        <!-- Diagnostics and Logs -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>System Diagnostics</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View System Logs</p></a>
-                        </li>
+                                <!-- Diagnostics and Logs -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>System Diagnostics</p></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View System Logs</p></a>
+                                </li>
 
-                        <!-- Alarm Management -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Alarm Configuration</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View Alarms</p></a>
-                        </li>
+                                <!-- Alarm Management -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Alarm Configuration</p></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View Alarms</p></a>
+                                </li>
 
-                        <!-- OLT Reports -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Performance Reports</p></a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Customer Service Reports</p></a>
-                        </li>
+                                <!-- OLT Reports -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Performance Reports</p></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Customer Service Reports</p></a>
+                                </li>
 
-                        <!-- OLT Settings -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Configuration Settings</p></a>
+                                <!-- OLT Settings -->
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Configuration Settings</p></a>
+                                </li>
+                            </ul>
                         </li>
-                    </ul>
-                </li>
+                    @endif
                 @endif
 
                 <!-- Ticket Management -->
-                <li class="nav-item">
-                    <a href="#"
-                        class="nav-link {{ Str::startsWith($currentRoute, 'admin.tickets') ? 'active' : '' }}">
-                        <i class='nav-icon fas fa-ticket-alt'></i>
-                        <p>&nbsp; {{ __('menu.tickets') }} <i class="right fas fa-angle-left"></i> </p>
-                    </a>
+                @if(auth()->guard('admin')->user()->can('menu.access.tickets'))
+                    <li class="nav-item">
 
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, 'admin.tickets') ? 'display: block;' : 'display: none;' }}">
+                        <a href="#"
+                            class="nav-link {{ Str::startsWith($currentRoute, 'admin.tickets') ? 'active' : '' }}">
+                            <i class='nav-icon fas fa-ticket-alt'></i>
+                            <p>&nbsp; {{ __('menu.tickets') }} <i class="right fas fa-angle-left"></i> </p>
+                        </a>
 
-                        <li class="nav-item">
-                            <a href="{{ route('admin.tickets.index') }}"
-                                class="nav-link {{ $route == 'admin.tickets.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.ticket_list') }}</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.tickets.complain_type.index') }}"
-                                class="nav-link  {{ $route == 'admin.tickets.complain_type.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.complain_type') }}</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.tickets.assign.index') }}"
-                                class="nav-link  {{ $route == 'admin.tickets.assign.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.ticket_assign') }}</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                        <ul class="nav nav-treeview"
+                            style="{{ Str::startsWith($currentRoute, 'admin.tickets') ? 'display: block;' : 'display: none;' }}">
+                            @if(auth()->guard('admin')->user()->can('ticket.list.view'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.tickets.index') }}"
+                                    class="nav-link {{ $route == 'admin.tickets.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.ticket_list') }}</p>
+                                </a>
+                            </li>
+                            @endif
+                            @if(auth()->guard('admin')->user()->can('ticket.complain_type.manage'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.tickets.complain_type.index') }}"
+                                    class="nav-link  {{ $route == 'admin.tickets.complain_type.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.complain_type') }}</p>
+                                </a>
+                            </li>
+                            @endif
+                            @if(auth()->guard('admin')->user()->can('ticket.assign.manage'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.tickets.assign.index') }}"
+                                    class="nav-link  {{ $route == 'admin.tickets.assign.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.ticket_assign') }}</p>
+                                </a>
+                            </li>
+                             @endif
+                        </ul>
+                    </li>
+                @endif
 
 
                 @php
                     $active_prefix = ['admin.sms.config', 'admin.sms.template_list', 'admin.sms.message_send_list','admin.sms.bulk.message_send_list','admin.sms.logs','admin.sms.report'];
                 @endphp
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
-                        <i class="nav-icon fas fa-envelope"></i>
-                        <p>{{ __('menu.sms') }} <i class="right fas fa-angle-left"></i></p>
-                    </a>
+                @if(auth()->guard('admin')->user()->can('menu.access.sms'))
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
+                            <i class="nav-icon fas fa-envelope"></i>
+                            <p>{{ __('menu.sms') }} <i class="right fas fa-angle-left"></i></p>
+                        </a>
 
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sms.message_send_list') }}"
-                                class="nav-link {{ $route == 'admin.sms.message_send_list' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.send_sms') }}</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sms.bulk.message_send_list') }}"
-                                class="nav-link {{ $route == 'admin.sms.bulk.message_send_list' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.send_bulk_sms') }}</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sms.template_list') }}"
-                                class="nav-link {{ $route == 'admin.sms.template_list' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.sms_template') }}</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sms.logs') }}" class="nav-link {{ $route == 'admin.sms.logs' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.sms_logs') }}</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.sms.report') }}" class="nav-link {{ $route == 'admin.sms.report' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>{{ __('menu.sms_report') }}</p>
-                            </a>
-                        </li>
-                        @if (empty($branch_user_id))
+                        <ul class="nav nav-treeview"
+                            style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                            @if(auth()->guard('admin')->user()->can('sms.send'))
                             <li class="nav-item">
-                                <a href="{{ route('admin.sms.config') }}"
-                                    class="nav-link {{ $route == 'admin.sms.config' ? 'active' : '' }}">
+                                <a href="{{ route('admin.sms.message_send_list') }}"
+                                    class="nav-link {{ $route == 'admin.sms.message_send_list' ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>{{ __('menu.sms_config') }}</p>
+                                    <p>{{ __('menu.send_sms') }}</p>
                                 </a>
                             </li>
-                        @endif
-                    </ul>
-                </li>
+                            @endif
+                            @if(auth()->guard('admin')->user()->can('sms.bulk.send'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.sms.bulk.message_send_list') }}"
+                                    class="nav-link {{ $route == 'admin.sms.bulk.message_send_list' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.send_bulk_sms') }}</p>
+                                </a>
+                            </li>
+                            @endif
+                            @if(auth()->guard('admin')->user()->can('sms.template.manage'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.sms.template_list') }}"
+                                    class="nav-link {{ $route == 'admin.sms.template_list' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.sms_template') }}</p>
+                                </a>
+                            </li>
+                            @endif
+                            @if(auth()->guard('admin')->user()->can('sms.logs.view'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.sms.logs') }}" class="nav-link {{ $route == 'admin.sms.logs' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.sms_logs') }}</p>
+                                </a>
+                            </li>
+                            @endif
+                            @if(auth()->guard('admin')->user()->can('sms.report.view'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.sms.report') }}" class="nav-link {{ $route == 'admin.sms.report' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>{{ __('menu.sms_report') }}</p>
+                                </a>
+                            </li>
+                            @endif
+                            @if (empty($branch_user_id))
+                                @if(auth()->guard('admin')->user()->can('sms.config.manage'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.sms.config') }}"
+                                        class="nav-link {{ $route == 'admin.sms.config' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>{{ __('menu.sms_config') }}</p>
+                                    </a>
+                                </li>
+                                @endif
+                            @endif
+                        </ul>
+                    </li>
+                @endif
 
                 <!-- HR Management -->
                  @php
                     $active_prefix = ['admin.hr.shift.index','admin.hr.department.index','admin.hr.designation.index','admin.hr.employee.create','admin.hr.employee.store','admin.hr.employee.index', 'admin.hr.employee.update', 'admin.hr.employee.leave.index','admin.hr.employee.salary.index','admin.hr.employee.salary.advance.index', 'admin.hr.employee.salary.advance.report','admin.hr.employee.payroll.create', 'admin.hr.employee.payroll.index','admin.hr.employee.loan.index','admin.hr.employee.loan.create','admin.hr.employee.loan.edit','admin.hr.employee.loan.show'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>HR Management <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                        <!-- Employee Management -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.index') }}" class="nav-link {{ $route=='admin.hr.employee.index' || $route=='admin.hr.employee.update' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Employee List</p>
+                    @if(auth()->guard('admin')->user()->can('menu.access.hr_management'))
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link{{ in_array($route, $active_prefix) ? ' active' : '' }}">
+                                <i class="nav-icon fas fa-users-cog"></i>
+                                <p>HR Management <i class="right fas fa-angle-left"></i></p>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.create') }}" class="nav-link {{ $route == 'admin.hr.employee.create' ||$route=='admin.hr.employee.store' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Add New Employee</p>
-                            </a>
-                        </li>
-                        {{-- <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Employee Documents</p>
-                            </a>
-                        </li> --}}
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.leave.index') }}" class="nav-link {{ $route == 'admin.hr.employee.leave.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Leave Management</p>
-                            </a>
-                        </li>
-                        <!-- Attendance Management -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
-                                <p>Attendance </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
-                                <p>Attendance Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.salary.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Salary</p>
-                            </a>
-                        </li>
+                            <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                                <!-- Employee Management -->
+                                @if(auth()->guard('admin')->user()->can('hr.employee.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.index') }}" class="nav-link {{ $route=='admin.hr.employee.index' || $route=='admin.hr.employee.update' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Employee List</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.employee.create'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.create') }}" class="nav-link {{ $route == 'admin.hr.employee.create' ||$route=='admin.hr.employee.store' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Add New Employee</p>
+                                    </a>
+                                </li>
+                                @endif
+                                {{-- <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Employee Documents</p>
+                                    </a>
+                                </li> --}}
+                                @if(auth()->guard('admin')->user()->can('hr.employee.leave.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.leave.index') }}" class="nav-link {{ $route == 'admin.hr.employee.leave.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Leave Management</p>
+                                    </a>
+                                </li>
+                                @endif
+                                <!-- Attendance Management -->
+                                @if(auth()->guard('admin')->user()->can('hr.attendance.view'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                                        <p>Attendance </p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.attendance.report.view'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i>
+                                        <p>Attendance Report</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.salary.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.salary.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Salary</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.salary.advance.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.salary.advance.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Advance Salary</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.salary.advance.report.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.salary.advance.report') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.report' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Advance Salary Report</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.loan.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.loan.index') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Employee Loans</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.loan.create'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.loan.create') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Apply Loan</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.payroll.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.employee.payroll.index') }}" class="nav-link {{ $route == 'admin.hr.employee.payroll.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Payroll Management</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.designation.view'))
+                                <!-- Department & Designation -->
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.designation.index') }}" class="nav-link {{ $route == 'admin.hr.designation.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Designations</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.department.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.department.index') }}" class="nav-link {{ $route == 'admin.hr.department.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Departments</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.shift.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hr.shift.index') }}" class="nav-link {{ $route == 'admin.hr.shift.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Shift Management</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.promotion.manage'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Employee Promotions</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.transfer.manage'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Employee Transfers</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.resignation.manage'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Resignation</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.performance.manage'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Performance Evaluation</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.training.manage'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Training Records</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('hr.notice_board.manage'))
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Notice Board</p>
+                                    </a>
+                                </li>
+                                @endif
 
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.salary.advance.index') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Advance Salary</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.salary.advance.report') }}" class="nav-link {{ $route == 'admin.hr.employee.salary.advance.report' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Advance Salary Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.loan.index') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Employee Loans</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.loan.create') }}" class="nav-link {{ $route == 'admin.hr.employee.loan.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Apply Loan</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.employee.payroll.index') }}" class="nav-link {{ $route == 'admin.hr.employee.payroll.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Payroll Management</p>
-                            </a>
-                        </li>
 
-                        <!-- Department & Designation -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.designation.index') }}" class="nav-link {{ $route == 'admin.hr.designation.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Designations</p>
-                            </a>
+                            </ul>
                         </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.department.index') }}" class="nav-link {{ $route == 'admin.hr.department.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Departments</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ route('admin.hr.shift.index') }}" class="nav-link {{ $route == 'admin.hr.shift.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Shift Management</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Employee Promotions</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Employee Transfers</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Resignation / Termination</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Performance Evaluation</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Training Records</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Notice Board</p>
-                            </a>
-                        </li>
-
-
-                    </ul>
-                </li>
+                    @endif
                 @endif
 
 
@@ -779,41 +918,6 @@
                 </li>
                 @endif
 
-                <!-----------------Task Management--------------------->
-                @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                {{-- <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-tasks"></i>
-                        <p>Task Management <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Tasks</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Create Task</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Task Types</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Task Report</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li> --}}
-                @endif
                 <!-----------------Settings--------------------->
                 @php
                     $active_prefix = ['admin.settings.information.index','admin.settings.passowrd.change.index'];
