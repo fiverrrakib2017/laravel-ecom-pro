@@ -42,7 +42,7 @@
                                         <td>{{$item->email}}</td>
                                         <td>{{$item->phone}}</td>
                                         <td>
-                                            @if($item->user_type==1)
+                                            @if($item->user_type)
                                                 <button class="btn-sm btn btn-success edit-btn" data-id="{{$item->id}}"><i class="fas fa-edit"></i></button>
 
                                                 <button class="btn-sm btn btn-danger delete-btn" data-id="{{$item->id}}"><i class="fas fa-trash"></i></button>
@@ -229,15 +229,8 @@
 @endsection
 
 @section('script')
-    {{-- <script  src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
-    <script src="{{ asset('Backend/assets/js/delete_data.js') }}"></script> --}}
-
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#user_datatable").Datatable();
-            // handleSubmit('#addForm', '#addModal');
-            // handleSubmit('#editForm', '#editModal');
-        });
+            $("#user_datatable").DataTable();
 
         $('#addModal form').submit(function(e){
             e.preventDefault();
