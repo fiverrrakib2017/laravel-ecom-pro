@@ -999,85 +999,97 @@
                 @endphp
                 <!-----------------Router Management--------------------->
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                <li class="nav-item has-treeview">
-                    <a href="#"
-                        class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-server"></i>
-                        <p>Server <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"
-                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                        <li class="nav-item">
-                            <a href="{{ route('admin.router.index') }}"
-                                class="nav-link {{ $route == 'admin.router.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Mikrotik Router Add</p>
+
+                    @if(auth()->guard('admin')->user()->can('menu.access.server'))
+                        <li class="nav-item has-treeview">
+                            <a href="#"
+                                class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-server"></i>
+                                <p>Server <i class="right fas fa-angle-left"></i></p>
                             </a>
+                            <ul class="nav nav-treeview"
+                                style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                                @if(auth()->guard('admin')->user()->can('server.router.add'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.router.index') }}"
+                                        class="nav-link {{ $route == 'admin.router.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Mikrotik Router Add</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('server.router.sync'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.router.sync') }}"
+                                        class="nav-link {{ $route == 'admin.router.sync' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Mikrotik Sync</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('server.nas.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.router.nas.show_nas_server') }}"
+                                        class="nav-link {{ $route == 'admin.router.nas.show_nas_server' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>NAS Server</p>
+                                    </a>
+                                </li>
+                                @endif
+                                {{-- <li class="nav-item">
+                                    <a href="#" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Settings</p>
+                                    </a>
+                                </li> --}}
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.router.sync') }}"
-                                class="nav-link {{ $route == 'admin.router.sync' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Mikrotik Sync</p>
+                    @endif
+                    @php
+                        $active_prefix = ['admin.user.index','admin.user.store','admin.user.permission','admin.user.role.index'];
+                    @endphp
+
+                    @if(auth()->guard('admin')->user()->can('menu.access.user_management'))
+                        <li class="nav-item has-treeview ">
+                            <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-users-cog"></i>
+                                <p>User Management <i class="right fas fa-angle-left"></i>
+                                </p>
                             </a>
+
+                            <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                                @if(auth()->guard('admin')->user()->can('user.view'))
+                                <li class="nav-item">
+                                    <a href="{{route('admin.user.index')}}"
+                                    class="nav-link {{ $route == 'admin.user.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Users</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('role.view'))
+                                <li class="nav-item">
+                                    <a href="{{route('admin.user.role.index')}}"
+                                    class="nav-link {{ $route == 'admin.user.role.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Roles</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('permission.view'))
+                                <li class="nav-item">
+                                    <a href="{{route('admin.user.permission')}}"
+                                    class="nav-link {{ $route == 'admin.user.permission' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Permissions</p>
+                                    </a>
+                                </li>
+                                @endif
+
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.router.nas.show_nas_server') }}"
-                                class="nav-link {{ $route == 'admin.router.nas.show_nas_server' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>NAS Server</p>
-                            </a>
-                        </li>
-                        {{-- <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Settings</p>
-                            </a>
-                        </li> --}}
-                    </ul>
-                </li>
+                    @endif
                 @endif
-                 @php
-                    $active_prefix = ['admin.user.index','admin.user.store','admin.user.permission','admin.user.role.index'];
-                @endphp
-                <li class="nav-item has-treeview ">
-                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>User Management <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-
-                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.user.index')}}"
-                            class="nav-link {{ $route == 'admin.user.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Users</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.user.role.index')}}"
-                            class="nav-link {{ $route == 'admin.user.role.index' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Roles</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{route('admin.user.permission')}}"
-                            class="nav-link {{ $route == 'admin.user.permission' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Permissions</p>
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-
-
-
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
