@@ -237,7 +237,7 @@
                 @php
                     $active_prefix = ['admin.customer.payment.history', 'admin.customer.customer_credit_recharge_list','admin.customer.bulk.recharge','admin.customer.customer_comming_expire'];
                 @endphp
-                @if(auth()->guard('admin')->user()->can(''))
+                @if(auth()->guard('admin')->user()->can('menu.access.billing_payments'))
                     <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
@@ -249,7 +249,7 @@
 
                     <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
 
-                        @if(auth()->guard('admin')->user()->can('customer.coming.expire'))
+                        @if(auth()->guard('admin')->user()->can('payment.upcoming.expiry.view'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_comming_expire') }}"
                                 class="nav-link {{ $route == 'admin.customer.customer_comming_expire' ? 'active' : '' }}">
@@ -259,7 +259,7 @@
                         </li>
                         @endif
 
-                        @if(auth()->guard('admin')->user()->can('customer.bulk.recharge'))
+                        @if(auth()->guard('admin')->user()->can('payment.bulk.recharge'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.bulk.recharge') }}"
                                 class="nav-link {{ $route == 'admin.customer.bulk.recharge' ? 'active' : '' }}">
@@ -279,7 +279,7 @@
                         </li>
                         @endif
 
-                        @if(auth()->guard('admin')->user()->can('customer.credit.recharge.list'))
+                        @if(auth()->guard('admin')->user()->can('payment.credit.recharge.list'))
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.customer_credit_recharge_list') }}"
                                 class="nav-link {{ $route == 'admin.customer.customer_credit_recharge_list' ? 'active' : '' }}">
@@ -381,7 +381,7 @@
                         </a>
                         <ul class="nav nav-treeview"
                             style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                            @can('pop_branch.view')
+                            @if(auth()->guard('admin')->user()->can('pop_branch.view'))
                             <li class="nav-item">
                                 <a href="{{ route('admin.pop.index') }}"
                                 class="nav-link {{ $route == 'admin.pop.index' ? 'active' : '' }}">
@@ -391,7 +391,7 @@
                             </li>
                             @endcan
 
-                            @can('pop_branch.area.view')
+                            @if(auth()->guard('admin')->user()->can('pop_branch.area.view'))
                             <li class="nav-item">
                                 <a href="{{ route('admin.pop.area.index') }}"
                                 class="nav-link {{ $route == 'admin.pop.area.index' ? 'active' : '' }}">
