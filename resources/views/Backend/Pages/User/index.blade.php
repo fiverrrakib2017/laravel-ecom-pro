@@ -85,6 +85,10 @@
                                     <label><strong>Username</strong></label>
                                     <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
                                 </div>
+                                <div class="form-group">
+                                    <label><strong>Phone</strong></label>
+                                    <input type="text" name="phone" class="form-control" placeholder="Enter Phone Number" required>
+                                </div>
 
                                 <div class="form-group">
                                     <label><strong>Email address</strong></label>
@@ -151,6 +155,10 @@
                                 <div class="form-group">
                                     <label><strong>Username</strong></label>
                                     <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
+                                </div>
+                                 <div class="form-group">
+                                    <label><strong>Phone</strong></label>
+                                    <input type="text" name="phone" class="form-control" placeholder="Enter Phone Number" required>
                                 </div>
 
                                 <div class="form-group">
@@ -227,8 +235,8 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $("#user_datatable").Datatable();
-            handleSubmit('#addForm', '#addModal');
-            handleSubmit('#editForm', '#editModal');
+            // handleSubmit('#addForm', '#addModal');
+            // handleSubmit('#editForm', '#editModal');
         });
 
         $('#addModal form').submit(function(e){
@@ -272,6 +280,7 @@
                 }
             });
         });
+
         /** Handle Edit button click **/
         $('#user_datatable tbody').on('click', '.edit-btn', function() {
             var id = $(this).data('id');
@@ -288,6 +297,7 @@
                         $('input[name="id"]').val(admin.id);
                         $('input[name="name"]').val(admin.name);
                         $('input[name="username"]').val(admin.username);
+                        $('input[name="phone"]').val(admin.phone);
                         $('input[name="email"]').val(admin.email);
 
                         var roleSelect = $('select[name="role"]');
@@ -304,6 +314,48 @@
                 },
                 error: function() {
                     toastr.error('An error occurred. Please try again.');
+                }
+            });
+        });
+         /** Handle Update Submit form **/
+        $('#editModal form').submit(function(e){
+            e.preventDefault();
+            var submitBtn = $(this).find('button[type="submit"]');
+            var originalBtnText = submitBtn.html();
+            submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+            submitBtn.prop('disabled', true);
+
+            var formData = new FormData(this);
+            $.ajax({
+                type: $(this).attr('method'),
+                url: $(this).attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        $("#editModal").modal('hide');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        var errors = xhr.responseJSON.errors;
+                        $.each(errors, function(field, messages) {
+                            $.each(messages, function(index, message) {
+                                toastr.error(message);
+                            });
+                        });
+                    } else {
+                        toastr.error('An error occurred. Please try again.');
+                    }
+                },
+                complete: function() {
+                    submitBtn.html(originalBtnText);
+                    submitBtn.prop('disabled', false);
                 }
             });
         });
