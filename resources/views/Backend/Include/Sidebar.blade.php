@@ -790,83 +790,105 @@
                     $active_prefix = ['admin.category.index','admin.brand.index','admin.store.index','admin.unit.index','admin.supplier.index','admin.supplier.invoice.create_invoice','admin.supplier.invoice.show_invoice','admin.client.index','admin.client.invoice.create_invoice','admin.client.invoice.show_invoice', 'admin.product.index'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-
-                <li class="nav-item">
-                    <a href="#" class="nav-link {{ in_array($route, $active_prefix) ? ' active' : '' }}">
-                        <i class="nav-icon fas fa-warehouse"></i>
-                        <p>&nbsp; Inventory <i class="right fas fa-angle-left"></i> </p>
-                    </a>
-                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-
+                    @if(auth()->guard('admin')->user()->can('menu.access.inventory'))
                         <li class="nav-item">
-                            <a href="{{ route('admin.client.invoice.create_invoice') }}"
-                                class="nav-link  {{ Route::currentRouteName() == 'admin.client.invoice.create_invoice' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Sale</p>
+                            <a href="#" class="nav-link {{ in_array($route, $active_prefix) ? ' active' : '' }}">
+                                <i class="nav-icon fas fa-warehouse"></i>
+                                <p>&nbsp; Inventory <i class="right fas fa-angle-left"></i> </p>
                             </a>
+                            <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                                @if(auth()->guard('admin')->user()->can('inventory.sale.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.client.invoice.create_invoice') }}"
+                                        class="nav-link  {{ Route::currentRouteName() == 'admin.client.invoice.create_invoice' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Sale</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.sale_invoice.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.client.invoice.show_invoice') }}" class="nav-link {{ Route::currentRouteName() == 'admin.client.invoice.show_invoice' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Sale Invoice</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.purchase.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.supplier.invoice.create_invoice') }}" class="nav-link {{ Route::currentRouteName() == 'admin.supplier.invoice.create_invoice' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Purchase</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.purchase_invoice.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.supplier.invoice.show_invoice') }}" class="nav-link {{ Route::currentRouteName() == 'admin.supplier.invoice.show_invoice' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Purchase Invoice</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.brand.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.brand.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.brand.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Brand</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.category.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.category.index') }}"
+                                        class="nav-link {{ Route::currentRouteName() == 'admin.category.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Category</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.unit.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.unit.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.unit.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Units</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.store.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.store.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.store.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Store</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.product.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.product.index') }}" class="nav-link  {{ Route::currentRouteName() == 'admin.product.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Products</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.supplier.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.supplier.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.supplier.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Supplier</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('inventory.client.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.client.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.client.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Client</p>
+                                    </a>
+                                </li>
+                                @endif
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.client.invoice.show_invoice') }}" class="nav-link {{ Route::currentRouteName() == 'admin.client.invoice.show_invoice' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Sale Invoice</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.supplier.invoice.create_invoice') }}" class="nav-link {{ Route::currentRouteName() == 'admin.supplier.invoice.create_invoice' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Purchase</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.supplier.invoice.show_invoice') }}" class="nav-link {{ Route::currentRouteName() == 'admin.supplier.invoice.show_invoice' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Purchase Invoice</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.brand.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.brand.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Brand</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.category.index') }}"
-                                class="nav-link {{ Route::currentRouteName() == 'admin.category.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Category</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.unit.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.unit.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Units</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.store.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.store.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Store</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.product.index') }}" class="nav-link  {{ Route::currentRouteName() == 'admin.product.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Products</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.supplier.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.supplier.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Supplier</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.client.index') }}" class="nav-link {{ Route::currentRouteName() == 'admin.client.index' ? 'active' : '' }}"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Client</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    @endif
                 @endif
 
                 <!-----------------Accounts--------------------->
