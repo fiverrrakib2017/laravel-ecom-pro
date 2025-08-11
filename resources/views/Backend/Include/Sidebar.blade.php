@@ -896,48 +896,67 @@
                     $active_prefix = ['admin.account.index','admin.account.transaction.index','admin.account.ledger.index','admin.account.trial_balance.index','admin.account.income_statment.index','admin.account.balance_sheet.index'];
                 @endphp
                 @if (empty($branch_user_id)||$branch_user_id == null || $branch_user_id == 0)
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link {{ in_array($route, $active_prefix) ? ' active' : '' }}">
-                        <i class="nav-icon fas fa-calculator"></i>
-                        <p>Accounts <i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                        <!-- Account List -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.account.index') }}" class="nav-link {{ $route == 'admin.account.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Account List</p>
+                    @if(auth()->guard('admin')->user()->can('menu.access.accounts'))
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link {{ in_array($route, $active_prefix) ? ' active' : '' }}">
+                                <i class="nav-icon fas fa-calculator"></i>
+                                <p>Accounts <i class="right fas fa-angle-left"></i></p>
                             </a>
-                        </li>
-                        <!-- Account Transaction -->
-                        <li class="nav-item">
-                            <a href="{{ route('admin.account.transaction.index') }}" class="nav-link {{ $route=='admin.account.transaction.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Account Transaction</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.account.ledger.index') }}" class="nav-link {{ $route=='admin.account.ledger.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Ledger Report</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.account.trial_balance.index') }}" class="nav-link {{ $route=='admin.account.trial_balance.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Trial Balance</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.account.income_statment.index') }}" class="nav-link {{ $route=='admin.account.income_statment.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Profit & Loss</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.account.balance_sheet.index') }}" class="nav-link {{ $route=='admin.account.balance_sheet.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
-                                <p>Balance Sheet</p>
-                            </a>
-                        </li>
+                            <ul class="nav nav-treeview"  style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+
+                                @if(auth()->guard('admin')->user()->can('accounts.list.view'))
+                                <!-- Account List -->
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.account.index') }}" class="nav-link {{ $route == 'admin.account.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Account List</p>
+                                    </a>
+                                </li>
+                                @endif
+                                @if(auth()->guard('admin')->user()->can('accounts.transaction.view'))
+                                <!-- Account Transaction -->
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.account.transaction.index') }}" class="nav-link {{ $route=='admin.account.transaction.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Account Transaction</p>
+                                    </a>
+                                </li>
+                                @endif
+
+                                @if(auth()->guard('admin')->user()->can('accounts.ledger.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.account.ledger.index') }}" class="nav-link {{ $route=='admin.account.ledger.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Ledger Report</p>
+                                    </a>
+                                </li>
+                                @endif
+
+                                @if(auth()->guard('admin')->user()->can('accounts.trial_balance.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.account.trial_balance.index') }}" class="nav-link {{ $route=='admin.account.trial_balance.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Trial Balance</p>
+                                    </a>
+                                </li>
+                                @endif
+
+                                @if(auth()->guard('admin')->user()->can('accounts.profit_loss.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.account.income_statment.index') }}" class="nav-link {{ $route=='admin.account.income_statment.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Profit & Loss</p>
+                                    </a>
+                                </li>
+                                @endif
+
+                                @if(auth()->guard('admin')->user()->can('accounts.balance_sheet.view'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.account.balance_sheet.index') }}" class="nav-link {{ $route=='admin.account.balance_sheet.index' ? 'active': '' }}"><i class="far fa-circle nav-icon"></i>
+                                        <p>Balance Sheet</p>
+                                    </a>
+                                </li>
+                                @endif
 
 
-                    </ul>
-                </li>
+                            </ul>
+                        </li>
+                    @endif
                 @endif
 
                 <!-----------------Settings--------------------->
