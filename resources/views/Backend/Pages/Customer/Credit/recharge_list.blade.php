@@ -7,36 +7,13 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
-                <div class="card-header">
-                    <h4>Credit Recharge List</h4>
+               <div class="card-header bg-info text-white d-flex align-items-center gap-2">
+                        <i class="fas fa-money-bill-wave me-2 text-white fs-4"></i>&nbsp;
+                    <h5 class="mb-0 fw-semibold">Credit Recharge List </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" id="tableStyle">
-
-                        @php
-                            use App\Models\Customer;
-                            use App\Models\Customer_recharge;
-                            use Illuminate\Support\Facades\Auth;
-                            use Illuminate\Support\Carbon;
-
-                            $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-
-                            // Distinct customer IDs
-                            $customerIdsQuery = Customer_recharge::select('customer_id')->distinct();
-
-                            if ($branch_user_id) {
-                                $customerIdsQuery->whereHas('customer', function ($query) use ($branch_user_id) {
-                                    $query->where('pop_id', $branch_user_id);
-                                });
-                            }
-
-                            $customerIds = $customerIdsQuery->pluck('customer_id')->toArray();
-
-                            // Load customers with pop & area relations
-                            $customers = Customer::with(['pop', 'area'])->whereIn('id', $customerIds)->get()->keyBy('id');
-                        @endphp
-
-                        <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap"
+                        <table id="customer_credit_recharge_datatable1" class="table table-bordered dt-responsive nowrap"
                             style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                             <thead>
                                 <tr>
@@ -50,76 +27,16 @@
                                     <th>Total Due</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($customerIds as $customer_id)
-                                    @php
-                                        $customer = $customers[$customer_id] ?? null;
-                                        if (!$customer) continue;
-
-                                        $credit_recharges = Customer_recharge::where('customer_id', $customer_id)
-                                            ->where('transaction_type', 'credit')
-                                            ->get(['recharge_month', 'amount']);
-
-                                        $due_paids = Customer_recharge::where('customer_id', $customer_id)
-                                            ->where('transaction_type', 'due_paid')
-                                            ->get(['recharge_month', 'amount']);
-
-                                        $paid_months = $due_paids->pluck('recharge_month')->toArray();
-
-                                        $unpaid_credits = [];
-                                        $total_due = 0;
-
-                                        foreach ($credit_recharges as $credit) {
-                                            if (!in_array($credit->recharge_month, $paid_months)) {
-                                                $unpaid_credits[] = $credit->recharge_month;
-                                                $total_due += $credit->amount;
-                                            }
-                                        }
-
-                                        $total_recharge = Customer_recharge::where('customer_id', $customer_id)
-                                            ->where('transaction_type', '!=', 'due_paid')
-                                            ->sum('amount');
-
-                                        $total_paid = Customer_recharge::where('customer_id', $customer_id)
-                                            ->where('transaction_type', '!=', 'credit')
-                                            ->sum('amount');
-                                    @endphp
-
-                                    @if ($total_due > 0)
-                                        <tr>
-                                            <td>
-                                                <a href="{{ route('admin.customer.view', $customer->id) }}"
-                                                    style="display: flex; align-items: center; text-decoration: none; color: #333;">
-                                                    @if ($customer->status == 'online')
-                                                        <i class="fas fa-unlock"
-                                                            style="font-size: 15px; color: green; margin-right: 8px;"></i>
-                                                    @else
-                                                        <i class="fas fa-lock"
-                                                            style="font-size: 15px; color: red; margin-right: 8px;"></i>
-                                                    @endif
-                                                    &nbsp;<span style="font-size: 16px; font-weight: bold;">
-                                                        {{ $customer->username }}
-                                                    </span>
-                                                </a>
-                                            </td>
-                                            <td>{{ $customer->pop->name ?? '-' }}</td>
-                                            <td>{{ $customer->area->name ?? '-' }}</td>
-                                            <td>{{ $customer->phone ?? '-' }}</td>
-                                            <td>
-                                                @foreach ($unpaid_credits as $month)
-                                                    {{ Carbon::parse($month)->format('F Y') }}<br>
-                                                @endforeach
-                                            </td>
-                                            <td>{{ $total_recharge }}</td>
-                                            <td>{{ $total_paid }}</td>
-                                            <td>{{ $total_due }}</td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="7" style="text-align:right">
+                                        <i class="fas fa-calculator"></i> Total Due:
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                            <tbody></tbody>
                         </table>
-
-
                     </div>
                 </div>
                 <div class="card-footer text-end">
@@ -139,11 +56,124 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#customer_datatable1').DataTable();
+
+        /* GET POP-Branch */
+        var pop_branches = @json($pop_branches);
+        var pop_filter = `
+            <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                <select id="search_pop_id" name="search_pop_id" class="form-control form-control-sm select2">
+                    <option value="">--Select POP/Branch--</option>`;
+                    pop_branches.forEach(function(item) {
+                        pop_filter += `<option value="${item.id}">${item.name}</option>`;
+                    });
+                    pop_filter += `</select></div>`;
+
+                    /* Get Areas */
+                    var areas = @json($areas);
+                    var area_filter = `
+                        <div class="form-group mb-0 mr-2" style="min-width: 150px;">
+                            <select id="search_area_id" name="search_area_id" class="form-control form-control-sm select2">
+                                <option value="">--Select Area--</option>`;
+                    areas.forEach(function(item) {
+                        area_filter += `<option value="${item.id}">${item.name}</option>`;
+                    });
+                    area_filter += `</select></div>`;
+
+                    setTimeout(() => {
+                        var filters_wrapper = `
+                            <div class="row no-gutters mb-0  " style=" row-gap: 0.5rem;">
+                                <!-- Left: Per Page -->
+                                <div class="col-12 col-md-auto dataTables_length_container d-flex align-items-center mb-2 mb-md-0 pr-md-3"></div>
+
+                                <!-- Middle: Filters -->
+                                <div class="col-12 col-md d-flex flex-wrap align-items-center mb-2 mb-md-0" style="gap: 0.5rem;">
+                                    ${pop_filter + area_filter }
+                                </div>
+
+                                <!-- Right: Search Input -->
+                                <div class="col-12 col-md-auto dataTables_filter_container d-flex justify-content-md-end"></div>
+                            </div>
+                        `;
+                        /* Append the filters to the DataTable wrapper */
+                            var tableWrapper = $('#customer_credit_recharge_datatable1').closest('.dataTables_wrapper');
+                            tableWrapper.prepend(filters_wrapper);
+
+                            tableWrapper.find('.dataTables_length').appendTo(tableWrapper.find('.dataTables_length_container'));
+                            tableWrapper.find('.dataTables_filter').appendTo(tableWrapper.find('.dataTables_filter_container'));
+                        $('#search_pop_id').select2({ width: 'resolve' });
+                        $('#search_area_id').select2({ width: 'resolve' });
+                    }, 1000);
+            var table = $('#customer_credit_recharge_datatable1').DataTable({
+                processing: true,
+                serverSide: false,
+                ajax: {
+                    url: "{{route('admin.customer.show_credit_recharge_list_data')}}",
+                    data: function(d) {
+                        d.pop_id = $('#search_pop_id').val();
+                        d.area_id = $('#search_area_id').val();
+                    },
+                    dataSrc: function(json) {
+                        // footer update
+                        $(table.column(7).footer()).html(
+                            '<i class="fas fa-money-bill-wave text-success"></i> ' +
+                            new Intl.NumberFormat().format(json.total_due_all)
+                        );
+                        return json.data;
+                    },
+                    error: function(xhr) {
+                        console.log("AJAX Error:", xhr.responseText);
+                    }
+                },
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                    processing: `<div class="spinner-grow text-primary" role="status">
+                                <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-secondary" role="status">
+                                <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-success" role="status">
+                                <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-danger" role="status">
+                                <span class="sr-only">Loading...</span>
+                                </div>`,
+                },
+                columns: [
+                    { data: 'username', name: 'username' },
+                    { data: 'pop', name: 'pop' },
+                    { data: 'area', name: 'area' },
+                    { data: 'phone', name: 'phone' },
+                    { data: 'months', name: 'months' },
+                    { data: 'recharged', name: 'recharged' },
+                    { data: 'paid', name: 'paid' },
+                    { data: 'due', name: 'due' }
+                ],
+            });
+
+            $(document).on('change','select[name="search_pop_id"]',function(){
+                var areas = @json($areas);
+                var selectedPopId = $(this).val();
+                var filteredAreas = areas.filter(function(item) {
+                    return item.pop_id == selectedPopId;
+                });
+                var areasOptions = '<option value="">--Select Area--</option>';
+                filteredAreas.forEach(function(item) {
+                    areasOptions += '<option value="' + item.id + '">' + item.name + '</option>';
+                });
+                $('#customer_credit_recharge_datatable1').DataTable().ajax.reload(null, false);
+                $('select[name="search_area_id"]').html(areasOptions);
+            });
+            /*Handle Area filter change*/
+            $(document).on('change', 'select[name="search_area_id"]', function() {
+                $('#customer_credit_recharge_datatable1').DataTable().ajax.reload(null, false);
+            });
         });
 
         function printTable() {
-            var printContents = document.getElementById('customer_datatable1').outerHTML;
+            var printContents = document.getElementById('customer_credit_recharge_datatable1').outerHTML;
             var originalContents = document.body.innerHTML;
 
             var newWindow = window.open('', '', 'width=800, height=600');
@@ -169,4 +199,7 @@
             newWindow.close();
         }
     </script>
+
 @endsection
+
+

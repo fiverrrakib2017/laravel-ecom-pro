@@ -736,7 +736,100 @@ class CustomerController extends Controller
 
     public function customer_credit_recharge_list()
     {
-        return view('Backend.Pages.Customer.Credit.recharge_list');
+        $pop_branches= \App\Models\Pop_branch::where('status',1)->latest()->get();
+        $areas=\App\Models\Pop_area::latest()->get();
+        return view('Backend.Pages.Customer.Credit.recharge_list',compact('pop_branches', 'areas'));
+    }
+    public function show_credit_recharge_list_data(Request $request){
+        $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+        $customerIdsQuery = Customer_recharge::select('customer_id')->distinct();
+
+        if ($branch_user_id) {
+            $customerIdsQuery->whereHas('customer', function ($query) use ($branch_user_id) {
+                $query->where('pop_id', $branch_user_id);
+            });
+        }
+
+
+        if ($request->pop_id) {
+            $customerIdsQuery->whereHas('customer', function ($query) use ($request){
+                $query->where('pop_id', $request->pop_id);
+            });
+        }
+
+        if ($request->area_id) {
+            $customerIdsQuery->whereHas('customer', function ($query) use ($request){
+                $query->where('area_id', $request->area_id);
+            });
+        }
+
+        $customerIds = $customerIdsQuery->pluck('customer_id')->toArray();
+        $customers = Customer::with(['pop', 'area'])->whereIn('id', $customerIds)->get()->keyBy('id');
+
+        $rows = [];
+        $total_due_all = 0;
+        foreach ($customerIds as $customer_id) {
+            $customer = $customers[$customer_id] ?? null;
+            if (!$customer) continue;
+
+            $credit_recharges = Customer_recharge::where('customer_id', $customer_id)
+                ->where('transaction_type', 'credit')
+                ->get(['recharge_month', 'amount']);
+
+            $due_paids = Customer_recharge::where('customer_id', $customer_id)
+                ->where('transaction_type', 'due_paid')
+                ->get(['recharge_month', 'amount']);
+
+            $paid_months = $due_paids->pluck('recharge_month')->toArray();
+            $unpaid_credits = [];
+            $total_due = 0;
+
+            foreach ($credit_recharges as $credit) {
+                if (!in_array($credit->recharge_month, $paid_months)) {
+                    $unpaid_credits[] = \Carbon\Carbon::parse($credit->recharge_month)->format('F Y');
+                    $total_due += $credit->amount;
+                }
+            }
+
+            $total_recharge = Customer_recharge::where('customer_id', $customer_id)
+                ->where('transaction_type', '!=', 'due_paid')
+                ->sum('amount');
+
+            $total_paid = Customer_recharge::where('customer_id', $customer_id)
+                ->where('transaction_type', '!=', 'credit')
+                ->sum('amount');
+
+            if ($total_due > 0) {
+                $total_due_all += $total_due;
+                $rows[] = [
+                    'username' => '<a href="'.route('admin.customer.view', $customer->id).'" style="display: flex; align-items: center; text-decoration: none; color: #333;">'
+                        .($customer->status == 'online'
+                            ? '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;"></i>'
+                            : '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;"></i>'
+                        )
+                        .'&nbsp;<span style="font-size: 16px; font-weight: bold;">'.$customer->username.'</span>'
+                        .'</a>',
+
+                    'pop' =>'<span><i class="fas fa-broadcast-tower" style="color: #28a745; margin-right: 6px;"></i>'.$customer->pop->name ?? '-'.'</span>',
+
+
+                    'area' =>'<i class="fas fa-map-marker-alt" style="color: #dc3545; margin-right: 6px;"></i>'.$customer->area->name ?? '-'.'</span>',
+
+                    'phone' =>'<i class="fas fa-phone-alt" style="color: #007bff; margin-right: 6px;"></i>'.$customer->phone ?? '-'.'</span>' ,
+
+                    'months' => implode('<br>', $unpaid_credits),
+
+                    'recharged' =>'<span style="font-size: 16px; font-weight: bold; color:green; "> '.$total_recharge.'</span>' ,
+
+                    'paid' => '<span style="font-size: 16px; font-weight: bold; color:black; "> '.$total_paid.'</span>',
+
+                    'due' =>'<span style="font-size: 16px; font-weight: bold; color:red; "> '.$total_due.'</span>',
+                    'due' => $total_due
+                ];
+            }
+        }
+
+        return response()->json(['data' => $rows,'total_due_all' => $total_due_all,]);
     }
     public function onu_list(){
         return view('Backend.Pages.Customer.Onu.onu_list');

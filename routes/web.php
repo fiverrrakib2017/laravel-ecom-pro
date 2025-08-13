@@ -153,6 +153,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/customer/log/get_all_data', 'customer_log_get_all_data')->name('admin.customer.log.get_all_data');
             /***** Customer Credit Recharge List *******/
             Route::get('/credit/recharge/list', 'customer_credit_recharge_list')->name('admin.customer.customer_credit_recharge_list');
+            Route::get('/credit/recharge/get_all_data', 'show_credit_recharge_list_data')->name('admin.customer.show_credit_recharge_list_data');
             /***** Customer Backup *******/
             Route::get('/customer/restore', 'customer_restore')->name('admin.customer.restore.index');
             Route::get('/customer/restore/get_all_data', 'customer_restore_get_all_data')->name('admin.customer.restore.get_all_data');
