@@ -106,6 +106,15 @@
             var table = $('#customer_credit_recharge_datatable1').DataTable({
                 processing: true,
                 serverSide: false,
+                // responsive: {
+                //     details: {
+                //         type: 'column'
+                //     }
+                // },
+                // columnDefs: [
+                //     { responsivePriority: 1, targets: 0 }, // username
+                //     { responsivePriority: 2, targets: 7 }  // total due
+                // ],
                 ajax: {
                     url: "{{route('admin.customer.show_credit_recharge_list_data')}}",
                     data: function(d) {
@@ -115,7 +124,6 @@
                     dataSrc: function(json) {
                         // footer update
                         $(table.column(7).footer()).html(
-                            '<i class="fas fa-money-bill-wave text-success"></i> ' +
                             new Intl.NumberFormat().format(json.total_due_all)
                         );
                         return json.data;
@@ -142,14 +150,14 @@
                                 </div>`,
                 },
                 columns: [
-                    { data: 'username', name: 'username' },
-                    { data: 'pop', name: 'pop' },
-                    { data: 'area', name: 'area' },
-                    { data: 'phone', name: 'phone' },
-                    { data: 'months', name: 'months' },
-                    { data: 'recharged', name: 'recharged' },
-                    { data: 'paid', name: 'paid' },
-                    { data: 'due', name: 'due' }
+                    { data: 'username', name: 'username', responsivePriority: 1 },
+                    { data: 'pop', name: 'pop', responsivePriority: 3 },
+                    { data: 'area', name: 'area', responsivePriority: 4 },
+                    { data: 'phone', name: 'phone', responsivePriority: 5 },
+                    { data: 'months', name: 'months', responsivePriority: 6 },
+                    { data: 'recharged', name: 'recharged', responsivePriority: 7 },
+                    { data: 'paid', name: 'paid', responsivePriority: 8 },
+                    { data: 'due', name: 'due', responsivePriority: 2 }
                 ],
             });
 
