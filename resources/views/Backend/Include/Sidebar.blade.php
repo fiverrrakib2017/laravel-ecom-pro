@@ -254,7 +254,7 @@
                             <a href="{{ route('admin.customer.customer_comming_expire') }}"
                                 class="nav-link {{ $route == 'admin.customer.customer_comming_expire' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Upcoming Expired</p>
+                                <p>Upcoming Expired <span class="right badge badge-danger">New</span></p>
                             </a>
                         </li>
                         @endif
