@@ -22,11 +22,6 @@ class UserController extends Controller
     }
     public function store(Request $request)
     {
-//         $role = Role::where('name', $request->role)
-//             ->where('guard_name', 'admin')
-//             ->with('permissions')
-//             ->first();
-// dd($role->permissions->pluck('name')->toArray());
         /* Validate the form data */
         $request->validate([
             'name' => 'required|string|max:255',

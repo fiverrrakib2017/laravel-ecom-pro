@@ -824,7 +824,6 @@ class CustomerController extends Controller
                     'paid' => '<span style="font-size: 16px; font-weight: bold; color:black; "> '.$total_paid.'</span>',
 
                     'due' =>'<span style="font-size: 16px; font-weight: bold; color:red; "> '.$total_due.'</span>',
-                    'due' => $total_due
                 ];
             }
         }
