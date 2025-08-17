@@ -6,8 +6,8 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-primary card-outline">
-                <div class="card-header ">
+            <div class="card card-primary ">
+                <div class="card-header bg-info text-white">
                     <h3 class="card-title"><i class="fas fa-ticket-alt"></i> Ticket Profile - #TID-{{ $data->id }}</h3>
 
                 </div>
@@ -350,7 +350,7 @@
         }
     });
 
-    // Auto fill based on status
+    /******** Auto fill based on status *************/
     $('#statusSelect').on('change', function () {
         const status = $(this).val();
         let customerName = @json($data->customer->fullname ?? '');
@@ -379,8 +379,7 @@
                 message = `প্রিয় ${customerName}, আপনার টিকিট (#${ticketId}) সফলভাবে সমাধান করা হয়েছে। ধন্যবাদ আমাদের সাথে থাকার জন্য।`;
                 break;
         }
-
-        // Autofill the fields
+        /******** Autofill the fields *************/
         $('#titleField').val(title);
         $('#descriptionField').val(description);
         $('#sendMessageCheckbox').prop('checked', true);
