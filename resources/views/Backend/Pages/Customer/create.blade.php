@@ -4,7 +4,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-lg-9">
-        <div class="card  " style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: 20px; ">
+        <div class="card  " style="background: linear-gradient(to right, #e3f2fd, #f1f8e9); padding: ; ">
             <form action="{{ route('admin.customer.store') }}" method="post" id="addStudentForm" enctype="multipart/form-data">
                 @csrf
             <div class="card-body ">
@@ -248,7 +248,7 @@
 
 
             </div>
-            <div class="">
+            <div class="p-2">
                 <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
                 <button type="submit" class="btn btn-success">Add Customer</button>
             </div>
