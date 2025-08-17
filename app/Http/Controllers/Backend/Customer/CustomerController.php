@@ -2058,7 +2058,7 @@ class CustomerController extends Controller
                             DB::beginTransaction();
                             $customer = new Customer();
                             $customer->fullname = $data['fullname'];
-                            $customer->phone = $data['phone'];
+                            $customer->phone = $data['phone']?? '';
                             $customer->nid = $data['nid'] ?? null;
                             $customer->address = $data['address'] ?? null;
                             $customer->con_charge = $data['con_charge'] ?? 0;
