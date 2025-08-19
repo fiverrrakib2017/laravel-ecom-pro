@@ -7,21 +7,9 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Define the application's command schedule.
-     */
-    // protected function schedule(Schedule $schedule): void
-    // {
-    //     //everyFiveMinutes  hourly everyThirtyMinutes  everyMinute
-    //     $schedule->command('app:check_status')->everyMinute();
-    //     $schedule->command('app:check_expire')->dailyAt('10:00');
-    //    // $schedule->command('app:check_wather')->everyThirtyMinutes();
-    //     $schedule->command('app:customer_usage')->everyFiveMinutes();
-
-    // }
     protected function schedule(Schedule $schedule): void
     {
-        $tenants = \DB::table('tenants')->get();
+        $tenants = \DB::connection('mysql')->table('tenants')->get();
 
         foreach ($tenants as $tenant) {
             $schedule
@@ -50,9 +38,9 @@ class Kernel extends ConsoleKernel
     private function __set_tenant_connection($tenant)
     {
         \Config::set('database.connections.tenant', [
-            'driver' => 'mysql',
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
+            'driver'   => 'mysql',
+            'host'     => env('DB_HOST', '127.0.0.1'),
+            'port'     => env('DB_PORT', '3306'),
             'database' => $tenant->db_name,
             'username' => $tenant->db_user,
             'password' => $tenant->db_pass,
