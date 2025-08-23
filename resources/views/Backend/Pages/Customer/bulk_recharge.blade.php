@@ -6,10 +6,8 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">
-                     <i class="fas fa-coins"></i> Bulk/Grace Recharge
-                    </h4>
+                <div class="card-header bg-info text-white">
+                    <h4 class="card-title"><i class="fas fa-coins"></i> Bulk/Grace Recharge</h4>
 
                 </div>
                 <div class="card-body ">

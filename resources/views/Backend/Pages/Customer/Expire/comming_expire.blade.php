@@ -6,9 +6,9 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">
-                        <i class="fas fa-clock text-danger me-1"></i>&nbsp; Upcomming Expire Customer List
+                <div class="card-header bg-info text-white">
+                    <h4 class="card-title ">
+                        <i class="fas fa-clock text-white me-1"></i>&nbsp; Upcomming Expire Customer List
                     </h4>
 
 
