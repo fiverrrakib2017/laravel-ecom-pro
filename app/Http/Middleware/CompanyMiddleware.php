@@ -18,9 +18,9 @@ class CompanyMiddleware
     {
         $host = $request->getHost();
         $subdomain = explode('.', $host)[0];
-
+       
         $tenant = DB::table('tenants')->where('subdomain', $host)->first();
-// dd($tenant);
+
         if ($tenant) {
             Config::set('database.connections.tenant', [
                 'driver' => 'mysql',

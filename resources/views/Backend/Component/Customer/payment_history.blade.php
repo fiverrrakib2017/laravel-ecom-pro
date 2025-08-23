@@ -157,7 +157,10 @@
                  "render": function(data, type, row) {
                      if (data == 'cash') {
                          return '<span class="badge bg-success">Cash</span>';
-                     } else if (data == 'credit') {
+                     }else if(data== 'bkash'){
+                        return '<span class="badge bg-primary">Bkash</span>';
+                     }
+                      else if (data == 'credit') {
                          return '<span class="badge bg-danger">Credit</span>';
                      } else if (data == 'due_paid') {
                          return '<span class="badge bg-success">Due Paid</span>';

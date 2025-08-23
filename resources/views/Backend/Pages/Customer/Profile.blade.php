@@ -445,6 +445,9 @@
                                                             @elseif($item->transaction_type == 'due_paid')
                                                                 <span
                                                                     class="badge bg-success">{{ ucfirst($item->transaction_type) }}</span>
+                                                            @elseif($item->transaction_type == 'bkash')
+                                                                <span
+                                                                    class="badge bg-success">{{ ucfirst($item->transaction_type) }}</span>
                                                             @else
                                                                 <span
                                                                     class="badge bg-danger">{{ ucfirst($item->transaction_type) }}</span>
