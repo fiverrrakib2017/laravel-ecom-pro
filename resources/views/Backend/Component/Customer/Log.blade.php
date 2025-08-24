@@ -59,6 +59,19 @@
                          <span>To:</span>
                          <input class="to_date form-control" type="date" value="">
                      </label>`;
+        var _type_filter = `
+            <div class="form-group " style='margin-top:4px;'>
+                <select class="_type_filter form-control">
+                        <option value="">All</option>
+                        <option value="recharge">Recharge</option>
+                        <option value="add">Add</option>
+                        <option value="edit">Edit</option>
+                        <option value="package_change">Package Change</option>
+                        <option value="suspend">Suspend</option>
+                        <option value="reconnect">Reconnect</option>
+                        <option value="delete">Delete</option>
+                </select>
+            </div>`;
 
         setTimeout(() => {
             let filterContainer = $('.dataTables_filter');
@@ -69,14 +82,11 @@
 
             filterContainer.append(from_date);
             filterContainer.append(to_date);
+            filterContainer.append(_type_filter);
 
-            $('.status_filter').select2({
-                width: '150px'
-            });
-            $('.bill_collect').select2({
-                width: '150px'
-            });
-        }, 1000);
+
+            //$('._type_filter').select2({ width: 'resolve' });
+        }, 500);
 
         var table = $("#datatable1").DataTable({
             "processing": true,
@@ -89,6 +99,7 @@
                     d.length = d.length || 10;
                     d.from_date = $('.from_date').val();
                     d.to_date = $('.to_date').val();
+                    d.action_type = $('._type_filter').val();
                     d.pop_id = branch_user_id;
                 },
             },
@@ -166,6 +177,9 @@
         /* Filter Change Event*/
         $(document).on('change', '.from_date, .to_date', function() {
             $('#datatable1').DataTable().ajax.reload();
+        });
+        $(document).on('change','._type_filter',function(){
+           $('#datatable1').DataTable().ajax.reload();
         });
     });
 </script>

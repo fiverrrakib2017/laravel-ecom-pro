@@ -1989,6 +1989,9 @@ class CustomerController extends Controller
         if ($request->to_date) {
             $query->whereDate('created_at', '<=', $request->to_date);
         }
+        if ($request->action_type) {
+            $query->where('action_type', $request->action_type);
+        }
         if ($request->pop_id) {
             $query->whereHas('customer', function ($q) use ($request) {
                 $q->where('pop_id', $request->pop_id);
