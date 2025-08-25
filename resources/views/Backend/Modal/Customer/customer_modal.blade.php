@@ -2,13 +2,14 @@
 @php
     $pop_id = $pop_id ?? null;
     $area_id = $area_id ?? null;
+    $request_from = $request_from ?? null;
 @endphp
 <!-- Add Customer Modal -->
 <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-labelledby="addCustomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addCustomerModalLabel">Add New Customer</h5>
+                <h5 class="modal-title" id="addCustomerModalLabel">{{ $request_from=='hotspot' ? 'Create Hostpot Customer':'Create New Customer'}}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -63,9 +64,11 @@
                                                         if (response.available) {
                                                             $('#username_status_icon').html('<i class="fas fa-check-circle text-success"></i>');
                                                             $('#username_status_msg').text('Username is available').css('color', 'green');
+                                                             $("#addCustomerModal form").find('button[type="submit"]').prop('disabled', false);
                                                         } else {
                                                             $('#username_status_icon').html('<i class="fas fa-times-circle text-danger"></i>');
                                                             $('#username_status_msg').text('Username already taken').css('color', 'red');
+                                                            $("#addCustomerModal form").find('button[type="submit"]').prop('disabled', true);
                                                         }
                                                     }
                                                 });
@@ -154,11 +157,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Connection Type <span class="text-danger">*</span></label>
-                                    <select name="connection_type" class="form-control" required>
+                                    <select name="connection_type" class="form-control"  {{ $request_from == 'hotspot' ? 'disabled' : '' }}  required>
                                         <option>---Select---</option>
                                         <option value="pppoe">PPPOE</option>
                                         <option value="radius">Radius</option>
-                                        <option value="hotspot">Hostpot</option>
+                                        <option value="hotspot" {{ $request_from == 'hotspot' ? 'selected' : '' }}>Hotspot</option>
                                     </select>
                                 </div>
 
@@ -185,16 +188,13 @@
                                     <label>Package Price <span class="text-danger">*</span></label>
                                     <input type="number" name="amount" placeholder="Enter Package Price" class="form-control" required>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-label">Expire Date <span class="text-danger">*</span></label>
-                                    <input type="date" name="expire_date" class="form-control">
-                                </div>
+
                             </div>
                         </div>
                     </fieldset>
 
                     <!-- Additional Information -->
-                <fieldset class="border p-4 shadow-sm rounded mb-4" style="border:2px #c9c9c9 dotted !important;">
+                <fieldset class="border p-4 shadow-sm rounded mb-4 {{ $request_from == 'hotspot' ? 'd-none' : '' }}" style="border:2px #c9c9c9 dotted !important;">
                     <legend class="w-auto px-3 text-primary fw-bold">Additional Information</legend>
                     <div class="row">
                         <div class="col-lg-6 mb-3">

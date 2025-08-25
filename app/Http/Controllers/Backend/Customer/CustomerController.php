@@ -2101,6 +2101,15 @@ class CustomerController extends Controller
         ]);
         exit();
     }
+
+    /************* Customer Hostpot Method***********************/
+
+    public function hotspot_index(){
+        return view('Backend.Pages.Customer.Hotspot.index');
+    }
+
+
+
     private function router_activation($customer_id){
         $customer=Customer::find($customer_id);
         $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);

@@ -76,6 +76,8 @@
 <script type="text/javascript">
     $(document).ready(function() {
         var filter_dropdown = true;
+        var connection_type_dropdown = true;
+        var hostpot = false;
         /*Get Url Param Recevied*/
         var pop_id = @json($pop_id ?? '');
         var area_id = @json($area_id ?? '');
@@ -98,14 +100,10 @@
             get_type = urlParams.get('type');
         }
 
-        /*When Request Get Area Page*/
-         filter_dropdown = @json($filter_dropdown ?? true);
-        // if (area_page) {
-        //     pop_id = @json($pop_id ?? '');
-        //     area_id = @json($area_id ?? '');
-        //     status = @json($status ?? '');
-        // }
-        /*When Request Get POP/Branch Page*/
+        filter_dropdown = @json($filter_dropdown ?? true);
+        connection_type_dropdown = @json($connection_type_dropdown ?? true);
+        hostpot = @json($hostpot ?? false);
+
 
         /* GET POP-Branch */
         var pop_branches = @json($pop_branches);
@@ -130,9 +128,6 @@
         area_filter += `</select></div>`;
 
         /* Status Filter */
-        //  <option value="unpaid">Unpaid</option>
-        //             <option value="due">Due</option>
-        //             <option value="free">Free</option>
         var status_filter = `
             <div class="form-group mb-0 mr-2" style="min-width: 150px;">
                 <select class="status_filter form-control form-control-sm select2">
@@ -148,7 +143,8 @@
                 </select>
             </div>`;
         /* connection_type_filter  Filter */
-        var connection_type_filter = `
+        if(connection_type_dropdown==true){
+            var connection_type_filter = `
             <div class="form-group mb-0 mr-2" style="min-width: 150px;">
                 <select class="connection_type_filter form-control form-control-sm select2">
                     <option value="">Connection Type</option>
@@ -157,6 +153,8 @@
                     <option value="hostpot">Hostpot</option>
                 </select>
             </div>`;
+        }
+
 
         setTimeout(() => {
             var filters_wrapper = `
@@ -166,7 +164,10 @@
 
                     <!-- Middle: Filters -->
                     <div class="col-12 col-md d-flex flex-wrap align-items-center mb-2 mb-md-0" style="gap: 0.5rem;">
-                        ${pop_filter + area_filter + status_filter + connection_type_filter}
+                        ${(pop_filter   ?? '')}
+                        ${(area_filter  ?? '')}
+                        ${(status_filter ?? '')}
+                        ${(connection_type_filter ?? '')}
                     </div>
 
                     <!-- Right: Search Input -->
@@ -265,7 +266,7 @@
                     d.pop_id            = $('#search_pop_id').val() || pop_id;
                     d.area_id           = $('#search_area_id').val() || area_id;
                     d.status            = $('.status_filter').val() || status;
-                    d.connection_type   = $('.connection_type_filter').val();
+                    d.connection_type   = $('.connection_type_filter').val() || (hostpot === true ? 'hostpot' : '');
                     d.year              = get_year || null;
                     d.month             = get_month || null;
                     d.type              = get_type || null;
