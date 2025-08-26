@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-12 ">
             <div class="card">
-               <div class="card-header bg-info text-white d-flex align-items-center gap-2">
+               <div class="card-header bg-danger text-white d-flex align-items-center gap-2">
                         <i class="fas fa-money-bill-wave me-2 text-white fs-4"></i>&nbsp;
                     <h5 class="mb-0 fw-semibold">Credit Recharge List </h5>
                 </div>

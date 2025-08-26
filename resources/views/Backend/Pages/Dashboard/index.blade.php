@@ -244,7 +244,7 @@
                     'id' => 10,
                     'title' => 'Total Tickets',
                     'value' => $tickets,
-                    'bg' => 'success',
+                    'bg' => 'indigo',
                     'icon' => 'fas fa-solid fa-ticket-alt',
                     'url' => route('admin.tickets.index'),
                 ],
