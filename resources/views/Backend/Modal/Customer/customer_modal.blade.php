@@ -207,15 +207,15 @@
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label class="form-label">Status <span class="text-danger">*</span></label>
-                            <select name="status" class="form-control" required>
+                            <select name="status" class="form-control" disabled required>
                                 <option>---Select---</option>
-                                <option value="active">Active</option>
-                                <option value="online">Online</option>
+                                <option value="active" selected>Active</option>
+                                {{-- <option value="online">Online</option>
                                 <option value="offline">Offline</option>
                                 <option value="blocked">Blocked</option>
                                 <option value="expired">Expired</option>
                                 <option value="disabled">Disabled</option>
-                                <option value="discontinue">Discontinue</option>
+                                <option value="discontinue">Discontinue</option> --}}
                             </select>
                         </div>
                         <div class="col-lg-12 mb-3">

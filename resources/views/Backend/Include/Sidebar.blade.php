@@ -164,13 +164,13 @@
 
 
                         @if(auth()->guard('admin')->user()->can('hotspot.user.active.view'))
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ route('admin.hotspot.user.active') }}"
                             class="nav-link {{ $route == 'admin.hotspot.user.active' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Active Hotspot Users</p>
                             </a>
-                        </li>
+                        </li> --}}
                         @endif
 
 
