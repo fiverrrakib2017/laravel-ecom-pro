@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <table id="customer_datatable1" class="table table-bordered dt-responsive nowrap"
     style="border-collapse: collapse; border-spacing: 0; width: 100%;">
     <thead>
@@ -20,9 +21,9 @@
 </table>
 
 
-<div id="deleteModal" class="modal fade">
+<div id="restoreModal" class="modal fade">
     <div class="modal-dialog modal-confirm">
-        <form method="post" enctype="multipart/form-data" id="deleteForm">
+        <form method="post" enctype="multipart/form-data" id="restoreForm">
             @csrf
             <div class="modal-content">
                 <div class="modal-header flex-column">
@@ -46,7 +47,8 @@
         </form>
     </div>
 </div>
-
+<!-- Include SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         var customer_table = $("#customer_datatable1").DataTable({
@@ -146,20 +148,18 @@
                 {
                     data: null,
                     render: function(data, type, row) {
-                        var viewUrl = '{{ route('admin.customer.view', ':id') }}'.replace(':id',
-                            row.id);
+                        var viewUrl = '{{ route("admin.customer.view", ":id") }}'.replace(':id', row.id);
 
                         return `
-
-
-                            <button class="btn btn-danger btn-sm mr-3 restore-btn" data-id="${row.id}">
+                            <button class="btn btn-primary btn-sm mr-3 restore-btn" data-id="${row.id}">
                                 <i class="fa fa-undo"></i>
                             </button>
 
-                            `;
+                            <button class="btn btn-danger btn-sm mr-3 delete-btn" data-id="${row.id}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        `;
                     }
-
-
                 },
             ],
             order: [
@@ -173,15 +173,15 @@
             var id = $(this).data('id');
             var deleteUrl = "{{ route('admin.customer.restore.back', ':id') }}".replace(':id', id);
 
-            $('#deleteForm').attr('action', deleteUrl);
-            $('#deleteModal').find('input[name="id"]').val(id);
-            $('#deleteModal').modal('show');
+            $('#restoreForm').attr('action', deleteUrl);
+            $('#restoreModal').find('input[name="id"]').val(id);
+            $('#restoreModal').modal('show');
         });
-        /** Handle form submission for delete **/
-        $('#deleteModal form').submit(function(e) {
+        /** Handle form submission for restore **/
+        $('#restoreModal form').submit(function(e) {
             e.preventDefault();
             /*Get the submit button*/
-            var submitBtn = $('#deleteModal form').find('button[type="submit"]');
+            var submitBtn = $('#restoreModal form').find('button[type="submit"]');
 
             /* Save the original button text*/
             var originalBtnText = submitBtn.html();
@@ -194,13 +194,13 @@
             var form = $(this);
             var url = form.attr('action');
             var formData = form.serialize();
-            /** Use Ajax to send the delete request **/
+            /** Use Ajax to send the restore request **/
             $.ajax({
                 type: 'POST',
                 'url': url,
                 data: formData,
                 success: function(response) {
-                    $('#deleteModal').modal('hide');
+                    $('#restoreModal').modal('hide');
                     if (response.success) {
                         toastr.success(response.message);
                         $('#customer_datatable1').DataTable().ajax.reload(null, false);
@@ -216,6 +216,51 @@
                 }
             });
         });
+
+        $(document).on('click', '.delete-btn', function (e) {
+            e.preventDefault();
+            let id = $(this).data('id');
+            let url= "{{route('admin.customer.forge_delete')}}";
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this action!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            id    :id,
+                        },
+                        success: function (response) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: response.message || 'The item has been deleted.',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+
+                            $(`.delete-btn[data-id="${id}"]`).closest('tr').remove();
+                        },
+                        error: function (xhr) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: xhr.responseJSON?.message || 'Something went wrong.',
+                                icon: 'error'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
 
     });
 </script>

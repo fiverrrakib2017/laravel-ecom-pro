@@ -909,6 +909,38 @@ class CustomerController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Deleted successfully.']);
     }
+    public function forge_delete(Request $request)
+    {
+        $object = Customer::find($request->id);
+
+        if (empty($object)) {
+            return response()->json(['error' => 'Not found.'], 404);
+        }
+
+        $object->delete();
+
+        return response()->json(['success' => true, 'message' => 'Deleted successfully.']);
+    }
+    public function deletes(Request $request){
+        $object = Customer::find($request->id);
+
+        if (empty($object)) {
+            return response()->json(['error' => 'Not found.'], 404);
+        }
+
+        /* Delete it From Database Table */
+        if($request->softDelete==true){
+            $object->is_delete = 1;
+            $object->save();
+            customer_log($object->id, 'edit', auth()->guard('admin')->user()->id, 'Customer Update Successfully!');
+        }
+        if($request->hardDelete==true){
+            $object->delete();
+        }
+
+
+        return response()->json(['success' => true, 'message' => 'Deleted successfully.']);
+    }
     public function customer_restore_back(Request $request)
     {
         $object = Customer::find($request->id);
