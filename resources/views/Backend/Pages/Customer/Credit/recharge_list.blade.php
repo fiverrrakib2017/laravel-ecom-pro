@@ -193,7 +193,7 @@
 
             newWindow.document.write('<div class="header">');
             newWindow.document.write(
-                '<img src="http://103.146.16.154/assets/images/it-fast.png" class="logo" alt="Company Logo" style="display:block; margin:auto; height:50px;">'
+                '<img src="" class="logo" alt="Company Logo" style="display:block; margin:auto; height:50px;">'
             );
             newWindow.document.write('<h2 style="text-align:center; color: #000;">Star Communication</h2>');
             newWindow.document.write('<p style="text-align:center;">Credit Recharge Report</p>');

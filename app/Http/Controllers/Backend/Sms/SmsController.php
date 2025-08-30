@@ -8,6 +8,8 @@ use App\Models\Pop_branch;
 use App\Models\Send_message;
 use App\Models\Sms_configuration;
 use App\Models\Ticket;
+use App\Models\Branch_package;
+use App\Models\Customer_recharge;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -111,10 +113,10 @@ class SmsController extends Controller
 
         /*Validate the form data*/
        $rules = [
-        'pop_id' => 'required|integer',
-        'name' => 'required|string',
-        'message' => 'required|string',
-    ];
+            'pop_id' => 'required|integer',
+            'name' => 'required|string',
+            'message' => 'required|string',
+        ];
     $validator = Validator::make($request->all(), $rules);
 
     if ($validator->fails()) {
@@ -141,9 +143,10 @@ class SmsController extends Controller
 
     }
     public function send_message_store(Request $request){
-        /*Validate the form data*/
+        /*----------- Validate the form data ------------*/
         $rules = [
             'message' => 'required|string',
+            'customer_ids' => 'required|array',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -157,33 +160,75 @@ class SmsController extends Controller
             );
         }
 
-        if(empty($request->customer_ids) && isset($request->customer_ids)){
+        if(empty($request->customer_ids)){
             return response()->json(['success'=>false, 'message'=>'Customer Not Found']);
         }
+
         foreach($request->customer_ids as $customer_id){
-            /*Get POP ID From Customer table*/
-            $customer=Customer::find($customer_id);
-            /* Create a new Instance*/
-            $object =new Send_message();
+            /*--------- Get customer -----------*/
+            $customer = Customer::find($customer_id);
+
+            if(!$customer) continue;
+
+            /*--------- Get customer Due Calculation -----------*/
+            $credit_recharges = Customer_recharge::where('customer_id', $customer_id)
+            ->where('transaction_type', 'credit')
+            ->get(['recharge_month', 'amount']);
+
+            $due_paids = Customer_recharge::where('customer_id', $customer_id)
+            ->where('transaction_type', 'due_paid')
+            ->get(['recharge_month', 'amount']);
+
+            $paid_months = $due_paids->pluck('recharge_month')->toArray();
+            $total_due = 0;
+            foreach ($credit_recharges as $credit) {
+                if (!in_array($credit->recharge_month, $paid_months)) {
+                    $total_due += $credit->amount;
+                }
+            }
+            if(!preg_match('/^(?:\+88)?01[3-9]\d{8}$/', $customer->phone)){
+                continue;
+            }
+
+            /* Prepare dynamic message */
+            $messageTemplate = $request->message;
+
+            $message = str_replace(
+                ['{username}', '{mobile}', '{area}', '{package}', '{expiry_date}', '{pop}','{due}'],
+                [
+                    $customer->username ?? '',
+                    $customer->phone ?? '',
+                    $customer->area->name ?? '',
+                    Branch_package::find($customer->package_id)->name ?? '',
+                    $customer->expire_date ?? '',
+                    $customer->pop->name ?? '',
+                    $total_due > 0 ? $total_due : 0
+                ],
+                $messageTemplate
+            );
+
+
+            /*------------ Create a new Instance ---------*/
+            $object = new Send_message();
             $object->pop_id = $customer->pop_id;
             $object->area_id = $customer->area_id;
             $object->customer_id = $customer_id;
-            $object->message = $request->message;
+            $object->message = $message;
             $object->sent_at = Carbon::now();
 
+            /*-------- Call Send Message Function --------*/
+            send_message($customer->phone, $message);
 
-            /*Call Send Message Function */
-           send_message($customer->phone, $request->message);
-            /* Save to the database table*/
+            /* Save to the database table */
             $object->save();
         }
-
 
         return response()->json([
             'success' => true,
             'message' => 'Added successfully!',
         ]);
     }
+
     public function send_message_get_all_data(Request $request){
         $search = $request->search['value'];
         $columnsForOrderBy = ['id', 'pop_id', 'name', 'message'];

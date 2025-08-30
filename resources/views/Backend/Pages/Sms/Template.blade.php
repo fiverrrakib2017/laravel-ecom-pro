@@ -102,17 +102,16 @@
     $('#datatable1 tbody').on('click', '.edit-btn', function () {
         var id = $(this).data('id');
         $.ajax({
-            url: "{{ route('admin.tickets.assign.edit', ':id') }}".replace(':id', id),
+            url: "{{ route('admin.sms.template_get', ':id') }}".replace(':id', id),
             method: 'GET',
             success: function(response) {
                 if (response.success) {
-                    $('#assignForm').attr('action', "{{ route('admin.tickets.assign.update', ':id') }}".replace(':id', id));
-                    $('#assignModalLabel').html('<span class="mdi mdi-account-edit mdi-18px"></span> &nbsp;Edit Assign To');
-                    $('#assignForm input[name="name"]').val(response.data.name);
-                    $('#assignForm select[name="pop_id"]').val(response.data.pop_id).trigger('change');
+                    $('#updateSmsTemplateModal input[name="name"]').val(response.data.name);
+                    $('#updateSmsTemplateModal textarea[name="message"]').val(response.data.message);
+                    $('#updateSmsTemplateModal select[name="pop_id"]').val(response.data.pop_id).trigger('change');
 
                     // Show the modal
-                    $('#assignModal').modal('show');
+                    $('#updateSmsTemplateModal').modal('show');
                 } else {
                     toastr.error('Failed to fetch Supplier data.');
                 }

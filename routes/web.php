@@ -497,6 +497,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/Store', 'sms_template_Store')->name('admin.sms.template_Store');
                 Route::post('/delete', 'sms_template_delete')->name('admin.sms.template_delete');
                 Route::get('/get/{id}', 'sms_template_get')->name('admin.sms.template_get');
+                Route::post('/update', 'sms_template_update')->name('admin.sms.template_update');
             });
         });
         /* Send SMS Template Route */
