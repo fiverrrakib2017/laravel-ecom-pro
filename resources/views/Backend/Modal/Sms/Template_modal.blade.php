@@ -31,8 +31,18 @@
 
 									<div class="form-group mb-2">
 										<label>SMS </label>
-										<textarea name="message" placeholder="Enter SMS" class="form-control" type="text"></textarea>
+										<textarea type="text" name="message" placeholder="Enter SMS" class="form-control" id="textMessage"></textarea>
 									</div>
+                                     <!-- Shortcodes Buttons -->
+                                        <div class="mb-2">
+                                            <label>Insert Shortcodes:</label><br>
+                                            <button type="button" class="btn btn-sm btn-outline-info shortcode-btn" data-code="{id}">{id}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-info shortcode-btn" data-code="{username}">{username}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-info shortcode-btn" data-code="{mobile}">{mobile}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-info shortcode-btn" data-code="{area}">{area}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-info shortcode-btn" data-code="{package}">{package}</button>
+                                            <button type="button" class="btn btn-sm btn-outline-info shortcode-btn" data-code="{expiry_date}">{expiry_date}</button>
+                                        </div>
 									<div class="modal-footer ">
 										<button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
 										<button type="submit" class="btn btn-success">Save Changes</button>
@@ -42,3 +52,23 @@
                         </div>
                      </div>
                   </div>
+<script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+   $(".shortcode-btn").on("click", function(){
+        let shortcode = $(this).data("code");
+        let textarea = $("#textMessage");
+
+        let cursorPos = textarea.prop("selectionStart");
+        let v = textarea.val();
+        let textBefore = v.substring(0, cursorPos);
+        let textAfter  = v.substring(cursorPos, v.length);
+
+        textarea.val(textBefore + shortcode + textAfter);
+        textarea.focus();
+        textarea[0].selectionStart = cursorPos + shortcode.length;
+        textarea[0].selectionEnd = cursorPos + shortcode.length;
+    });
+});
+
+</script>

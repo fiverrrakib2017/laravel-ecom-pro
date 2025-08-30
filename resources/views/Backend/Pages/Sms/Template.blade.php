@@ -65,17 +65,25 @@
             "data":"name",
           },
           {
-            "data":"message",
-            "render": function(data, type, row) {
-              return row.message.length > 50 ? row.message.substring(0, 50) + "..." : row.message;
-            }
-          },
+            data: "message",
+                render: function (data, type, row) {
+                    const full = row.message || '';
+                    const short = full.length > 50 ? full.substring(0, 50) + '…' : full;
+
+                    const esc = $('<div/>').text(full).html()
+                    .replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+
+                    return `<span title='${esc}'>${short}</span>`;
+                }
+            },
+
 
           {
             data:null,
             render: function (data, type, row) {
 
               return `
+              <button class="btn btn-success btn-sm mr-3 edit-btn"  data-id="${row.id}"><i class="fa fa-edit"></i></button>
               <button class="btn btn-danger btn-sm mr-3 delete-btn"  data-id="${row.id}"><i class="fa fa-trash"></i></button> `;
             }
 
@@ -90,7 +98,30 @@
     });
 
 
+     /** Handle Edit button click **/
+    $('#datatable1 tbody').on('click', '.edit-btn', function () {
+        var id = $(this).data('id');
+        $.ajax({
+            url: "{{ route('admin.tickets.assign.edit', ':id') }}".replace(':id', id),
+            method: 'GET',
+            success: function(response) {
+                if (response.success) {
+                    $('#assignForm').attr('action', "{{ route('admin.tickets.assign.update', ':id') }}".replace(':id', id));
+                    $('#assignModalLabel').html('<span class="mdi mdi-account-edit mdi-18px"></span> &nbsp;Edit Assign To');
+                    $('#assignForm input[name="name"]').val(response.data.name);
+                    $('#assignForm select[name="pop_id"]').val(response.data.pop_id).trigger('change');
 
+                    // Show the modal
+                    $('#assignModal').modal('show');
+                } else {
+                    toastr.error('Failed to fetch Supplier data.');
+                }
+            },
+            error: function() {
+                toastr.error('An error occurred. Please try again.');
+            }
+        });
+    });
 
 
 
