@@ -3,7 +3,9 @@ namespace App\Http\Controllers\Backend\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Customer;
-
+use App\Models\Customer_recharge;
+use Illuminate\Support\Carbon;
+use function App\Helpers\send_message;
 class BkashSmsController extends Controller
 {
     public function receive(Request $request){
@@ -23,12 +25,13 @@ class BkashSmsController extends Controller
          /*------------------ Cusotmer Found For Recharge ----------------------*/
         $customer=Customer::find($customerId);
         if(!$customer){
-            //return response()->json(['status'=>'error','message'=>'Customer not found']);
+
+           $this->_send_message("Account Not Found.", $customer);
         }
 
         /*------------------ Duplicate Recharge check ----------------------*/
         if(Customer_recharge::where('recharge_month', date('Y-m'))->where('customer_id',$customer->id)->exists()){
-            $this->_send_message($message, $customer);
+            $this->_send_message("Recharge Already Paid", $customer);
             exit;
         }
         /* Store recharge data */
@@ -45,7 +48,7 @@ class BkashSmsController extends Controller
         $object->save();
 
         /*----------- Send Message ------------*/
-         $this->_send_message($message, $customer);
+        $this->_send_message("Your Recharge Has benn Successfully Completed", $customer);
 
 
 
