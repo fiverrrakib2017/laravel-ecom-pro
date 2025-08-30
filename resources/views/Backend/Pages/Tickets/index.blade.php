@@ -16,7 +16,7 @@
                     'id' => 1,
                     'title' => 'Total Tickets',
                     'value' => $tickets ?? 0,
-                    'bg' => 'success',
+                    'bg' => 'indigo',
                     'icon' => 'fas fa-solid fa-ticket-alt',
                 ],
                 [
