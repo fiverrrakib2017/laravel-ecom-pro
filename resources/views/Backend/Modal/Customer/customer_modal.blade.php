@@ -283,7 +283,19 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group clearfix">
+                                <div class="icheck-primary d-inline">
+                                    <input type="checkbox" id="autoRechargeCheckbox" name="auto_recharge" value="1">
+                                    <label for="autoRechargeCheckbox">
+                                        Recharge immediately
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>

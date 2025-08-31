@@ -386,17 +386,7 @@ class CustomerController extends Controller
     {
         /* Validate the form data */
         $this->validateForm($request);
-        /* Check Pop Balance */
-        $pop_balance = check_pop_balance($request->pop_id);
-        if ($pop_balance < $request->amount) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pop balance is not enough',
-            ]);
-        }
-
         DB::beginTransaction();
-
         try {
             /* Create a new Customer */
             $customer = new Customer();
@@ -413,31 +403,55 @@ class CustomerController extends Controller
             $customer->area_id = $request->area_id;
             $customer->router_id = $request->router_id;
             $customer->status = $request->status;
-            $customer->expire_date = date('Y-m-d', strtotime('+1 month'));
+            $customer->expire_date = date('Y-m-d');
             $customer->remarks = $request->remarks;
             $customer->connection_type = $request->connection_type;
             $customer->liabilities = $request->liabilities;
+            /* First save customer to get the ID */
             $customer->save();
 
-            /* Store recharge data */
-            $object = new Customer_recharge();
-            $object->user_id = auth()->guard('admin')->user()->id;
-            $object->customer_id = $customer->id;
-            $object->pop_id = $request->pop_id;
-            $object->area_id = $request->area_id;
-            $object->recharge_month = implode(',', [date('Y-m')]);
-            $object->transaction_type = 'cash';
-            $object->paid_until = date('Y-m-d', strtotime('+1 month'));
-            $object->amount = $request->amount;
-            $object->note = 'Created';
-            $object->save();
+            /*-----------Customer Auto Recharge----------*/
+            if($request->auto_recharge=='1'){
+                /* Check Pop Balance */
+                $pop_balance = check_pop_balance($request->pop_id);
+                if ($pop_balance < $request->amount) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Pop balance is not enough',
+                    ]);
+                }
+                /* Store recharge data */
+                $object = new Customer_recharge();
+                $object->user_id = auth()->guard('admin')->user()->id;
+                $object->customer_id = $customer->id;
+                $object->pop_id = $request->pop_id;
+                $object->area_id = $request->area_id;
+                $object->recharge_month = implode(',', [date('Y-m')]);
+                $object->transaction_type = 'cash';
+                $object->paid_until = date('Y-m-d', strtotime('+1 month'));
+                $object->amount = $request->amount;
+                $object->note = 'Created';
+                $object->save();
 
+                /* Update customer expire date */
+                $customer->expire_date = $object->paid_until;
+                $customer->save();
+            }
             /* Send Message to the Customer*/
             if($request->send_message=='1'){
-                $message = 'Thank you for joining Wi-Fi.Your Customer ID : {customer_id} username : {username} password : {password} HelpLine : 01971768290';
-                $message = str_replace('{customer_id}', $customer->id, $message);
-                $message = str_replace('{username}', $customer->username, $message);
-                $message = str_replace('{password}', $customer->password, $message);
+                 $user = auth()->guard('admin')->user();
+                $data = \App\Models\Website_information::where('pop_id', $user->pop_id)->latest()->first();
+                if ($user->pop_id === null) {
+                    $data = \App\Models\Website_information::whereNull('pop_id')->latest()->first();
+                }
+                $_app_name = $data->name ?? '';
+                $message = "($_app_name)\n\n"
+                        . "ID: {$customer->id}\n"
+                        . "Name: {$customer->fullname}\n"
+                        . "Username: {$customer->username}\n"
+                        . "Password: {$customer->password}\n"
+                        . "Amount: {$customer->amount}\n"
+                        . "Thanks for your joining";
                 /* Create a new Instance*/
                 $send_message =new Send_message();
                 $send_message->pop_id = $customer->pop_id;
@@ -1596,9 +1610,18 @@ class CustomerController extends Controller
                 $package = \App\Models\Branch_package::find($customer->package_id);
                 $packageName = $package ? $package->name : '';
 
-                $message = "Dear {$customer->username}, your recharge of Tk {$request->payable_amount} has been successful. "
-                    . "Your package: {$packageName}, Expiry Date: {$customer->expire_date}. "
-                    . "Thank you for staying with us.";
+                $user = auth()->guard('admin')->user();
+                $data = \App\Models\Website_information::where('pop_id', $user->pop_id)->latest()->first();
+                if ($user->pop_id === null) {
+                    $data = \App\Models\Website_information::whereNull('pop_id')->latest()->first();
+                }
+                $message = "($data->name)\n\n"
+                        . "USER: {$customer->username}\n"
+                        . "ID: {$customer->id}\n"
+                        . "NAME: {$customer->fullname}\n"
+                        . "BILL: Tk {$request->payable_amount}\n\n"
+                        . "Thanks for your payment";
+
 
                 /* Create a new Instance*/
                 $send_message =new Send_message();
