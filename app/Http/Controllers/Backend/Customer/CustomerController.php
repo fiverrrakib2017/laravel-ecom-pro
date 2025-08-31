@@ -434,20 +434,10 @@ class CustomerController extends Controller
 
             /* Send Message to the Customer*/
             if($request->send_message=='1'){
-                //$bill_payment_link = "https://sr-wifi.net?clid={$custID}";
-
-                // $message = 'Thank you for joining SR Wi-Fi.
-                //             Your Customer ID : {customer_id}
-                //             username : {username}
-                //             password : {password}
-                //             HelpLine : 01821600600
-                //             Bill payment link: {bill_payment_link}';
                 $message = 'Thank you for joining Wi-Fi.Your Customer ID : {customer_id} username : {username} password : {password} HelpLine : 01971768290';
-
                 $message = str_replace('{customer_id}', $customer->id, $message);
                 $message = str_replace('{username}', $customer->username, $message);
                 $message = str_replace('{password}', $customer->password, $message);
-                //$message = str_replace('{bill_payment_link}', $bill_payment_link, $message);
                 /* Create a new Instance*/
                 $send_message =new Send_message();
                 $send_message->pop_id = $customer->pop_id;
@@ -1062,17 +1052,6 @@ class CustomerController extends Controller
         $duePaid = Customer_recharge::where('customer_id', $id)->where('transaction_type', 'due_paid')->sum('amount') ?? 0;
 
         $totalDue = $get_total_due - $duePaid;
-        /*Include Mikrotik Data Customer Profile*/
-        //$router = Mikrotik_router::where('status', 'active')->where('id', $data->router_id)->first();
-        /*Get Mikrotik Data via reusable function */
-        //$mikrotik_data = $router ? get_mikrotik_user_info($router, $data->username) : null;
-        /*Get Onu Information */
-        //  $ssh = new SSH2('OLT_IP_ADDRESS');
-        //  if (!$ssh->login('username', 'password')) {
-        //     return response()->json(['error' => 'Login Failed']);
-        //  }
-        // /*Send MAC search command*/
-        // $response = $ssh->exec("show mac-address-table | include $mikrotik_data['mac']");
         return view('Backend.Pages.Customer.Profile', compact('data', 'totalDue', 'totalPaid', 'duePaid', 'total_recharged', ));
     }
     public function customer_mikrotik_reconnect($id)
@@ -1303,23 +1282,6 @@ class CustomerController extends Controller
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
-
-    // public function getMonthlyUsage($username)
-    // {
-    //     $month = now()->month;
-    //     $year = now()->year;
-
-    //     $totalDownload = UserUsage::where('username', $username)->whereMonth('date', $month)->whereYear('date', $year)->sum('download_gb');
-
-    //     $totalUpload = UserUsage::where('username', $username)->whereMonth('date', $month)->whereYear('date', $year)->sum('upload_gb');
-
-    //     return response()->json([
-    //         'username' => $username,
-    //         'download_gb' => round($totalDownload, 2),
-    //         'upload_gb' => round($totalUpload, 2),
-    //     ]);
-    // }
-
     public function get_onu_info(Request $request)
     {
         $ip = '160.250.8.8';
@@ -1616,7 +1578,7 @@ class CustomerController extends Controller
             $object->paid_until     = $new_expire_date;
 
             $customer->update();
-
+            /*-----------Customer Grace Recharge Start----------------*/
             $get_grace_recharge = Grace_recharge::where('customer_id', $customer->id)->first();
             if ($get_grace_recharge) {
                 $customer_data = Customer::find($customer->id);
@@ -1628,6 +1590,27 @@ class CustomerController extends Controller
                 /*Delete Grace Rechage**/
                 $get_grace_recharge->delete();
                 customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Grace Recharge Remove!');
+            }
+            /*--------Send Message For Customer --------------*/
+            if($request->send_message=='1'){
+                $package = \App\Models\Branch_package::find($customer->package_id);
+                $packageName = $package ? $package->name : '';
+
+                $message = "Dear {$customer->username}, your recharge of Tk {$request->payable_amount} has been successful. "
+                    . "Your package: {$packageName}, Expiry Date: {$customer->expire_date}. "
+                    . "Thank you for staying with us.";
+
+                /* Create a new Instance*/
+                $send_message =new Send_message();
+                $send_message->pop_id = $customer->pop_id;
+                $send_message->area_id = $customer->area_id;
+                $send_message->customer_id = $customer->id;
+                $send_message->message =$message;
+                $send_message->sent_at = Carbon::now();
+                /*Call Send Message Function */
+                send_message($customer->phone, $message);
+                /* Save to the database table*/
+                $send_message->save();
             }
             if ($object->save()) {
                 customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');

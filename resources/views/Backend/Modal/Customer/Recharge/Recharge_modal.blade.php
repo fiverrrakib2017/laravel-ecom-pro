@@ -99,17 +99,29 @@
                                 var selectedType = $(this).val();
                                 if (selectedType === 'cash') {
                                     $('#voucherField').show();
-                                } else {
+                                }else {
                                     $('#voucherField').hide();
-                                    $('input[name="voucher_no"]').val(''); 
+                                    $('input[name="voucher_no"]').val('');
+                                }
+                                if(selectedType==='due_paid'){
+                                   $("#CustomerRechargeModal input[name=send_message]").prop('checked', false);
                                 }
                             });
                         });
                     </script>
 
-                    <div class="form-group mb-2">
+                    <div class="form-group mb-3">
                         <label>Remarks</label>
                         <input name="note" placeholder="Enter Remarks" class="form-control" type="text">
+                    </div>
+                    <div class="form-group">
+                        <!-- Checkbox Message -->
+                        <div class="icheck-primary d-inline">
+                            <input type="checkbox" id="sendMessageCheckbox" name="send_message" value="1">
+                            <label for="sendMessageCheckbox">
+                                Send message to the Customer
+                            </label>
+                        </div>
                     </div>
                     <div class="modal-footer ">
                         <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
