@@ -32,6 +32,13 @@ class Kernel extends ConsoleKernel
                     \Artisan::call('app:customer_usage');
                 })
                 ->everyFiveMinutes();
+
+            $schedule
+                ->call(function () use ($tenant) {
+                    $this->__set_tenant_connection($tenant);
+                    \Artisan::call('app:clean_daily_usages');
+                })
+                ->monthlyOn(1, '01:00');
         }
     }
 
