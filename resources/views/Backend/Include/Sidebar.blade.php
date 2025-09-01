@@ -421,78 +421,78 @@
                 @php
                     $active_prefix = ['admin.olt.index','admin.olt.create','admin.onu.index'];
                 @endphp
-                    @if(auth()->guard('admin')->user()->can('menu.access.olt'))
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                                <i class="nav-icon fas fa-server"></i>
-                                <p>OLT Management <i class="right fas fa-angle-left"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
-                                <!-- OLT Device Configuration -->
-                                @if(auth()->guard('admin')->user()->can('olt.device.list'))
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.olt.index') }}" class="nav-link {{ $route == 'admin.olt.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
-                                </li>
-                                @endif
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.olt.create') }}" class="nav-link  {{ $route == 'admin.olt.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
-                                </li>
 
-                                <!-- ONT (Optical Network Terminal) Management -->
-                                <li class="nav-item">
-                                    <a href="{{ route('admin.onu.index') }}" class="nav-link {{ $route == 'admin.onu.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>
-                                </li>
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link  {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-server"></i>
+                            <p>OLT Management <i class="right fas fa-angle-left"></i></p>
+                        </a>
+                        <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                            <!-- OLT Device Configuration -->
+                            @if(auth()->guard('admin')->user()->can('olt.device.list'))
+                            <li class="nav-item">
+                                <a href="{{ route('admin.olt.index') }}" class="nav-link {{ $route == 'admin.olt.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>OLT Device List</p></a>
+                            </li>
+                            @endif
+                            <li class="nav-item">
+                                <a href="{{ route('admin.olt.create') }}" class="nav-link  {{ $route == 'admin.olt.create' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>Configure OLT Device</p></a>
+                            </li>
 
-                                <!-- GPON Port Management -->
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>GPON Port Configuration</p></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Monitor GPON Ports</p></a>
-                                </li>
+                            <!-- ONT (Optical Network Terminal) Management -->
+                            <li class="nav-item">
+                                <a href="{{ route('admin.onu.index') }}" class="nav-link {{ $route == 'admin.onu.index' ? 'active' : '' }}"><i class="far fa-circle nav-icon"></i><p>ONT Device List</p></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Assign ONT to Customer</p></a>
+                            </li>
 
-                                <!-- Network Monitoring -->
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Status</p></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Traffic Monitoring</p></a>
-                                </li>
+                            <!-- GPON Port Management -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>GPON Port Configuration</p></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Monitor GPON Ports</p></a>
+                            </li>
 
-                                <!-- Diagnostics and Logs -->
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>System Diagnostics</p></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View System Logs</p></a>
-                                </li>
+                            <!-- Network Monitoring -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Status</p></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Network Traffic Monitoring</p></a>
+                            </li>
 
-                                <!-- Alarm Management -->
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Alarm Configuration</p></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View Alarms</p></a>
-                                </li>
+                            <!-- Diagnostics and Logs -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>System Diagnostics</p></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View System Logs</p></a>
+                            </li>
 
-                                <!-- OLT Reports -->
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Performance Reports</p></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Customer Service Reports</p></a>
-                                </li>
+                            <!-- Alarm Management -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Alarm Configuration</p></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>View Alarms</p></a>
+                            </li>
 
-                                <!-- OLT Settings -->
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Configuration Settings</p></a>
-                                </li>
-                            </ul>
-                        </li>
-                    @endif
+                            <!-- OLT Reports -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Performance Reports</p></a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Customer Service Reports</p></a>
+                            </li>
+
+                            <!-- OLT Settings -->
+                            <li class="nav-item">
+                                <a href="#" class="nav-link"><i class="far fa-circle nav-icon"></i><p>OLT Configuration Settings</p></a>
+                            </li>
+                        </ul>
+                    </li>
+
                 @endif
 
                 <!-- Ticket Management -->
