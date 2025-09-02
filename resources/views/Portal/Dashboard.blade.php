@@ -155,54 +155,10 @@
                 <div class="col-lg-4">
 
                     <!-- Account Summary -->
-                    <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h3 class="card-title">Account Summary</h3>
-                            <a href="#" data-toggle="modal" data-target="#changePasswordModal"
-                                class="small">Change Password</a>
-                        </div>
-                        <div class="card-body">
-                            <dl class="row mb-0">
-                                <dt class="col-5">Name</dt>
-                                <dd class="col-7">John Doe</dd>
-                                <dt class="col-5">Username</dt>
-                                <dd class="col-7">john_doe</dd>
-                                <dt class="col-5">Phone</dt>
-                                <dd class="col-7">017xx-xxxxxx</dd>
-                                <dt class="col-5">Address</dt>
-                                <dd class="col-7">House 12, Road 7, City</dd>
-                                <dt class="col-5">Area</dt>
-                                <dd class="col-7">Banani</dd>
-                                <dt class="col-5">POP</dt>
-                                <dd class="col-7">POP-01</dd>
-                                <dt class="col-5">Router</dt>
-                                <dd class="col-7">Mikrotik RB750Gr3</dd>
-                                <dt class="col-5">Last Seen</dt>
-                                <dd class="col-7">02 Sep 2025, 09:30 AM</dd>
-                            </dl>
-                        </div>
-                    </div>
+                      @include('Portal.Account_summary')
 
                     <!-- Service Details -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Service Details</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-2 mini-label">PPPoE</div>
-                            <div class="mb-2">Username: <strong>john.pppoe</strong></div>
-                            <div class="mb-3">Password:
-                                <span id="pppoePass" class="masked">••••••••</span>
-                                <a href="#" id="togglePass" class="small ml-1">Show</a>
-                            </div>
-                            <div class="mb-2">Public IP: <strong>103.100.20.30</strong></div>
-                            <div class="mb-2">MAC: <strong>DC:2C:6E:AA:BB:CC</strong></div>
-                            <div class="mb-2">CGNAT: <strong>Enabled</strong></div>
-                            <hr>
-                            <div class="text-muted small">Need static IP or upgrade plan? <a href="#">Contact
-                                    sales</a>.</div>
-                        </div>
-                    </div>
+                    
 
                     <!-- Support & Quick Actions -->
                     <div class="card">
