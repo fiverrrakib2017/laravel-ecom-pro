@@ -157,7 +157,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="mr-2"><i class="fas fa-network-wired mr-2"></i> IP</div>
                             <div class="input-group input-group-sm w-50">
-                                <input type="text" class="form-control" value="10.10.12.34" id="wanIp" readonly>
+                                <input type="text" class="form-control" value="{{ auth('customer')->user()->router->ip_address ?? 'N/A' }}" id="wanIp" readonly>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" id="copyIp" data-toggle="tooltip"
                                         title="Copy IP">
@@ -170,12 +170,12 @@
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-server mr-2"></i> Router</span>
-                        <span class="text-monospace">Mikrotik RB750Gr3</span>
+                        <span class="text-monospace">Mikrotik ->{{ auth('customer')->user()->router->name ?? 'N/A' }}</span>
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-map-marker-alt mr-2"></i> Area/POP</span>
-                        <span>Banani / POP-01</span>
+                        <span>{{ auth('customer')->user()->area->name ?? 'N/A' }} / {{ auth('customer')->user()->pop->name ?? 'N/A' }}</span>
                     </li>
                 </ul>
 
