@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Customer extends Model
+class Customer extends Authenticatable
 {
-    use HasFactory;
+      use HasFactory, Notifiable;
     protected $fillable = [
         'fullname', 'phone', 'nid', 'address', 'con_charge', 'amount',
         'username', 'password', 'package_id', 'pop_id', 'area_id',

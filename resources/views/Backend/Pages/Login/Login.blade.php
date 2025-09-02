@@ -72,25 +72,25 @@
                     @csrf
 
                     <div class="input-group mb-3">
-                        <input  type="email" name="email" class="form-control" placeholder="Enter Your Email" value="{{old('email')}}">
+                        <input type="text" name="login" class="form-control"
+                            placeholder="Enter Email or Username" value="{{ old('login') }}">
                         <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-user"></span>
-                            </div>
+                            <div class="input-group-text"><span class="fas fa-user"></span></div>
                         </div>
                     </div>
+
                     <div class="input-group mb-3">
                         <input type="password" name="password" class="form-control" placeholder="Enter Your Password">
                         <div class="input-group-append">
-                            <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
-                            </div>
+                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
                         </div>
                     </div>
+
                     <button type="submit" id="loginBtn" class="btn btn-block btn-success">
                         Login <i class="fas fa-sign-in-alt"></i>
                     </button>
                 </form>
+
                 <div class="social-auth-links text-center mb-3">
                     <p>- OR -</p>
                     <a href="#" class="btn btn-block btn-primary">

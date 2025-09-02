@@ -826,3 +826,16 @@ Route::get('/optimize', function () {
     return 'Optimize Clear Completed';
 });
 
+
+Route::middleware('auth:customer')->group(function () {
+    Route::get('/customer/portal', function () {
+        return view('Portal.Dashboard');
+    })->name('customer.portal');
+
+    Route::post('/customer/logout', function () {
+        Auth::guard('customer')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('admin.login');
+    })->name('customer.logout');
+});
