@@ -90,10 +90,10 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-2 mini-label">PPPoE</div>
-                            <div class="mb-2">Username: <strong>john.pppoe</strong></div>
+                            <div class="mb-2">Username: <strong>{{auth('customer')->user()->username ?? 'N/A'}}</strong></div>
                             <div class="mb-3">Password:
-                                <span id="pppoePass" class="masked">••••••••</span>
-                                <a href="#" id="togglePass" class="small ml-1">Show</a>
+                                <span id="pppoePass" class="masked">{{auth('customer')->user()->password ?? ''}}</span>
+                                {{-- <a href="#" id="togglePass" class="small ml-1">Show</a> --}}
                             </div>
                             <div class="mb-2">Public IP: <strong>103.100.20.30</strong></div>
                             <div class="mb-2">MAC: <strong>DC:2C:6E:AA:BB:CC</strong></div>
