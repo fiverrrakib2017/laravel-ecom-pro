@@ -26,9 +26,37 @@
             <dt class="col-5">POP</dt>
             <dd class="col-7">{{ auth('customer')->user()->pop_id ?? '' }}</dd>
             <dt class="col-5">Router</dt>
-            <dd class="col-7">Mikrotik {{ auth('customer')->user()->mikrotik_id ?? '' }}</dd>
+            <dd class="col-7" id="show_router_name"></dd>
             <dt class="col-5">Last Seen</dt>
             <dd class="col-7">{{ auth('customer')->user()->last_seen ?? 'N/A' }}</dd>
         </dl>
     </div>
 </div>
+<script type="text/javascript">
+    /************** Customer Router Name Show **************************/
+    $.ajax({
+        url: "{{ route('admin.customer.router.vendor') }}",
+        method: "POST",
+        data: {
+            customer_id: "{{ auth('customer')->user()->id }}",
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            if (!response || !response.vendor || response.vendor === 'Unknown Router') {
+                $("#show_router_name")
+                    .html('Not found')
+                    .removeClass('text-success')
+                    .addClass('text-danger');
+            } else {
+                $("#show_router_name")
+                    .html(response.vendor)
+                    .removeClass('text-danger')
+                    .addClass('text-success');
+            }
+        },
+
+        error: function() {
+            $("#show_router_name").html('Not found').addClass('text-danger');
+        }
+    });
+</script>

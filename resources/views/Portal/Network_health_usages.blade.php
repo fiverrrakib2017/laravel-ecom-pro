@@ -1,3 +1,19 @@
+@php
+    use Illuminate\Support\Facades\DB;
+
+    $start = \Carbon\Carbon::now()->startOfMonth();
+    $end = \Carbon\Carbon::now()->endOfMonth();
+
+    $usage = DB::table('daily_usages')
+        ->selectRaw('SUM(upload) as total_upload, SUM(download) as total_download')
+        ->where('customer_id', auth('customer')->user()->id)
+        ->whereBetween('created_at', [$start, $end])
+        ->first();
+
+    $upload_gb = round(($usage->total_upload ?? 0) / 1024, 2);
+    $download_gb = round(($usage->total_download ?? 0) / 1024, 2);
+@endphp
+
 <div class="card shadow-sm">
     <div class="card-header card-header-compact d-flex align-items-center justify-content-between">
         <!-- Left: title + status -->
@@ -129,12 +145,12 @@
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-long-arrow-alt-down mr-2"></i> Download</span>
-                        <span class="badge badge-primary">26.8 Mbps</span>
+                        <span class="badge badge-primary">{{$download_gb ?? ''}} GB</span>
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-long-arrow-alt-up mr-2"></i> Upload</span>
-                        <span class="badge badge-info">4.2 Mbps</span>
+                        <span class="badge badge-info">{{$upload_gb ?? ''}} GB</span>
                     </li>
 
                     <li class="list-group-item">
