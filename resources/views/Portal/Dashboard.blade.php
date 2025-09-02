@@ -62,52 +62,11 @@
               @include('Portal.Welcome')
 
             <!-- Top KPI Boxes -->
-            <div class="row">
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-success">
-                        <div class="inner">
-                            <h3 class="mb-1">{{ auth('customer')->user()->status }}</h3>
-                            <p class="mb-0">Account Status</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-signal"></i></div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-danger">
-                        <div class="inner">
-                            <h3 class="mb-1">0.00 ৳</h3>
-                            <p class="mb-0">Total Due</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-info">
-                        <div class="inner">
-                            <h3 class="mb-1">
-                                {{ \Carbon\Carbon::parse(auth('customer')->user()->expire_date)->format('d M Y') }}
-                            </h3>
-                            <p class="mb-0">Next Billing</p>
-
-
-                        </div>
-                        <div class="icon"><i class="fas fa-calendar-alt"></i></div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-6">
-                    <div class="small-box bg-primary">
-                        <div class="inner">
-                            <h3 class="mb-1">Package</h3>
-                            <p class="mb-0">{{ \App\Models\Branch_package::find(auth('customer')->user()->package_id)->name }} • Unlimited</p>
-                        </div>
-                        <div class="icon"><i class="fas fa-wifi"></i></div>
-                    </div>
-                </div>
-            </div>
+             @include('Portal.Card')
 
             <div class="row">
                 <!-- LEFT -->
-                <div class="col-lg-8">
+                <div class="col-lg-9">
                     <!-- Network Health + Usage -->
                     @include('Portal.Network_health_usages')
                     <!-- Billing Summary & Invoices -->
@@ -119,13 +78,32 @@
                 <!-- /LEFT -->
 
                 <!-- RIGHT -->
-                <div class="col-lg-4">
+                <div class="col-lg-3">
 
                     <!-- Account Summary -->
                       @include('Portal.Account_summary')
 
                     <!-- Service Details -->
-                     @include('Portal.Service_summary')
+                     <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Service Details</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2 mini-label">PPPoE</div>
+                            <div class="mb-2">Username: <strong>john.pppoe</strong></div>
+                            <div class="mb-3">Password:
+                                <span id="pppoePass" class="masked">••••••••</span>
+                                <a href="#" id="togglePass" class="small ml-1">Show</a>
+                            </div>
+                            <div class="mb-2">Public IP: <strong>103.100.20.30</strong></div>
+                            <div class="mb-2">MAC: <strong>DC:2C:6E:AA:BB:CC</strong></div>
+                            <div class="mb-2">CGNAT: <strong>Enabled</strong></div>
+                            <hr>
+                            <div class="text-muted small">Need static IP or upgrade plan? <a href="#">Contact
+                                    sales</a>.</div>
+                        </div>
+                    </div>
+
 
                     <!-- Support & Quick Actions -->
                      @include('Portal.Support_and_tickets')
