@@ -30,7 +30,7 @@
             </span>
 
             <span class="badge badge-uptime" data-toggle="tooltip" title="Router uptime since last reboot">
-                <i class="far fa-clock mr-1"></i> 12d 04h
+                <i class="far fa-clock mr-1"></i> <span id="customer_uptime"></span>
             </span>
         </div>
 
@@ -170,7 +170,7 @@
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-server mr-2"></i> Router</span>
-                        <span class="text-monospace">Mikrotik ->{{ auth('customer')->user()->router->name ?? 'N/A' }}</span>
+                        <span class="text-monospace">Mikrotik -> {{ auth('customer')->user()->router->name ?? 'N/A' }}</span>
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -178,59 +178,11 @@
                         <span>{{ auth('customer')->user()->area->name ?? 'N/A' }} / {{ auth('customer')->user()->pop->name ?? 'N/A' }}</span>
                     </li>
                 </ul>
-
-
-                <!-- link quality -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted small">Optical Power</span>
-                        <span><strong>-19.4 dBm</strong></span>
-                    </div>
-                    <div class="progress" style="height:8px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 72%;" aria-valuenow="72"
-                            aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted small">SNR</span>
-                        <span><strong>28 dB</strong></span>
-                    </div>
-                    <div class="progress" style="height:8px;">
-                        <div class="progress-bar bg-info" role="progressbar" style="width: 56%;" aria-valuenow="56"
-                            aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-
-                <!-- latency & quality chips -->
-                <div class="d-flex flex-wrap">
-                    <span class="badge badge-light border mr-2 mb-2" data-toggle="tooltip" title="Gateway latency">
-                        <i class="fas fa-bolt mr-1"></i> 4 ms
-                    </span>
-                    <span class="badge badge-light border mr-2 mb-2" data-toggle="tooltip"
-                        title="Packet loss (1 min)">
-                        <i class="fas fa-water mr-1"></i> 0.0% loss
-                    </span>
-                    <span class="badge badge-light border mb-2" data-toggle="tooltip" title="Jitter (1 min)">
-                        <i class="fas fa-random mr-1"></i> 1.2 ms jitter
-                    </span>
-                </div>
-
-                <!-- hidden diagnostic text for copy -->
-                <pre id="diagText" class="d-none">
-                    Account: John Doe (john_doe)
-                    IP: 10.10.12.34
-                    Router: Mikrotik RB750Gr3
-                    ONU: Active, Optical -19.4 dBm, SNR 28 dB
-                    Latency: 4 ms, Loss 0.0%, Jitter 1.2 ms
-                    Down/Up: 26.8/4.2 Mbps
-                </pre>
             </div>
 
             <!-- RIGHT: chart -->
             <div class="col-xl-7 col-lg-6">
-                <canvas id="usageChart" height="140"></canvas>
+               <canvas id="liveBandwidthChart" height="150"></canvas>
             </div>
         </div>
     </div>
@@ -302,66 +254,93 @@
             }, 2200);
         });
 
-        // usage chart with gradient
-        (function() {
-            const ctx = document.getElementById('usageChart').getContext('2d');
-            const gradDown = ctx.createLinearGradient(0, 0, 0, 220);
-            gradDown.addColorStop(0, 'rgba(54,162,235,0.35)');
-            gradDown.addColorStop(1, 'rgba(54,162,235,0.05)');
-            const gradUp = ctx.createLinearGradient(0, 0, 0, 220);
-            gradUp.addColorStop(0, 'rgba(75,192,192,0.35)');
-            gradUp.addColorStop(1, 'rgba(75,192,192,0.05)');
+        /************** Customer Bandwidth Graph Start **************************/
+        const ctx = document.getElementById('liveBandwidthChart').getContext('2d');
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                            label: 'Download (GB)',
-                            data: [12, 9, 14, 18, 11, 16, 13],
-                            backgroundColor: gradDown,
-                            borderColor: 'rgba(54,162,235,1)',
-                            borderWidth: 2,
-                            fill: true,
-                            pointRadius: 2,
-                            tension: .35
-                        },
-                        {
-                            label: 'Upload (GB)',
-                            data: [2, 1.5, 2.2, 3, 2.4, 2.8, 2.1],
-                            backgroundColor: gradUp,
-                            borderColor: 'rgba(75,192,192,1)',
-                            borderWidth: 2,
-                            fill: true,
-                            pointRadius: 2,
-                            tension: .35
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        }
+        const labels = Array.from({
+            length: 30
+        }, () => '');
+        const downloadData = Array(30).fill(0);
+        const uploadData = Array(30).fill(0);
+
+        const bandwidthChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                        label: 'Download (kbps)',
+                        data: downloadData,
+                        borderColor: '#36A2EB',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        fill: true,
+                        tension: 0.4,
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0,0,0,.05)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
+                    {
+                        label: 'Upload (kbps)',
+                        data: uploadData,
+                        borderColor: '#FF6384',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                animation: false,
+                scales: {
+                    x: {
+                        display: false,
+                    },
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 5,
+                    }
+                }
+            }
+        });
+
+        function fetch_live_bandwidth_data() {
+            $.ajax({
+                url: "{{ route('admin.customer.live_bandwith_update', ':id') }}".replace(':id',
+                    "{{ auth('customer')->user()->id }}"),
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        const downloadSpeed = response.rx_mb;
+                        const uploadSpeed = response.tx_mb;
+                        // const rx_speed_kbps = response.rx_speed_kbps;
+                        // const tx_speed_kbps = response.tx_speed_kbps;
+
+                        const user_uptime = response.uptime;
+                        const user_interface_name = response.interface_name;
+                        const user_ip_address = response.ip_address;
+                        const user_mac_address = response.mac_address;
+
+                        /* Update graph data with new point (slide effect)*/
+                        downloadData.push(downloadSpeed);
+                        downloadData.shift();
+
+                        uploadData.push(uploadSpeed);
+                        uploadData.shift();
+
+                        bandwidthChart.update();
+
+                        /* Update Client Data*/
+                        $("#customer_upload_speed").html(uploadSpeed);
+                        $("#customer_download_speed").html(downloadSpeed);
+                        $("#customer_uptime").html(user_uptime);
+                        $("#customer_mac_address").html(user_mac_address);
+                        $("#customer_ip_address").html(user_ip_address);
+                        $("#customer_interface").html($('<div>').text(user_interface_name).html());
                     }
                 }
             });
-        })();
+
+
+        }
+
+        fetch_live_bandwidth_data();
+        setInterval(fetch_live_bandwidth_data, 1000);
     });
 </script>
