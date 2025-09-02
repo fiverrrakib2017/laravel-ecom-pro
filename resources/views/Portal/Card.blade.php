@@ -20,12 +20,9 @@
     <div class="col-lg-3 col-6">
         <div class="small-box bg-info">
             <div class="inner">
-                <h3 class="mb-1">
-                    {{ \Carbon\Carbon::parse(auth('customer')->user()->expire_date)->format('d M Y') }}
+                <h3 class="mb-1"> {{ \Carbon\Carbon::parse(auth('customer')->user()->expire_date)->format('d M Y') }}
                 </h3>
                 <p class="mb-0">Next Billing</p>
-
-
             </div>
             <div class="icon"><i class="fas fa-calendar-alt"></i></div>
         </div>
