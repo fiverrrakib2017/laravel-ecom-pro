@@ -2,11 +2,9 @@
   <div class="card-header d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
       <h3 class="card-title mb-0 mr-2">Billing Summary</h3>
-      <span class="badge badge-success mr-1">2 Paid</span>
-      <span class="badge badge-danger">1 Due</span>
     </div>
 
-    <div class="card-tools" style="width: 320px;">
+    {{-- <div class="card-tools" style="width: 320px;">
       <div class="input-group input-group-sm">
         <select id="invoiceFilter" class="custom-select">
           <option value="all" selected>All invoices</option>
@@ -19,7 +17,7 @@
           </a>
         </div>
       </div>
-    </div>
+    </div> --}}
   </div>
 
   <div class="card-body p-0">
