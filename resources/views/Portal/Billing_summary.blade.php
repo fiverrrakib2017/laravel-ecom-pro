@@ -10,9 +10,14 @@
 
     </div>
 
-    <div class="card-footer d-flex justify-content-between align-items-right">
-        <a href="#" class="btn btn-success">
-            <i class="fas fa-money-check-alt"></i> Pay Now (bKash/Nagad)
-        </a>
-    </div>
+    <div class="card-footer bg-white d-flex justify-content-end">
+    <a href="#"
+       class="btn btn-danger bg-white d-flex align-items-center px-4 shadow-sm">
+        <img src="{{ asset('Backend/images/bkash.png') }}"alt="bKash" style="height:22px; margin-right:8px; border-radius:3px; padding:2px; background:white;">
+        Pay Now via <strong class="ml-1">bKash</strong>
+    </a>
+</div>
+
+
+
 </div>
