@@ -22,9 +22,9 @@
             <dt class="col-5">Address</dt>
             <dd class="col-7">{{ auth('customer')->user()->address ?? '' }}</dd>
             <dt class="col-5">Area</dt>
-            <dd class="col-7">{{ auth('customer')->user()->area_id ?? '' }}</dd>
+            <dd class="col-7">{{ auth('customer')->user()->area->name ?? '' }}</dd>
             <dt class="col-5">POP</dt>
-            <dd class="col-7">{{ auth('customer')->user()->pop_id ?? '' }}</dd>
+            <dd class="col-7">{{ auth('customer')->user()->pop->name ?? '' }}</dd>
             <dt class="col-5">Router</dt>
             <dd class="col-7" id="show_router_name"></dd>
             <dt class="col-5">Last Seen</dt>
