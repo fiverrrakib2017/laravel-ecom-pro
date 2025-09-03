@@ -1,13 +1,27 @@
 <div class="row">
+    @php
+        $status = strtolower(auth('customer')->user()->status ?? 'offline');
+        $isOnline = $status === 'online';
+    @endphp
+
     <div class="col-lg-3 col-6">
-        <div class="small-box bg-success">
+        <div class="small-box {{ $isOnline ? 'bg-success' : 'bg-danger' }}">
             <div class="inner">
-                <h3 class="mb-1">{{ auth('customer')->user()->status }}</h3>
+                <h3 class="mb-1">
+                    {{ ucfirst($status) }}
+                </h3>
                 <p class="mb-0">Account Status</p>
             </div>
-            <div class="icon"><i class="fas fa-signal"></i></div>
+            <div class="icon">
+                @if ($isOnline)
+                    <i class="fas fa-signal"></i>
+                @else
+                    <i class="fas fa-times-circle"></i>
+                @endif
+            </div>
         </div>
     </div>
+
     <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
             <div class="inner">

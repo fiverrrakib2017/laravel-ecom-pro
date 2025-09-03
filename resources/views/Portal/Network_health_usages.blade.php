@@ -23,11 +23,20 @@
                 <h3 class="card-title mb-0 mr-2">Network Health &amp; Usage</h3>
             </div>
 
-            <span class="v-divider d-none d-md-inline-block"></span>
+            {{-- <span class="v-divider d-none d-md-inline-block"></span> --}}
 
-            <span class="badge badge-status mr-2" data-toggle="tooltip" title="ONU is reachable">
-                <span class="status-dot"></span> Online
+            @php
+                $status = strtolower(auth('customer')->user()->status ?? 'offline');
+                $isOnline = $status === 'online';
+            @endphp
+
+            <span class="badge {{ $isOnline ? 'badge-success' : 'badge-danger' }} mr-2" data-toggle="tooltip"
+                title="{{ $isOnline ? 'Customer is reachable' : 'Customer is not reachable' }}">
+
+                <i class="fas fa-circle {{ $isOnline ? 'text-light' : 'text-white-50' }} mr-1"></i>
+                {{ ucfirst($status) }}
             </span>
+
 
             <span class="badge badge-uptime" data-toggle="tooltip" title="Router uptime since last reboot">
                 <i class="far fa-clock mr-1"></i> <span id="customer_uptime"></span>
@@ -145,19 +154,21 @@
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-long-arrow-alt-down mr-2"></i> Download</span>
-                        <span class="badge badge-primary">{{$download_gb ?? ''}} GB</span>
+                        <span class="badge badge-primary">{{ $download_gb ?? '' }} GB</span>
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-long-arrow-alt-up mr-2"></i> Upload</span>
-                        <span class="badge badge-info">{{$upload_gb ?? ''}} GB</span>
+                        <span class="badge badge-info">{{ $upload_gb ?? '' }} GB</span>
                     </li>
 
                     <li class="list-group-item">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="mr-2"><i class="fas fa-network-wired mr-2"></i> IP</div>
                             <div class="input-group input-group-sm w-50">
-                                <input type="text" class="form-control" value="{{ auth('customer')->user()->router->ip_address ?? 'N/A' }}" id="wanIp" readonly>
+                                <input type="text" class="form-control"
+                                    value="{{ auth('customer')->user()->router->ip_address ?? 'N/A' }}" id="wanIp"
+                                    readonly>
                                 <div class="input-group-append">
                                     <button class="btn btn-outline-secondary" id="copyIp" data-toggle="tooltip"
                                         title="Copy IP">
@@ -170,19 +181,21 @@
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-server mr-2"></i> Router</span>
-                        <span class="text-monospace">Mikrotik -> {{ auth('customer')->user()->router->name ?? 'N/A' }}</span>
+                        <span class="text-monospace">Mikrotik ->
+                            {{ auth('customer')->user()->router->name ?? 'N/A' }}</span>
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <span><i class="fas fa-map-marker-alt mr-2"></i> Area/POP</span>
-                        <span>{{ auth('customer')->user()->area->name ?? 'N/A' }} / {{ auth('customer')->user()->pop->name ?? 'N/A' }}</span>
+                        <span>{{ auth('customer')->user()->area->name ?? 'N/A' }} /
+                            {{ auth('customer')->user()->pop->name ?? 'N/A' }}</span>
                     </li>
                 </ul>
             </div>
 
             <!-- RIGHT: chart -->
             <div class="col-xl-7 col-lg-6">
-               <canvas id="liveBandwidthChart" height="150"></canvas>
+                <canvas id="liveBandwidthChart" height="150"></canvas>
             </div>
         </div>
     </div>
@@ -332,12 +345,12 @@
                         $("#customer_uptime").html(user_uptime);
                         $("#customer_mac_address").html(user_mac_address);
                         $("#customer_ip_address").html(user_ip_address);
+                        $("#public_ip_address").html(user_ip_address);
+
                         $("#customer_interface").html($('<div>').text(user_interface_name).html());
                     }
                 }
             });
-
-
         }
 
         fetch_live_bandwidth_data();

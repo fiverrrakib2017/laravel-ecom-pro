@@ -171,7 +171,7 @@ Route::group(['middleware' => 'admin'], function () {
             /***** Customer Change Status *******/
             Route::post('/change/status', 'customer_change_status')->name('admin.customer.change_status');
             /***** Customer Live Bandwith With Her Profile *******/
-            Route::get('/live-bandwith-update/{customer_id}', 'customer_live_bandwith_update')->name('admin.customer.live_bandwith_update');
+            // Route::get('/live-bandwith-update/{customer_id}', 'customer_live_bandwith_update')->name('admin.customer.live_bandwith_update');
              /***** Onu Information *******/
              Route::post('/get-onu-information', 'get_onu_info')->name('admin.customer.get_onu_info');
              /*****Get Router name *******/
@@ -826,7 +826,12 @@ Route::get('/optimize', function () {
     return 'Optimize Clear Completed';
 });
 
+/*---- Route without middleware ---------*/
+Route::get('admin/customer/live-bandwith-update/{customer_id}', [CustomerController::class,'customer_live_bandwith_update'])->name('admin.customer.live_bandwith_update');
 
+
+
+/*----Customer Portal Route ---------*/
 Route::middleware('auth:customer')->group(function () {
     Route::get('/customer/portal', function () {
         return view('Portal.Dashboard');
@@ -838,4 +843,5 @@ Route::middleware('auth:customer')->group(function () {
         request()->session()->regenerateToken();
         return redirect()->route('admin.login');
     })->name('customer.logout');
+
 });
