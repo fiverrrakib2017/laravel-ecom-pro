@@ -2,6 +2,11 @@
     @php
         $status = strtolower(auth('customer')->user()->status ?? 'offline');
         $isOnline = $status === 'online';
+
+        $get_total_due =  \App\Models\Customer_recharge::where('customer_id', auth('customer')->user()->id)->where('transaction_type', 'credit')->sum('amount') ?? 0;
+        $duePaid = \App\Models\Customer_recharge::where('customer_id', auth('customer')->user()->id)->where('transaction_type', 'due_paid')->sum('amount') ?? 0;
+
+        $totalDue = $get_total_due - $duePaid;
     @endphp
 
     <div class="col-lg-3 col-6">
@@ -25,7 +30,7 @@
     <div class="col-lg-3 col-6">
         <div class="small-box bg-danger">
             <div class="inner">
-                <h3 class="mb-1">0.00 ৳</h3>
+                <h3 class="mb-1">{{$totalDue}} ৳</h3>
                 <p class="mb-0">Total Due</p>
             </div>
             <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
