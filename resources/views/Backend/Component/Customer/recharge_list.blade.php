@@ -18,7 +18,7 @@
      </thead>
      <tbody>
          @php
-             $total_recharge_data = App\Models\Customer_recharge::where('customer_id', auth('customer')->user()->id)
+             $total_recharge_data = App\Models\Customer_recharge::where('customer_id', $customer_id)
                  ->latest()
                  ->get();
          @endphp
