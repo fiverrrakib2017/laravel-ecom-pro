@@ -74,6 +74,9 @@
                      <button class="btn btn-success btn-sm customer_recharge_print_btn" data-id="{{ $item->id }}"><i
                              class="fas fa-print"></i>
                      </button>
+                     <button class="btn btn-danger btn-sm customer_recharge_undo_btn" data-id="{{ $item->id }}"><i
+                             class="fas fa-undo"></i>
+                     </button>
                  </td>
 
              </tr>

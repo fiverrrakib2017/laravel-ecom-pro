@@ -1,3 +1,12 @@
+@php
+    $transaction_type = $transaction_type ?? null;
+    $message_check = $message_check ?? '';
+    $payable_amount = $payable_amount ?? '';
+    $package_name = $package_name ?? '';
+    $customer_amount = $customer_amount ?? '';
+    $multiple_select_month = $multiple_select_month ?? '';
+@endphp
+
 <div class="modal fade bs-example-modal-lg" id="CustomerRechargeModal" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog " role="document">
@@ -41,12 +50,12 @@
 
                     <div class="form-group mb-2">
                         <label>Recharge Month & Year</label>
-                        <select  name="recharge_month[]" class="form-control" multiple required>
+                        <select  name="recharge_month[]" class="form-control"  required>
                             @foreach ($years as $year)
                                 @foreach ($months as $num => $name)
                                     @php
                                         $value = $year . '-' . str_pad($num, 2, '0', STR_PAD_LEFT); // ex: 2025-05
-                                        $label = $name . ' ' . $year; // ex: May 2025
+                                        $label = $name . ' ' . $year;
                                     @endphp
                                     <option value="{{ $value }}" {{ ($num == $currentMonth && $year == $currentYear) ? 'selected' : '' }}>
                                         {{ $label }}
@@ -57,26 +66,27 @@
                     </div>
 
                     <div class="d-none">
-                        <input name="pop_id" class="form-control" type="text" value="{{ $data->pop_id }}">
-                        <input name="area_id" class="form-control" type="text" value="{{ $data->area_id }}">
-                        <input name="customer_id" class="form-control" type="text" value="{{ $data->id }}">
+                        <input name="pop_id" class="form-control" type="text" value="{{ $data->pop_id ?? '' }}">
+                        <input name="area_id" class="form-control" type="text" value="{{ $data->area_id ?? '' }}">
+                        <input name="customer_id" class="form-control" type="text" value="{{ $data->id ?? '' }}">
                     </div>
                     <div class="form-group mb-2">
                         <label>Package</label>
-                        <input readonly class="form-control" type="text" value="{{ $data->package->name ?? 'N/A' }}">
+                        <input readonly class="form-control" type="text" value="{{ $data->package->name ?? $package_name ?? 'N/A' }}">
                     </div>
                     <div class="form-group mb-2">
                         <label>Amount</label>
                         <input readonly name="amount" placeholder="Enter Amount" class="form-control" type="number"
-                            value="{{ $data->amount ?? '0' }}" required>
+                            value="{{ $data->amount ?? $customer_amount ?? '0' }}" required>
                     </div>
-
+                    @if($payable_amount !=='disabled')
                     <div class="form-group mb-2">
                         <label>Payable Amount</label>
                         <input name="payable_amount" placeholder="Enter Amount" class="form-control" type="number"
                             value="{{ $data->amount ?? '0' }}" required>
                     </div>
-
+                    @endif
+                    @if($transaction_type !=='disabled')
                     <div class="form-group mb-2">
                         <label for="">Transaction Type</label>
                         <select type="text" class="form-select" name="transaction_type" style="width: 100%;"
@@ -89,6 +99,8 @@
                             <option value="due_paid">Due Paid</option>
                         </select>
                     </div>
+                    @endif
+
                     <div class="form-group mb-2" id="voucherField" style="display: none;">
                         <label>Voucher No.</label>
                         <input name="voucher_no" placeholder="Enter Voucher No." class="form-control" type="text">
@@ -114,6 +126,8 @@
                         <label>Remarks</label>
                         <input name="note" placeholder="Enter Remarks" class="form-control" type="text">
                     </div>
+
+                    @if($message_check !=='disabled')
                     <div class="form-group">
                         <!-- Checkbox Message -->
                         <div class="icheck-primary d-inline">
@@ -123,6 +137,7 @@
                             </label>
                         </div>
                     </div>
+                    @endif
                     <div class="modal-footer ">
                         <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
                         <button type="submit" class="btn btn-success">Save Changes</button>
