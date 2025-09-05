@@ -14,7 +14,7 @@
                         <ul class="nav nav-tabs" id="paymentTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="bkash-tab" data-toggle="tab" href="#bkash"
-                                    role="tab">Bkash</a>
+                                    role="tab"><img src="{{ asset('Backend/images/bkash.png') }}"alt="bKash" style="height:22px; margin-right:8px; border-radius:3px; padding:2px; background:white;">Bkash</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="nagad-tab" data-toggle="tab" href="#nagad" role="tab">Nagad</a>
