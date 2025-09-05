@@ -87,6 +87,9 @@ class SettingsController extends Controller
 
         return response(['success'=>true,'message'=>'Settings updated successfully']);
     }
+    public function payment_method_create(){
+        return view('Backend.Pages.Settings.Payment_method.create');
+    }
 
     private function validateForm($request)
     {

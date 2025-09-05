@@ -961,7 +961,7 @@
 
                 <!-----------------Settings--------------------->
                 @php
-                    $active_prefix = ['admin.settings.information.index','admin.settings.passowrd.change.index'];
+                    $active_prefix = ['admin.settings.information.index','admin.settings.passowrd.change.index','admin.settings.payment.method.index'];
                 @endphp
                     @if(auth()->guard('admin')->user()->can('menu.access.settings'))
                         <li class="nav-item">
@@ -990,6 +990,13 @@
                                     </a>
                                 </li>
                                 @endif
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.settings.payment.method.index') }}"
+                                        class="nav-link {{ $route == 'admin.settings.payment.method.index' ? 'active' : '' }}"><i
+                                            class="far fa-circle nav-icon"></i>
+                                        <p>Payment Method</p>
+                                    </a>
+                                </li>
 
                             </ul>
                         </li>
