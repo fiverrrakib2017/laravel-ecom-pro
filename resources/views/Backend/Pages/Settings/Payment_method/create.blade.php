@@ -41,46 +41,46 @@
                                     <div class="form-group">
                                         <label for="bkash_number">Bkash Number</label>
                                         <input type="text" class="form-control" name="bkash_number"
-                                            placeholder="Enter Bkash Merchant Number">
+                                            placeholder="Enter Bkash Merchant Number" value="{{$data->account_number ?? ''}}">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_api_key">API Key</label>
                                         <input type="text" class="form-control" name="bkash_api_key"
-                                            placeholder="Enter Bkash API Key">
+                                            placeholder="Enter Bkash API Key" value="{{$data->api_key ?? ''}}">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_api_secret">API Secret</label>
-                                        <input type="password" class="form-control" name="bkash_api_secret" placeholder="Enter Bkash API Secret">
+                                        <input type="text" class="form-control" name="bkash_api_secret" placeholder="Enter Bkash API Secret" value="{{$data->api_secret ?? ''}}">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_username">Username</label>
-                                        <input type="text" class="form-control"  name="bkash_username" placeholder="Enter Bkash Username">
+                                        <input type="text" class="form-control"  name="bkash_username" placeholder="Enter Bkash Username" value="{{$data->username ?? ''}}">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_password">Password</label>
-                                        <input type="password" class="form-control"
-                                            name="bkash_password" placeholder="Enter Bkash Password">
+                                        <input type="text" class="form-control"
+                                            name="bkash_password" placeholder="Enter Bkash Password" value="{{$data->password ?? ''}}">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_callback_url">Callback URL</label>
                                         <input type="url" class="form-control"
-                                            name="bkash_callback_url" placeholder="https://yourdomain.com/bkash/callback">
+                                            name="bkash_callback_url" placeholder="https://yourdomain.com/bkash/callback" value="{{$data->callback_url ?? ''}}">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_status">Status</label>
                                         <select class="form-control"  name="bkash_status">
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
+                                            <option value="1" @if($data->status=='1') selected @endif>Active</option>
+                                            <option value="0"@if($data->status=='0') selected @endif>Inactive</option>
                                         </select>
                                     </div>
 
-                                    <button type="submit" class="btn btn-success">Save</button>
+                                    <button type="submit" class="btn btn-success">Save Changes</button>
                                 </form>
                             </div>
 
