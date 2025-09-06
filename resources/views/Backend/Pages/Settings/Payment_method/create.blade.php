@@ -33,46 +33,48 @@
                         <div class="tab-content mt-3">
                             <!-- Bkash Tab -->
                             <div class="tab-pane fade show active" id="bkash" role="tabpanel">
-                                <form>
+                                <form action="{{ route('admin.settings.payment.method.store') }}" method="POST" id="BkashForm">
+                                @csrf
+                                    <div class="form-group d-none">
+                                        <input type="text" name="name" value="Bkash">
+                                    </div>
                                     <div class="form-group">
                                         <label for="bkash_number">Bkash Number</label>
-                                        <input type="text" class="form-control" id="bkash_number" name="bkash_number"
+                                        <input type="text" class="form-control" name="bkash_number"
                                             placeholder="Enter Bkash Merchant Number">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_api_key">API Key</label>
-                                        <input type="text" class="form-control" id="bkash_api_key" name="bkash_api_key"
+                                        <input type="text" class="form-control" name="bkash_api_key"
                                             placeholder="Enter Bkash API Key">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_api_secret">API Secret</label>
-                                        <input type="password" class="form-control" id="bkash_api_secret"
-                                            name="bkash_api_secret" placeholder="Enter Bkash API Secret">
+                                        <input type="password" class="form-control" name="bkash_api_secret" placeholder="Enter Bkash API Secret">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_username">Username</label>
-                                        <input type="text" class="form-control" id="bkash_username" name="bkash_username"
-                                            placeholder="Enter Bkash Username">
+                                        <input type="text" class="form-control"  name="bkash_username" placeholder="Enter Bkash Username">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_password">Password</label>
-                                        <input type="password" class="form-control" id="bkash_password"
+                                        <input type="password" class="form-control"
                                             name="bkash_password" placeholder="Enter Bkash Password">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_callback_url">Callback URL</label>
-                                        <input type="url" class="form-control" id="bkash_callback_url"
+                                        <input type="url" class="form-control"
                                             name="bkash_callback_url" placeholder="https://yourdomain.com/bkash/callback">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="bkash_status">Status</label>
-                                        <select class="form-control" id="bkash_status" name="bkash_status">
+                                        <select class="form-control"  name="bkash_status">
                                             <option value="1">Active</option>
                                             <option value="0">Inactive</option>
                                         </select>
@@ -146,7 +148,14 @@
 @endsection
 
 @section('script')
-    <script type="text/javascript">
-        // Future JS if needed
-    </script>
+<script  src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        handle_submit_form('#BkashForm');
+
+
+    });
+
+
+  </script>
 @endsection

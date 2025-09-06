@@ -708,6 +708,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/passowrd/change/store', 'password_change_store')->name('admin.settings.passowrd.change.store');
             /** Payment Method Route **/
             Route::get('/payment-method/create', 'payment_method_create')->name('admin.settings.payment.method.index');
+            Route::post('/payment-method/store','payment_method_store')->name('admin.settings.payment.method.store');
         });
     });
     /* Mikrotik Router Management Route */

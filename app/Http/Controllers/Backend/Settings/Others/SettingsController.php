@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend\Settings\Others;
 
 use App\Http\Controllers\Controller;
 use App\Models\Website_information;
+use App\Models\Payment_method;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
@@ -88,7 +89,32 @@ class SettingsController extends Controller
         return response(['success'=>true,'message'=>'Settings updated successfully']);
     }
     public function payment_method_create(){
-        return view('Backend.Pages.Settings.Payment_method.create');
+        if (auth()->guard('admin')->user()->pop_id == null) {
+            $data = Payment_method::latest()->where('pop_id',null)->first();
+            return view('Backend.Pages.Settings.Payment_method.create', compact('data'));
+        }else{
+            $data = Payment_method::where('pop_id',auth()->guard('admin')->user()->pop_id)->latest()->first();
+            return view('Backend.Pages.Settings.Payment_method.create', compact('data'));
+        }
+        abort(403);
+    }
+    public function payment_method_store(Request $request)
+    {
+        $object = Payment_method::find($request->id) ?? new Payment_method();
+        if (auth()->guard('admin')->user()->pop_id !== null) {
+            $object->pop_id = auth()->guard('admin')->user()->pop_id;
+        }
+        $object->name = $request->name;
+        $object->account_number = $request->bkash_number;
+        $object->api_key = $request->bkash_api_key;
+        $object->api_secret = $request->bkash_api_secret;
+        $object->username = $request->bkash_username;
+        $object->password = $request->bkash_password;
+        $object->callback_url = $request->bkash_callback_url;
+        $object->status = $request->bkash_status;
+        $object->save();
+
+        return response(['success'=>true,'message'=>'Payment Method Add Successfully']);
     }
 
     private function validateForm($request)

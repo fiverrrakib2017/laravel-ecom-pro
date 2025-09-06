@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
+            $table->integer('pop_id')->nullable();
             $table->string('name'); // e.g. Bkash, Nagad, Rocket, SSLCommerz, Stripe
             $table->string('account_number')->nullable(); // merchant number / account number
             $table->string('api_key')->nullable();
