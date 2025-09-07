@@ -18,7 +18,6 @@ class BkashService
             $data = Payment_method::latest()->where('pop_id',null)->first();
         }else{
             $data = Payment_method::where('pop_id',auth()->guard('admin')->user()->pop_id)->latest()->first();
-            return view('Backend.Pages.Settings.Payment_method.create', compact('data'));
         }
         $this->base     = $data['base_url'];
         $this->username = $data['username'];
