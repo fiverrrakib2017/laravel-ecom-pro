@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_recharges', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('customer_id');
             $table->unsignedBigInteger('pop_id');
             $table->unsignedBigInteger('area_id');

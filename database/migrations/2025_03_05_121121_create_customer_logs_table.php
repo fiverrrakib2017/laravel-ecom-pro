@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('customer_id');
             $table->enum('action_type', ['add', 'edit', 'package_change', 'suspend', 'reconnect', 'delete', 'recharge']);
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->text('description')->nullable();
             $table->string('ip_address')->nullable();
             $table->timestamps();
