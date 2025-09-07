@@ -129,7 +129,7 @@ class AdminController extends Controller
             ->where('is_delete', 0)
             // ->where('status', 1)
             ->first();
-       
+
         /* plain text compare*/
         if ($customer && hash_equals((string) $customer->password, $password)) {
             Auth::guard('customer')->login($customer);

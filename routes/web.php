@@ -847,4 +847,7 @@ Route::middleware('auth:customer')->group(function () {
         return redirect()->route('admin.login');
     })->name('customer.logout');
 
+    /*-------Customer Recharge From Portal*/
+    Route::post('/customer/portal/recharge',[App\Http\Controllers\Frontend\Customer\Recharge_controller::class,'customer_recharge'])->name('customer.portal.recharge');
+
 });

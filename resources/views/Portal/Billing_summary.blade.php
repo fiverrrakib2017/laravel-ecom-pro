@@ -29,7 +29,8 @@
     'message_check'         =>'disabled',
     'payable_amount'        =>'disabled',
     'package_name'          =>auth('customer')->user()->package->name ?? '',
-    'customer_amount'       =>auth('customer')->user()->amount ?? ''
+    'customer_amount'       =>auth('customer')->user()->amount ?? '',
+    'recharge_url'          =>'true',
 
 
 ])

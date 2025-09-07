@@ -1,10 +1,11 @@
 @php
-    $transaction_type = $transaction_type ?? null;
-    $message_check = $message_check ?? '';
-    $payable_amount = $payable_amount ?? '';
-    $package_name = $package_name ?? '';
-    $customer_amount = $customer_amount ?? '';
-    $multiple_select_month = $multiple_select_month ?? '';
+    $transaction_type       = $transaction_type ?? null;
+    $message_check          = $message_check ?? '';
+    $payable_amount         = $payable_amount ?? '';
+    $package_name           = $package_name ?? '';
+    $customer_amount        = $customer_amount ?? '';
+    $multiple_select_month  = $multiple_select_month ?? '';
+    $recharge_url           = $recharge_url ?? '';
 @endphp
 
 <div class="modal fade bs-example-modal-lg" id="CustomerRechargeModal" tabindex="-1" role="dialog"
@@ -20,8 +21,19 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('admin.customer.recharge.store') }}" id="customerRechargeForm" method="POST"
-                    enctype="multipart/form-data">
+                <form
+                    @if($recharge_url=='')
+                        action  ="{{ route('admin.customer.recharge.store') }}"
+                        id      ="customerRechargeForm"
+                    @else
+                        action  ="{{ route('customer.portal.recharge') }}"
+                         id      ="customerRechargeForm"
+                    @endif
+
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
                     @csrf
                     @php
                         $months = [
@@ -50,7 +62,7 @@
 
                     <div class="form-group mb-2">
                         <label>Recharge Month & Year</label>
-                        <select  name="recharge_month[]" class="form-control"  required>
+                        <select @if($multiple_select_month=='') name="recharge_month[]" @else name="recharge_month[]" @endif   class="form-control" @if($multiple_select_month=='') multiple @endif required>
                             @foreach ($years as $year)
                                 @foreach ($months as $num => $name)
                                     @php
