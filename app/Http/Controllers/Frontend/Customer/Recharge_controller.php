@@ -46,13 +46,14 @@ class Recharge_controller extends Controller
             // }
             try {
                 $res = $this->bkash->createPayment([
-                    'amount'  => 500,
+                    'amount'  => '500',
                     'invoice' => 'adsfasdasd',
                 ]);
+
                 // keep paymentID to map later
                 session(['bkash_payment_id' => $res['paymentID']]);
 
-                return response()->json(['bkashURL' => $res['bkashURL']]);
+                return redirect()->away($res['bkashURL']);
             } catch (\Throwable $e) {
                 return response()->json(['message' => $e->getMessage()], 500);
             }

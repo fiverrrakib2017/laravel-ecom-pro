@@ -27,7 +27,7 @@
                         id      ="customerRechargeForm"
                     @else
                         action  ="{{ route('customer.portal.recharge') }}"
-                         id      ="customerRechargeForm"
+                      
                     @endif
 
                     method="POST"
