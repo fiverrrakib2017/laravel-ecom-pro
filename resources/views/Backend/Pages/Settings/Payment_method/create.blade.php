@@ -36,6 +36,7 @@
                                 <form action="{{ route('admin.settings.payment.method.store') }}" method="POST" id="BkashForm">
                                 @csrf
                                     <div class="form-group d-none">
+                                        <input type="text" name="id" value="{{$data->id ?? ''}}">
                                         <input type="text" name="name" value="Bkash">
                                     </div>
                                     <div class="form-group">
@@ -44,6 +45,11 @@
                                             placeholder="Enter Bkash Merchant Number" value="{{$data->account_number ?? ''}}">
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="bkash_url">Url</label>
+                                        <input type="text" class="form-control" name="bkash_url"
+                                            placeholder="Enter URL" value="{{$data->url ?? ''}}">
+                                    </div>
                                     <div class="form-group">
                                         <label for="bkash_api_key">API Key</label>
                                         <input type="text" class="form-control" name="bkash_api_key"

@@ -9,6 +9,7 @@ class Payment_method extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'url',
         'pop_id',
         'name',
         'account_number',

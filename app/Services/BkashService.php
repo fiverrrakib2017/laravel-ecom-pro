@@ -14,12 +14,10 @@ class BkashService
 
     public function __construct()
     {
-        if (auth()->guard('admin')->user()->pop_id == null) {
-            $data = Payment_method::latest()->where('pop_id',null)->first();
-        }else{
-            $data = Payment_method::where('pop_id',auth()->guard('admin')->user()->pop_id)->latest()->first();
-        }
-        $this->base     = $data['base_url'];
+
+        $data = Payment_method::where('pop_id',auth()->guard('customer')->user()->pop_id)->where('pop_id',null)->latest()->first();
+
+        $this->base     = $data['url'];
         $this->username = $data['username'];
         $this->password = $data['password'];
         $this->appKey   = $data['app_key'];

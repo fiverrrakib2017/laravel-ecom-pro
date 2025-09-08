@@ -30,9 +30,9 @@ class SettingsController extends Controller
     public function password_change_store(Request $request)
     {
         $request->validate([
-            'current_password' => 'required|string|max:255',
-            'new_password' => 'required|string|max:255|min:6',
-            'confirm_new_password' => 'required|string|same:new_password',
+            'current_password'      => 'required|string|max:255',
+            'new_password'          => 'required|string|max:255|min:6',
+            'confirm_new_password'  => 'required|string|same:new_password',
         ]);
 
         $admin = auth()->guard('admin')->user();
@@ -62,11 +62,11 @@ class SettingsController extends Controller
     {
         //return $request->all();
         $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:500',
-            'phone_number' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name'          => 'required|string|max:255',
+            'address'       => 'nullable|string|max:500',
+            'phone_number'  => 'nullable|string|max:20',
+            'email'         => 'nullable|email|max:255',
+            'logo'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         $object = Website_information::find($request->id) ?? new Website_information();
@@ -74,15 +74,15 @@ class SettingsController extends Controller
         if (auth()->guard('admin')->user()->pop_id !== null) {
             $object->pop_id = auth()->guard('admin')->user()->pop_id;
         }
-        $object->name = $request->name;
-        $object->address = $request->address;
-        $object->phone_number = $request->phone_number;
-        $object->email = $request->email;
+        $object->name           = $request->name;
+        $object->address        = $request->address;
+        $object->phone_number   = $request->phone_number;
+        $object->email          = $request->email;
         if ($request->hasFile('logo')) {
-            $image = $request->file('logo');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image              = $request->file('logo');
+            $imageName          = time() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('Backend/uploads/photos/'), $imageName);
-            $object->logo = $imageName;
+            $object->logo       = $imageName;
         }
         $object->save();
 
@@ -104,14 +104,15 @@ class SettingsController extends Controller
         if (auth()->guard('admin')->user()->pop_id !== null) {
             $object->pop_id = auth()->guard('admin')->user()->pop_id;
         }
-        $object->name = $request->name;
+        $object->url            = $request->bkash_url;
+        $object->name           = $request->name;
         $object->account_number = $request->bkash_number;
-        $object->api_key = $request->bkash_api_key;
-        $object->api_secret = $request->bkash_api_secret;
-        $object->username = $request->bkash_username;
-        $object->password = $request->bkash_password;
-        $object->callback_url = $request->bkash_callback_url;
-        $object->status = $request->bkash_status;
+        $object->api_key        = $request->bkash_api_key;
+        $object->api_secret     = $request->bkash_api_secret;
+        $object->username       = $request->bkash_username;
+        $object->password       = $request->bkash_password;
+        $object->callback_url   = $request->bkash_callback_url;
+        $object->status         = $request->bkash_status;
         $object->save();
 
         return response(['success'=>true,'message'=>'Payment Method Add Successfully']);

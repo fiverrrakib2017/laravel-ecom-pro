@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('pop_id')->nullable();
             $table->string('name'); // e.g. Bkash, Nagad, Rocket, SSLCommerz, Stripe
             $table->string('account_number')->nullable(); // merchant number / account number
+            $table->text('url')->nullable();
             $table->string('api_key')->nullable();
             $table->string('api_secret')->nullable();
             $table->string('username')->nullable();

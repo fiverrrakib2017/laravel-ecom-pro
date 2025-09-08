@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Frontend\Customer;
 use App\Http\Controllers\Controller;
+use App\Services\BkashService;
+
 use Illuminate\Http\Request;
 use App\Models\Branch_package;
 use App\Models\Branch_transaction;
@@ -28,21 +30,37 @@ use Illuminate\Support\Facades\Cache;
 
 class Recharge_controller extends Controller
 {
+    public function __construct(private BkashService $bkash) {}
     public function customer_recharge(Request $request){
         if ($request==true){
             DB::beginTransaction();
             /*Check POP/Branch Balance*/
-            $pop_balance = check_pop_balance(auth()->guard('customer')->user()->pop_id);
+            // $pop_balance = check_pop_balance(auth()->guard('customer')->user()->pop_id);
 
-            if ($pop_balance < $request->payable_amount) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pop balance is not enough',
+            // if ($pop_balance < $request->payable_amount) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Pop balance is not enough',
+            //     ]);
+            //     exit();
+            // }
+            try {
+                $res = $this->bkash->createPayment([
+                    'amount'  => 500,
+                    'invoice' => 'adsfasdasd',
                 ]);
-                exit();
+                // keep paymentID to map later
+                session(['bkash_payment_id' => $res['paymentID']]);
+
+                return response()->json(['bkashURL' => $res['bkashURL']]);
+            } catch (\Throwable $e) {
+                return response()->json(['message' => $e->getMessage()], 500);
             }
+
+
+            exit;
             $object                     = new Customer_recharge();
-            $object->user_id            =
+            $object->user_id            = null;
             $object->customer_id        = auth()->guard('customer')->user()->id;
             $object->pop_id             = auth()->guard('customer')->user()->pop_id;
             $object->area_id            = auth()->guard('customer')->user()->area_id;
@@ -88,7 +106,7 @@ class Recharge_controller extends Controller
                 }
                 /*Delete Grace Rechage**/
                 $get_grace_recharge->delete();
-                customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Grace Recharge Remove!');
+                customer_log($object->customer_id, 'recharge',null, 'Customer Grace Recharge Remove!');
             }
             /*--------Send Message For Customer --------------*/
             // if($request->send_message=='1'){
@@ -121,7 +139,7 @@ class Recharge_controller extends Controller
             //     $send_message->save();
             // }
             if ($object->save()) {
-                customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');
+                customer_log($object->customer_id, 'recharge',null, 'Customer Recharge Completed!');
 
                 /*Call Router activation Function*/
                 $this->router_activation($object->customer_id);
