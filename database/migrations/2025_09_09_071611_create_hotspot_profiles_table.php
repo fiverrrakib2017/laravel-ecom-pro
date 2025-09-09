@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('hotspot_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('router_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('router_id')->constrained('routers')->cascadeOnDelete();
             $table->string('name');
-            $table->string('mikrotik_profile'); 
+            $table->string('mikrotik_profile');
             $table->string('rate_limit')->nullable(); // e.g. 5M/5M (fallback)
             $table->unsignedInteger('shared_users')->default(1);
             $table->string('idle_timeout')->nullable(); // e.g. 5m
@@ -25,7 +25,6 @@ return new class extends Migration
             $table->unsignedInteger('price_minor')->default(0); // store in minor unit (paisa)
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
-            $table->timestamps();
             $table->unique(['router_id','mikrotik_profile']);
             $table->timestamps();
         });

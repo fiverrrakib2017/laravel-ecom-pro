@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('voucher_batches', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('router_id')->constrained()->cascadeOnDelete();
+             $table->foreignId('router_id')->constrained('routers')->cascadeOnDelete();
             $table->foreignId('hotspot_profile_id')->constrained()->cascadeOnDelete();
             $table->string('name'); // e.g. Eid Offer 1GB 2H
             $table->unsignedInteger('qty');

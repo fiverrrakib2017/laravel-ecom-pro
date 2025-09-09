@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('hotspot_users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('router_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('router_id')->constrained('routers')->cascadeOnDelete();
             $table->foreignId('hotspot_profile_id')->constrained()->cascadeOnDelete();
             $table->string('username');
             $table->text('password_encrypted'); // store encrypted for print/recovery
