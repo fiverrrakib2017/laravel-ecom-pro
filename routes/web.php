@@ -9,7 +9,6 @@ use App\Http\Controllers\Backend\Accounts\Trial_balance_controller;
 use App\Http\Controllers\Backend\Admin\AdminController;
 use App\Http\Controllers\Backend\Client\Client_invoiceController;
 use App\Http\Controllers\Backend\Customer\CustomerController;
-use App\Http\Controllers\Backend\Student\ExamRoutine_controller;
 use App\Http\Controllers\Backend\Supplier\Supplier_invoiceController;
 use App\Http\Controllers\Backend\Supplier\Supplier_returnController;
 use App\Http\Controllers\Backend\Customer\InvoiceController;
@@ -204,7 +203,9 @@ Route::group(['middleware' => 'admin'], function () {
     });
     /** Hotspot Route **/
     Route::prefix('admin/hotspot')->group(function () {
-        Route::controller(CustomerController::class)->group(function () {
+        Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotController::class)->group(function () {
+            Route::get('/dashbaord', 'hotspot_dashbaord')->name('admin.hotspot.user.dashbaord');
+
             Route::get('/list', 'hotspot_index')->name('admin.hotspot.user.list');
             Route::get('/all-data', 'hotspot_get_all_data')->name('admin.hotspot.user.get_all_data');
             Route::get('/view/{id}', 'view')->name('admin.hotspot.user.view');
