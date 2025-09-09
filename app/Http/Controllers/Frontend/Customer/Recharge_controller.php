@@ -35,48 +35,71 @@ class Recharge_controller extends Controller
         if ($request==true){
             DB::beginTransaction();
             /*Check POP/Branch Balance*/
-            // $pop_balance = check_pop_balance(auth()->guard('customer')->user()->pop_id);
+            $pop_balance = check_pop_balance(auth()->guard('customer')->user()->pop_id);
 
-            // if ($pop_balance < $request->payable_amount) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'Pop balance is not enough',
-            //     ]);
-            //     exit();
-            // }
+            if ($pop_balance < $request->amount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pop balance is not enough',
+                ]);
+                exit();
+            }
+            return $request->all(); exit;
+            $_invoice_number =  'INV-' . date('Ymd') . '-' . mt_rand(1000, 9999);
             try {
                 $res = $this->bkash->createPayment([
-                    'amount'  => '500',
-                    'invoice' => 'adsfasdasd',
+                    'amount'  => $request->amount,
+                    'invoice' => $_invoice_number,
                 ]);
 
-                // keep paymentID to map later
-                session(['bkash_payment_id' => $res['paymentID']]);
-
+                /**---------Save Payment Id for later-------****/
+                session([
+                    'bkash_payment_id' => $res['paymentID'],
+                    'bkash_invoice'    => $_invoice_number,
+                    'recharge_data'    => $request->all(),
+                ]);
+                DB::commit();
+                /**--------------Redirect to bKash page-------------***/
                 return redirect()->away($res['bkashURL']);
             } catch (\Throwable $e) {
+                DB::rollBack();
                 return response()->json(['message' => $e->getMessage()], 500);
             }
 
+        }
+    }
+    public function bkash_callback(Request $request){
+        $paymentID  = session('bkash_payment_id');
+        $data       = session('recharge_data');
 
-            exit;
+        if (!$paymentID) {
+            return redirect()->route('customer.portal')
+                ->with('error', 'Invalid payment request!');
+        }
+
+        try {
+        /***----------- bKash execute----------****/
+        $execute = $this->bkash->executePayment($paymentID);
+
+        if (!empty($execute['transactionStatus']) && $execute['transactionStatus'] === 'Completed') {
+
             $object                     = new Customer_recharge();
             $object->user_id            = null;
             $object->customer_id        = auth()->guard('customer')->user()->id;
             $object->pop_id             = auth()->guard('customer')->user()->pop_id;
             $object->area_id            = auth()->guard('customer')->user()->area_id;
-            $object->recharge_month     = implode(',', $request->recharge_month);
+            $object->recharge_month     = implode(',', $data['recharge_month']);
             $object->transaction_type   = 'bkash';
-            $object->amount             = $request->payable_amount;
-            $object->note               = $request->note ?? '';
-            $object->voucher_no         = $request->voucher_no ?? '';
+            $object->amount             = $data['amount'];
+            $object->note               = $data['note'] ?? '';
+            $object->voucher_no         = $execute['merchantInvoiceNumber'] ?? '';
 
             $customer = Customer::find(auth()->guard('customer')->user()->id);
 
-            foreach ($request->recharge_month as $monthYear) {
-                $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
-                    ->where('pop_id', $request->pop_id)
-                    ->where('area_id', $request->area_id)
+            foreach ($data['recharge_month'] as $monthYear) {
+                $existingRecharge = Customer_recharge::where('customer_id', auth()->guard('customer')->user()->id)
+                    ->where('pop_id', auth()->guard('customer')->user()->pop_id)
+                    ->where('area_id', auth()->guard('customer')->user()->area_id)
                     ->where('recharge_month', $monthYear)
                     ->exists();
 
@@ -89,7 +112,7 @@ class Recharge_controller extends Controller
                 }
             }
 
-            $months_count           = count($request->recharge_month);
+            $months_count           = count($data['recharge_month']);
             $base_date              = strtotime($customer->expire_date) > time() ? $customer->expire_date : date('Y-m-d');
             $new_expire_date        = date('Y-m-d', strtotime("+$months_count months", strtotime($base_date)));
             $customer->expire_date  = $new_expire_date;
@@ -109,41 +132,11 @@ class Recharge_controller extends Controller
                 $get_grace_recharge->delete();
                 customer_log($object->customer_id, 'recharge',null, 'Customer Grace Recharge Remove!');
             }
-            /*--------Send Message For Customer --------------*/
-            // if($request->send_message=='1'){
-            //     $package = \App\Models\Branch_package::find($customer->package_id);
-            //     $packageName = $package ? $package->name : '';
-
-            //     $user = auth()->guard('admin')->user();
-            //     $data = \App\Models\Website_information::where('pop_id', $user->pop_id)->latest()->first();
-            //     if ($user->pop_id === null) {
-            //         $data = \App\Models\Website_information::whereNull('pop_id')->latest()->first();
-            //     }
-            //     $message = "($data->name)\n\n"
-            //             . "USER: {$customer->username}\n"
-            //             . "ID: {$customer->id}\n"
-            //             . "NAME: {$customer->fullname}\n"
-            //             . "BILL: Tk {$request->payable_amount}\n\n"
-            //             . "Thanks for your payment";
-
-
-            //     /* Create a new Instance*/
-            //     $send_message =new Send_message();
-            //     $send_message->pop_id = $customer->pop_id;
-            //     $send_message->area_id = $customer->area_id;
-            //     $send_message->customer_id = $customer->id;
-            //     $send_message->message =$message;
-            //     $send_message->sent_at = Carbon::now();
-            //     /*Call Send Message Function */
-            //     send_message($customer->phone, $message);
-            //     /* Save to the database table*/
-            //     $send_message->save();
-            // }
             if ($object->save()) {
-                customer_log($object->customer_id, 'recharge',null, 'Customer Recharge Completed!');
+                customer_log($object->customer_id, 'recharge',null, 'Customer Recharge Bkash Completed!');
 
                 /*Call Router activation Function*/
-                $this->router_activation($object->customer_id);
+                //$this->router_activation($object->customer_id);
 
 
                 DB::commit();
@@ -158,6 +151,14 @@ class Recharge_controller extends Controller
                     'message' => 'Recharge failed. Please try again.',
                 ]);
             }
+        } else {
+            return redirect()->route('customer.portal')
+                ->with('error', 'bKash payment failed or cancelled!');
         }
+    } catch (\Throwable $e) {
+        return redirect()->route('customer.portal')
+            ->with('error', $e->getMessage());
+    }
+
     }
 }

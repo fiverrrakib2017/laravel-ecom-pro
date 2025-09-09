@@ -77,7 +77,7 @@ class BkashService
         $payerRef  = $this->normalizeMsisdn($customer->mobile ?? $customer->phone ?? null)
                  ?? (string)($customer->id ?? 'GUEST');
         $body = [
-            'payerReference'        => 'GUEST',
+            'payerReference'        => $payerRef,
             'mode'                  => '0011',
             'amount'                => number_format((float)$payload['amount'], 2, '.', ''),
             'currency'              => 'BDT',
@@ -89,7 +89,7 @@ class BkashService
 
         $resp = Http::withHeaders([
             'Authorization' => $token,
-            'X-APP-Key'     => $this->api_key, // ← এখানে api_key না, appKey হবে
+            'X-APP-Key'     => $this->api_key, 
             'Content-Type'  => 'application/json',
         ])->post($this->base . '/tokenized/checkout/create', $body);
 
@@ -150,6 +150,6 @@ class BkashService
         if (strlen($msisdn) === 11 && str_starts_with($msisdn, '01')) {
             return $msisdn;
         }
-        return null; 
+        return null;
     }
 }
