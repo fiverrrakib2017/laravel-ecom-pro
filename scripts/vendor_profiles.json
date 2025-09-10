@@ -1,0 +1,82 @@
+{
+  "BDCOM": {
+    "login_prompts": ["login:", "Username:"],
+    "password_prompts": ["Password:", "password:"],
+    "prompt_regex": "(?:[#>\\]])\\s*$",
+    "pager_markers": ["--More--", "--- More ---", "More:", "Press any key"],
+    "commands": {
+      "ports_discover": "show interface brief",
+      "onu_list": "show gpon onu-information interface {pon}",
+      "optical_one": "show gpon interface {pon_if} onu optical-transceiver-diagnosis",
+      "optical_all": "show gpon optical-transceiver-diagnosis interface {pon}",
+      "mac_table": "show mac address-table interface {pon_if}"
+    },
+    "autodiscover_regex": "\\bgpON\\s+\\d+/\\d+",
+    "if_format": { "pon": "gpON {slot}/{port}", "pon_if": "gpON {slot}/{port}:{onu_id}" }
+  },
+
+  "Huawei": {
+    "login_prompts": ["Username:", "Login:"],
+    "password_prompts": ["Password:", "password:"],
+    "prompt_regex": "(?:[#>\\]])\\s*$",
+    "pager_markers": ["---- More ----", "More:"],
+    "commands": {
+      "ports_discover": "display interface brief | include GPON",
+      "onu_list": "display ont info summary {pon}",
+      "optical_one": "display ont optical-info {pon} ontid {onu_id}",
+      "optical_all": "display ont optical-info {pon} all",
+      "mac_table": "display mac-address port {pon_if}"
+    },
+    "autodiscover_regex": "\\b\\d+/\\d+\\b",
+    "if_format": { "pon": "{frame}/{slot}", "pon_if": "{frame}/{slot} {onu_id}" }
+  },
+
+  "ZTE": {
+    "login_prompts": ["Username:", "Login:"],
+    "password_prompts": ["Password:", "password:"],
+    "prompt_regex": "(?:[#>\\]])\\s*$",
+    "pager_markers": ["--More--", "More:"],
+    "commands": {
+      "ports_discover": "show interface gpon-olt brief",
+      "onu_list": "show gpon onu state gpon-olt_{slot}/{port}",
+      "optical_one": "show pon power onu gpon-olt_{slot}/{port} {onu_id}",
+      "optical_all": "show pon power onu gpon-olt_{slot}/{port} all",
+      "mac_table": "show mac address-table gpon-olt_{slot}/{port}:{onu_id}"
+    },
+    "autodiscover_regex": "gpon-olt_\\d+/\\d+",
+    "if_format": { "pon": "gpon-olt_{slot}/{port}", "pon_if": "gpon-olt_{slot}/{port}:{onu_id}" }
+  },
+
+  "VSOL": {
+    "login_prompts": ["Username:", "Login:"],
+    "password_prompts": ["Password:", "password:"],
+    "prompt_regex": "(?:[#>\\]])\\s*$",
+    "pager_markers": ["--More--", "More:"],
+    "commands": {
+      "ports_discover": "show interface status | include PON",
+      "onu_list": "show onu-information interface {pon}",
+      "optical_one": "show onu optical-transceiver-diagnosis interface {pon_if}",
+      "optical_all": "show onu opticalpower interface {pon}",
+      "mac_table": "show mac address-table interface {pon_if}"
+    },
+    "autodiscover_regex": "\\bpon\\s+\\d+/\\d+\\b",
+    "if_format": { "pon": "pon {slot}/{port}", "pon_if": "pon {slot}/{port}:{onu_id}" }
+  },
+
+  "CDATA": {
+    "__note": "Often similar to VSOL; adjust if your model differs.",
+    "login_prompts": ["Username:", "Login:"],
+    "password_prompts": ["Password:", "password:"],
+    "prompt_regex": "(?:[#>\\]])\\s*$",
+    "pager_markers": ["--More--", "More:"],
+    "commands": {
+      "ports_discover": "show interface status | include PON",
+      "onu_list": "show onu-information interface {pon}",
+      "optical_one": "show onu optical-transceiver-diagnosis interface {pon_if}",
+      "optical_all": "show onu opticalpower interface {pon}",
+      "mac_table": "show mac address-table interface {pon_if}"
+    },
+    "autodiscover_regex": "\\bpon\\s+\\d+/\\d+\\b",
+    "if_format": { "pon": "pon {slot}/{port}", "pon_if": "pon {slot}/{port}:{onu_id}" }
+  }
+}

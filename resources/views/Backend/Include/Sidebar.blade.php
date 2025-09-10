@@ -68,35 +68,13 @@
 
                 {{-- Dashboard (was: route('admin.hotspot.dashboard')) --}}
                 <li class="nav-item">
-                    <a href="{{route('admin.hotspot.user.dashbaord')}}" class="nav-link ">
+                    <a href="{{route('admin.hotspot.user.dashbaord')}}" class="nav-link  {{ Str::startsWith($currentRoute, 'admin.hotspot.user.dashbaord') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Hotspot Dashboard</p>
                     </a>
                 </li>
 
-                {{-- Routers --}}
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-network-wired"></i>
-                        <p>Routers<i class="right fas fa-angle-left"></i></p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        {{-- was: route('admin.hotspot.routers.index') --}}
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Routers</p>
-                            </a>
-                        </li>
-                        {{-- was: route('admin.hotspot.routers.create') --}}
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Router</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+
 
                 {{-- Profiles --}}
                 <li class="nav-item has-treeview">
