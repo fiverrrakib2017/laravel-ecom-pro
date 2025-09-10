@@ -1,14 +1,16 @@
 <?php
 namespace App\Http\Controllers\Backend\Api;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\Send_message;
 use App\Models\Customer_recharge;
 use App\Models\Grace_recharge;
-
-use function App\Helpers\customer_log;
 use Illuminate\Support\Carbon;
 use function App\Helpers\send_message;
+use function App\Helpers\router_activation;
+use function App\Helpers\customer_log;
 class BkashSmsController extends Controller
 {
     public function receive(Request $request){
@@ -45,9 +47,9 @@ class BkashSmsController extends Controller
             $object->area_id            = $customer->area_id;
             $object->recharge_month     = implode(',', date('Y-m'));
             $object->transaction_type   = 'bkash';
-            $object->amount             = $data['amount'];
-            $object->note               = $data['note'] ?? '';
-            $object->voucher_no         = $execute['merchantInvoiceNumber'] ?? '';
+            $object->amount             = $amount;
+            $object->note               = 'Bkash Send Money';
+            $object->voucher_no         =  '';
 
             $customer = Customer::find(auth()->guard('customer')->user()->id);
 
@@ -77,14 +79,12 @@ class BkashSmsController extends Controller
                 customer_log($object->customer_id, 'recharge',null, 'Customer Recharge Bkash Completed!');
 
                 /*Call Router activation Function*/
-                //$this->router_activation($object->customer_id);
+                router_activation($object->customer_id);
 
 
                 DB::commit();
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Recharge successfully.',
-                ]);
+                 /*----------- Send Message ------------*/
+                $this->_send_message("Your Recharge Has benn Successfully Completed", $customer);
             } else {
                 DB::rollBack();
                 return response()->json([
@@ -94,8 +94,7 @@ class BkashSmsController extends Controller
             }
 
 
-        /*----------- Send Message ------------*/
-        $this->_send_message("Your Recharge Has benn Successfully Completed", $customer);
+
 
 
 

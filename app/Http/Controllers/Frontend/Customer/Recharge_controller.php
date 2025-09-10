@@ -21,6 +21,7 @@ use function App\Helpers\customer_log;
 use function App\Helpers\formate_uptime;
 use function App\Helpers\get_mikrotik_user_info;
 use function App\Helpers\send_message;
+use function App\Helpers\router_activation;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -136,7 +137,7 @@ class Recharge_controller extends Controller
                 customer_log($object->customer_id, 'recharge',null, 'Customer Recharge Bkash Completed!');
 
                 /*Call Router activation Function*/
-                //$this->router_activation($object->customer_id);
+                router_activation($object->customer_id);
 
 
                 DB::commit();
