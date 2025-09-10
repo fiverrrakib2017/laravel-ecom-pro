@@ -6,6 +6,8 @@ use App\Models\Customer;
 use App\Models\Customer_log;
 use App\Models\Sms_configuration;
 use App\Models\Customer_recharge;
+use App\Models\Router as Mikrotik_router;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use RouterOS\Client;
 use RouterOS\Query;
@@ -208,3 +210,56 @@ if (!function_exists('formate_uptime')) {
         return "{$days} d {$hours} h {$minutes} m {$seconds} sec";
     }
 }
+
+if (!function_exists('router_activation')) {
+    function router_activation($customer_id)
+    {
+         $customer=Customer::find($customer_id);
+        $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
+        if ($router) {
+            $client = new Client([
+                'host' => $router->ip_address,
+                'user' => $router->username,
+                'pass' => $router->password,
+                'port' => (int) $router->port ?? 8728,
+            ]);
+
+            try {
+                $client->connect();
+
+                // Find secret
+                $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
+                $secrets = $client->query($secretQuery)->read();
+
+                if (!empty($secrets)) {
+                    $secretId = $secrets[0]['.id'];
+                    $isDisabled = $secrets[0]['disabled'] ?? 'false';
+
+                    if ($isDisabled === 'true') {
+                        /* Enable secret*/
+                        $enableQuery = (new Query('/ppp/secret/set'))
+                            ->equal('.id', $secretId)
+                            ->equal('disabled', 'no');
+                        $client->query($enableQuery)->read();
+                    }
+
+                    $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
+                    $activeUser = $client->query($activeQuery)->read();
+
+                    if (!empty($activeUser)) {
+                        $activeId = $activeUser[0]['.id'];
+                        $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
+                        $client->query($removeQuery)->read();
+                    }
+
+                    /* Status update*/
+                    $customer->status = 'online';
+                    $customer->save();
+                }
+            } catch (\Exception $e) {
+                \Log::error("Router connection or enabling failed: " . $e->getMessage());
+            }
+        }
+    }
+}
+

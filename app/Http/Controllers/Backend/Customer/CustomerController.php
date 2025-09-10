@@ -21,6 +21,7 @@ use function App\Helpers\customer_log;
 use function App\Helpers\formate_uptime;
 use function App\Helpers\get_mikrotik_user_info;
 use function App\Helpers\send_message;
+use function App\Helpers\router_activation;
 
 use phpseclib3\Net\SSH2;
 use Illuminate\Support\Facades\DB;
@@ -1639,7 +1640,7 @@ class CustomerController extends Controller
                 customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Completed!');
 
                 /*Call Router activation Function*/
-                $this->router_activation($object->customer_id);
+                router_activation($object->customer_id);
 
 
                 DB::commit();
@@ -1763,7 +1764,7 @@ class CustomerController extends Controller
 
                     customer_log($customer_id, 'recharge', auth()->guard('admin')->id(), 'Customer Recharge Completed!');
                     /*Call Router activation Function*/
-                    $this->router_activation($customer_id);
+                    router_activation($customer_id);
                 }
             }
 
@@ -1807,7 +1808,7 @@ class CustomerController extends Controller
                     $customer->save();
                 }
                 /*Activate rouater customer*/
-                $this->router_activation($customer_id);
+                router_activation($customer_id);
             }
 
             DB::commit();
@@ -2144,57 +2145,6 @@ class CustomerController extends Controller
 
     public function hotspot_index(){
         return view('Backend.Pages.Customer.Hotspot.index');
-    }
-
-
-
-    private function router_activation($customer_id){
-        $customer=Customer::find($customer_id);
-        $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
-        if ($router) {
-            $client = new Client([
-                'host' => $router->ip_address,
-                'user' => $router->username,
-                'pass' => $router->password,
-                'port' => (int) $router->port ?? 8728,
-            ]);
-
-            try {
-                $client->connect();
-
-                // Find secret
-                $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
-                $secrets = $client->query($secretQuery)->read();
-
-                if (!empty($secrets)) {
-                    $secretId = $secrets[0]['.id'];
-                    $isDisabled = $secrets[0]['disabled'] ?? 'false';
-
-                    if ($isDisabled === 'true') {
-                        /* Enable secret*/
-                        $enableQuery = (new Query('/ppp/secret/set'))
-                            ->equal('.id', $secretId)
-                            ->equal('disabled', 'no');
-                        $client->query($enableQuery)->read();
-                    }
-
-                    $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
-                    $activeUser = $client->query($activeQuery)->read();
-
-                    if (!empty($activeUser)) {
-                        $activeId = $activeUser[0]['.id'];
-                        $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
-                        $client->query($removeQuery)->read();
-                    }
-
-                    /* Status update*/
-                    $customer->status = 'online';
-                    $customer->save();
-                }
-            } catch (\Exception $e) {
-                \Log::error("Router connection or enabling failed: " . $e->getMessage());
-            }
-        }
     }
 
     private function validateForm($request)

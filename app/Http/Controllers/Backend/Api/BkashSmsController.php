@@ -4,6 +4,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\Customer_recharge;
+use App\Models\Grace_recharge;
+
+use function App\Helpers\customer_log;
 use Illuminate\Support\Carbon;
 use function App\Helpers\send_message;
 class BkashSmsController extends Controller
@@ -35,17 +38,61 @@ class BkashSmsController extends Controller
             exit;
         }
         /* Store recharge data */
-        $object = new Customer_recharge();
-        $object->user_id = auth()->guard('admin')->user()->id;
-        $object->customer_id = $customer->id;
-        $object->pop_id = $request->pop_id;
-        $object->area_id = $request->area_id;
-        $object->recharge_month = implode(',', [date('Y-m')]);
-        $object->transaction_type = 'cash';
-        $object->paid_until = date('Y-m-d', strtotime('+1 month'));
-        $object->amount = $request->amount;
-        $object->note = 'Bkash Send Money';
-        $object->save();
+            $object                     = new Customer_recharge();
+            $object->user_id            = null;
+            $object->customer_id        = $customer->id;
+            $object->pop_id             = $customer->pop_id;
+            $object->area_id            = $customer->area_id;
+            $object->recharge_month     = implode(',', date('Y-m'));
+            $object->transaction_type   = 'bkash';
+            $object->amount             = $data['amount'];
+            $object->note               = $data['note'] ?? '';
+            $object->voucher_no         = $execute['merchantInvoiceNumber'] ?? '';
+
+            $customer = Customer::find(auth()->guard('customer')->user()->id);
+
+
+
+            $months_count           = count($data['recharge_month']);
+            $base_date              = strtotime($customer->expire_date) > time() ? $customer->expire_date : date('Y-m-d');
+            $new_expire_date        = date('Y-m-d', strtotime("+$months_count months", strtotime($base_date)));
+            $customer->expire_date  = $new_expire_date;
+            $object->paid_until     = $new_expire_date;
+
+            $customer->update();
+            /*-----------Customer Grace Recharge Start----------------*/
+            $get_grace_recharge = Grace_recharge::where('customer_id', $customer->id)->first();
+            if ($get_grace_recharge) {
+                $customer_data = Customer::find($customer->id);
+                /*Remove Grace Recharge Days*/
+                if ($customer_data->expire_date) {
+                    $customer_data->expire_date = \Carbon\Carbon::parse($customer_data->expire_date)->subDays($get_grace_recharge->days);
+                    $customer_data->save();
+                }
+                /*Delete Grace Rechage**/
+                $get_grace_recharge->delete();
+                customer_log($object->customer_id, 'recharge',null, 'Customer Grace Recharge Remove!');
+            }
+            if ($object->save()) {
+                customer_log($object->customer_id, 'recharge',null, 'Customer Recharge Bkash Completed!');
+
+                /*Call Router activation Function*/
+                //$this->router_activation($object->customer_id);
+
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Recharge successfully.',
+                ]);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recharge failed. Please try again.',
+                ]);
+            }
+
 
         /*----------- Send Message ------------*/
         $this->_send_message("Your Recharge Has benn Successfully Completed", $customer);
