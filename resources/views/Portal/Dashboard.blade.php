@@ -1,3 +1,10 @@
+
+@if (!auth('customer')->check())
+    <script>
+        location.replace(@json(route('admin.login', [], false)));
+    </script>
+@endif
+
 <!DOCTYPE html>
 <html lang="en">
 

@@ -50,7 +50,7 @@
         <div class="small-box bg-primary">
             <div class="inner">
                 <h3 class="mb-1">Package</h3>
-                <p class="mb-0">{{ \App\Models\Branch_package::find(auth('customer')->user()->package_id)->name }} •
+                <p class="mb-0">{{ \App\Models\Branch_package::find(auth('customer')->user()->package_id)->name ?? 'N/A' }} •
                     Unlimited</p>
             </div>
             <div class="icon"><i class="fas fa-wifi"></i></div>

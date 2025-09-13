@@ -835,20 +835,20 @@ Route::get('admin/customer/live-bandwith-update/{customer_id}', [CustomerControl
 
 
 
+
+
+
 /*----Customer Portal Route ---------*/
-Route::middleware('auth:customer')->group(function () {
+Route::group(['middleware'=>'customer'],function(){
     Route::get('/customer/portal', function () {
         return view('Portal.Dashboard');
     })->name('customer.portal');
 
-    Route::post('/customer/logout', function () {
+    Route::post('/customer/logout', function (Request $request) {
         Auth::guard('customer')->logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
         return redirect()->route('admin.login');
     })->name('customer.logout');
 
     /*-------Customer Recharge From Portal*/
     Route::post('/customer/portal/recharge',[App\Http\Controllers\Frontend\Customer\Recharge_controller::class,'customer_recharge'])->name('customer.portal.recharge');
-
 });

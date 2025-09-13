@@ -117,13 +117,8 @@ class AdminController extends Controller
             }
         }
 
-         /*-------Try customer by username ------*/
+        /*-------Try customer by username ------*/
         $customerQuery = Customer::query()->where('username',$login);
-        //  if ($login) {
-        //     if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-        //         $customerQuery->where('username', $login);
-        //     }
-        // }
 
         $customer = $customerQuery
             ->where('is_delete', 0)
@@ -131,10 +126,25 @@ class AdminController extends Controller
             ->first();
 
         /* plain text compare*/
+        // Login validation
         if ($customer && hash_equals((string) $customer->password, $password)) {
-            Auth::guard('customer')->login($customer);
+            // Logout any existing session (if necessary)
+            Auth::guard('customer')->logout();
+
+            // Flush all old session data
+            $request->session()->flush();
+
+            // Regenerate the session ID to ensure a new session
             $request->session()->regenerate();
-            return redirect()->intended(route('customer.portal'));
+
+            // Login the customer
+            Auth::guard('customer')->login($customer);
+
+            // Forget the intended URL (if any)
+            $request->session()->forget('url.intended');
+
+            // Redirect to customer portal (with relative URL to avoid domain issues)
+            return redirect()->intended(route('customer.portal', [], false));
         }
 
 

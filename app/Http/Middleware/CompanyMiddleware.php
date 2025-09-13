@@ -18,7 +18,7 @@ class CompanyMiddleware
     {
         $host = $request->getHost();
         $subdomain = explode('.', $host)[0];
-       
+
         $tenant = DB::table('tenants')->where('subdomain', $host)->first();
 
         if ($tenant) {

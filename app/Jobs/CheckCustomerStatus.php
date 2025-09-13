@@ -43,7 +43,12 @@ class CheckCustomerStatus implements ShouldQueue
                 'attempts' => 1,
             ]);
 
+            /**----Get Online Customer**/
             $activeList = collect($client->query(new Query('/ppp/active/print'))->read());
+
+            /**----Get Mikrotik Customer**/
+            $pppSecrets = collect($client->query(new Query('/ppp/secret/print'))->read())
+                ->keyBy('name');
 
             $customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
 
@@ -59,10 +64,20 @@ class CheckCustomerStatus implements ShouldQueue
                             $customer->update(['status' => 'online']);
                         }
                     } else {
-                        if ($customer->status !== 'offline') {
+                        $lastSeen = now();
+                        $secret = $pppSecrets->get($customer->username);
+
+                        if ($secret && !empty($secret['last-logged-out'])) {
+                            try {
+                                $lastSeen = Carbon::parse($secret['last-logged-out']);
+                            } catch (\Throwable $e) {
+                            }
+                        }
+
+                        if ($customer->status !== 'offline' || $customer->last_seen === null) {
                             $customer->update([
-                                'status' => 'offline',
-                                'last_seen' => now(),
+                                'status'    => 'offline',
+                                'last_seen' => $lastSeen,
                             ]);
                         }
                     }
@@ -75,92 +90,4 @@ class CheckCustomerStatus implements ShouldQueue
             \Log::error("Router ({$router->ip_address}) connection failed: " . $e->getMessage());
         }
     }
-
-    // public function handle(): void
-    // {
-    //     $customer = Customer::find($this->customer_id);
-    //     if (!$customer) {
-    //         return;
-    //     }
-
-    //     try {
-    //         if ($customer->connection_type == 'pppoe') {
-    //             $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
-
-    //             if (!$router) {
-    //                 //Log::error("Router not found for customer {$customer->username}");
-    //                 return;
-    //             }
-
-    //             $client = new Client([
-    //                 'host' => $router->ip_address,
-    //                 'user' => $router->username,
-    //                 'pass' => $router->password,
-    //                 'port' => (int) $router->port,
-    //                 'timeout' => 3,
-    //                 'attempts' => 1,
-    //             ]);
-
-    //             $query = new Query('/ppp/active/print');
-    //             $query->where('name', $customer->username);
-
-    //             $response = $client->query($query)->read();
-
-    //             if (!empty($response)) {
-    //                 $customer->update(['status' => 'online']);
-    //             } else {
-    //                 $customer->update([
-    //                     'status' => 'offline',
-    //                     'last_seen' => now(),
-    //                 ]);
-    //             }
-    //         } elseif ($customer->connection_type == 'radius') {
-    //             $activeSession = Radacct::where('username', $customer->username)->whereNull('acctstoptime')->latest('acctstarttime')->first();
-
-    //             if ($activeSession) {
-    //                 $customer->update(['status' => 'online']);
-    //                 //Log::info("RADIUS Customer {$customer->username} is ONLINE (via radacct)");
-    //             } else {
-    //                 $customer->update(['status' => 'offline']);
-    //                 //Log::info("RADIUS Customer {$customer->username} is OFFLINE (via radacct)");
-    //             }
-    //         } elseif ($customer->connection_type == 'hotspot') {
-    //             $router = Router::where('status', 'active')->where('id', $customer->router_id)->first();
-
-    //             if (!$router) {
-    //                 //Log::error("Router not found for hotspot customer {$customer->username}");
-    //                 return;
-    //             }
-
-    //             try {
-    //                 $client = new Client([
-    //                     'host' => $router->ip_address,
-    //                     'user' => $router->username,
-    //                     'pass' => $router->password,
-    //                     'port' => (int) $router->port,
-    //                     'timeout' => 3,
-    //                     'attempts' => 1,
-    //                 ]);
-
-    //                 $query = new Query('/ip/hotspot/active/print');
-    //                 /* Hotspot user filter*/
-    //                 $query->where('user', $customer->username);
-
-    //                 $response = $client->query($query)->read();
-
-    //                 if (!empty($response)) {
-    //                     $customer->update(['status' => 'online']);
-    //                     Log::info("HOTSPOT Customer {$customer->username} is ONLINE");
-    //                 } else {
-    //                     $customer->update(['status' => 'offline']);
-    //                     Log::info("HOTSPOT Customer {$customer->username} is OFFLINE");
-    //                 }
-    //             } catch (\Exception $e) {
-    //                 Log::error("Hotspot check failed for {$customer->username}: " . $e->getMessage());
-    //             }
-    //         }
-    //     } catch (\Exception $e) {
-    //         Log::error("Status check failed for customer {$customer->username}: " . $e->getMessage());
-    //     }
-    // }
 }
