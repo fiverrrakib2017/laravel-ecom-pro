@@ -296,6 +296,7 @@
                         'admin.customer.onu_list',
                         'admin.customer.view',
                         'admin.customer.edit',
+                        'admin.customer.customer_operation',
                         'admin.customer.import.mikrotik',
                     ];
                 @endphp
@@ -330,7 +331,13 @@
                                     </a>
                                 </li>
                             @endif
-
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.customer.customer_operation') }}"
+                                        class="nav-link {{ $route == 'admin.customer.customer_operation' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Customer Operation</p>
+                                    </a>
+                                </li>
 
                             @if (auth()->guard('admin')->user()->can('customer.import'))
                                 <li class="nav-item">

@@ -277,8 +277,8 @@
                 }
             });
         }
-          /***Load Customer **/
-          $("button[name='search_btn']").click(function() {
+            /***Load Customer **/
+            $("button[name='search_btn']").click(function() {
                 var button = $(this);
 
                 button.html(`<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...`);

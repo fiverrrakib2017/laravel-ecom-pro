@@ -44,6 +44,10 @@ class CustomerController extends Controller
     {
         return view('Backend.Pages.Customer.Restore.index');
     }
+    public function customer_operation ()
+    {
+        return view('Backend.Pages.Customer.Operation');
+    }
 
     public function customer_comming_expire()
     {

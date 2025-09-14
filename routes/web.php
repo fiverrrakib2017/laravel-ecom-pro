@@ -114,6 +114,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/create', 'create')->name('admin.customer.create');
             Route::get('/list', 'index')->name('admin.customer.index');
             Route::get('/all-data', 'get_all_data')->name('admin.customer.get_all_data');
+            Route::get('/operation', 'customer_operation')->name('admin.customer.customer_operation');
             Route::get('/edit/{id}', 'edit')->name('admin.customer.edit');
             Route::get('/view/{id}', 'view')->name('admin.customer.view');
             Route::post('/delete', 'delete')->name('admin.customer.delete');
