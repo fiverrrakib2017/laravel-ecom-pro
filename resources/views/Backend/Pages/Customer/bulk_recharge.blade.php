@@ -299,8 +299,10 @@
 
                             $("#print_area").removeClass('d-none');
                             $("#_data").html(response.html);
-                            $("#datatable1").DataTable({
+                              $("#datatable1").DataTable({
                                 "paging": true,
+                                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                                "pageLength": 10,
                                 "searching": true,
                                 "ordering": true,
                                 "info": true
