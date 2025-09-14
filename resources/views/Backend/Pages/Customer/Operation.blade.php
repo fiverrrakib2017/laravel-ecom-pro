@@ -111,53 +111,61 @@
                 </div>
                 <div class="card-body d-none" id="print_area">
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="toolbar-pro d-flex align-items-center">
-                            <div class="tp-left d-flex align-items-center mr-auto">
-                              
-                            </div>
+                    <!-- Toolbar (AdminLTE 3) -->
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="card card-outline card-primary toolbar-card shadow-sm">
+      <div class="card-body py-2">
+        <div class="d-flex align-items-center flex-wrap">
 
-                            <div class="tp-right d-flex align-items-center flex-wrap">
-                                <button type="button" class="btn-sm btn btn-primary js-change-package" data-toggle="tooltip" title="Change Package">
-                                <i class="fas fa-credit-card"></i><span class="lbl"> Change Package</span>
-                                </button>
+          <!-- Left: status/info -->
+          <div class="mr-auto d-flex align-items-center flex-wrap">
+            <!-- selection count / status -->
+            <span class="badge badge-info mr-2" id="selected-count" data-toggle="tooltip" title="Selected rows">
+              0 Selected
+            </span>
+            <span class="text-muted small d-none d-md-inline">Customer Actions</span>
+          </div>
 
-                                <button type="button" class="tp-btn tp-primary" id="bulk_recharge_btn" data-toggle="tooltip" title="Bulk Recharge">
-                                <i class="fas fa-layer-group"></i><span class="lbl"> Bulk Recharge</span>
-                                </button>
+          <!-- Right: actions -->
+          <div class="btn-toolbar" role="toolbar" aria-label="Toolbar">
 
-                                <button type="button" class="tp-btn tp-success" id="grace_recharge_btn" data-toggle="tooltip" title="Grace Recharge">
-                                <i class="fas fa-bolt"></i><span class="lbl"> Grace</span>
-                                </button>
+            <!-- Primary actions -->
+            <div class="btn-group btn-group-sm mr-2" role="group" aria-label="Primary actions">
+              <button type="button" class="btn btn-primary btn-icon  mr-2"
+                      data-toggle="tooltip" title="Change Package">
+                <i class="fas fa-credit-card"></i><span class="lbl"> Change Package</span>
+              </button>
 
-                                <button type="button" class="tp-btn tp-ghost" id="btn-export" data-toggle="tooltip" title="Export CSV">
-                                <i class="fas fa-file-export"></i><span class="lbl"> Export</span>
-                                </button>
+              <button type="button" class="btn btn-info btn-icon mr-2" id="bulk_recharge_btn"
+                      data-toggle="tooltip" title="Bulk Recharge">
+                <i class="fas fa-layer-group"></i><span class="lbl"> Bulk Recharge</span>
+              </button>
 
-                                <button type="button" class="tp-btn tp-ghost" onclick="window.print()" data-toggle="tooltip" title="Print">
-                                <i class="fas fa-print"></i><span class="lbl"> Print</span>
-                                </button>
+              <button type="button" class="btn btn-success btn-icon mr-2" id="grace_recharge_btn"
+                      data-toggle="tooltip" title="Grace Recharge">
+                <i class="fas fa-bolt"></i><span class="lbl"> Grace</span>
+              </button>
+            </div>
+          </div>
 
-                                <div class="dropdown tp-drop">
-                                <button class="tp-btn tp-ghost dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-ellipsis-h"></i><span class="lbl"> More</span>
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right shadow">
-                                    <a class="dropdown-item" href="#" id="btn-refresh"><i class="fas fa-sync-alt"></i> Refresh</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item text-danger" href="#" id="btn-clear"><i class="fas fa-times-circle"></i> Clear Selection</a>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-                    <style>
+<style>
+  .toolbar-card .btn-icon i { margin-right: .35rem; }
+  .toolbar-card .badge { border-radius: 50rem; }
+  /* XS screens: label hide, only icon */
+  @media (max-width: 576px) {
+    .toolbar-card .btn-icon .lbl { display: none; }
+    .toolbar-card .btn-icon i { margin-right: 0; }
+  }
+</style>
 
 
-                    </style>
 
 
                     <div class="table-responsive responsive-table">
@@ -173,19 +181,7 @@
 
 @section('script')
     <script type="text/javascript">
-        /******When Bulk Recharge Button Clicked**********/
-        handle_bulk_recharge_trigger('#bulk_recharge_btn', '#bulk_rechargeModal', '#selectedCustomerCount');
-        /******When Grace Recharge Button Clicked**********/
-        handle_bulk_recharge_trigger('#grace_recharge_btn', '#graceRechargeModal', '#grace_recharge_customer_Count');
 
-
-        /*Call bulk recharge Function*/
-        handle_ajax_submit('#bulk_rechargeForm');
-        /*Call Grace recharge Function*/
-        handle_ajax_submit('#grace_rechargeForm', function() {
-            $('#graceRechargeModal').modal('hide');
-            setTimeout(() => location.reload(), 500);
-        });
     </script>
 
 @endsection
