@@ -59,14 +59,17 @@
                 </li>
 
                 {{-- ================= HOTSPOT MENU  ================= --}}
-
+                @php
+                    $active_prefix = [
+                        'admin.hotspot.profile.index',
+                    ];
+                @endphp
                 <div class="section-divider">
                     <span>Hotspot</span>
                 </div>
 
 
 
-                {{-- Dashboard (was: route('admin.hotspot.dashboard')) --}}
                 <li class="nav-item">
                     <a href="{{route('admin.hotspot.user.dashbaord')}}" class="nav-link  {{ Str::startsWith($currentRoute, 'admin.hotspot.user.dashbaord') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -78,14 +81,14 @@
 
                 {{-- Profiles --}}
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-layer-group"></i>
                         <p>Profiles<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        {{-- was: route('admin.hotspot.profiles.index') --}}
+                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{route('admin.hotspot.profile.index')}}"
+                                class="nav-link {{ $route == 'admin.hotspot.profile.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Profiles</p>
                             </a>

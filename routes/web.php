@@ -206,21 +206,7 @@ Route::group(['middleware' => 'admin'], function () {
         Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotController::class)->group(function () {
             Route::get('/dashbaord', 'hotspot_dashbaord')->name('admin.hotspot.user.dashbaord');
 
-            Route::get('/list', 'hotspot_index')->name('admin.hotspot.user.list');
-            Route::get('/all-data', 'hotspot_get_all_data')->name('admin.hotspot.user.get_all_data');
-            Route::get('/view/{id}', 'view')->name('admin.hotspot.user.view');
-            Route::get('/create', 'hotspot_create')->name('admin.hotspot.user.create');
-            Route::post('/store', 'hotspot_store')->name('admin.hotspot.user.store');
-            Route::get('/edit/{id}', 'hotspot_edit')->name('admin.hotspot.user.edit');
-            Route::post('/update/{id}', 'hotspot_update')->name('admin.hotspot.user.update');
-            Route::post('/delete', 'hotspot_delete')->name('admin.hotspot.user.delete');
-            Route::post('/recharge', 'recharge')->name('admin.hotspot.user.recharge');
-            Route::get('/expired', 'expired')->name('admin.hotspot.user.expired');
-            Route::get('/active', 'active')->name('admin.hotspot.user.active');
-            Route::get('/usage', 'usage_report')->name('admin.hotspot.user.usage');
-            Route::get('/voucher', 'voucher')->name('admin.hotspot.user.voucher');
-            Route::post('/voucher/generate', 'voucher_generate')->name('admin.hotspot.user.voucher.generate');
-            Route::post('/check-username', 'check_username')->name('admin.hotspot.user.check.username');
+            Route::get('/profile/list', 'hotspot_profile_index')->name('admin.hotspot.profile.index');
         });
     });
 
