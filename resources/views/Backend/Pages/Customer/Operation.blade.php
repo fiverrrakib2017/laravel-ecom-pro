@@ -77,12 +77,32 @@
                         </div>
                     </div>
                     <div class="header-actions d-none d-md-flex">
-                        <button type="button" class="btn btn-header btn-sm mr-2">
+                        <button type="button"  id="btn-refresh" class="btn btn-header btn-sm mr-2">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button type="button" class="btn btn-header btn-sm">
+                        <script>
+                            $(document).on('click', '#btn-refresh', function () {
+                                var $btn  = $(this);
+                                var html0 = $btn.html();
+
+                                $btn.prop('disabled', true)
+                                    .html('<i class="fas fa-sync-alt fa-spin"></i> Refreshing...');
+
+                                 setTimeout(function () {
+                                    toastr.success('Refresh Completed');
+                                }, 2000);
+                                setTimeout(function () {
+                                    var url = new URL(window.location.href);
+                                    url.searchParams.set('_r', Date.now().toString());
+                                    window.location.replace(url.toString());
+                                }, 2000);
+                            });
+                             $(function(){ $('[data-toggle="tooltip"]').tooltip(); });
+                        </script>
+
+                        <a href="{{route('admin.settings.information.index')}}" class="btn btn-header btn-sm">
                             <i class="fas fa-cog"></i> Settings
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -92,12 +112,53 @@
                 <div class="card-body d-none" id="print_area">
 
                     <div class="row">
-                        <div class="col-md-12 text-right">
-                            <button type="button" id="change_package_btn" class="btn btn-primary mb-2">
-                                <i class="fas fa-credit-card"></i>&nbsp; Change Package
-                            </button>
+                        <div class="col-12">
+                            <div class="toolbar-pro d-flex align-items-center">
+                            <div class="tp-left d-flex align-items-center mr-auto">
+                              
+                            </div>
+
+                            <div class="tp-right d-flex align-items-center flex-wrap">
+                                <button type="button" class="btn-sm btn btn-primary js-change-package" data-toggle="tooltip" title="Change Package">
+                                <i class="fas fa-credit-card"></i><span class="lbl"> Change Package</span>
+                                </button>
+
+                                <button type="button" class="tp-btn tp-primary" id="bulk_recharge_btn" data-toggle="tooltip" title="Bulk Recharge">
+                                <i class="fas fa-layer-group"></i><span class="lbl"> Bulk Recharge</span>
+                                </button>
+
+                                <button type="button" class="tp-btn tp-success" id="grace_recharge_btn" data-toggle="tooltip" title="Grace Recharge">
+                                <i class="fas fa-bolt"></i><span class="lbl"> Grace</span>
+                                </button>
+
+                                <button type="button" class="tp-btn tp-ghost" id="btn-export" data-toggle="tooltip" title="Export CSV">
+                                <i class="fas fa-file-export"></i><span class="lbl"> Export</span>
+                                </button>
+
+                                <button type="button" class="tp-btn tp-ghost" onclick="window.print()" data-toggle="tooltip" title="Print">
+                                <i class="fas fa-print"></i><span class="lbl"> Print</span>
+                                </button>
+
+                                <div class="dropdown tp-drop">
+                                <button class="tp-btn tp-ghost dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i><span class="lbl"> More</span>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right shadow">
+                                    <a class="dropdown-item" href="#" id="btn-refresh"><i class="fas fa-sync-alt"></i> Refresh</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="#" id="btn-clear"><i class="fas fa-times-circle"></i> Clear Selection</a>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
                         </div>
                     </div>
+
+                    <style>
+
+
+                    </style>
+
 
                     <div class="table-responsive responsive-table">
                         @include('Backend.Component.Customer.table')
