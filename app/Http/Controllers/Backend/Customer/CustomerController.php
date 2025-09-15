@@ -312,6 +312,9 @@ class CustomerController extends Controller
         if (!empty($request->status)) {
             $query->where('status', $request->status);
         }
+        if (!empty($request->expire_date)) {
+            $query->where('expire_date', $request->expire_date);
+        }
 
         if (!empty($request->expire_days)) {
             $today = now();

@@ -45,7 +45,7 @@
 
     <div class="col-md-3">
         <div class="form-group">
-            <label for="customer_status" class="form-label">Status <span class="text-danger">*</span></label>
+            <label for="customer_status" class="form-label">Status </label>
             <select name="customer_status" id="customer_status" class="form-select" style="width: 100%;" required>
                 <option value="">---Select---</option>
                 <option value="active">Active</option>
@@ -55,6 +55,12 @@
                 <option value="expired">Expired</option>
                 <option value="disabled">Disabled</option>
             </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label for="customer_expire_date" class="form-label">Expire Date</label>
+            <input type="date" name="customer_expire_date" id="customer_expire_date" class="form-control">
         </div>
     </div>
 

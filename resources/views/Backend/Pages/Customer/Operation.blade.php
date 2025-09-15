@@ -140,23 +140,34 @@
                                             <!-- Primary actions -->
                                             <div class="btn-group btn-group-sm mr-2" role="group"
                                                 aria-label="Primary actions">
-                                                <button type="button" class="btn btn-primary btn-icon  mr-2"
-                                                    data-toggle="tooltip" title="Change Package">
-                                                    <i class="fas fa-credit-card"></i><span class="lbl"> Change
-                                                        Package</span>
+                                                <!-- Change Expire Date Button -->
+                                                <button type="button" class="btn btn-primary btn-icon mr-2"
+                                                    id="change_expire_date_btn" data-toggle="tooltip"
+                                                    title="Change Expire Date">
+                                                    <i class="fas fa-calendar-alt"></i><span class="ml-2">Change Expire
+                                                        Date</span>
                                                 </button>
 
+                                                <!-- Change Package Button -->
+                                                <button type="button" class="btn btn-warning btn-icon mr-2"
+                                                    data-toggle="tooltip" title="Change Package">
+                                                    <i class="fas fa-cogs"></i><span class="ml-2">Change Package</span>
+                                                </button>
+
+                                                <!-- Bulk Recharge Button -->
                                                 <button type="button" class="btn btn-info btn-icon mr-2"
                                                     id="bulk_recharge_btn" data-toggle="tooltip" title="Bulk Recharge">
-                                                    <i class="fas fa-layer-group"></i><span class="lbl"> Bulk
+                                                    <i class="fas fa-layer-group"></i><span class="ml-2">Bulk
                                                         Recharge</span>
                                                 </button>
 
+                                                <!-- Grace Recharge Button -->
                                                 <button type="button" class="btn btn-success btn-icon mr-2"
                                                     id="grace_recharge_btn" data-toggle="tooltip" title="Grace Recharge">
-                                                    <i class="fas fa-bolt"></i><span class="lbl"> Grace</span>
+                                                    <i class="fas fa-bolt"></i><span class="ml-2">Grace</span>
                                                 </button>
                                             </div>
+
                                         </div>
 
                                     </div>
@@ -174,19 +185,109 @@
         </div>
     </div>
 
-
+    <!-------Bulk Recharge ---------->
     @include('Backend.Modal.Customer.Recharge.bulk_recharge_modal')
+    <!------change Expire Date ---------->
+    @include('Backend.Modal.Customer.change_expire_date_modal')
 @endsection
 
 @section('script')
     <script type="text/javascript">
-    $(document).ready(function(){
-        /******When -Bulk Recharge Butto/n Clicked**********/
-        handle_trigger('#bulk_recharge_btn', '#bulk_rechargeModal','#selectedCustomerCount');
-        /*Call bulk recharge Function*/
-        handle_ajax_submit('#bulk_rechargeForm');
-    });
+        $(document).ready(function() {
+            /******When  Button Clicked**********/
+            handle_trigger('#bulk_recharge_btn', '#bulk_rechargeModal', '#selectedCustomerCount');
+            handle_trigger('#change_expire_date_btn', '#bulk_change_expire_dateModal',
+                '#bulk_change_expire_dateModal #selectedCustomerCount');
+
+            /*---------Call Function For Submit -------*/
+            handle_ajax_submit('#bulk_rechargeForm');
 
 
+            function handle_ajax_submit(formId, __success_call_back = null) {
+                $(formId).submit(function(e) {
+                    e.preventDefault();
+
+                    let form = $(this);
+                    let submitBtn = form.find('button[type="submit"]');
+                    let originalBtnText = submitBtn.html();
+
+                    submitBtn.html(
+                        '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                    ).prop('disabled', true);
+
+                    let formData = new FormData(this);
+
+                    let customer_ids = [];
+                    $(".checkSingle:checked").each(function() {
+                        customer_ids.push($(this).val());
+                    });
+                    customer_ids.forEach(function(id) {
+                        formData.append('customer_ids[]', id);
+                    });
+
+                    $.ajax({
+                        type: form.attr('method'),
+                        url: form.attr('action'),
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function() {
+                            form.find(':input').prop('disabled', true);
+                        },
+                        success: function(response) {
+                            if (response.success === true) {
+                                toastr.success(response.message);
+                                form[0].reset();
+
+                                if (typeof __success_call_back === "function") {
+                                    __success_call_back();
+                                } else {
+                                    setTimeout(() => location.reload(), 500);
+                                }
+
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                $.each(errors, function(field, messages) {
+                                    $.each(messages, function(index, message) {
+                                        toastr.error(message);
+                                    });
+                                });
+                            } else {
+                                toastr.error('An error occurred. Please try again.');
+                            }
+                        },
+                        complete: function() {
+                            submitBtn.html(originalBtnText).prop('disabled', false);
+                            form.find(':input').prop('disabled', false);
+                        }
+                    });
+                });
+            }
+            /***Trigger button****/
+            function handle_trigger(button_selector, modalId, textSelector) {
+                $(document).on('click', button_selector, function(event) {
+                    event.preventDefault();
+
+                    var __selected_customers = [];
+                    $(".checkSingle:checked").each(function() {
+                        __selected_customers.push($(this).val());
+                    });
+
+                    if (__selected_customers.length === 0) {
+                        toastr.error('Please select at least one customer.');
+                        return;
+                    }
+
+                    var countText = "You have selected " + __selected_customers.length + " customers.";
+                    $(textSelector).text(countText);
+                    $(modalId).modal('show');
+                });
+            }
+        });
     </script>
 @endsection

@@ -34,9 +34,10 @@
                  );
              button.attr('disabled', true);
 
-             var pop_id = $("#pop_id").val();
-             var area_id = $("#area_id").val();
-             var customer_status = $("#customer_status").val();
+             var pop_id                 = $("#pop_id").val();
+             var area_id                = $("#area_id").val();
+             var customer_status        = $("#customer_status").val();
+             var customer_expire_date   = $("#customer_expire_date").val();
 
              if ($.fn.DataTable.isDataTable("#datatable1")) {
                  $("#datatable1").DataTable().destroy();
@@ -47,10 +48,11 @@
                  type: 'POST',
                  dataType: 'json',
                  data: {
-                     _token: "{{ csrf_token() }}",
-                     pop_id: pop_id,
-                     area_id: area_id,
-                     status: customer_status
+                     _token     : "{{ csrf_token() }}",
+                     pop_id     : pop_id,
+                     area_id    : area_id,
+                     status     : customer_status,
+                     expire_date: customer_expire_date,
                  },
                  success: function(response) {
                      if (response.success === true) {
@@ -132,6 +134,7 @@
                          });
                          $('#selectAll').on('click', function() {
                                 $('.customer-checkbox').prop('checked', this.checked);
+                                _update_select_count();
                             });
 
                             $('.customer-checkbox').on('click', function() {
@@ -140,6 +143,7 @@
                                 } else {
                                     $('#selectAll').prop('checked', false);
                                 }
+                                _update_select_count();
                             });
 
                          /*---- Checkbox Select All toggle---*/
@@ -149,7 +153,7 @@
                                  $('.row-checkbox').prop('checked', this.checked);
                              });
 
-                         /*----Row checkbox -> update header----*/ 
+                         /*----Row checkbox -> update header----*/
                          $(document).off('change.rowCk').on('change.rowCk', '.row-checkbox',
                              function() {
                                  var total = $('.row-checkbox').length;
@@ -171,92 +175,12 @@
                  }
              });
          });
+        /*----- Function to update the selected count------*/
+        function _update_select_count() {
+            var selectedCount = $('.customer-checkbox:checked').length;
+            $('#selected-count').text(selectedCount + ' Selected');
+        }
 
 
-         function handle_ajax_submit(formId, __success_call_back = null) {
-             $(formId).submit(function(e) {
-                 e.preventDefault();
-
-                 let form = $(this);
-                 let submitBtn = form.find('button[type="submit"]');
-                 let originalBtnText = submitBtn.html();
-
-                 submitBtn.html(
-                     '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
-                 ).prop('disabled', true);
-
-                 let formData = new FormData(this);
-
-                 let customer_ids = [];
-                 $(".checkSingle:checked").each(function() {
-                     customer_ids.push($(this).val());
-                 });
-                 customer_ids.forEach(function(id) {
-                     formData.append('customer_ids[]', id);
-                 });
-
-                 $.ajax({
-                     type: form.attr('method'),
-                     url: form.attr('action'),
-                     data: formData,
-                     processData: false,
-                     contentType: false,
-                     beforeSend: function() {
-                         form.find(':input').prop('disabled', true);
-                     },
-                     success: function(response) {
-                         if (response.success === true) {
-                             toastr.success(response.message);
-                             form[0].reset();
-
-                             if (typeof __success_call_back === "function") {
-                                 __success_call_back();
-                             } else {
-                                 setTimeout(() => location.reload(), 500);
-                             }
-
-                         } else {
-                             toastr.error(response.message);
-                         }
-                     },
-                     error: function(xhr) {
-                         if (xhr.status === 422) {
-                             let errors = xhr.responseJSON.errors;
-                             $.each(errors, function(field, messages) {
-                                 $.each(messages, function(index, message) {
-                                     toastr.error(message);
-                                 });
-                             });
-                         } else {
-                             toastr.error('An error occurred. Please try again.');
-                         }
-                     },
-                     complete: function() {
-                         submitBtn.html(originalBtnText).prop('disabled', false);
-                         form.find(':input').prop('disabled', false);
-                     }
-                 });
-             });
-         }
-         /***Trigger button****/
-         function handle_trigger(button_selector, modalId, textSelector) {
-             $(document).on('click', button_selector, function(event) {
-                 event.preventDefault();
-
-                 var __selected_customers = [];
-                 $(".checkSingle:checked").each(function() {
-                     __selected_customers.push($(this).val());
-                 });
-
-                 if (__selected_customers.length === 0) {
-                     toastr.error('Please select at least one customer.');
-                     return;
-                 }
-
-                 var countText = "You have selected " + __selected_customers.length + " customers.";
-                 $(textSelector).text(countText);
-                 $(modalId).modal('show');
-             });
-         }
      });
  </script>
