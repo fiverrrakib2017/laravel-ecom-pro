@@ -1796,9 +1796,6 @@ class CustomerController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Invalid transaction type.']);
     }
-
-
-
     public function customer_change_expire_date(Request $request)
     {
         $request->validate([
@@ -1877,6 +1874,38 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Something went wrong during bulk recharge.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function bulk_customer_re_connect(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                /*Activate rouater customer*/
+                router_activation($customer_id);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully Completed.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went.',
                 'error'   => $e->getMessage()
             ], 500);
         }

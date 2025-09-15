@@ -153,10 +153,7 @@
                                                     <i class="fas fa-layer-group"></i><span class="ml-2 d-none d-sm-inline">Bulk Recharge</span>
                                                 </button>
 
-                                                <!-- Grace Recharge Button -->
-                                                {{-- <button type="button" class="btn btn-success btn-icon mr-2 mb-2 mb-sm-0" id="grace_recharge_btn" data-toggle="tooltip" title="Grace Recharge">
-                                                    <i class="fas fa-bolt"></i><span class="ml-2 d-none d-sm-inline">Grace Recharge</span>
-                                                </button> --}}
+                                                 <button type="button" id="bulk_re_connect_btn" class="btn btn-warning m-1" ><i class="fas fa-undo-alt"></i> Ree-Connect</button>
                                             </div>
 
                                         </div>
@@ -182,6 +179,8 @@
     @include('Backend.Modal.Customer.change_package_modal')
     <!------change Expire Date ---------->
     @include('Backend.Modal.Customer.change_expire_date_modal')
+    <!------change Expire Date ---------->
+    @include('Backend.Modal.Customer.bulk_re_connect_modal')
 @endsection
 
 @section('script')
@@ -192,11 +191,14 @@
             _handle_trigger('#package_change_btn', '#bulk_change_packageModal', '#bulk_change_packageModal #selectedCustomerCount');
             _handle_trigger('#change_expire_date_btn', '#bulk_change_expire_dateModal',
                 '#bulk_change_expire_dateModal #selectedCustomerCount');
+            _handle_trigger('#bulk_re_connect_btn', '#bulk_re_connectModal',
+                '#bulk_re_connectModal #selectedCustomerCount');
 
             /*---------Call Function For Submit -------*/
             _handle_ajax_submit('#bulk_rechargeForm');
             _handle_ajax_submit('#bulk_change_expire_dateForm');
             _handle_ajax_submit('#bulk_change_packageForm');
+            _handle_ajax_submit('#bulk_re_connectForm');
 
             /***-----submit form function ------****/
             function _handle_ajax_submit(formId, __success_call_back = null) {
