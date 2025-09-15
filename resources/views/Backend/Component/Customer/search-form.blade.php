@@ -2,44 +2,14 @@
     <div class="col-md-3">
         <div class="form-group">
             <label for="pop_id" class="form-label">POP/Branch Name <span class="text-danger">*</span></label>
-            <select name="pop_id" id="pop_id" class="form-control" required>
-                <option value="">Select POP Branch</option>
-                @php
-                    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-                    if (empty($pop_id)) {
-                        $pop_id = $branch_user_id;
-                    }
-                    if ($branch_user_id != null) {
-                        $pops = App\Models\Pop_branch::where('status', '1')->where('id', $branch_user_id)->get();
-                    } else {
-                        $pops = App\Models\Pop_branch::where('status', '1')->latest()->get();
-                    }
-                @endphp
-                @foreach ($pops as $item)
-                    <option value="{{ $item->id }}" @if ($item->id == $pop_id) selected @endif>
-                        {{ $item->name }}</option>
-                @endforeach
-            </select>
+            @include('Backend.Component.Common.Select.pop_branch_select')
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="form-group">
             <label for="area" class="form-label">Area <span class="text-danger">*</span></label>
-            <select name="area_id" id="area_id" class="form-control" required>
-                <option value="">Select Area</option>
-                @php
-                    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
-                    if ($branch_user_id != null && $branch_user_id != 0) {
-                        $areas = App\Models\Pop_area::where('pop_id', $branch_user_id)->latest()->get();
-                    } else {
-                        $areas = \App\Models\Pop_area::latest()->get();
-                    }
-                @endphp
-                @foreach ($areas as $item)
-                    <option value="{{ $item->id }}">{{ $item->name }}</option>
-                @endforeach
-            </select>
+             @include('Backend.Component.Common.Select.area_select')
         </div>
     </div>
 
