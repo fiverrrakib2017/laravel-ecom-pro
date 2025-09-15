@@ -22,6 +22,7 @@ use function App\Helpers\formate_uptime;
 use function App\Helpers\get_mikrotik_user_info;
 use function App\Helpers\send_message;
 use function App\Helpers\router_activation;
+use function App\Helpers\delete_mikrotik_user;
 
 use phpseclib3\Net\SSH2;
 use Illuminate\Support\Facades\DB;
@@ -1898,6 +1899,43 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Successfully Completed.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+    public function bulk_customer_delete(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                $customer = Customer::find($customer_id);
+                if ($customer) {
+                    /*Delete Customer Mikrotik Router*/
+                    delete_mikrotik_user($customer_id);
+                    $customer->delete();
+                }
+
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Delete Completed'
             ]);
 
         } catch (\Exception $e) {

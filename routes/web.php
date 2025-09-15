@@ -118,6 +118,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/edit/{id}', 'edit')->name('admin.customer.edit');
             Route::get('/view/{id}', 'view')->name('admin.customer.view');
             Route::post('/delete', 'delete')->name('admin.customer.delete');
+            Route::post('/bulk/delete', 'bulk_customer_delete')->name('admin.customer.bulk.delete');
             Route::post('/forge_delete', 'forge_delete')->name('admin.customer.forge_delete');
             Route::post('/check-username', 'check_customer_user')->name('admin.customer.check.username');
 

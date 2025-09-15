@@ -262,4 +262,63 @@ if (!function_exists('router_activation')) {
         }
     }
 }
+/**--------------Delete Customer From Mikrotik-----------**/
+
+if (!function_exists('delete_mikrotik_user')) {
+    /**
+     * Function to delete a customer from Mikrotik Router
+     *
+     * @param int $customer_id
+     * @return void
+     */
+    function delete_mikrotik_user($customer_id)
+    {
+        /*--------- Fetch the customer data------------*/
+        $customer = Customer::find($customer_id);
+
+        if ($customer && $customer->router_id) {
+            $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
+            if ($router) {
+                $client = new Client([
+                    'host' => $router->ip_address,
+                    'user' => $router->username,
+                    'pass' => $router->password,
+                    'port' => (int) $router->port ?? 8728,
+                ]);
+
+                try {
+                    $client->connect();
+                    $secretQuery = (new Query('/ppp/secret/print'))->where('name', $customer->username);
+                    $secrets = $client->query($secretQuery)->read();
+
+                    if (!empty($secrets)) {
+                        $secretId = $secrets[0]['.id'];
+
+                        /*-------Remove active PPP session if exists---------*/
+                        $activeQuery = (new Query('/ppp/active/print'))->where('name', $customer->username);
+                        $activeUser = $client->query($activeQuery)->read();
+
+                        if (!empty($activeUser)) {
+                            $activeId = $activeUser[0]['.id'];
+                            $removeQuery = (new Query('/ppp/active/remove'))->equal('.id', $activeId);
+                            $client->query($removeQuery)->read();
+                        }
+
+                        /*****---------Remove the secret------------****/
+                        $removeSecretQuery = (new Query('/ppp/secret/remove'))->equal('.id', $secretId);
+                        $client->query($removeSecretQuery)->read();
+                    }
+                    $client->disconnect();
+                } catch (\Exception $e) {
+                    \Log::error("Mikrotik router connection or operation failed: " . $e->getMessage());
+                }
+            }
+        } else {
+            \Log::error("Customer or router not found for customer ID: " . $customer_id);
+        }
+    }
+}
+
+?>
+
 
