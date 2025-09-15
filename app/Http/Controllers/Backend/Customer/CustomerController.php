@@ -1838,6 +1838,49 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+    public function customer_change_pacakge(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+            'pop_id'  => 'required',
+            'area_id'  => 'required',
+            'customer_package_id'  => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                /*update Customer Expire Date*/
+                $customer = Customer::find($customer_id);
+                if ($customer && $customer->pop_id && $customer->area_id && $customer->customer_package_id) {
+                    $customer->pop_id = $request->pop_id;
+                    $customer->area_id = $request->area_id;
+                    $customer->package_id = $request->customer_package_id;
+                    $customer->update();
+                }
+                /*Activate rouater customer*/
+                router_activation($customer_id);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update Successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong during bulk recharge.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
     public function customer_grace_recharge_store(Request $request)
     {
         $request->validate([

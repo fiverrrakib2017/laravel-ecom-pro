@@ -77,8 +77,8 @@
                             <i class="fas fa-coins"></i>
                         </span>
                         <div class="lh-1">
-                            <h4 class="card-title m-0">Customer Operation</h4>
-                            <small class="subtitle text-white-50">Bulk, Grace & Package actions</small>
+                            <h4 class="card-title m-0">Customer Operation</h4><br>
+                            <small class="subtitle text-white-50">Change Expire date,Bulk Recharge, Grace Recharge & Package actions</small>
                         </div>
                     </div>
                     <div class="header-actions d-none d-md-flex">
@@ -118,60 +118,54 @@
                 </div>
                 <div class="card-body d-none" id="print_area">
                     <!-- Toolbar (AdminLTE 3) -->
-                   <!-- Toolbar (AdminLTE 3) -->
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="card card-outline card-primary toolbar-card shadow-sm">
-            <div class="card-body py-2">
-                <div class="d-flex flex-wrap justify-content-between align-items-center">
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="card card-outline card-primary toolbar-card shadow-sm">
+                                <div class="card-body py-2">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center">
 
-                    <!-- Left: status/info -->
-                    <div class="mr-auto d-flex align-items-center flex-wrap">
-                        <!-- selection count / status -->
-                        <span class="badge badge-info mr-2" id="selected-count" data-toggle="tooltip" title="Selected rows">
-                            0 Selected
-                        </span>
-                        <span class="text-muted small d-none d-md-inline">Customer Actions</span>
-                    </div>
+                                        <!-- Left: status/info -->
+                                        <div class="mr-auto d-flex align-items-center flex-wrap">
+                                            <!-- selection count / status -->
+                                            <span class="badge badge-info mr-2" id="selected-count" data-toggle="tooltip" title="Selected rows">
+                                                0 Selected
+                                            </span>
+                                            <span class="text-muted small d-none d-md-inline">Customer Actions</span>
+                                        </div>
 
-                    <!-- Right: actions -->
-                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar">
+                                        <!-- Right: actions -->
+                                        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar">
 
-                        <!-- Primary actions -->
-                        <div class="btn-group btn-group-sm mr-2" role="group" aria-label="Primary actions">
-                            <!-- Change Expire Date Button -->
-                            <button type="button" class="btn btn-primary btn-icon mr-2 mb-2 mb-sm-0" id="change_expire_date_btn" data-toggle="tooltip" title="Change Expire Date">
-                                <i class="fas fa-calendar-alt"></i><span class="ml-2 d-none d-sm-inline">Change Expire Date</span>
-                            </button>
+                                            <!-- Primary actions -->
+                                            <div class="btn-group btn-group-sm mr-2" role="group" aria-label="Primary actions">
+                                                <!-- Change Expire Date Button -->
+                                                <button type="button" class="btn btn-primary btn-icon mr-2 mb-2 mb-sm-0" id="change_expire_date_btn" data-toggle="tooltip" title="Change Expire Date">
+                                                    <i class="fas fa-calendar-alt"></i><span class="ml-2 d-none d-sm-inline">Change Expire Date</span>
+                                                </button>
 
-                            <!-- Change Package Button -->
-                            <button type="button" class="btn btn-warning btn-icon mr-2 mb-2 mb-sm-0" data-toggle="tooltip" title="Change Package">
-                                <i class="fas fa-cogs"></i><span class="ml-2 d-none d-sm-inline">Change Package</span>
-                            </button>
+                                                <!-- Change Package Button -->
+                                                <button type="button" id="package_change_btn"  class="btn btn-warning btn-icon mr-2 mb-2 mb-sm-0" data-toggle="tooltip" title="Change Package">
+                                                    <i class="fas fa-cogs"></i><span class="ml-2 d-none d-sm-inline">Change Package</span>
+                                                </button>
 
-                            <!-- Bulk Recharge Button -->
-                            <button type="button" class="btn btn-info btn-icon mr-2 mb-2 mb-sm-0" id="bulk_recharge_btn" data-toggle="tooltip" title="Bulk Recharge">
-                                <i class="fas fa-layer-group"></i><span class="ml-2 d-none d-sm-inline">Bulk Recharge</span>
-                            </button>
+                                                <!-- Bulk Recharge Button -->
+                                                <button type="button" class="btn btn-info btn-icon mr-2 mb-2 mb-sm-0" id="bulk_recharge_btn" data-toggle="tooltip" title="Bulk Recharge">
+                                                    <i class="fas fa-layer-group"></i><span class="ml-2 d-none d-sm-inline">Bulk Recharge</span>
+                                                </button>
 
-                            <!-- Grace Recharge Button -->
-                            <button type="button" class="btn btn-success btn-icon mr-2 mb-2 mb-sm-0" id="grace_recharge_btn" data-toggle="tooltip" title="Grace Recharge">
-                                <i class="fas fa-bolt"></i><span class="ml-2 d-none d-sm-inline">Grace</span>
-                            </button>
+                                                <!-- Grace Recharge Button -->
+                                                {{-- <button type="button" class="btn btn-success btn-icon mr-2 mb-2 mb-sm-0" id="grace_recharge_btn" data-toggle="tooltip" title="Grace Recharge">
+                                                    <i class="fas fa-bolt"></i><span class="ml-2 d-none d-sm-inline">Grace Recharge</span>
+                                                </button> --}}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-
-
-                    <style>
-
-                    </style>
                     <div class="table-responsive responsive-table">
                         @include('Backend.Component.Customer.table')
 
@@ -184,8 +178,8 @@
 
     <!-------Bulk Recharge ---------->
     @include('Backend.Modal.Customer.Recharge.bulk_recharge_modal')
-    <!-------Grace Recharge ---------->
-    @include('Backend.Modal.Customer.Recharge.grace_recharge_modal')
+    <!------- Change package  ---------->
+    @include('Backend.Modal.Customer.change_package_modal')
     <!------change Expire Date ---------->
     @include('Backend.Modal.Customer.change_expire_date_modal')
 @endsection
@@ -195,12 +189,14 @@
         $(document).ready(function() {
             /******When  Button Clicked**********/
             _handle_trigger('#bulk_recharge_btn', '#bulk_rechargeModal', '#selectedCustomerCount');
+            _handle_trigger('#package_change_btn', '#bulk_change_packageModal', '#bulk_change_packageModal #selectedCustomerCount');
             _handle_trigger('#change_expire_date_btn', '#bulk_change_expire_dateModal',
                 '#bulk_change_expire_dateModal #selectedCustomerCount');
 
             /*---------Call Function For Submit -------*/
             _handle_ajax_submit('#bulk_rechargeForm');
             _handle_ajax_submit('#bulk_change_expire_dateForm');
+            _handle_ajax_submit('#bulk_change_packageForm');
 
             /***-----submit form function ------****/
             function _handle_ajax_submit(formId, __success_call_back = null) {

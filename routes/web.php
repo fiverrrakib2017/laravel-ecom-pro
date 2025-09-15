@@ -124,6 +124,7 @@ Route::group(['middleware' => 'admin'], function () {
             Route::post('/store', 'store')->name('admin.customer.store');
             Route::post('/update/{id}', 'update')->name('admin.customer.update');
             Route::post('/change_expire_date', 'customer_change_expire_date')->name('admin.customer.expire_date.update');
+            Route::post('/change_package', 'customer_change_pacakge')->name('admin.customer.bulk.package.update');
             Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');
 
             /*Customer Onu List*/
