@@ -1,6 +1,6 @@
 <div id="bulk_re_connectModal" class="modal fade">
     <div class="modal-dialog modal-confirm">
-        <form action="{{route('admin.customer.bulk.package.update')}}" method="POST" enctype="multipart/form-data" id="bulk_re_connectForm">
+        <form action="{{route('admin.customer.bulk.re.connect')}}" method="POST" enctype="multipart/form-data" id="bulk_re_connectForm">
             @csrf
             <div class="modal-content">
                 <div class="modal-header flex-column">

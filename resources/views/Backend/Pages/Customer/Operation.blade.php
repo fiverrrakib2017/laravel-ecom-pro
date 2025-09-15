@@ -153,7 +153,9 @@
                                                     <i class="fas fa-layer-group"></i><span class="ml-2 d-none d-sm-inline">Bulk Recharge</span>
                                                 </button>
 
-                                                 <button type="button" id="bulk_re_connect_btn" class="btn btn-warning m-1" ><i class="fas fa-undo-alt"></i> Ree-Connect</button>
+                                                 <button type="button" id="bulk_re_connect_btn" class="btn btn-warning btn-icon mr-2 mb-2 mb-sm-0" data-toggle="tooltip" title="Bulk Re-connect">
+                                                     <i class="fas fa-undo-alt"></i><span class="ml-2 d-none d-sm-inline"> Ree-Connect</span>
+                                                </button>
                                             </div>
 
                                         </div>
