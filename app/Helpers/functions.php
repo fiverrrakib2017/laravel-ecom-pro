@@ -263,7 +263,6 @@ if (!function_exists('router_activation')) {
     }
 }
 /**--------------Delete Customer From Mikrotik-----------**/
-
 if (!function_exists('delete_mikrotik_user')) {
     /**
      * Function to delete a customer from Mikrotik Router
@@ -318,6 +317,81 @@ if (!function_exists('delete_mikrotik_user')) {
         }
     }
 }
+/**--------------Customer Add From Mikrotik-----------**/
+if (!function_exists('add_mikrotik_user')) {
+    /**
+     * Function to add a customer from Mikrotik Router
+     *
+     * @param int $customer_id
+     * @return void
+     */
+    function add_mikrotik_user($customer_id)
+    {
+        /*--------- Fetch the customer data------------*/
+        $customer = Customer::find($customer_id); 
+
+        if ($customer && $customer->router_id) {
+            $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
+            if ($router) {
+                $client = new Client([
+                    'host' => $router->ip_address,
+                    'user' => $router->username,
+                    'pass' => $router->password,
+                    'port' => (int) $router->port ?? 8728,
+                ]);
+
+                try {
+                    $client->connect();
+
+                    /*-----Load MikroTik Profile list------*/
+                    $mikrotik_profile_list = new Query('/ppp/profile/print');
+                    $profiles = $client->query($mikrotik_profile_list)->read();
+
+                    /*-----Find profile name from Branch Package-----*/
+                    $profileName = Branch_package::find($customer->package_id)->name;
+
+                    /*------Check if the profile name exists in MikroTik-----*/
+                    $profileExists = collect($profiles)->pluck('name')->contains(trim($profileName));
+
+                    if (!$profileExists) {
+                        // Log the error if profile does not exist
+                        \Log::error("MikroTik profile '{$profileName}' does not exist for customer ID: {$customer->id}");
+                        return response()->json([
+                            'success' => false,
+                            'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package configuration.",
+                        ]);
+                    }
+
+                    /*--------Check if the customer already exists in MikroTik------*/
+                    $check_Query = new Query('/ppp/secret/print');
+                    $check_Query->where('name', $customer->username);
+                    $check_customer = $client->query($check_Query)->read();
+
+                    /*------- If customer does not exist, create a new PPP secret-------*/
+                    if (empty($check_customer)) {
+                        $query = new Query('/ppp/secret/add');
+                        $query->equal('name', $customer->username);
+                        $query->equal('password', $customer->password);
+                        $query->equal('service', 'pppoe');
+                        $query->equal('profile', $profileName);
+                        $client->query($query)->read();
+                    }
+
+                    /*---------Disconnect client after operation-------*/
+                    $client->disconnect();
+                } catch (\Exception $e) {
+                    \Log::error("Mikrotik router connection or operation failed for customer ID: {$customer->id} - " . $e->getMessage());
+                }
+            } else {
+                \Log::error("Router not found for customer ID: {$customer->id}");
+            }
+        } else {
+            // Log if the customer is not found
+            \Log::error("Customer not found for ID: {$customer_id}");
+        }
+    }
+}
+
 
 ?>
 
