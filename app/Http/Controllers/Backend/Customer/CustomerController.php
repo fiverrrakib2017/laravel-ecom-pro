@@ -336,9 +336,11 @@ class CustomerController extends Controller
         foreach ($customers as $row) {
             $package_name = $row->package ? $row->package->name : 'N/A';
             $get_pop_name = $row->pop ? $row->pop->name : 'N/A';
+            $pop_url = route('admin.pop.view', $row->pop->id);
             $get_area_name = $row->area ? $row->area->name : 'N/A';
-            //$status_icon = $row->status == 'online'? '<span style="color:green; font-size:20px; margin-right:5px;">&#9679;</span>': '<span style="color:red; font-size:20px; margin-right:5px;">&#9679;</span>';
+            $area_url = route('admin.pop.area.view', $row->area->id);
             $url = route('admin.customer.view', $row->id);
+
             $status_icon = '';
             switch ($row->status) {
                 case 'online':
@@ -363,16 +365,29 @@ class CustomerController extends Controller
                     $status_icon = '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;" title="Unknown"></i>';
                     break;
             }
+
+
+            /*--------Expire Date-------*/
+            $expire_date = '';
+            $today = now()->format('Y-m-d');
+            if ($today > $row->expire_date) {
+                $expire_date = '<span class="badge bg-danger">Expired (' . $row->expire_date . ')</span>';
+            } else {
+                $expire_date = $row->expire_date;
+            }
             $html .= '<tr>';
             $html .= '<td><input type="checkbox" class="customer-checkbox checkSingle" value="' . $row->id . '"></td>';
             $html .= '<td>' . $row->id . '</td>';
             $html .= '<td>' . $status_icon . '<a href="' . $url . '" style="text-decoration:none; color:#007bff;">' . $row->username . '</a></td>';
             $html .= '<td>' . $package_name . '</td>';
             $html .= '<td>' . $row->amount . '</td>';
-            $html .= '<td>' . $row->expire_date . '</td>';
-            $html .= '<td>' . $get_pop_name . '</td>';
-            $html .= '<td>' . $get_area_name . '</td>';
-            $html .= '<td>' . $row->phone . '</td>';
+            $html .= '<td>' . $expire_date . '</td>';
+
+            $html .= '<td><i class="fas fa-broadcast-tower" style="color: #28a745; margin-right: 6px;"></i><a href="' . $pop_url . '" style="text-decoration:none; color:#007bff;">' . $get_pop_name . '</a></td>';
+
+            $html .= '<td><i class="fas fa-map-marker-alt" style="color: #dc3545; margin-right: 6px;"></i><a href="' . $area_url . '" style="text-decoration:none; color:#007bff;">' . $get_area_name . '</a></td>';
+
+            $html .= '<td><i class="fas fa-phone-alt" style="color: #007bff; margin-right: 6px;"></i><span>'.$row->phone.'</span></td>';
             $html .= '<td>' . $row->address . '</td>';
             $html .= '</tr>';
         }
@@ -1784,6 +1799,45 @@ class CustomerController extends Controller
 
 
 
+    public function customer_change_expire_date(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+            'customer_expire_date'  => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                /*update Customer Expire Date*/
+                $customer = Customer::find($customer_id);
+                if ($customer && $customer->expire_date) {
+                    $customer->expire_date = $request->customer_expire_date;
+                    $customer->update();
+                }
+                /*Activate rouater customer*/
+                router_activation($customer_id);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update Successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong during bulk recharge.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
     public function customer_grace_recharge_store(Request $request)
     {
         $request->validate([

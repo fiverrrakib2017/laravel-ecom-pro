@@ -1,4 +1,4 @@
-<!-- Modal for Bulk Recharge -->
+<!-- Modal for Change Customer Expire Date -->
 <div class="modal fade " id="bulk_change_expire_dateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog " role="document">
@@ -12,10 +12,10 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-success" id="selectedCustomerCount"></div>
-                <form action="{{ route('admin.customer.bulk.recharge.store') }}" id="bulk_rechargeForm" method="POST">
+                <form action="{{ route('admin.customer.expire_date.update') }}" id="bulk_change_expire_dateForm" method="POST">
                     @csrf
                     <div class="form-group mb-2">
-                        <label for="customer_expire_date" class="form-label">Expire Date</label>
+                        <label for="customer_expire_date" class="form-label">Expire Date</label><span class="text-danger">*</span>
                         <input type="date" name="customer_expire_date" id="customer_expire_date"
                             class="form-control" required>
                     </div>

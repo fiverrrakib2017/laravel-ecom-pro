@@ -138,7 +138,7 @@
                             });
 
                             $('.customer-checkbox').on('click', function() {
-                                if ($('.customer-checkbox:checked').length == $('.customer-checkbox').length) {
+                                 if ($('.customer-checkbox:checked').length == $('.customer-checkbox').length) {
                                     $('#selectAll').prop('checked', true);
                                 } else {
                                     $('#selectAll').prop('checked', false);
@@ -176,8 +176,11 @@
              });
          });
         /*----- Function to update the selected count------*/
+        $('#datatable1').on('length.dt', function() {
+            _update_select_count();
+        });
         function _update_select_count() {
-            var selectedCount = $('.customer-checkbox:checked').length;
+            var selectedCount = $('.customer-checkbox:checked').not('#selectAll').length;
             $('#selected-count').text(selectedCount + ' Selected');
         }
 
