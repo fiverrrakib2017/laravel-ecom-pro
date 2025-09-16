@@ -111,21 +111,12 @@
             @if (!empty($branch_user_id))
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <!-- Top Up Button -->
-                    <button type="button" data-toggle="modal" data-target="#smsTopUpModal" class="btn btn-success m-1">
+                    {{-- <button type="button" data-toggle="modal" data-target="#smsTopUpModal" class="btn btn-success m-1">
                         <i class="fas fa-plus-circle"></i> Top Up
-                    </button>
+                    </button> --}}
 
                     <!-- Available SMS -->
-                    <div class="d-flex align-items-center bg-light p-2 rounded m-1">
-                        <i class="fas fa-comment-dots text-info me-2"></i>
-                        <span class="text-dark">
-                            <strong>Available SMS:</strong>
-                            <strong class="text-danger fw-bold counter-value">
-                                {{-- Replace 520 with dynamic SMS count --}}
-                                {{ $available_sms ?? 520 }}
-                            </strong>
-                        </span>
-                    </div>
+                    @include('Backend.Component.Common.available_sms')
 
                     <!-- Remaining Account Balance -->
                     <div class="d-flex align-items-center bg-light p-2 rounded m-1">
@@ -157,6 +148,9 @@
                     </div>
 
                 </div>
+            @else
+                <!-- Available SMS -->
+                @include('Backend.Component.Common.available_sms')
             @endif
 
 
@@ -264,7 +258,38 @@
                     'icon' => 'fas fa-solid fa-check-circle',
                      'url' => route('admin.tickets.index',['status' => 'completed']),
                 ],
-
+                 [
+                    'id' => 13,
+                    'title' => 'Monthly Bill',
+                    'value' => $monthly_bill ?? '',
+                    'bg' => 'primary',
+                    'icon' => 'fa-file-invoice',
+                    'url' => '',
+                ],
+                [
+                    'id' => 14,
+                    'title' => 'Paid Bill',
+                    'value' => $total_recharged ?? '',
+                    'bg' => 'success',
+                    'icon' => 'fa-check-circle',
+                    'url' => '',
+                ],
+                [
+                    'id' => 15,
+                    'title' => 'Unpaid Bill',
+                    'value' => $get_total_dues ?? '',
+                    'bg' => 'warning',
+                    'icon' => 'fa-times-circle',
+                    'url' => '',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Overdue Bill',
+                    'value' => $totalDue ?? '',
+                    'bg' => 'danger',
+                    'icon' => 'fa-exclamation-triangle',
+                     'url' => '',
+                ],
             ];
         @endphp
         @foreach ($dashboardCards as $card)

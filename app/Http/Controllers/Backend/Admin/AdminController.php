@@ -187,6 +187,13 @@ class AdminController extends Controller
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount') ?? 0;
+
+            $monthly_bill=Customer::sum('amount')->where('pop_id',$branch_user_id);
+            // $paid_bill = Customer_recharge::where('transaction_type', '!=', 'credit')
+            //             ->where('pop_id',$branch_user_id)
+            //             ->whereMonth('created_at', Carbon::now()->month)
+            //             ->whereYear('created_at', Carbon::now()->year)
+            //             ->sum('amount') ?? 0;
         }
         if(empty($branch_user_id)){
             $total_area=Pop_area::latest()->count();
@@ -222,11 +229,18 @@ class AdminController extends Controller
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount') ?? 0;
+
+            $monthly_bill=Customer::sum('amount');
+            // $paid_bill = Customer_recharge::where('transaction_type', '!=', 'credit')
+            //             ->whereMonth('created_at', Carbon::now()->month)
+            //             ->whereYear('created_at', Carbon::now()->year)
+            //             ->sum('amount') ?? 0;
+
         }
 
 
         $totalDue=$get_total_due-$duePaid;
-        return view('Backend.Pages.Dashboard.index',compact('total_area','tickets','ticket_completed','ticket_pending','online_customer','active_customer','expire_customer','offline_customer','disable_customer','total_recharged','totalPaid','totalDue','duePaid','discontinue_customer','total_customer'));
+        return view('Backend.Pages.Dashboard.index',compact('total_area','tickets','ticket_completed','ticket_pending','online_customer','active_customer','expire_customer','offline_customer','disable_customer','total_recharged','totalPaid','totalDue','duePaid','discontinue_customer','total_customer', 'monthly_bill'));
     }
     /*Server Information*/
     public function server_info()
