@@ -1,25 +1,35 @@
 <!-- Available SMS -->
-                    <div class="d-flex align-items-center bg-light p-2 rounded m-1">
-                        <i class="fas fa-comment-dots text-info me-2"></i>
-                        <span class="text-dark">
-                            <strong> Available SMS Balance:</strong>
-                            <strong class="text-danger fw-bold counter-value">
+<div class="d-flex align-items-center bg-light p-2 rounded m-1">
+    <i class="fas fa-comment-dots text-info me-2"></i>
+    <span class="text-dark">
+        <strong> Available SMS Balance:</strong>
+        <strong class="text-danger fw-bold counter-value">
 
-                                @php
-    //                             use GuzzleHttp\Client as sms_api;
-    //                               $client = new sms_api();
+            @php
+                $config=App\Models\Sms_configuration::latest()->first();
+                $url = 'http://bulksmsbd.net/api/getBalanceApi';
 
-    // $response = $client->get('https://api.bulksmsbd.net/api/v1/get-balance', [
-    //     'headers' => [
-    //         'Authorization' => 'Bearer SOkFEJZipnBeQ6g2YhvR',
-    //     ],
-    // ]);
+                $data = [
+                    'api_key' => $config->api_key,
+                ];
 
-    // $data = json_decode($response->getBody()->getContents(), true);
+                $ch = curl_init();
 
-    // $smsBalance = $data['balance'] ?? 0;
-                                @endphp
-                                520
-                            </strong>
-                        </span>
-                    </div>
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+                $response = curl_exec($ch);
+
+                curl_close($ch);
+
+                $responseData = json_decode($response, true);
+
+                $smsBalance = $responseData['balance'] ?? 'N/A';
+            @endphp
+            {{ $smsBalance }}
+        </strong>
+    </span>
+</div>

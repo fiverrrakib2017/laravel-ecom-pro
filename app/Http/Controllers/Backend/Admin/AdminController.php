@@ -188,7 +188,8 @@ class AdminController extends Controller
             ->whereYear('created_at', Carbon::now()->year)
             ->sum('amount') ?? 0;
 
-            $monthly_bill=Customer::sum('amount')->where('pop_id',$branch_user_id);
+           $monthly_bill = Customer::where('pop_id', $branch_user_id)->sum('amount');
+
             // $paid_bill = Customer_recharge::where('transaction_type', '!=', 'credit')
             //             ->where('pop_id',$branch_user_id)
             //             ->whereMonth('created_at', Carbon::now()->month)
