@@ -3,6 +3,7 @@ namespace App\Helpers;
 
 use App\Models\Branch_transaction;
 use App\Models\Customer;
+use App\Models\Branch_package;
 use App\Models\Customer_log;
 use App\Models\Sms_configuration;
 use App\Models\Customer_recharge;
@@ -307,7 +308,7 @@ if (!function_exists('delete_mikrotik_user')) {
                         $removeSecretQuery = (new Query('/ppp/secret/remove'))->equal('.id', $secretId);
                         $client->query($removeSecretQuery)->read();
                     }
-                    $client->disconnect();
+
                 } catch (\Exception $e) {
                     \Log::error("Mikrotik router connection or operation failed: " . $e->getMessage());
                 }
@@ -328,7 +329,7 @@ if (!function_exists('add_mikrotik_user')) {
     function add_mikrotik_user($customer_id)
     {
         /*--------- Fetch the customer data------------*/
-        $customer = Customer::find($customer_id); 
+        $customer = Customer::find($customer_id);
 
         if ($customer && $customer->router_id) {
             $router = Mikrotik_router::where('status', 'active')->find($customer->router_id);
@@ -378,7 +379,7 @@ if (!function_exists('add_mikrotik_user')) {
                     }
 
                     /*---------Disconnect client after operation-------*/
-                    $client->disconnect();
+                    //$client->disconnect();
                 } catch (\Exception $e) {
                     \Log::error("Mikrotik router connection or operation failed for customer ID: {$customer->id} - " . $e->getMessage());
                 }
