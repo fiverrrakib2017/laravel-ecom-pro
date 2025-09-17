@@ -377,6 +377,7 @@
                                 <li class="nav-item"><a class="nav-link" href="#onu_details" data-toggle="tab">Onu
                                         Information</a></li>
                                 <li class="nav-item"><a class="nav-link" href="#liabilities_table" data-toggle="tab">Liabilities</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#customer_activities_table" data-toggle="tab">Activities</a></li>
 
                             </ul>
                         </div><!-- /.card-header -->
@@ -550,6 +551,59 @@
                                         </table>
                                     </div>
                                 </div>
+                                <!-- Customer Activities Section -->
+                                <div class="tab-pane fade show " id="customer_activities_table" role="tabpanel">
+                                    <div class="table table-responsive">
+                                        <table id="customer_activities_data_table"class="table table-bordered dt-responsive nowrap"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                            <thead class="">
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Session</th>
+                                                    <th>IP</th>
+                                                    <th>Mac Address</th>
+                                                    <th>Upload</th>
+                                                    <th>Download</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                               @php
+                                                    $total_customer_activities_data = App\Models\Daily_usages::where('customer_id',$data->id)
+                                                        ->latest()
+                                                        ->get();
+
+                                                    if (! function_exists('formate_bytes')) {
+                                                        function formate_bytes($bytes, $precision = 2)
+                                                        {
+                                                            if ($bytes > 0) {
+                                                                $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+                                                                $power = floor(log($bytes, 1024));
+                                                                return number_format($bytes / pow(1024, $power), $precision) . ' ' . $units[$power];
+                                                            } else {
+                                                                return '0 B';
+                                                            }
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                @foreach ($total_customer_activities_data as $item)
+                                                    <tr>
+                                                        <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}
+                                                        </td>
+
+                                                        <td>{{ ucfirst($item->session_id) }}</td>
+                                                        <td>{{ ucfirst($item->ip) }}</td>
+                                                        <td>{{ ucfirst($item->mac) }}</td>
+                                                        <td>{{ round(($item->upload ?? 0) / 1024, 2)}} GB</td>
+                                                        <td>{{ round(($item->download ?? 0) / 1024, 2)}} GB</td>
+
+                                                    </tr>
+                                                @endforeach
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
 
                             </div>
                             <!-- /.tab-content -->
@@ -600,7 +654,17 @@
                 },
                 "order": [[0, 'desc']],
             });
-           
+            $("#customer_activities_data_table").DataTable({
+                "responsive": true,
+                "autoWidth": false,
+                "lengthMenu": [10, 25, 50, 100],
+                "language": {
+                    "emptyTable": "No  data available",
+                    "zeroRecords": "No matching records found"
+                },
+                "order": [[0, 'desc']],
+            });
+
             /************** Customer Enable And Disabled Start**************************/
             $(document).on("click", ".change-status", function() {
                __handle_custom_ajax_action({

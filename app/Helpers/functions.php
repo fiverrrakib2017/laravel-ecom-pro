@@ -212,6 +212,19 @@ if (!function_exists('formate_uptime')) {
     }
 }
 
+if (!function_exists('formate_bytes')) {
+    function formate_bytes($bytes)
+    {
+        if ($bytes > 0) {
+            $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+            $power = floor(log($bytes, 1024));
+            return number_format($bytes / pow(1024, $power), $precision) . ' ' . $units[$power];
+        } else {
+            return '0 B';
+        }
+    }
+}
+
 if (!function_exists('router_activation')) {
     function router_activation($customer_id)
     {
