@@ -2,13 +2,13 @@
 <div class="d-flex align-items-center bg-light p-2 rounded m-1">
     <i class="fas fa-comment-dots text-info me-2"></i>
     <span class="text-dark">
-        <strong> Available SMS Balance:</strong>
+        <strong>SMS Balance: ৳</strong>
         <strong class="text-danger fw-bold counter-value">
 
             @php
                 $config=App\Models\Sms_configuration::latest()->first();
                 $url = 'http://bulksmsbd.net/api/getBalanceApi';
-
+ 
                 $data = [
                     'api_key' => $config->api_key,
                 ];

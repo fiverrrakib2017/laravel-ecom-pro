@@ -152,6 +152,12 @@
                                                 <button type="button" class="btn btn-info btn-icon mr-2 mb-2 mb-sm-0" id="bulk_recharge_btn" data-toggle="tooltip" title="Bulk Recharge">
                                                     <i class="fas fa-layer-group"></i><span class="ml-2 d-none d-sm-inline">Bulk Recharge</span>
                                                 </button>
+                                               <!-- Bulk Send Message Button -->
+                                                <button type="button" class="btn btn-primary btn-icon mr-2 mb-2 mb-sm-0" id="bulk_send_message_btn" data-toggle="tooltip" title="Bulk Send Message">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                    <span class="ml-2 d-none d-sm-inline">Send Message</span>
+                                                </button>
+
 
                                                  <button type="button" id="bulk_re_connect_btn" class="btn btn-success text-white btn-icon mr-2 mb-2 mb-sm-0" data-toggle="tooltip" title="Bulk Re-connect">
                                                      <i class="fas fa-undo"></i><span class="ml-2 d-none d-sm-inline"> Ree-Connect</span>
@@ -188,6 +194,8 @@
     @include('Backend.Modal.Customer.bulk_re_connect_modal')
     <!------ Bulk Customer Delete ---------->
     @include('Backend.Modal.Customer.bulk_customer_delete_modal')
+    <!------ Bulk send message ---------->
+    @include('Backend.Modal.Sms.bulk_send_message_modal')
 @endsection
 
 @section('script')
@@ -200,6 +208,8 @@
                 '#bulk_change_expire_dateModal #selectedCustomerCount');
             _handle_trigger('#bulk_re_connect_btn', '#bulk_re_connectModal',
                 '#bulk_re_connectModal #selectedCustomerCount');
+            _handle_trigger('#bulk_send_message_btn', '#sendMessageModal',
+                '#sendMessageModal #selectedCustomerCount');
 
             _handle_trigger('#bulk_customer_delete_btn', '#bulk_customer_deleteModal',
                 '#bulk_customer_deleteModal #selectedCustomerCount');
@@ -210,6 +220,7 @@
             _handle_ajax_submit('#bulk_change_packageForm');
             _handle_ajax_submit('#bulk_re_connectForm');
             _handle_ajax_submit('#bulk_customer_deleteForm');
+            _handle_ajax_submit('#send_bulk_message_form');
 
             /***-----submit form function ------****/
             function _handle_ajax_submit(formId, __success_call_back = null) {

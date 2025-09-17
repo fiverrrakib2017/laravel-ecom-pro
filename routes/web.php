@@ -773,47 +773,17 @@ Route::group(['middleware' => 'admin'], function () {
     })->name('admin.network.diagram');
 
     Route::get('/admin/test', function () {
-        // $client = new Client([
-        //     'host' => '10.52.0.2',
-        //     'user' => 'apiusers',
-        //     'pass' => 'apiusers@54321#',
-        //     'port' => (int) 8722,
-        // ]);
-        $client = new Client([
-            'host' => '103.174.193.41',
-            'user' => 'billing',
-            'pass' => 'billing@123#',
-            'port' => (int) 7700,
-        ]);
-        $username = 'ak.sojeb';
-        $interfaces = $client->query(new Query('/interface/print'))->read();
-                $sessions = $client->query(new Query('/ppp/active/print'))->read();
-
-                $uptime = 'N/A';
-                foreach ($sessions as $session) {
-                    if ($session['name'] == $username) {
-                        $uptime = $session['uptime'];
-                        break;
-                    }
-                }
-
-                foreach ($interfaces as $intf) {
-                    if (strpos($intf['name'], $username) !== false) {
-                        return response()->json([
-                            'success' => true,
-                            'interface_name' => $intf['name'],
-                            'type' => $intf['type'],
-                            'rx_mb' => round($intf['rx-byte'] / 1024 / 1024, 2),
-                            'tx_mb' => round($intf['tx-byte'] / 1024 / 1024, 2),
-                            'rx_packet' => $intf['rx-packet'],
-                            'tx_packet' => $intf['tx-packet'],
-                            'uptime' => formate_uptime($uptime),
-                        ]);
-                    }
-                }
-
-
-
+        $router = \App\Models\Router::where('status', 'active')->find(1);
+            if ($router) {
+                $client = new Client([
+                    'host' => $router->ip_address,
+                    'user' => $router->username,
+                    'pass' => $router->password,
+                    'port' => (int) $router->port ?? 8728,
+                ]);
+                 $activeList = collect($client->query(new Query('/ppp/secret/print'))->read());
+                 return $activeList;
+            }
     });
 });
 Route::get('/optimize', function () {

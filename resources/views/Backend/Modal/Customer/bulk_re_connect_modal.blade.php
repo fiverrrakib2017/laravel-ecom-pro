@@ -5,7 +5,7 @@
             <div class="modal-content">
                 <div class="modal-header flex-column">
                     <div class="icon-box">
-                        <i class="fas fa-trash"></i>
+                       <i class="fas fa-undo-alt"></i> 
                     </div>
                     <h4 class="modal-title w-100">Are you sure?</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
