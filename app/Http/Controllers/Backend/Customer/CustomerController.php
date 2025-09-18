@@ -174,87 +174,96 @@ class CustomerController extends Controller
         $area_id = $request->area_id;
         $status = $request->status;
         $connection_type = $request->connection_type;
-        $search = $request->search['value'];
-        $columnsForOrderBy = [ 'id', 'fullname', 'package_id', 'amount', 'expire_date', 'username', 'phone', 'pop_id', 'area_id', 'created_at', 'id'];
 
-        $orderByColumn = $request->order[0]['column'] ?? 0;
+        // SAFER: Datatables search value
+        $search = $request->input('search.value', null);
+
+        $columnsForOrderBy = ['id','fullname','package_id','amount','expire_date','username','phone','pop_id','area_id','created_at','id'];
+
+        $orderByColumn = (int) ($request->order[0]['column'] ?? 0);
         $orderDirection = $request->order[0]['dir'] ?? 'desc';
-        /*Check if search value is empty*/
-        $start = $request->start ?? 0;
-        $length = $request->length ?? 10;
+        $start = (int) ($request->start ?? 0);
+        $length = (int) ($request->length ?? 10);
 
-        /*Check if branch user  value is empty*/
         $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 
-        $baseQuery = Customer::with(['pop', 'area', 'package'])
-            ->where('is_delete', '!=', 1)
-            ->when($search, function ($query) use ($search) {
-                $query
-                    ->where('phone', 'like', "%$search%")
-                    ->orWhere('username', 'like', "%$search%")
-                    ->orWhereHas('pop', function ($query) use ($search) {
-                        $query->where('fullname', 'like', "%$search%");
+        $baseQuery = Customer::with(['pop','area','package'])
+            ->where('is_delete','!=',1)
+
+            // ✨ FIX: group all OR search conditions inside a single where(...) closure
+            ->when(filled($search), function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('phone', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
+                    ->orWhereHas('pop', function ($qq) use ($search) {
+                        $qq->where('fullname', 'like', "%{$search}%");
                     })
-                    ->orWhereHas('area', function ($query) use ($search) {
-                        $query->where('name', 'like', "%$search%");
+                    ->orWhereHas('area', function ($qq) use ($search) {
+                        $qq->where('name', 'like', "%{$search}%");
                     })
-                    ->orWhereHas('package', function ($query) use ($search) {
-                        $query->where('name', 'like', "%$search%");
+                    ->orWhereHas('package', function ($qq) use ($search) {
+                        $qq->where('name', 'like', "%{$search}%");
                     });
+                });
             })
+
             ->when($pop_id, function ($query) use ($pop_id) {
                 $query->where('pop_id', $pop_id);
             })
-            /*POP/BRANCH Filter*/
+
+            // POP/BRANCH filter (keeps branch scope strict)
             ->when($branch_user_id, function ($query) use ($branch_user_id) {
                 $query->where('pop_id', $branch_user_id);
             })
+
             ->when($area_id, function ($query) use ($area_id) {
                 $query->where('area_id', $area_id);
             })
-            ->when($connection_type, function ($query) use($connection_type) {
+
+            ->when($connection_type, function ($query) use ($connection_type) {
                 $query->where('connection_type', $connection_type);
             })
-            /*year month type|| new|| expire*/
-            // ->when($request->year, function ($query) use ($request) {
-            //     $query->whereYear('created_at', $request->year);
-            // })
-            // ->when($request->month, function ($query) use ($request) {
-            //     $query->whereMonth('created_at', date('m', strtotime($request->month)));
-            // })
-            ->when($request->type === 'expired', function ($query) use ($request) {
-                $monthNum = date('m', strtotime($request->month)); // "June" → "06"
+
+            // Monthly expired/new filters (if you actually pass type=expired/new with month/year)
+            ->when(($request->type ?? null) === 'expired', function ($query) use ($request) {
+                $monthNum = date('m', strtotime($request->month));
                 $query->whereMonth('expire_date', $monthNum)
                     ->whereYear('expire_date', $request->year);
             })
-            ->when($request->type === 'new', function ($query) use ($request) {
-               $query->whereMonth('created_at', date('m', strtotime($request->month)))
+            ->when(($request->type ?? null) === 'new', function ($query) use ($request) {
+                $query->whereMonth('created_at', date('m', strtotime($request->month)))
                     ->whereYear('created_at', $request->year);
             })
-            /*Filter Grace Recharge Data From Customer*/
+
+            // Status filter (expired / online / active / grace ... )
             ->when($status, function ($query) use ($status) {
-                if ($status == 'grace') {
-                    $grace_ids = Grace_recharge::pluck('customer_id')->toArray();
-                    $query->whereIn('id', $grace_ids);
+                if ($status === 'grace') {
+                    // ✨ Minor perf: subquery instead of pluck()->toArray()
+                    $query->whereIn('id', Grace_recharge::select('customer_id'));
                 } else {
                     $query->where('status', $status);
                 }
             });
+
         $filteredQuery = clone $baseQuery;
-        /*Pagination*/
+
+        // Safe order-by column index
+        $orderBy = $columnsForOrderBy[$orderByColumn] ?? 'id';
+
         $paginatedData = $baseQuery
-            ->orderBy($columnsForOrderBy[$orderByColumn] ?? 'id', $orderDirection)
+            ->orderBy($orderBy, $orderDirection)
             ->skip($start)
             ->take($length)
             ->get();
 
         return response()->json([
-            'draw' => intval($request->draw),
-            'recordsTotal' => Customer::where('is_delete', '!=', 1)->count(),
+            'draw' => (int) ($request->draw ?? 0),
+            'recordsTotal' => Customer::where('is_delete','!=',1)->count(),
             'recordsFiltered' => $filteredQuery->count(),
             'data' => $paginatedData,
         ]);
     }
+
 
     public function customer_restore_get_all_data(Request $request)
     {
