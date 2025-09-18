@@ -108,42 +108,7 @@ class CustomerController extends Controller
 
                 /*********** PPPOE Customer Store ****************/
                 if($customer->connection_type=='pppoe'){
-                    $router = Mikrotik_router::where('status', 'active')->where('id', $customer->router_id)->first();
-                    $client = new Client([
-                        'host' => $router->ip_address,
-                        'user' => $router->username,
-                        'pass' => $router->password,
-                        'port' => (int) $router->port ?? 8728,
-                    ]);
-                    /*Load MikroTik Profile list*/
-                    $mikrotik_profile_list = new Query('/ppp/profile/print');
-                    $profiles = $client->query($mikrotik_profile_list)->read();
-                    /*Find profile name from Branch Package*/
-                    $profileName = Branch_package::find($request->data['package_id'])->name;
-                    /* Check if the profile name exists in MikroTik*/
-                    $profileExists = collect($profiles)->pluck('name')->contains(trim($profileName));
-
-                    if (!$profileExists) {
-                        DB::rollBack();
-                        return response()->json([
-                            'success' => false,
-                            'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package configuration.",
-                        ]);
-                        exit;
-                    }
-                    /*Check if alreay exist*/
-                    $check_Query = new Query('/ppp/secret/print');
-                    $check_Query->where('name', $request->data['username']);
-                    $check_customer = $client->query($check_Query)->read();
-
-                    if (empty($check_customer)) {
-                        $query = new Query('/ppp/secret/add');
-                        $query->equal('name', $request->data['username']);
-                        $query->equal('password', $request->data['password']);
-                        $query->equal('service', 'pppoe');
-                        $query->equal('profile', Branch_package::find($request->data['package_id'])->name);
-                        $client->query($query)->read();
-                    }
+                    add_mikrotik_user($customer->id);
                 }
                 /*********** Hotspot Customer Store ****************/
                 if($request->connection_type=='hotspot'){
