@@ -569,7 +569,7 @@
                                             <tbody>
                                                @php
                                                     $total_customer_activities_data = App\Models\Daily_usages::where('customer_id',$data->id)
-                                                        ->latest()
+                                                        ->latest('created_at')
                                                         ->get();
 
                                                     if (! function_exists('formate_bytes')) {
