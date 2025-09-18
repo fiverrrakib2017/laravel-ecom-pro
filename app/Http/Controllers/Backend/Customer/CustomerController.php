@@ -215,11 +215,18 @@ class CustomerController extends Controller
         // Safe order-by column index
         $orderBy = $columnsForOrderBy[$orderByColumn] ?? 'id';
 
-        $paginatedData = $baseQuery
-            ->orderBy($orderBy, $orderDirection)
-            ->skip($start)
-            ->take($length)
-            ->get();
+        // $paginatedData = $baseQuery
+        //     ->orderBy($orderBy, $orderDirection)
+        //     ->skip($start)
+        //     ->take($length)
+        //     ->get();
+            $query = $baseQuery->orderBy($orderBy, $orderDirection);
+
+            if ($length != -1) {
+                $query->skip($start)->take($length);
+            }
+
+            $paginatedData = $query->get();
 
         return response()->json([
             'draw' => (int) ($request->draw ?? 0),

@@ -167,7 +167,6 @@
                         ${(pop_filter   ?? '')}
                         ${(area_filter  ?? '')}
                         ${(status_filter ?? '')}
-                        ${(connection_type_filter ?? '')}
                     </div>
 
                     <!-- Right: Search Input -->
@@ -275,7 +274,7 @@
             language: {
                 searchPlaceholder: 'Search...',
                 sSearch: '',
-                lengthMenu: '_MENU_ items/page',
+                lengthMenu: '_MENU_ items',
                  processing: `<div class="spinner-grow text-primary" role="status">
                             <span class="sr-only">Loading...</span>
                             </div>
@@ -290,56 +289,45 @@
                             </div>`,
             },
             "columns": [
-                // {
-                //     data: 'id',
-                //     orderable: false,
-                //     searchable: false,
-                //     render: function(data, type, row, meta) {
-                //         return `<div class="custom-control custom-checkbox">
-                //                     <input type="checkbox" class="custom-control-input row-checkbox" id="row_checkbox_${data}" value="${data}">
-                //                     <label class="custom-control-label" for="row_checkbox_${data}"></label>
-                //                 </div>`;
-                //     }
-                // },
-
                 {
                     "data": "id"
                 },
-                {
-                    "data": "fullname",
-                    "render": function(data, type, row) {
-                        var viewUrl = '{{ route('admin.customer.view', ':id') }}'.replace(':id',
-                            row.id);
-                        /*Set the icon based on the status*/
-                        var icon = '';
-                        var color = '';
-                        var last_seen = '';
+               {
+                "data": "fullname",
+                "render": function(data, type, row) {
+                    var viewUrl = '{{ route('admin.customer.view', ':id') }}'.replace(':id', row.id);
 
-                        if (row.status === 'online') {
-                            icon = '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;" title="Online"></i>';
-                        } else if (row.status === 'offline') {
-                            icon = '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;" title="Offline"></i>';
-                             /* Show last_seen time if available*/
-                            if (row.last_seen) {
-                                last_seen = `<small style="color: gray; margin-left: 5px;">(${__time_ago(row.last_seen)})</small>`;
-                            }
-                        } else if (row.status === 'expired') {
-                            icon = '<i class="fas fa-clock" style="font-size: 15px; color: orange; margin-right: 8px;" title="Expired"></i>';
-                        } else if (row.status === 'blocked') {
-                            icon = '<i class="fas fa-ban" style="font-size: 15px; color: darkred; margin-right: 8px;" title="Blocked"></i>';
-                        } else if (row.status === 'disabled') {
-                            icon = '<i class="fas fa-user-slash" style="font-size: 15px; color: gray; margin-right: 8px;" title="Disabled"></i>';
-                        } else if (row.status === 'discontinue') {
-                            icon = '<i class="fas fa-times-circle" style="font-size: 15px; color: #ff6600; margin-right: 8px;" title="Discontinue"></i>';
-                        } else {
-                            icon = '<i class="fa fa-question-circle" style="font-size: 18px; color: gray; margin-right: 8px;" title="Unknown"></i>';
-                        }
-                         return `<a href="${viewUrl}" style="display: flex; align-items: center; text-decoration: none; color: #333;">
-                                    ${icon}
-                                    <span style="font-size: 16px; font-weight: bold;">${row.fullname}</span>
-                                    ${last_seen}
-                                </a>`;
+                    var icon = '';
+                    var last_seen = '';
+
+                    if (row.status === 'online') {
+                    icon = '<i class="fas fa-unlock" style="font-size:15px;color:green;margin-right:8px;" title="Online"></i>';
+                    } else if (row.status === 'offline') {
+                    icon = '<i class="fas fa-lock" style="font-size:15px;color:red;margin-right:8px;" title="Offline"></i>';
+                    if (row.last_seen) {
+                        last_seen = `<small style="color:gray;margin-top:2px;">(${__time_ago(row.last_seen)})</small>`;
                     }
+                    } else if (row.status === 'expired') {
+                    icon = '<i class="fas fa-clock" style="font-size:15px;color:orange;margin-right:8px;" title="Expired"></i>';
+                    } else if (row.status === 'blocked') {
+                    icon = '<i class="fas fa-ban" style="font-size:15px;color:darkred;margin-right:8px;" title="Blocked"></i>';
+                    } else if (row.status === 'disabled') {
+                    icon = '<i class="fas fa-user-slash" style="font-size:15px;color:gray;margin-right:8px;" title="Disabled"></i>';
+                    } else if (row.status === 'discontinue') {
+                    icon = '<i class="fas fa-times-circle" style="font-size:15px;color:#ff6600;margin-right:8px;" title="Discontinue"></i>';
+                    } else {
+                    icon = '<i class="fa fa-question-circle" style="font-size:18px;color:gray;margin-right:8px;" title="Unknown"></i>';
+                    }
+
+                    return `
+                    <a href="${viewUrl}" style="display:flex;align-items:center;text-decoration:none;color:#333;">
+                        ${icon}
+                        <span style="display:flex;flex-direction:column;line-height:1.1;">
+                        <span style="font-size:16px;font-weight:bold;">${row.fullname}</span>
+                        ${last_seen}
+                        </span>
+                    </a>`;
+                }
                 },
 
 
@@ -436,7 +424,7 @@
            'rt' +
            '<"row"<"col-md-6"i><"col-md-6"p>>' +
            '<"row"<"col-md-12"B>>',
-           lengthMenu: [[10, 25, 50,100,150,200, -1], [10, 25, 50,100,150,200, "All"]],
+           lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, 'All']],
             "pageLength": 10,
             "buttons": [
                 { extend: 'copy', text: 'Copy', className: 'btn btn-secondary btn-sm ' },
