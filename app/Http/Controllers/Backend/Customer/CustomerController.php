@@ -1563,6 +1563,7 @@ class CustomerController extends Controller
                 /*Remove Grace Recharge Days*/
                 if ($customer_data->expire_date) {
                     $customer_data->expire_date = \Carbon\Carbon::parse($customer_data->expire_date)->subDays($get_grace_recharge->days);
+                    $object->paid_until     =  $customer_data->expire_date;
                     $customer_data->save();
                 }
                 /*Delete Grace Rechage**/
@@ -1907,16 +1908,12 @@ class CustomerController extends Controller
                     $existing->customer_id = $customer_id;
                     $existing->days = $request->days;
                     $existing->save();
-                } else {
-                    $existing->days = $request->days;
-                    $existing->updated_at = now();
-                    $existing->save();
-                }
-                /*Increase Customer Expire Date*/
-                $customer = Customer::find($customer_id);
-                if ($customer && $customer->expire_date) {
-                    $customer->expire_date = Carbon::parse($customer->expire_date)->addDays($existing->days);
-                    $customer->save();
+
+                    $customer = Customer::find($customer_id);
+                    if ($customer && $customer->expire_date) {
+                        $customer->expire_date = Carbon::parse($customer->expire_date)->addDays($existing->days);
+                        $customer->save();
+                    }
                 }
                 /*Activate rouater customer*/
                 router_activation($customer_id);
@@ -1951,13 +1948,16 @@ class CustomerController extends Controller
         try {
             DB::beginTransaction();
             $data = Grace_recharge::where('customer_id', $customer_id)->first();
-            /*Decrease Customer Expire Date*/
-            $customer = Customer::find($customer_id);
-            if ($customer && $customer->expire_date) {
-                $customer->expire_date = Carbon::parse($customer->expire_date)->subDays($data->days);
-                $customer->save();
+            if($data){
+                /*Decrea/se Customer Expire Date*/
+                $customer = Customer::find($customer_id);
+                if ($customer && $customer->expire_date) {
+                    $customer->expire_date = Carbon::parse($customer->expire_date)->subDays($data->days);
+                    $customer->save();
+                }
+                $data->delete();
             }
-            $data->delete();
+
             DB::commit();
             return response()->json([
                 'success' => true,
