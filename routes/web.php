@@ -153,6 +153,9 @@ Route::group(['middleware' => 'admin'], function () {
             /***** Customer Payment History *******/
             Route::get('/payment/history', 'customer_payment_history')->name('admin.customer.payment.history');
             Route::get('/payment/history/get_all_data', 'customer_payment_history_get_all_data')->name('admin.customer.payment.history.get_all_data');
+            /***** Customer Grace Recharge Logs *******/
+            Route::get('/grace-recharge/logs', 'customer_grace_recharge_logs')->name('admin.customer.grace_recharge.logs');
+            Route::get('/grace-recharge/logs/get_all_data', 'customer_grace_recharge_logs_get_all_data')->name('admin.customer.grace_recharge.logs.get_all_data');
             /***** Customer Log *******/
             Route::get('/customer/log', 'customer_log')->name('admin.customer.log.index');
             Route::get('/customer/log/get_all_data', 'customer_log_get_all_data')->name('admin.customer.log.get_all_data');

@@ -402,6 +402,7 @@
                         'admin.customer.customer_credit_recharge_list',
                         'admin.customer.bulk.recharge',
                         'admin.customer.customer_comming_expire',
+                        'admin.customer.grace_recharge.logs',
                     ];
                 @endphp
                 @if (auth()->guard('admin')->user()->can('menu.access.billing_payments'))
@@ -434,6 +435,13 @@
                                         class="nav-link {{ $route == 'admin.customer.bulk.recharge' ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Bulk/Grace Recharge</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.customer.grace_recharge.logs') }}"
+                                        class="nav-link {{ $route == 'admin.customer.grace_recharge.logs' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Grace Recharge Logs</p>
                                     </a>
                                 </li>
                             @endif

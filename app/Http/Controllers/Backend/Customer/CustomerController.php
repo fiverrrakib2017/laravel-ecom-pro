@@ -2054,6 +2054,85 @@ class CustomerController extends Controller
         return response()->json(['success' => true, 'html' => $html]);
     }
 
+    public function customer_grace_recharge_logs()
+    {
+        return view('Backend.Pages.Customer.Grace.grace_recharge_logs');
+    }
+    public function customer_grace_recharge_logs_get_all_data(Request $request)
+{
+    $search = $request->search['value'] ?? null;
+    $columnsForOrderBy = ['id', 'created_at', 'customer_id', 'days']; // আপনি চাইলে এখানে ইনডেক্স অনুযায়ী পরিবর্তন করতে পারবেন
+    $orderByColumn = isset($request->order[0]['column']) ? (int) $request->order[0]['column'] : 0;
+    $orderDirection = isset($request->order[0]['dir']) && strtolower($request->order[0]['dir']) === 'asc' ? 'asc' : 'desc';
+
+    $start = isset($request->start) ? (int) $request->start : 0;
+    $length = isset($request->length) ? (int) $request->length : 10;
+
+    // Branch User ID
+    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+
+    // ----- total records (branch-scoped, no search/date filters) -----
+    $totalQuery = Grace_recharge::query()
+        ->when($branch_user_id, function ($q) use ($branch_user_id) {
+            $q->whereHas('customer', function ($qc) use ($branch_user_id) {
+                $qc->where('pop_id', $branch_user_id);
+            });
+        });
+    $totalRecords = $totalQuery->count();
+
+    // ----- build main query with eager loads -----
+    $query = Grace_recharge::with(['customer', 'customer.pop', 'customer.area', 'customer.package'])
+        ->when($branch_user_id, function ($q) use ($branch_user_id) {
+            $q->whereHas('customer', function ($qc) use ($branch_user_id) {
+                $qc->where('pop_id', $branch_user_id);
+            });
+        });
+
+    // apply search (grouped so ORs don't break other where clauses)
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('created_at', 'like', "%{$search}%")
+              ->orWhere('days', 'like', "%{$search}%")
+              ->orWhereHas('customer', function ($qc) use ($search) {
+                  $qc->where('fullname', 'like', "%{$search}%")
+                     ->orWhere('username', 'like', "%{$search}%");
+              });
+        });
+    }
+
+    // date filters if provided
+    if ($request->filled('from_date')) {
+        $query->whereDate('created_at', '>=', $request->from_date);
+    }
+    if ($request->filled('to_date')) {
+        $query->whereDate('created_at', '<=', $request->to_date);
+    }
+
+    // filtered count BEFORE pagination
+    $recordsFiltered = (clone $query)->count();
+
+    // determine orderBy column safely (fallback to id)
+    $orderByColumnName = isset($columnsForOrderBy[$orderByColumn]) ? $columnsForOrderBy[$orderByColumn] : 'id';
+
+    // apply ordering
+    $query->orderBy($orderByColumnName, $orderDirection);
+
+    // apply pagination (DataTables uses length == -1 to mean "all")
+    if ($length !== -1) {
+        $query->skip($start)->take($length);
+    }
+
+    $data = $query->get();
+
+    return response()->json([
+        'draw' => isset($request->draw) ? (int) $request->draw : 0,
+        'recordsTotal' => $totalRecords,
+        'recordsFiltered' => $recordsFiltered,
+        'data' => $data,
+    ]);
+}
+
+
     public function customer_payment_history()
     {
         return view('Backend.Pages.Customer.Payment.payment_history');
