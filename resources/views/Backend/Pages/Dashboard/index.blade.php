@@ -168,7 +168,7 @@
                     'title' => 'Online',
                     'value' => $online_customer,
                     'bg' => 'success',
-                    'icon' => 'fa-user-check',
+                    'icon' => 'fas fa-user-check',
                     'url' => route('admin.customer.index', ['status' => 'online']),
                 ],
                 [
@@ -176,7 +176,7 @@
                     'title' => 'Offline',
                     'value' => $offline_customer,
                     'bg' => 'info',
-                    'icon' => 'fa-user-times',
+                    'icon' => 'fas fa-user-times',
                     'url' => route('admin.customer.index', ['status' => 'Offline']),
                 ],
                 [
@@ -184,15 +184,15 @@
                     'title' => 'Active Customers',
                     'value' => $active_customer,
                     'bg' => 'primary',
-                    'icon' => 'fa-users',
-                    //'url' => route('admin.customer.index', ['status' => 'active']),
+                    'icon' => 'fas fa-users',
+                    'url' => route('admin.customer.index'),
                 ],
                 [
                     'id' => 4,
                     'title' => 'Expired',
                     'value' => $expire_customer,
                     'bg' => 'danger',
-                    'icon' => 'fa-user-clock',
+                    'icon' => 'fas fa-user-clock',
                     'url' => route('admin.customer.index', ['status' => 'expired']),
                 ],
                 [
@@ -200,7 +200,7 @@
                     'title' => 'Disabled',
                     'value' => $disable_customer,
                     'bg' => 'warning',
-                    'icon' => 'fa-user-lock',
+                    'icon' => 'fas fa-user-lock',
                     'url' => route('admin.customer.index', ['status' => 'disabled']),
                 ],
                 [
@@ -208,21 +208,21 @@
                     'title' => 'Requests',
                     'value' => 0,
                     'bg' => 'dark',
-                    'icon' => 'fa-user-edit'
+                    'icon' => 'fas fa-user-edit'
                 ],
                 [
                     'id' => 7,
                     'title' => 'Discontinue',
                     'value' => $discontinue_customer,
                     'bg' => 'danger',
-                    'icon' => 'fa-user-times'
+                    'icon' => 'fas fa-user-times'
                 ],
                 [
                     'id' => 8,
                     'title' => 'Total Customer',
                     'value' => $total_customer,
                     'bg' => 'success',
-                    'icon' => 'fa-user-check',
+                    'icon' => 'fas fa-user-check',
                     'url' => route('admin.customer.index'),
                 ],
 
@@ -261,53 +261,39 @@
                  [
                     'id' => 13,
                     'title' => 'Monthly Bill',
-                    'value' => $monthly_bill ?? '',
+                    'value' => $monthly_bill ?? '0',
                     'bg' => 'primary',
-                    'icon' => 'fa-file-invoice',
+                    'icon' => 'fas fa-file-invoice',
                     'url' => '',
                 ],
                 [
                     'id' => 14,
                     'title' => 'Paid Bill',
-                    'value' => $total_recharged ?? '',
+                    'value' => $total_recharged ?? '0',
                     'bg' => 'success',
-                    'icon' => 'fa-check-circle',
+                    'icon' => 'fas fa-check-circle',
                     'url' => '',
                 ],
                 [
                     'id' => 15,
                     'title' => 'Unpaid Bill',
-                    'value' => $get_total_dues ?? '',
+                    'value' => $get_total_dues ?? '0',
                     'bg' => 'warning',
-                    'icon' => 'fa-times-circle',
+                    'icon' => 'fas fa-times-circle',
                     'url' => '',
                 ],
                 [
                     'id' => 16,
                     'title' => 'Overdue Bill',
-                    'value' => $totalDue ?? '',
+                    'value' => $totalDue ?? '0',
                     'bg' => 'danger',
-                    'icon' => 'fa-exclamation-triangle',
+                    'icon' => 'fas fa-exclamation-triangle',
                      'url' => '',
                 ],
             ];
         @endphp
         @foreach ($dashboardCards as $card)
-            <div class="col-lg-3 col-6 card-item wow animate__animated animate__fadeInUp" data-id="{{ $card['id'] }}"
-                data-wow-delay="0.{{ $card['id'] }}s">
-                <a href="{{ $card['url'] ?? '#' }}" style="text-decoration: none;">
-                    <div class="small-box bg-{{ $card['bg'] }}">
-                        <div class="inner">
-                            <h3 class=" counter-value">{{ $card['value'] }}</h3>
-                            <p>{{ $card['title'] }}</p>
-                        </div>
-                        <div class="icon">
-                            {{-- <i class="fas {{ $card['icon'] }} fa-2x text-gray-300"></i> --}}
-                            <i class="fas {{ $card['icon'] }} fa-2x text-gray-800" ></i>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            @include('Backend.Component.Common.dashboard-card', ['card' => $card])
         @endforeach
     </div>
 
