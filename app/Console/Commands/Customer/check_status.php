@@ -33,7 +33,6 @@ class check_status extends Command
     public function handle(SessionService $session_service)
     {
         $this->info('---Tasks Started ---');
-            //$customers = Customer::where('is_delete', '0')->where('status', '!=', 'expired')->where('status', '!=', 'disabled')->where('status', '!=', 'discontinue')->get();
             $routers = Router::where('status', 'active')->get();
             foreach($routers as $item){
                 dispatch(new CheckCustomerStatus ($item->id));
