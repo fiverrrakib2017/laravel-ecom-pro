@@ -62,6 +62,7 @@
                 @php
                     $active_prefix = [
                         'admin.hotspot.profile.index',
+                        'admin.hotspot.profile.create',
                     ];
                 @endphp
                 <div class="section-divider">
@@ -95,7 +96,7 @@
                         </li>
                         {{-- was: route('admin.hotspot.profiles.create') --}}
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{route('admin.hotspot.profile.create')}}" class="nav-link {{ $route == 'admin.hotspot.profile.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Create Profile</p>
                             </a>
