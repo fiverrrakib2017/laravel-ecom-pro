@@ -12,9 +12,32 @@ class HotspotController extends Controller
     public function hotspot_dashbaord(){
         return view('Backend.Pages.Hotspot.Dashboard');
     }
-    public function hotspot_profile_index(){
+    public function hotspot_profile_index(Request $request){
+        $query = Hotspot_profile::query()
+            ->with(['router:id,name'])
+            ->orderByDesc('id');
 
-        return view('Backend.Pages.Hotspot.Profile.index');
+        if ($request->filled('router_id')) {
+            $query->where('router_id', $request->integer('router_id'));
+        }
+
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('is_active', $request->status === '1');
+        }
+
+        if ($request->filled('q')) {
+            $term = $request->q;
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', "%{$term}%")
+                  ->orWhere('mikrotik_profile', 'like', "%{$term}%");
+            });
+        }
+
+        $profiles = $query->paginate(20)->withQueryString();
+
+        $routers = Mikrotik_router::orderBy('name')->get(['id', 'name']);
+
+        return view('Backend.Pages.Hotspot.Profile.index', compact('profiles', 'routers'));
     }
     public function hotspot_profile_create(){
         $routers=Mikrotik_router::where('status', 'active')->get();

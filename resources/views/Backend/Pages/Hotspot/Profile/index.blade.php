@@ -47,16 +47,9 @@
 
             </div>
             <div class="btn-group">
-                <a href="#" class="btn btn-primary">
+                <a href="{{route('admin.hotspot.profile.create')}}" class="btn btn-primary">
                     <i class="fas fa-plus-circle"></i> Create Profile
                 </a>
-                <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-icon" data-toggle="dropdown" aria-expanded="false">
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    <a class="dropdown-item" href="#"><i class="far fa-file-excel mr-2"></i>Export CSV</a>
-                    <a class="dropdown-item" href="#"><i class="far fa-file-pdf mr-2"></i>Export PDF</a>
-                </div>
             </div>
         </div>
 
@@ -82,7 +75,7 @@
                             <input type="text" id="q" name="q" value="{{ request('q') }}"
                                    placeholder="Search by name or MikroTik profile…" class="form-control">
                             <div class="input-group-append">
-                                <button class="btn btn-secondary"><i class="fas fa-search"></i></button>
+                                <button class="btn btn-success"><i class="fas fa-search"></i></button>
                             </div>
                         </div>
                     </div>
@@ -97,10 +90,7 @@
                     </div>
 
                     <div class="form-group col-md-2 mb-2 d-flex align-items-end">
-                        <a href="{{ route('admin.hotspot.profile.index') }}" class="btn btn-light mr-2">
-                            <i class="fas fa-undo"></i> Reset
-                        </a>
-                        <button type="submit" class="btn btn-dark">
+                        <button type="submit" class="btn btn-danger">
                             <i class="fas fa-filter"></i> Apply
                         </button>
                     </div>
@@ -181,13 +171,19 @@
 
             <!-- Footer (Pagination placeholder) -->
             <div class="card-footer d-flex justify-content-between align-items-center">
+            @if($profiles instanceof \Illuminate\Pagination\LengthAwarePaginator)
                 <small class="text-muted">
-                    Showing <strong>5</strong> item(s)
+                    Showing <strong>{{ $profiles->firstItem() }}–{{ $profiles->lastItem() }}</strong>
+                    of <strong>{{ $profiles->total() }}</strong> item(s)
                 </small>
-                @if($profiles instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                    {{ $profiles->appends(request()->query())->links() }}
-                @endif
-            </div>
+                {{ $profiles->appends(request()->query())->links() }}
+            @else
+                <small class="text-muted">
+                    Showing <strong>{{ $profiles->count() }}</strong> item(s)
+                </small>
+            @endif
+        </div>
+
         </div>
     </div>
 </div>
