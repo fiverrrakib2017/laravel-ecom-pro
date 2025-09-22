@@ -145,18 +145,21 @@
                                         <span class="badge badge-secondary"><i class="fas fa-pause-circle mr-1"></i>Inactive</span>
                                     @endif
                                 </td>
-                                <td class="text-nowrap">
-                                    <a href="#" class="btn btn-xs btn-info" data-toggle="tooltip" title="View">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
+                                <td class="text-nowrap" id="row-actions-{{ $p->id }}">
+                                    <a href="{{ route('admin.hotspot.profile.edit', $p->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button class="btn btn-xs btn-danger" data-toggle="tooltip" title="Delete"
-                                            onclick="if(confirm('Delete this profile?')){/* submit form here */}">
+
+                                    <button type="button"
+                                            class="btn btn-xs btn-danger btn-delete"
+                                            data-id="{{ $p->id }}"
+                                            data-name="{{ $p->name }}"
+                                            data-url="{{ route('admin.hotspot.profile.destroy', $p->id) }}"
+                                            title="Delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
+
                             </tr>
                         @empty
                             <tr>

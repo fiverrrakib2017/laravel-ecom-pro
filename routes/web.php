@@ -215,6 +215,11 @@ Route::group(['middleware' => 'admin'], function () {
             Route::get('/dashbaord', 'hotspot_dashbaord')->name('admin.hotspot.user.dashbaord');
             Route::get('/profile/create', 'hotspot_profile_create')->name('admin.hotspot.profile.create');
             Route::post('/profile/store', 'hotspot_profile_store')->name('admin.hotspot.profile.store');
+            Route::get('/profile/edit/{id}', 'hotspot_profile_edit')->name('admin.hotspot.profile.edit');
+
+            Route::put('/profiles/{id}', 'hotspot_profile_update')->name('admin.hotspot.profile.update');
+            Route::delete('profiles/{id}', 'hotspot_profile_destroy')->name('admin.hotspot.profile.destroy');
+
             Route::get('/profile/list', 'hotspot_profile_index')->name('admin.hotspot.profile.index');
         });
     });
