@@ -193,13 +193,59 @@
 @endsection
 
 @section('script')
+<!-- Include SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     $(function () {
-        // Enable BS tooltips (AdminLTE ships with Bootstrap)
         $('[data-toggle="tooltip"]').tooltip();
+        $(document).on('click', '.btn-delete', function(){
+            const id   = $(this).data('id');
+            const name = $(this).data('name') || 'this profile';
+            const url  = $(this).data('url');
 
-        // Optional: auto-submit on status/router change
-        // $('#router_id, select[name="status"]').on('change', function(){ $(this).closest('form')[0].submit(); });
+            if (window.Swal && Swal.fire) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: 'You are about to delete <b>'+ name +'</b>.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then(function(result){
+                    if(result.isConfirmed){
+                        doDelete(url, id);
+                    }
+                });
+            } else {
+                if (confirm('Are you sure you want to delete "'+ name +'"?')) {
+                    doDelete(url, id);
+                }
+            }
+        });
+
+    function doDelete(url, id){
+        let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: {_method:'DELETE', _token: csrf},
+            success: function(res){
+                if(res && res.success){
+                    toastr.success(res.message || 'Deleted Successfully');
+                    // remove row or reload
+                    const $row = $('#row-'+id);
+                    if($row.length){ $row.remove(); } else { location.reload(); }
+                } else {
+                    toastr.warning('Unexpected response.');
+                }
+            },
+            error: function(xhr){
+                toastr.error('Could not delete. Please try again.');
+            }
+        });
+    }
+
     });
 </script>
 @endsection

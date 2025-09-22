@@ -1,35 +1,15 @@
 @extends('Backend.Layout.App')
 @section('title', 'Edit Hotspot Profile | Admin Panel')
 
-@section('style')
-<style>
-    .card-header-pro{position:relative;overflow:hidden;padding:16px 20px;border:0;color:#fff;background:linear-gradient(135deg,#17a2b8 0%,#0ea5e9 45%,#2563eb 100%);box-shadow:inset 0 -1px 0 rgba(255,255,255,.2);border-top-left-radius:.25rem;border-top-right-radius:.25rem;}
-    .card-header-pro::after{content:"";position:absolute;right:-30px;top:-30px;width:180px;height:180px;pointer-events:none;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.35),rgba(255,255,255,0) 60%);transform:rotate(25deg);opacity:.7;}
-    .card-header-pro .card-title{font-weight:700;letter-spacing:.2px;}
-    .card-header-pro .icon-badge{width:44px;height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;box-shadow:0 6px 16px rgba(0,0,0,.08), inset 0 0 0 1px rgba(255,255,255,.25);}
-    .card-header-pro .subtitle{display:block;margin-top:2px;font-size:.825rem;}
-    .invalid-feedback{display:block;}
-</style>
-@endsection
-
 @section('content')
 <div class="row">
     <div class="col-md-12 ">
         <div class="card">
-            <div class="card-header card-header-pro d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <span class="icon-badge mr-2"><i class="fas fa-wifi"></i></span>
-                    <div class="lh-1">
-                        <h4 class="card-title m-0">Edit Hotspot Profile</h4><br>
-                        <small class="subtitle text-white-50">Update MikroTik hotspot plan & timeouts</small>
-                    </div>
-                </div>
-                <div class="header-actions d-none d-md-flex">
-                    <a href="{{ route('admin.hotspot.profile.index') }}" class="btn btn-header btn-sm">
-                        <i class="fas fa-list"></i> Back to List
-                    </a>
-                </div>
-            </div>
+            @include('Backend.Component.Common.card-header', [
+                'title' => 'Edit Hotspot Profile',
+                'description' => 'Update MikroTik hotspot plan & timeouts',
+                'icon' => '<i class="fas fa-wifi"></i>'
+            ])
 
             <div class="card-body">
                 <form id="profileForm"
@@ -179,7 +159,7 @@
                         <button type="submit" id="btn-submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Update Profile
                         </button>
-                        <a href="{{ route('admin.hotspot.profile.index') }}" class="btn btn-default ml-2">
+                        <a href="{{ route('admin.hotspot.profile.index') }}" class="btn btn-danger ml-2">
                             <i class="fas fa-list"></i> Cancel
                         </a>
                     </div>
