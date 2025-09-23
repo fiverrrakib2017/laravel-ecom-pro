@@ -18,6 +18,10 @@ class HotspotUserController extends Controller
         $routers=Mikrotik_router::where('status', 'active')->get();
         return view('Backend.Pages.Hotspot.User.Create', compact('routers'));
     }
+    public function hotspot_user_bulk_create(Request $request){
+        $routers=Mikrotik_router::where('status', 'active')->get();
+        return view('Backend.Pages.Hotspot.User.Bulk_create', compact('routers'));
+    }
     public function hotspot_user_index(Request $request)
     {
         $query = Hotspot_user::query()

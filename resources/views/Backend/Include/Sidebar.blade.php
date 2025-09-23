@@ -109,6 +109,7 @@
 
                         'admin.hotspot.user.index',
                         'admin.hotspot.user.create',
+                        'admin.hotspot.user.bulk.create',
                         'admin.hotspot.user.edit',
                     ];
                 @endphp
@@ -140,7 +141,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{route('admin.hotspot.user.bulk.create')}}" class="nav-link {{ $route == 'admin.hotspot.user.bulk.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Bulk User Create</p>
                             </a>

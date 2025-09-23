@@ -231,6 +231,10 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::put('/user/{id}', 'hotspot_user_update')->name('admin.hotspot.user.update');
                 Route::delete('user/{id}', 'hotspot_user_destroy')->name('admin.hotspot.user.destroy');
 
+                /*------Bulk User Create-------*/
+                Route::get('/user/bulk/create', 'hotspot_user_bulk_create')->name('admin.hotspot.user.bulk.create');
+                Route::post('/user/bulk/store', 'hotspot_user_bulk_store')->name('admin.hotspot.user.bulk.store');
+
             });
 
         });
