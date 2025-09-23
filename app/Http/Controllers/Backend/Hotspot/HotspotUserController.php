@@ -18,6 +18,53 @@ class HotspotUserController extends Controller
         $routers=Mikrotik_router::where('status', 'active')->get();
         return view('Backend.Pages.Hotspot.User.Create', compact('routers'));
     }
+    public function hotspot_user_index(Request $request)
+    {
+        $query = Hotspot_user::query()
+            ->with([
+                'router:id,name',
+                'profile:id,name,mikrotik_profile',
+            ])
+            ->orderByDesc('id');
+
+        // Filter: router
+        if ($request->filled('router_id')) {
+            $query->where('router_id', $request->integer('router_id'));
+        }
+
+        // Filter: profile
+        if ($request->filled('hotspot_profile_id')) {
+            $query->where('hotspot_profile_id', $request->integer('hotspot_profile_id'));
+        }
+
+        // Filter: status
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Search: username, mac_lock, comment
+        if ($request->filled('q')) {
+            $term = $request->q;
+            $query->where(function ($q) use ($term) {
+                $q->where('username', 'like', "%{$term}%")
+                  ->orWhere('mac_lock', 'like', "%{$term}%")
+                  ->orWhere('comment', 'like', "%{$term}%");
+            });
+        }
+
+        $users = $query->paginate(20)->withQueryString();
+
+        // Dropdown data
+        $routers  = Mikrotik_router::orderBy('name')->get(['id','name']);
+        $profiles = collect();
+        if ($request->filled('router_id')) {
+            $profiles = Hotspot_profile::where('router_id', $request->integer('router_id'))
+                        ->orderBy('name')
+                        ->get(['id','name','mikrotik_profile']);
+        }
+
+        return view('Backend.Pages.Hotspot.User.index', compact('users','routers','profiles'));
+    }
 
     /**
      * Store a newly created hotspot user.

@@ -107,6 +107,7 @@
                 @php
                     $active_prefix = [
 
+                        'admin.hotspot.user.index',
                         'admin.hotspot.user.create',
                     ];
                 @endphp
@@ -121,12 +122,12 @@
                             <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Active Sessions</p>
-                                <span class="right badge badge-danger">57</span> 
+                                <span class="right badge badge-danger">57</span>
                             </a>
                         </li>
                         {{-- was: route('admin.hotspot.users.index') --}}
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{route('admin.hotspot.user.index')}}" class="nav-link {{ $route == 'admin.hotspot.user.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Users</p>
                             </a>

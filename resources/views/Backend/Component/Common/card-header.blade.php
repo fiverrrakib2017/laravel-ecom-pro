@@ -77,12 +77,17 @@
 
       </div>
       <div class="header-actions d-none d-md-flex">
-          <button type="button" id="btn-refresh" class="btn btn-header btn-sm mr-2">
-              <i class="fas fa-sync-alt"></i> Refresh
-          </button>
-          <a href="{{ route('admin.settings.information.index') }}" class="btn btn-header btn-sm">
-              <i class="fas fa-cog"></i> Settings
-          </a>
+            <button type="button" id="btn-refresh" class="btn btn-header btn-sm mr-2">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button type="button" onclick="window.location='{{ route('admin.settings.information.index') }}'" class="btn btn-header btn-sm mr-2">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <button type="button" onclick="history.back()" class="btn btn-header btn-sm mr-2">
+            <i class="fas fa-arrow-left"></i> Back
+        </button>
+
+           {!! $button ?? '' !!}
       </div>
   </div>
 
