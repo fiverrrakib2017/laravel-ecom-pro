@@ -226,6 +226,10 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/user/index', 'hotspot_user_index')->name('admin.hotspot.user.index');
                 Route::get('/user/create', 'hotspot_user_create')->name('admin.hotspot.user.create');
                 Route::post('/user/store', 'hotspot_user_store')->name('admin.hotspot.user.store');
+             
+                Route::get('/user/edit/{id}', 'hotspot_user_edit')->name('admin.hotspot.user.edit');
+                Route::put('/user/{id}', 'hotspot_user_update')->name('admin.hotspot.user.update');
+                Route::delete('user/{id}', 'hotspot_user_destroy')->name('admin.hotspot.user.destroy');
 
             });
 

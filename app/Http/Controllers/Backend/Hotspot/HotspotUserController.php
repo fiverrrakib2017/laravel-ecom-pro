@@ -124,9 +124,74 @@ class HotspotUserController extends Controller
             'message' => 'Added Successfully'
         ]);
     }
+    public function hotspot_user_edit($id){
+        $user           = Hotspot_user::with(['router:id,name', 'profile:id,name,mikrotik_profile'])->findOrFail($id);
+        $profiles       = Hotspot_profile::where('router_id', $user->router_id)
+                            ->orderBy('name')
+                            ->get(['id','name','mikrotik_profile']);
+        $routers        = Mikrotik_router::orderBy('name')->get(['id','name']);
 
+    return view('Backend.Pages.Hotspot.User.edit', compact('user','routers','profiles'));
+    }
+    public function hotspot_user_update(Request $request, $id)
+    {
+        $user = Hotspot_user::findOrFail($id);
 
-    /** Delete Hotspot profile */
+        /* Validate the form data*/
+        $rules = [
+            'router_id'          => 'required|integer|exists:routers,id',
+            'hotspot_profile_id' => [
+                'required','integer',
+                Rule::exists('hotspot_profiles','id')
+                    ->where(fn($q) => $q->where('router_id', $request->router_id)),
+            ],
+            'username'           => [
+                'required','string','max:190',
+                Rule::unique('hotspot_users','username')
+                    ->where(fn($q) => $q->where('router_id', $request->router_id))
+                    ->ignore($user->id),
+            ],
+            'password'  => 'nullable|string|min:4|max:190',
+            'mac_lock'  => 'nullable|string|max:190',
+            // 'mac_lock' => ['nullable','string','max:190','regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/'],
+            'status'    => ['required', Rule::in(['active','disabled','expired','blocked'])],
+            'expires_at'=> 'nullable|date',
+            'comment'   => 'nullable|string|max:500',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        /*-------------- Update the Instance-------------- */
+        $user->router_id          = (int)$request->router_id;
+        $user->hotspot_profile_id = (int)$request->hotspot_profile_id;
+        $user->username           = $request->username;
+
+        if ($request->filled('password')) {
+            $user->password_encrypted = Crypt::encryptString($request->password);
+        }
+
+        $user->mac_lock   = $request->filled('mac_lock') ? Str::lower($request->mac_lock) : null;
+        $user->status     = $request->status;
+        $user->expires_at = $request->filled('expires_at') ? $request->expires_at : null;
+        $user->comment    = $request->filled('comment') ? $request->comment : null;
+
+        $user->created_by = $user->created_by ?? optional(Auth::guard('admin')->user())->id;
+
+        /*--------------Save to the database table--------------*/
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Updated Successfully'
+        ]);
+    }
+    /**-------------- Delete Hotspot profile-------------- */
     public function hotspot_user_destroy($id)
     {
         $profile = Hotspot_profile::findOrFail($id);
@@ -136,7 +201,7 @@ class HotspotUserController extends Controller
     }
 
     private function _validateForm($request){
-        /*Validate the form data*/
+        /*--------------Validate the form data--------------*/
         $rules = [
             'router_id'         => 'required|integer|exists:routers,id',
             'name'              => 'required|string|max:255',

@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-12">
         <div class="">
-            <!-- Page Header -->
+            <!-- Card Header -->
             @include('Backend.Component.Common.card-header', [
                 'title' => 'Hotspot Users',
                 'description' => 'All users with status, usage & expiry details',
@@ -77,7 +77,7 @@
                     </div>
 
                     <div class="form-group col-md-1 mb-2 d-flex align-items-center">
-                        <button type="submit" class="btn btn-dark w-100">
+                        <button type="submit" class="btn btn-danger w-100">
                             <i class="fas fa-filter"></i>
                         </button>
                     </div>
@@ -100,7 +100,7 @@
                             <th>Usage</th>
                             <th>Uptime</th>
                             <th>Comment</th>
-                            {{-- <th style="width:140px;">Actions</th> --}}
+                            <th style="width:140px;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -162,20 +162,21 @@
                                 <td class="text-truncate" style="max-width: 220px;">
                                     {{ $u->comment ?? '—' }}
                                 </td>
-                                {{-- Actions (uncomment when edit/delete routes ready)
                                 <td class="text-nowrap">
                                     <a href="{{ route('admin.hotspot.user.edit', $u->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button class="btn btn-xs btn-danger btn-delete"
-                                            data-id="{{ $u->id }}"
-                                            data-name="{{ $u->username }}"
-                                            data-url="{{ route('admin.hotspot.user.destroy', $u->id) }}"
-                                            title="Delete">
+                                    <button type="button"
+                                        class="btn btn-xs btn-danger btn-delete"
+                                        data-id="{{ $u->id }}"
+                                        data-name="{{ $u->username }}"
+                                        data-url="{{ route('admin.hotspot.user.destroy', $u->id) }}"
+                                        title="Delete">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </td>
-                                --}}
+
+                               
                             </tr>
                         @empty
                             <tr>
@@ -203,6 +204,8 @@
 @endsection
 
 @section('script')
+<!-- Include SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
@@ -211,6 +214,50 @@ $(function () {
         $(this).closest('form')[0].submit();
     });
 
+    
+
+    $(document).on('click', '.btn-delete', function(){
+        const id   = $(this).data('id');
+        const name = $(this).data('name') || 'this user';
+        const url  = $(this).data('url');
+
+        if (window.Swal && Swal.fire) {
+            Swal.fire({
+                title: 'Are you sure?',
+                html: 'Delete <b>'+ name +'</b>? This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel'
+            }).then(function(result){
+                if(result.isConfirmed){ doDelete(url, id); }
+            });
+        } else if (confirm('Delete "'+name+'"?')) {
+            doDelete(url, id);
+        }
+    });
+
+    function doDelete(url, id){
+        const csrf = '{{ csrf_token() }}';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            data: {_method:'DELETE', _token: csrf},
+            success: function(res){
+                if(res && res.success){
+                    toastr.success(res.message || 'Deleted Successfully');
+                    const $row = $('#row-'+id);
+                    if($row.length){ $row.remove(); } else { location.reload(); }
+                }else{
+                    toastr.warning('Unexpected response.');
+                }
+            },
+            error: function(){
+                toastr.error('Could not delete. Please try again.');
+            }
+        });
+    }
 
 });
 </script>

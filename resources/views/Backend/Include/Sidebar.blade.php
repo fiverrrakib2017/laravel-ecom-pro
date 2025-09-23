@@ -109,6 +109,7 @@
 
                         'admin.hotspot.user.index',
                         'admin.hotspot.user.create',
+                        'admin.hotspot.user.edit',
                     ];
                 @endphp
                 {{-- Users --}}
@@ -125,9 +126,8 @@
                                 <span class="right badge badge-danger">57</span>
                             </a>
                         </li>
-                        {{-- was: route('admin.hotspot.users.index') --}}
                         <li class="nav-item">
-                            <a href="{{route('admin.hotspot.user.index')}}" class="nav-link {{ $route == 'admin.hotspot.user.index' ? 'active' : '' }}">
+                            <a href="{{route('admin.hotspot.user.index')}}" class="nav-link {{ $route == 'admin.hotspot.user.index' || $route=='admin.hotspot.user.edit' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Users</p>
                             </a>
