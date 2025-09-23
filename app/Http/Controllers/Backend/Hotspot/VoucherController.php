@@ -1,71 +1,89 @@
 <?php
 namespace App\Http\Controllers\Backend\Hotspot;
-
+use App\Http\Controllers\Controller;
 use App\Models\{Voucher_batch,Voucher,Hotspot_profile,Router};
-use App\Services\Router_api_service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
-
-class VoucherController extends Controller
-{
-
-public function createBatch(){
-for ($i=0; $i<$batch->qty; $i++) {
-    $uname = ($batch->code_prefix ? $batch->code_prefix.'-' : '').self::rnd($alphabet, $batch->username_length);
-    $pwd = self::rnd($alphabet, $batch->password_length);
-    Voucher::create([
-    'voucher_batch_id'=>$batch->id,
-    'router_id'=>$profile->router_id,
-    'hotspot_profile_id'=>$profile->id,
-    'username'=>$uname,
-    'password_encrypted'=>encrypt($pwd),
-    ]);
-    }
-    });
-}
-
-    $batch->update(['status'=>'generated']);
-    return redirect()->route('hotspot.vouchers.batch.show',$batch->id)->with('ok','Vouchers generated');
-    }
-
-
-    private static function rnd(string $alphabet, int $len): string
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Crypt;
+class VoucherController extends Controller{
+    /** Print Sheets UI for a single batch-------- */
+    public function print(Request $request)
     {
-    $out = '';
-    $max = strlen($alphabet)-1;
-    for ($i=0; $i<$len; $i++) { $out .=$alphabet[random_int(0,$max)]; } return $out; } public function
-        pushBatch(RouterOsApiService $api, int $batchId){ $batch=VoucherBatch::with(['profile','router','vouchers'])->
-        findOrFail($batchId);
-        foreach ($batch->vouchers as $v) {
-        $api->addHotspotUser($batch->router,[
-        'username'=>$v->username,
-        'password'=>decrypt($v->password_encrypted),
-        'profile'=>$batch->profile->mikrotik_profile,
-        'comment'=>'voucher:'.$batch->id,
+        
+        $batchId = $request->query('batch_id');
+        $batch   = Voucher_batch::with(['router:id,name','profile:id,name,mikrotik_profile'])->findOrFail($batchId);
+        // fetch all vouchers of the batch (limit safety)
+        $vouchers = Voucher::where('voucher_batch_id', $batch->id)
+            ->orderBy('id')->get(['id','username','password_encrypted','status','meta']);
+
+        return view('Backend.Pages.Hotspot.Vouchers.print', compact('batch','vouchers'));
+    }
+
+    /** Report: Sold / Activated list */
+    public function sales(Request $request)
+    {
+        $query = Voucher::query()
+            ->with(['batch:id,name','router:id,name','profile:id,name'])
+            ->whereIn('status', ['sold','activated'])
+            ->orderByDesc('id');
+
+        if ($request->filled('router_id'))  $query->where('router_id', $request->integer('router_id'));
+        if ($request->filled('batch_id'))   $query->where('voucher_batch_id', $request->integer('batch_id'));
+        if ($request->has('status') && $request->status !== '') $query->where('status', $request->status);
+        if ($request->filled('q')) {
+            $term = $request->q;
+            $query->where('username','like',"%{$term}%");
+        }
+
+        $vouchers = $query->paginate(30)->withQueryString();
+
+        $routers  = Router::orderBy('name')->get(['id','name']);
+        $batches  = Voucher_batch::orderByDesc('id')->get(['id','name']);
+
+        return view('Backend.Pages.Hotspot.Vouchers.sales', compact('vouchers','routers','batches'));
+    }
+
+    /**------------ Export CSV ------------- */
+    public function export(Request $request): StreamedResponse
+    {
+        $filename = 'vouchers_export_'.now()->format('Ymd_His').'.csv';
+
+        $query = Voucher::query()
+            ->with(['batch:id,name'])
+            ->orderBy('id');
+
+        if ($request->filled('batch_id')) $query->where('voucher_batch_id', $request->integer('batch_id'));
+        if ($request->has('status') && $request->status !== '') $query->where('status', $request->status);
+
+        $callback = function() use ($query) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['batch','username','password','status','expires_at']);
+
+            $query->chunk(1000, function($chunk) use ($out) {
+                foreach ($chunk as $v) {
+                    $plain = null;
+                    try {
+                        $meta = json_decode($v->meta ?? '[]', true);
+                        // prefer plain from meta saved at creation
+                        $plain = $meta['password_plain_preview'] ?? null;
+                    } catch (\Throwable $e) {}
+                    fputcsv($out, [
+                        optional($v->batch)->name,
+                        $v->username,
+                        $plain, 
+                        $v->status,
+                        optional($v->expires_at)->format('Y-m-d H:i:s'),
+                    ]);
+                }
+            });
+            fclose($out);
+        };
+
+        return response()->streamDownload($callback, $filename, [
+            'Content-Type' => 'text/csv',
         ]);
-        }
-        $batch->update(['status'=>'pushed']);
-        return back()->with('ok','Batch pushed to router');
-        }
-
-
-        public function exportCSV(int $batchId){
-        $batch = VoucherBatch::with('vouchers')->findOrFail($batchId);
-        $csv = implode(",", ['username','password','profile','validity_days'])."\n";
-        foreach ($batch->vouchers as $v) {
-        $csv .= implode(",", [
-        $v->username,
-        decrypt($v->password_encrypted),
-        $batch->profile->name,
-        $batch->validity_days_override ?? $batch->profile->validity_days,
-        ])."\n";
-        }
-        return response($csv,200,[
-        'Content-Type'=>'text/csv',
-        'Content-Disposition'=>'attachment; filename="vouchers-'.$batchId.'.csv"'
-        ]);
-        }
-
+    }
 }

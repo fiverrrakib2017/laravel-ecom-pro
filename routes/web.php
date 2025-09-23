@@ -237,7 +237,22 @@ Route::group(['middleware' => 'admin'], function () {
                 /*------Bulk import-------*/
                 Route::get('/user/bulk/import', 'hotspot_user_bulk_import')->name('admin.hotspot.user.bulk.import');
                 Route::post('/user/bulk/import/store', 'hotspot_user_bulk_import_store')->name('admin.hotspot.user.bulk.import.store');
+            });
 
+            /*--------Hotspot Batch Route-----------**/
+            Route::controller(App\Http\Controllers\Backend\Hotspot\BatchController::class)->group(function () {
+                Route::get('/voucher/batches', 'index')->name('admin.hotspot.vouchers.batch.index');
+                Route::get('/voucher/batches/create', 'create')->name('admin.hotspot.vouchers.batch.create');
+                Route::post('/voucher/batches', 'store')->name('admin.hotspot.vouchers.batch.store');
+            });
+            /*--------Hotspot Voucher Route-----------**/
+            Route::controller(App\Http\Controllers\Backend\Hotspot\VoucherController::class)->group(function () {
+                // Print
+                Route::get('/vouchers/print', 'print')->name('admin.hotspot.vouchers.print');
+                // Sales
+                Route::get('/vouchers/sales', 'sales')->name('admin.hotspot.vouchers.sales');
+                // Export CSV
+                Route::post('/vouchers/export', 'export')->name('admin.hotspot.vouchers.export');
             });
 
         });

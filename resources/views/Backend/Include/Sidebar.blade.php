@@ -155,40 +155,52 @@
                         </li>
                     </ul>
                 </li>
+                 @php
+                    $active_prefix = [
 
+                        'admin.hotspot.vouchers.batch.index',
+                        'admin.hotspot.vouchers.batch.create',
+                        'admin.hotspot.vouchers.print',
+                        'admin.hotspot.vouchers.sales',
+                        'admin.hotspot.vouchers.export',
+                    ];
+                @endphp
                 {{-- Vouchers --}}
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-ticket-alt"></i>
                         <p>Vouchers<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        {{-- was: route('admin.hotspot.vouchers.batch.create') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+                        <li class="nav-item">
+                            <a href="{{route('admin.hotspot.vouchers.batch.create')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Generate Batch</p>
-                            </a></li>
-                        {{-- was: route('admin.hotspot.vouchers.batch.index') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                            </a>
+                        </li>
+                        <li class="nav-item"><a href="{{route('admin.hotspot.vouchers.batch.index')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Batches</p>
                                 <span class="right badge badge-secondary">9</span>
                             </a></li>
-                        {{-- was: route('admin.hotspot.vouchers.print') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="{{route('admin.hotspot.vouchers.print')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.print' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Print Sheets</p>
-                            </a></li>
-                        {{-- was: route('admin.hotspot.vouchers.sales') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('admin.hotspot.vouchers.sales')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.sales' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sold / Activated</p>
-                            </a></li>
-                        {{-- was: route('admin.hotspot.vouchers.export') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('admin.hotspot.vouchers.export')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.export' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Export CSV</p>
-                            </a></li>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
