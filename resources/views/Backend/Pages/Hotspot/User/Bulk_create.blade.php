@@ -11,7 +11,7 @@
                 'description' => 'Generate multiple hotspot users quickly',
                 'icon' => '<i class="fas fa-wifi"></i>',
                 'button' => '<button type="button" onclick="window.location=\''.route('admin.hotspot.user.index').'\'" class="btn btn-header">
-                    <i class="fas fa-user-plus"></i> User List
+                    <i class="fas fa-list"></i> User List
                 </button>'
 
             ])

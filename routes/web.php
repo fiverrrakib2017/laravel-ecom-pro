@@ -234,6 +234,9 @@ Route::group(['middleware' => 'admin'], function () {
                 /*------Bulk User Create-------*/
                 Route::get('/user/bulk/create', 'hotspot_user_bulk_create')->name('admin.hotspot.user.bulk.create');
                 Route::post('/user/bulk/store', 'hotspot_user_bulk_store')->name('admin.hotspot.user.bulk.store');
+                /*------Bulk import-------*/
+                Route::get('/user/bulk/import', 'hotspot_user_bulk_import')->name('admin.hotspot.user.bulk.import');
+                Route::post('/user/bulk/import/store', 'hotspot_user_bulk_import_store')->name('admin.hotspot.user.bulk.import.store');
 
             });
 

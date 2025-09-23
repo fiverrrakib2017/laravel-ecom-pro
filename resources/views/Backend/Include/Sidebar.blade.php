@@ -146,11 +146,10 @@
                                 <p>Bulk User Create</p>
                             </a>
                         </li>
-                        {{-- was: route('admin.hotspot.users.bulk') --}}
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{route('admin.hotspot.user.bulk.import')}}" class="nav-link {{ $route == 'admin.hotspot.user.bulk.import' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Bulk Import (CSV)</p>
+                                <p>Users Import</p>
                             </a>
                         </li>
                     </ul>

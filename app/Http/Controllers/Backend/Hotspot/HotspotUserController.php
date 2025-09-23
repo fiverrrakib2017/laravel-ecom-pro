@@ -69,7 +69,7 @@ class HotspotUserController extends Controller
 
         return view('Backend.Pages.Hotspot.User.index', compact('users','routers','profiles'));
     }
-
+hotspot_user_bulk_import
     /**
      * Store bulk users (JSON response).
      */
