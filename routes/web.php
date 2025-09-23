@@ -212,15 +212,23 @@ Route::group(['middleware' => 'admin'], function () {
     /** Hotspot Route **/
     Route::prefix('admin/hotspot')->group(function () {
         Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotController::class)->group(function () {
+            /*--------Hotspot Profile Route-----------**/
             Route::get('/dashbaord', 'hotspot_dashbaord')->name('admin.hotspot.user.dashbaord');
             Route::get('/profile/create', 'hotspot_profile_create')->name('admin.hotspot.profile.create');
             Route::post('/profile/store', 'hotspot_profile_store')->name('admin.hotspot.profile.store');
             Route::get('/profile/edit/{id}', 'hotspot_profile_edit')->name('admin.hotspot.profile.edit');
-
             Route::put('/profiles/{id}', 'hotspot_profile_update')->name('admin.hotspot.profile.update');
             Route::delete('profiles/{id}', 'hotspot_profile_destroy')->name('admin.hotspot.profile.destroy');
-
             Route::get('/profile/list', 'hotspot_profile_index')->name('admin.hotspot.profile.index');
+            Route::get('/profile/{id}', 'profilesByRouter')->name('admin.hotspot.profile.get_profile');
+            /*--------Hotspot Users Route-----------**/
+            Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotUserController::class)->group(function () {
+                Route::get('/user/index', 'hotspot_user_index')->name('admin.hotspot.user.index');
+                Route::get('/user/create', 'hotspot_user_create')->name('admin.hotspot.user.create');
+                Route::post('/user/store', 'hotspot_user_store')->name('admin.hotspot.user.store');
+
+            });
+
         });
     });
 

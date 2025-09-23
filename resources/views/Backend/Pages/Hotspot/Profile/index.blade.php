@@ -137,7 +137,7 @@
                                     <span data-toggle="tooltip" title="Session Timeout">Sess:</span> {{ $p->session_timeout ?? '—' }}
                                 </td>
                                 <td>{{ $p->validity_days }} d</td>
-                                <td>৳ {{ number_format(($p->price_minor ?? 0)/100, 2) }}</td>
+                                <td>৳ {{ number_format(($p->price_minor ?? 0), 2) }}</td>
                                 <td>
                                     @if($p->is_active)
                                         <span class="badge badge-success"><i class="fas fa-check-circle mr-1"></i>Active</span>

@@ -128,6 +128,22 @@ class HotspotController extends Controller
 
         return response()->json(['success'=>true,'message'=>'Updated Successfully']);
     }
+    /**
+     * Dependent dropdown helper: get active profiles for a router.
+     */
+    public function profilesByRouter($routerId)
+    {
+        $profiles = Hotspot_profile::query()
+            ->where('router_id', $routerId)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id','name','mikrotik_profile']);
+
+        return response()->json([
+            'success'  => true,
+            'profiles' => $profiles,
+        ]);
+    }
     /** Delete Hotspot profile */
     public function hotspot_profile_destroy($id)
     {

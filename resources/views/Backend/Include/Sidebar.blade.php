@@ -104,19 +104,24 @@
                     </ul>
                 </li>
 
+                @php
+                    $active_prefix = [
+
+                        'admin.hotspot.user.create',
+                    ];
+                @endphp
                 {{-- Users --}}
                 <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Users<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview">
-                        {{-- was: route('admin.hotspot.users.active') --}}
+                    <ul class="nav nav-treeview " style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Active Sessions</p>
-                                <span class="right badge badge-danger">57</span> {{-- placeholder --}}
+                                <span class="right badge badge-danger">57</span> 
                             </a>
                         </li>
                         {{-- was: route('admin.hotspot.users.index') --}}
@@ -124,6 +129,13 @@
                             <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Users</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.hotspot.user.create')}}" class="nav-link {{ $route == 'admin.hotspot.user.create' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Single User Create</p>
                             </a>
                         </li>
                         <li class="nav-item">
