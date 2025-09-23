@@ -71,6 +71,200 @@ class HotspotUserController extends Controller
     }
 
     /**
+     * Store bulk users (JSON response).
+     */
+    public function hotspot_user_bulk_store(Request $request)
+    {
+        /* Validate the form data*/
+        $rules = [
+            'router_id'          => 'required|integer|exists:routers,id',
+            'hotspot_profile_id' => [
+                'required','integer',
+                Rule::exists('hotspot_profiles','id')
+                    ->where(fn($q) => $q->where('router_id', $request->router_id)),
+            ],
+            'mode'               => ['required', Rule::in(['pattern','list'])],
+
+            // pattern mode fields
+            'prefix'     => 'nullable|string|max:50',
+            'start_from' => 'required_if:mode,pattern|integer|min:1',
+            'count'      => 'required_if:mode,pattern|integer|min:1|max:1000',
+            'pad'        => 'nullable|integer|min:1|max:10',
+
+            // list mode fields
+            'usernames_text' => 'required_if:mode,list|nullable|string',
+
+            // password modes
+            'password_mode'   => ['required', Rule::in(['same','fixed','random','list'])],
+            'fixed_password'  => 'required_if:password_mode,fixed|nullable|string|min:4|max:190',
+            'password_length' => 'required_if:password_mode,random|nullable|integer|min:4|max:32',
+            'passwords_text'  => 'required_if:password_mode,list|nullable|string',
+
+            'status'     => ['required', Rule::in(['active','disabled','expired','blocked'])],
+            'expires_at' => 'nullable|date',
+            'comment'    => 'nullable|string|max:500',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, [
+            'usernames_text.required_if' => 'Please paste usernames (one per line).',
+            'passwords_text.required_if' => 'Please paste passwords (one per line).',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        /* Build username list */
+        $mode      = $request->mode;
+        $routerId  = (int) $request->router_id;
+        $profileId = (int) $request->hotspot_profile_id;
+        $pad       = (int) ($request->pad ?? 3);
+
+        $usernames = [];
+
+        if ($mode === 'pattern') {
+            $prefix = (string) ($request->prefix ?? '');
+            $start  = (int) $request->start_from;
+            $count  = (int) $request->count;
+
+            for ($i = 0; $i < $count; $i++) {
+                $num = $start + $i;
+                $usernames[] = $prefix . str_pad((string)$num, $pad, '0', STR_PAD_LEFT);
+            }
+        } else {
+            // list mode
+            $lines = preg_split('/\r\n|\r|\n/', (string)$request->usernames_text);
+            foreach ($lines as $ln) {
+                $u = trim($ln);
+                if ($u !== '') $usernames[] = $u;
+            }
+        }
+
+        // sanitize + unique (preserve order)
+        $seen = [];
+        $usernames = array_values(array_filter($usernames, function ($u) use (&$seen) {
+            $u = trim($u);
+            if ($u === '') return false;
+            if (mb_strlen($u) > 190) return false;
+            if (isset($seen[$u])) return false;
+            $seen[$u] = true;
+            return true;
+        }));
+
+        if (empty($usernames)) {
+            return response()->json([
+                'success' => false,
+                'errors'  => ['usernames' => ['No valid usernames to create.']]
+            ], 422);
+        }
+
+        // enforce hard cap (safety)
+        if (count($usernames) > 1000) {
+            $usernames = array_slice($usernames, 0, 1000);
+        }
+
+        /* Passwords */
+        $passwordMode = $request->password_mode;
+        $passwordMap  = []; // username => plain password
+
+        if ($passwordMode === 'same') {
+            foreach ($usernames as $u) $passwordMap[$u] = $u;
+        } elseif ($passwordMode === 'fixed') {
+            $fixed = $request->fixed_password;
+            foreach ($usernames as $u) $passwordMap[$u] = $fixed;
+        } elseif ($passwordMode === 'random') {
+            $len = (int) $request->password_length;
+            $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#';
+            foreach ($usernames as $u) {
+                $pw = '';
+                for ($i=0;$i<$len;$i++) $pw .= $chars[random_int(0, strlen($chars)-1)];
+                $passwordMap[$u] = $pw;
+            }
+        } else { // list
+            $plines = preg_split('/\r\n|\r|\n/', (string)$request->passwords_text);
+            $passwords = [];
+            foreach ($plines as $ln) {
+                $p = trim($ln);
+                if ($p !== '') $passwords[] = $p;
+            }
+            if (count($passwords) !== count($usernames)) {
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['passwords_text' => ['Passwords count must match usernames count.']]
+                ], 422);
+            }
+            foreach ($usernames as $idx => $u) {
+                $passwordMap[$u] = $passwords[$idx];
+            }
+        }
+
+        /* Check duplicates on DB */
+        $existing = Hotspot_user::where('router_id', $routerId)
+                    ->whereIn('username', $usernames)
+                    ->pluck('username')
+                    ->all();
+        $existing = array_flip($existing); 
+
+        $rowsToInsert = [];
+        $printRows    = []; 
+        $skipped      = []; 
+
+        $nowAdminId = optional(Auth::guard('admin')->user())->id;
+
+        foreach ($usernames as $u) {
+            if (isset($existing[$u])) {
+                $skipped[] = ['username' => $u, 'reason' => 'Already exists'];
+                continue;
+            }
+            $plain = $passwordMap[$u] ?? null;
+            if (!$plain || mb_strlen($plain) < 4 || mb_strlen($plain) > 190) {
+                $skipped[] = ['username' => $u, 'reason' => 'Invalid password'];
+                continue;
+            }
+
+            $rowsToInsert[] = [
+                'router_id'          => $routerId,
+                'hotspot_profile_id' => $profileId,
+                'username'           => $u,
+                'password_encrypted' => Crypt::encryptString($plain),
+                'mac_lock'           => null,
+                'status'             => $request->status,
+                'expires_at'         => $request->filled('expires_at') ? $request->expires_at : null,
+                'last_seen_at'       => null,
+                'upload_bytes'       => 0,
+                'download_bytes'     => 0,
+                'uptime_seconds'     => 0,
+                'created_by'         => $nowAdminId,
+                'comment'            => $request->filled('comment') ? $request->comment : null,
+                'created_at'         => now(),
+                'updated_at'         => now(),
+            ];
+            $printRows[] = ['username' => $u, 'password' => $plain];
+        }
+
+        if (empty($rowsToInsert)) {
+            return response()->json([
+                'success' => false,
+                'errors'  => ['usernames' => ['Nothing to create (all duplicates or invalid).']],
+            ], 422);
+        }
+
+  
+        Hotspot_user::insert($rowsToInsert);
+
+        return response()->json([
+            'success'       => true,
+            'message'       => 'Bulk created: '.count($rowsToInsert).' user(s). Skipped: '.count($skipped).'.',
+            'created_count' => count($rowsToInsert),
+            'skipped_count' => count($skipped),
+            'created'       => $printRows, 
+            'skipped'       => $skipped
+        ]);
+    }
+    /**
      * Store a newly created hotspot user.
      */
     public function hotspot_user_store(Request $request)
