@@ -122,7 +122,7 @@
                                     @php
                                         $badge = [
                                             'active'   => 'success',
-                                            'disabled' => 'secondary',
+                                            'disabled' => 'danger',
                                             'expired'  => 'warning',
                                             'blocked'  => 'danger',
                                         ][$u->status] ?? 'light';
@@ -187,15 +187,21 @@
                 </table>
             </div>
 
-            <div class="card-footer d-flex justify-content-between align-items-center">
+           <div class="card-footer d-flex justify-content-between align-items-center">
                 @if($users instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                    <small class="text-muted">
-                        Showing <strong>{{ $users->firstItem() }}–{{ $users->lastItem() }}</strong>
-                        of <strong>{{ $users->total() }}</strong> item(s)
-                    </small>
-                    {{ $users->appends(request()->query())->links() }}
+                    <div class="text-muted">
+                        <small>
+                            Showing <strong>{{ $users->firstItem() }}–{{ $users->lastItem() }}</strong>
+                            of <strong>{{ $users->total() }}</strong> item(s)
+                        </small>
+                    </div>
+                    <div>
+                        {{ $users->appends(request()->query())->links('pagination::bootstrap-4') }}
+                    </div>
                 @else
-                    <small class="text-muted">Showing <strong>{{ $users->count() }}</strong> item(s)</small>
+                    <div class="text-muted">
+                        <small>Showing <strong>{{ $users->count() }}</strong> item(s)</small>
+                    </div>
                 @endif
             </div>
         </div>
