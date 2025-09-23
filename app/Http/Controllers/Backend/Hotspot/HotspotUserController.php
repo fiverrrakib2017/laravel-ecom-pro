@@ -191,11 +191,11 @@ class HotspotUserController extends Controller
             'message' => 'Updated Successfully'
         ]);
     }
-    /**-------------- Delete Hotspot profile-------------- */
+    /**-------------- Delete Hotspot user-------------- */
     public function hotspot_user_destroy($id)
     {
-        $profile = Hotspot_profile::findOrFail($id);
-        $profile->delete();
+        $user = Hotspot_user::findOrFail($id);
+        $user->delete();
 
         return response()->json(['success'=>true,'message'=>'Deleted Successfully']);
     }
