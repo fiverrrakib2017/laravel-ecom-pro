@@ -1,37 +1,18 @@
 @extends('Backend.Layout.App')
 @section('title', 'Bulk Import (CSV) | Admin Panel')
 
-@section('style')
-<style>
-.card-header-pro{position:relative;overflow:hidden;padding:16px 20px;border:0;color:#fff;background:linear-gradient(135deg,#17a2b8 0%,#0ea5e9 45%,#2563eb 100%);box-shadow:inset 0 -1px 0 rgba(255,255,255,.2);border-top-left-radius:.25rem;border-top-right-radius:.25rem;}
-.card-header-pro::after{content:"";position:absolute;right:-30px;top:-30px;width:180px;height:180px;pointer-events:none;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.35),rgba(255,255,255,0) 60%);transform:rotate(25deg);opacity:.7;}
-.card-header-pro .card-title{font-weight:700;letter-spacing:.2px;}
-.card-header-pro .icon-badge{width:44px;height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);color:#fff;box-shadow:0 6px 16px rgba(0,0,0,.08), inset 0 0 0 1px rgba(255,255,255,.25);}
-.card-header-pro .subtitle{display:block;margin-top:2px;font-size:.825rem;}
-.invalid-feedback{display:block}
-#result-wrap{display:none}
-.table-sm td, .table-sm th{padding:.35rem .5rem}
-.text-mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;}
-.custom-file-label::after{content:"Browse";}
-</style>
-@endsection
-
 @section('content')
 <div class="row">
     <div class="col-md-12 ">
         <div class="card">
-            <div class="card-header card-header-pro d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    <span class="icon-badge mr-2"><i class="fas fa-file-upload"></i></span>
-                    <div class="lh-1">
-                        <h4 class="card-title m-0">Bulk Import (CSV)</h4><br>
-                        <small class="subtitle text-white-50">Upload CSV: username,password,mac_lock,status,expires_at,comment</small>
-                    </div>
-                </div>
-                <div class="header-actions d-none d-md-flex">
-                    <a href="{{ route('admin.hotspot.user.index') }}" class="btn btn-header btn-sm"><i class="fas fa-list"></i> User List</a>
-                </div>
-            </div>
+            @include('Backend.Component.Common.card-header', [
+                'title' => 'Bulk Import (CSV)',
+                'description' => 'Upload CSV: username,password,mac_lock,status,expires_at,comment',
+                'icon' => '<i class="fas fa-wifi"></i>',
+                   'button' => '<button type="button" onclick="window.location=\''.route('admin.hotspot.user.index').'\'" class="btn btn-header">
+                    <i class="fas fa-user-plus"></i> User List
+                </button>'
+            ])
 
             <div class="card-body">
                 <form id="importForm" action="{{ route('admin.hotspot.user.bulk.import.store') }}" method="post" enctype="multipart/form-data">
@@ -159,7 +140,7 @@
                         <button type="button" id="btn-import" class="btn btn-primary">
                             <i class="fas fa-upload"></i> Import Now
                         </button>
-                        <a href="{{ route('admin.hotspot.user.index') }}" class="btn btn-default ml-2">
+                        <a href="{{ route('admin.hotspot.user.index') }}" class="btn btn-danger ml-2">
                             <i class="fas fa-list"></i> Back to List
                         </a>
                     </div>
@@ -223,8 +204,10 @@ $(function(){
             $profile.prop('disabled', true).html('<option value="">-- Select Profile --</option>');
             return;
         }
+        let url = "{{ route('admin.hotspot.profile.get_profile', ':id') }}";
+        url = url.replace(':id', routerId);
         $.ajax({
-            url: '{{ url('admin/hotspot-users/profiles-by-router') }}/' + routerId,
+            url: url,
             type: 'GET',
             dataType: 'json',
             headers: {'Accept':'application/json'},

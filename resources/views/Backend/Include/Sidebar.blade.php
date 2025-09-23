@@ -110,6 +110,7 @@
                         'admin.hotspot.user.index',
                         'admin.hotspot.user.create',
                         'admin.hotspot.user.bulk.create',
+                        'admin.hotspot.user.bulk.import',
                         'admin.hotspot.user.edit',
                     ];
                 @endphp
@@ -149,7 +150,7 @@
                         <li class="nav-item">
                             <a href="{{route('admin.hotspot.user.bulk.import')}}" class="nav-link {{ $route == 'admin.hotspot.user.bulk.import' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Users Import</p>
+                                <p>Bulk Import (CSV)</p>
                             </a>
                         </li>
                     </ul>

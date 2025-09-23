@@ -69,7 +69,274 @@ class HotspotUserController extends Controller
 
         return view('Backend.Pages.Hotspot.User.index', compact('users','routers','profiles'));
     }
-hotspot_user_bulk_import
+    public function hotspot_user_bulk_import(Request $request){
+        $routers = Mikrotik_router::orderBy('name')->get(['id','name']);
+        return view('Backend.Pages.Hotspot.User.Bulk_import', compact('routers'));
+    }
+    public function hotspot_user_bulk_import_store(Request $request){
+       /* Validate the form data */
+        $rules = [
+            'router_id'          => 'required|integer|exists:routers,id',
+            'hotspot_profile_id' => [
+                'required','integer',
+                Rule::exists('hotspot_profiles','id')
+                    ->where(fn($q) => $q->where('router_id', $request->router_id)),
+            ],
+            'csv_file'           => 'required|file|mimes:csv,txt|max:10240', // 10MB
+            'has_header'         => 'nullable|boolean',
+            'delimiter'          => ['nullable', Rule::in([',',';','\t','auto'])],
+            'status_override'    => ['nullable', Rule::in(['active','disabled','expired','blocked'])],
+            'expires_default'    => 'nullable|date',
+            'comment_default'    => 'nullable|string|max:500',
+
+            // password fallback when CSV password column is empty
+            'password_fallback'  => ['required', Rule::in(['none','username','fixed'])],
+            'fixed_password'     => 'required_if:password_fallback,fixed|nullable|string|min:4|max:190',
+
+            'dry_run'            => ['required', Rule::in(['0','1'])],
+        ];
+
+        $validator = Validator::make($request->all(), $rules, [
+            'csv_file.mimes' => 'Please upload a .csv (or .txt with CSV data).',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $routerId   = (int) $request->router_id;
+        $profileId  = (int) $request->hotspot_profile_id;
+        $dryRun     = $request->dry_run === '1';
+        $hasHeader  = (bool) $request->boolean('has_header');
+        $delimiter  = $request->input('delimiter', 'auto');
+        $statusOv   = $request->input('status_override');   // nullable
+        $expiresDef = $request->input('expires_default');   // nullable
+        $commentDef = $request->input('comment_default');   // nullable
+        $pwFallback = $request->input('password_fallback'); // none|username|fixed
+        $fixedPw    = $request->input('fixed_password');
+
+        // --- Read file into rows ---
+        $file = $request->file('csv_file');
+        if (!$file->isValid()) {
+            return response()->json(['success'=>false,'errors'=>['csv_file'=>['Invalid file upload.']]], 422);
+        }
+
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+        if (!$handle) {
+            return response()->json(['success'=>false,'errors'=>['csv_file'=>['Unable to read file.']]], 422);
+        }
+
+        // Peek the first line to auto-detect delimiter if needed
+        $firstLine = fgets($handle);
+        if ($firstLine === false) {
+            fclose($handle);
+            return response()->json(['success'=>false,'errors'=>['csv_file'=>['Empty file.']]], 422);
+        }
+
+        $dlm = $delimiter;
+        if ($dlm === 'auto') {
+            $candidates = ["," => substr_count($firstLine, ","), ";" => substr_count($firstLine, ";"), "\t" => substr_count($firstLine, "\t")];
+            arsort($candidates);
+            $dlm = key($candidates); // winner
+        }
+        // reset pointer and start reading again
+        rewind($handle);
+
+        // helper to get row array
+        $getRow = function() use ($handle, $dlm) {
+            return fgetcsv($handle, 0, $dlm);
+        };
+
+        // read header if present
+        $header = null;
+        if ($hasHeader) {
+            $header = $getRow();
+            if ($header) {
+                $header = array_map(function($h){
+                    $h = trim(mb_strtolower((string)$h));
+                    // normalize some common names
+                    return match ($h) {
+                        'mac' => 'mac_lock',
+                        default => $h,
+                    };
+                }, $header);
+            }
+        }
+
+        // If no header, we will map by index: 0=username, 1=password, 2=mac_lock, 3=status, 4=expires_at, 5=comment
+        $colIndex = [
+            'username'   => null,
+            'password'   => null,
+            'mac_lock'   => null,
+            'status'     => null,
+            'expires_at' => null,
+            'comment'    => null,
+        ];
+
+        if ($header) {
+            foreach ($header as $i => $h) {
+                if (array_key_exists($h, $colIndex)) {
+                    $colIndex[$h] = $i;
+                }
+            }
+            // username must exist in header
+            if ($colIndex['username'] === null) {
+                fclose($handle);
+                return response()->json([
+                    'success'=>false,
+                    'errors'=>['csv_file'=>['Header must include a "username" column.']]
+                ], 422);
+            }
+        } else {
+            // default index mapping
+            $colIndex = ['username'=>0,'password'=>1,'mac_lock'=>2,'status'=>3,'expires_at'=>4,'comment'=>5];
+        }
+
+        // preload existing usernames for duplicate check
+        $allNewUsernames = [];
+        $rowsRaw = [];
+        $lineNo  = 0;
+
+        // Read rows (cap to avoid memory abuse)
+        $maxRows = 5000;
+        while (($row = $getRow()) !== false) {
+            $lineNo++;
+            if ($hasHeader && $lineNo === 1) continue; // skip header line already read
+            if (count($row) === 1 && trim((string)$row[0]) === '') continue; // skip blank lines
+
+            $rowsRaw[] = $row;
+            if (count($rowsRaw) >= $maxRows) break;
+        }
+        fclose($handle);
+
+        // collect usernames for DB check
+        foreach ($rowsRaw as $row) {
+            $u = $colIndex['username'] !== null ? trim((string)($row[$colIndex['username']] ?? '')) : '';
+            if ($u !== '') {
+                $allNewUsernames[] = $u;
+            }
+        }
+        $allNewUsernames = array_values(array_unique($allNewUsernames));
+
+        $existing = Hotspot_user::where('router_id', $routerId)
+                    ->whereIn('username', $allNewUsernames)
+                    ->pluck('username')
+                    ->all();
+        $existing = array_flip($existing); // set for quick lookup
+
+        // Process rows
+        $createdRows  = []; // [{username,password}]
+        $rowsToInsert = [];
+        $skipped      = []; // [{username, reason}]
+        $seen         = []; // in-file duplicates
+
+        $adminId = optional(Auth::guard('admin')->user())->id;
+        $allowedStatus = ['active','disabled','expired','blocked'];
+
+        foreach ($rowsRaw as $idx => $row) {
+            $username = $colIndex['username'] !== null ? trim((string)($row[$colIndex['username']] ?? '')) : '';
+            if ($username === '') {
+                $skipped[] = ['username'=>'(line '.($hasHeader?($idx+2):($idx+1)).')','reason'=>'Missing username'];
+                continue;
+            }
+
+            if (isset($seen[$username])) {
+                $skipped[] = ['username'=>$username,'reason'=>'Duplicate in file'];
+                continue;
+            }
+            $seen[$username] = true;
+
+            if (isset($existing[$username])) {
+                $skipped[] = ['username'=>$username,'reason'=>'Already exists'];
+                continue;
+            }
+
+            // password
+            $password = $colIndex['password'] !== null ? trim((string)($row[$colIndex['password']] ?? '')) : '';
+            if ($password === '') {
+                if ($pwFallback === 'username') $password = $username;
+                elseif ($pwFallback === 'fixed') $password = $fixedPw;
+            }
+            if ($password === '' || mb_strlen($password) < 4 || mb_strlen($password) > 190) {
+                $skipped[] = ['username'=>$username,'reason'=>'Invalid password'];
+                continue;
+            }
+
+            // status
+            $status = $statusOv ?: ($colIndex['status'] !== null ? trim(mb_strtolower((string)($row[$colIndex['status']] ?? ''))) : 'active');
+            if (!in_array($status, $allowedStatus, true)) $status = 'active';
+
+            // expires_at
+            $expiresAtStr = $expiresDef ?: ($colIndex['expires_at'] !== null ? trim((string)($row[$colIndex['expires_at']] ?? '')) : null);
+            $expiresAt = null;
+            if ($expiresAtStr !== null && $expiresAtStr !== '') {
+                try { $expiresAt = Carbon::parse($expiresAtStr); } catch (\Throwable $e) { $expiresAt = null; }
+            }
+
+            $mac = $colIndex['mac_lock'] !== null ? trim((string)($row[$colIndex['mac_lock']] ?? '')) : null;
+            $mac = $mac !== '' ? Str::lower($mac) : null;
+
+            $comment = $commentDef ?? ($colIndex['comment'] !== null ? trim((string)($row[$colIndex['comment']] ?? '')) : null);
+            $comment = $comment !== '' ? $comment : null;
+
+            $rowsToInsert[] = [
+                'router_id'          => $routerId,
+                'hotspot_profile_id' => $profileId,
+                'username'           => $username,
+                'password_encrypted' => Crypt::encryptString($password),
+                'mac_lock'           => $mac,
+                'status'             => $status,
+                'expires_at'         => $expiresAt,
+                'last_seen_at'       => null,
+                'upload_bytes'       => 0,
+                'download_bytes'     => 0,
+                'uptime_seconds'     => 0,
+                'created_by'         => $adminId,
+                'comment'            => $comment,
+                'created_at'         => now(),
+                'updated_at'         => now(),
+            ];
+
+            $createdRows[] = ['username'=>$username, 'password'=>$password];
+        }
+
+        if ($dryRun) {
+            return response()->json([
+                'success'        => true,
+                'message'        => 'Preview generated. Valid: '.count($rowsToInsert).', Skipped: '.count($skipped).'.',
+                'valid_count'    => count($rowsToInsert),
+                'skipped_count'  => count($skipped),
+                'created'        => array_slice($createdRows, 0, 1000), // preview up to 1000 rows
+                'skipped'        => array_slice($skipped, 0, 1000),
+            ]);
+        }
+
+        if (empty($rowsToInsert)) {
+            return response()->json([
+                'success'=>false,
+                'errors'=>['csv_file'=>['Nothing to import (all invalid or duplicates).']]
+            ], 422);
+        }
+
+        // Insert in chunks
+        foreach (array_chunk($rowsToInsert, 1000) as $chunk) {
+            Hotspot_user::insert($chunk);
+        }
+
+        return response()->json([
+            'success'       => true,
+            'message'       => 'Imported: '.count($rowsToInsert).' user(s). Skipped: '.count($skipped).'.',
+            'created_count' => count($rowsToInsert),
+            'skipped_count' => count($skipped),
+            'created'       => array_slice($createdRows, 0, 1000),
+            'skipped'       => array_slice($skipped, 0, 1000),
+        ]);
+    }
+
     /**
      * Store bulk users (JSON response).
      */
