@@ -184,7 +184,12 @@
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Batches</p>
                                 <span class="right badge badge-success">
-                                    {{ \App\Models\Voucher_batch::count() }}
+                                   @php
+                                        $count = \Schema::hasTable('voucher_batches') 
+                                            ? \App\Models\Voucher_batch::count() 
+                                            : 0;
+                                        echo $count;
+                                    @endphp
                                 </span>
                             </a>
                         </li>
