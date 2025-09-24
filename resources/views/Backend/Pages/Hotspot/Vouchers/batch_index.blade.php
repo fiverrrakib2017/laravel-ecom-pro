@@ -89,7 +89,7 @@
                 <td>{{ $b->username_length }}/{{ $b->password_length }}</td>
                 <td>{{ $b->validity_days_override ? ($b->validity_days_override.' d') : '—' }}</td>
                 <td>{{ $b->expires_at ? $b->expires_at->format('Y-m-d H:i') : '—' }}</td>
-                <td>৳ {{ number_format(($b->price_minor ?? 0)/100, 2) }}</td>
+                <td>৳ {{ number_format(($b->price_minor ?? 0), 2) }}</td>
                 <td><span class="badge badge-{{ $b->status==='generated'?'success':($b->status==='draft'?'secondary':'info') }}">{{ ucfirst($b->status) }}</span></td>
                 <td class="text-nowrap">
                   <a href="{{ route('admin.hotspot.vouchers.print',['batch_id'=>$b->id]) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Print">

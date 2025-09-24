@@ -178,27 +178,22 @@
                                 <p>Generate Batch</p>
                             </a>
                         </li>
-                        <li class="nav-item"><a href="{{route('admin.hotspot.vouchers.batch.index')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.index' ? 'active' : '' }}">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.vouchers.batch.index') }}" 
+                            class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Batches</p>
-                                <span class="right badge badge-secondary">9</span>
-                            </a></li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.hotspot.vouchers.print')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.print' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Print Sheets</p>
+                                <span class="right badge badge-success">
+                                    {{ \App\Models\Voucher_batch::count() }}
+                                </span>
                             </a>
                         </li>
+
+                        
                         <li class="nav-item">
                             <a href="{{route('admin.hotspot.vouchers.sales')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.sales' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Sold / Activated</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.hotspot.vouchers.export')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.export' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Export CSV</p>
                             </a>
                         </li>
                     </ul>
