@@ -135,8 +135,6 @@
         $(function() {
             const $form = $('#batchForm'),
                 $submit = $('#btn-submit');
-            const $router = $('#router_id'),
-                $profile = $('#hotspot_profile_id');
 
             function clearErrors() {
                 $form.find('.is-invalid').removeClass('is-invalid');
@@ -153,42 +151,6 @@
                     '');
                 });
             }
-
-            function loadProfiles(routerId) {
-                $profile.prop('disabled', true).html('<option>Loading...</option>');
-                if (!routerId) {
-                    $profile.html('<option value="">-- Select Profile --</option>').prop('disabled', true);
-                    return;
-                }
-                let url = "{{ route('admin.hotspot.profile.get_profile', ':id') }}";
-                url = url.replace(':id', routerId);
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    dataType: 'json',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    success: function(res) {
-                        let opts = '<option value="">-- Select Profile --</option>';
-                        if (res && res.success) {
-                            (res.profiles || []).forEach(function(p) {
-                                opts += '<option value="' + p.id + '">' + p.name + ' (' + p
-                                    .mikrotik_profile + ')</option>';
-                            });
-                        }
-                        $profile.html(opts).prop('disabled', false);
-                    },
-                    error: function() {
-                        $profile.html('<option value="">-- Select Profile --</option>').prop('disabled',
-                            false);
-                        toastr.error('Could not load profiles.');
-                    }
-                });
-            }
-            $router.on('change', function() {
-                loadProfiles($(this).val());
-            });
 
             $form.on('submit', function(e) {
                 e.preventDefault();
