@@ -50,7 +50,6 @@ class CustomerController extends Controller
     {
         return view('Backend.Pages.Customer.Operation');
     }
-
     public function customer_comming_expire()
     {
         return view('Backend.Pages.Customer.Expire.comming_expire');
@@ -58,6 +57,43 @@ class CustomerController extends Controller
     public function customer_import_from_mikrotik(){
         return view('Backend.Pages.Customer.Import.import_mikrotik');
 
+    }
+    public function customer_bill_generate(){
+        //  2025-09
+        $currentMonth = \Carbon\Carbon::now()->format('Y-m');
+        $allCustomerIds = \App\Models\Customer::pluck('id')->toArray();
+
+        $paidCustomerIds = \App\Models\Customer_recharge::where('recharge_month', $currentMonth)
+            ->pluck('customer_id')
+            ->toArray();
+        /*------ Find customers whose bills are not paid-----*/
+        $unpaidCustomerIds = array_diff($allCustomerIds, $paidCustomerIds);
+        /*--------------- Get the unpaid customers' data--------------*/
+        $customers = \App\Models\Customer::with(['pop', 'area'])
+            ->whereIn('id', $unpaidCustomerIds)
+            ->get()
+            ->keyBy('id');
+
+        $rows = [];
+
+        foreach ($unpaidCustomerIds as $customer_id) {
+            $customer = $customers[$customer_id] ?? null;
+            if (!$customer) continue;
+
+            $rows[] = [
+                'id' => $customer->id,
+                'username' => '<a href="'.route('admin.customer.view', $customer->id).'" style="display: flex; align-items: center; text-decoration: none; color: #333;">'
+                    .($customer->status == 'online'
+                        ? '<i class="fas fa-unlock" style="font-size: 15px; color: green; margin-right: 8px;"></i>'
+                        : '<i class="fas fa-lock" style="font-size: 15px; color: red; margin-right: 8px;"></i>'
+                    )
+                    .'&nbsp;<span style="font-size: 16px; font-weight: bold;">'.$customer->username.'</span>'
+                    .'</a>',
+                'month' => ''.\Carbon\Carbon::parse($currentMonth)->format('F Y').'',
+                'price' => '<span style="font-size: 16px; font-weight: bold; color:red;">' . $customer->amount . '</span>',
+            ];
+        }
+        return view('Backend.Pages.Customer.bill_generate',compact('rows'));
     }
     function customer_import_from_mikrotik_store(Request $request){
         DB::beginTransaction();

@@ -153,6 +153,7 @@ Route::group(['middleware' => 'admin'], function () {
             /***** Customer Payment History *******/
             Route::get('/payment/history', 'customer_payment_history')->name('admin.customer.payment.history');
             Route::get('/payment/history/get_all_data', 'customer_payment_history_get_all_data')->name('admin.customer.payment.history.get_all_data');
+            Route::get('/bill/generate', 'customer_bill_generate')->name('admin.customer.bill.generate');
             /***** Customer Grace Recharge Logs *******/
             Route::get('/grace-recharge/logs', 'customer_grace_recharge_logs')->name('admin.customer.grace_recharge.logs');
             Route::get('/grace-recharge/logs/get_all_data', 'customer_grace_recharge_logs_get_all_data')->name('admin.customer.grace_recharge.logs.get_all_data');
@@ -226,7 +227,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::get('/user/index', 'hotspot_user_index')->name('admin.hotspot.user.index');
                 Route::get('/user/create', 'hotspot_user_create')->name('admin.hotspot.user.create');
                 Route::post('/user/store', 'hotspot_user_store')->name('admin.hotspot.user.store');
-             
+
                 Route::get('/user/edit/{id}', 'hotspot_user_edit')->name('admin.hotspot.user.edit');
                 Route::put('/user/{id}', 'hotspot_user_update')->name('admin.hotspot.user.update');
                 Route::delete('user/{id}', 'hotspot_user_destroy')->name('admin.hotspot.user.destroy');

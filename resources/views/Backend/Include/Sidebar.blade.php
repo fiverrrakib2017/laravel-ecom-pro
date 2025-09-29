@@ -179,14 +179,14 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.hotspot.vouchers.batch.index') }}" 
+                            <a href="{{ route('admin.hotspot.vouchers.batch.index') }}"
                             class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>All Batches</p>
                                 <span class="right badge badge-success">
                                    @php
-                                        $count = \Schema::hasTable('voucher_batches') 
-                                            ? \App\Models\Voucher_batch::count() 
+                                        $count = \Schema::hasTable('voucher_batches')
+                                            ? \App\Models\Voucher_batch::count()
                                             : 0;
                                         echo $count;
                                     @endphp
@@ -194,7 +194,7 @@
                             </a>
                         </li>
 
-                        
+
                         <li class="nav-item">
                             <a href="{{route('admin.hotspot.vouchers.sales')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.sales' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
@@ -426,6 +426,7 @@
                 @php
                     $active_prefix = [
                         'admin.customer.payment.history',
+                        'admin.customer.bill.generate',
                         'admin.customer.customer_credit_recharge_list',
                         'admin.customer.bulk.recharge',
                         'admin.customer.customer_comming_expire',
@@ -455,6 +456,13 @@
                                     </a>
                                 </li>
                             @endif
+                            <li class="nav-item">
+                                <a href="{{ route('admin.customer.bill.generate') }}"
+                                    class="nav-link {{ $route == 'admin.customer.bill.generate' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Bill Generate </p>
+                                </a>
+                            </li>
 
                             @if (auth()->guard('admin')->user()->can('payment.bulk.recharge'))
                                 <li class="nav-item">
