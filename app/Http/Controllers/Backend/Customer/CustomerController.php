@@ -61,7 +61,10 @@ class CustomerController extends Controller
     public function customer_bill_generate(){
         //  2025-09
         $currentMonth = \Carbon\Carbon::now()->format('Y-m');
-        $allCustomerIds = \App\Models\Customer::pluck('id')->toArray();
+        $allCustomerIds = \App\Models\Customer::whereRaw("DATE_FORMAT(expire_date, '%Y-%m') = ?", [$currentMonth])
+        ->where('is_delete', '0')
+        ->whereIn('status', ['active', 'online', 'offline'])
+        ->pluck('id')->toArray();
 
         $paidCustomerIds = \App\Models\Customer_recharge::where('recharge_month', $currentMonth)
             ->pluck('customer_id')

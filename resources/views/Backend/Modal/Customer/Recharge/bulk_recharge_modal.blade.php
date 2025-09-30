@@ -1,10 +1,11 @@
+
 <!-- Modal for Bulk Recharge -->
 <div class="modal fade bs-example-modal-lg" id="bulk_rechargeModal" tabindex="-1" role="dialog"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog " role="document">
         <div class="modal-content col-md-12">
             <div class="modal-header">
-                <h5 class="modal-title" id="ModalLabel"><span class="mdi mdi-account-check mdi-18px"></span> &nbsp;Bulk
+                <h5 class="modal-title" id="ModalLabel"><span class="mdi mdi-account-check mdi-18px"></span>&nbsp;Bulk
                     Recharge</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -73,7 +74,7 @@
                     </div>
                     <div class="modal-footer ">
                         <button data-dismiss="modal" type="button" class="btn btn-danger">Cancel</button>
-                        <button type="submit" class="btn btn-success">Confirm Recharge</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-money-bill-alt"></i>&nbsp; Confirm Recharge</button>
                     </div>
                 </form>
             </div>
