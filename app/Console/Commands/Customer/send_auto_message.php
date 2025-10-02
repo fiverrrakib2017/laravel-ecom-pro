@@ -6,6 +6,7 @@ use App\Models\Customer_recharge;
 use App\Models\Branch_package;
 use App\Models\Send_message;
 use App\Models\Customer;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use function App\Helpers\send_message;
 class send_auto_message extends Command
@@ -38,24 +39,23 @@ class send_auto_message extends Command
             $this->warn('Template bill_due_reminder not found or inactive.');
             exit;
         }
-        $_all_customer = Customer::query()
-        ->whereDate('expire_date', $targetDate)
+        $_all_customer = Customer::whereDate('expire_date', $targetDate)
         ->whereNotNull('phone')
         ->whereRaw("phone REGEXP '^[0-9]{11}$'")
         ->where('is_delete', '0')
-        ->whereNotIn('status', ['expired', 'disabled', 'discontinue']);
-        foreach($_all_customer as $customer_id){
+        ->whereNotIn('status', ['expired', 'disabled', 'discontinue'])->get();
+        foreach($_all_customer as $customer){
             /*--------- Get customer -----------*/
-            $customer = Customer::find($customer_id);
-
+            $customer = Customer::find($customer->id);
+         
             if(!$customer) continue;
 
             /*--------- Get customer Due Calculation -----------*/
-            $credit_recharges = Customer_recharge::where('customer_id', $customer_id)
+            $credit_recharges = Customer_recharge::where('customer_id', $customer->id)
             ->where('transaction_type', 'credit')
             ->get(['recharge_month', 'amount']);
 
-            $due_paids = Customer_recharge::where('customer_id', $customer_id)
+            $due_paids = Customer_recharge::where('customer_id', $customer->id)
             ->where('transaction_type', 'due_paid')
             ->get(['recharge_month', 'amount']);
 
@@ -82,7 +82,7 @@ class send_auto_message extends Command
                     $customer->pop->name ?? '',
                     $total_due > 0 ? $total_due : 0
                 ],
-                $get_message_template
+                $get_message_template->body
             );
 
 
@@ -90,7 +90,7 @@ class send_auto_message extends Command
             $object = new Send_message();
             $object->pop_id = $customer->pop_id;
             $object->area_id = $customer->area_id;
-            $object->customer_id = $customer_id;
+            $object->customer_id = $customer->id;
             $object->message = $message;
             $object->sent_at = Carbon::now();
 
