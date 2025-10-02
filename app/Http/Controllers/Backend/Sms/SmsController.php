@@ -6,6 +6,7 @@ use App\Models\Message_template;
 use App\Models\Pop_area;
 use App\Models\Pop_branch;
 use App\Models\Send_message;
+use App\Models\Auto_message;
 use App\Models\Sms_configuration;
 use App\Models\Ticket;
 use App\Models\Branch_package;
@@ -15,7 +16,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use function App\Helpers\send_message;
 
 class SmsController extends Controller
@@ -23,7 +25,9 @@ class SmsController extends Controller
     public function config()
     {
        $data= Sms_configuration::latest()->first();
-        return view('Backend.Pages.Sms.Config',compact('data'));
+        $keys = ['recharge_success','pop_recharge','bill_due_reminder'];
+        $templates = Auto_message::whereIn('key',$keys)->get()->keyBy('key');
+        return view('Backend.Pages.Sms.Config',compact('data', 'templates'));
     }
     public function sms_template_list()
     {
@@ -291,70 +295,152 @@ class SmsController extends Controller
         return view('Backend.Pages.Sms.Logs');
     }
     public function get_all_sms_logs_data(Request $request)
-{
-    $pop_id = $request->pop_id;
-    $area_id = $request->area_id;
-    $search = $request->search['value'];
-    $columnsForOrderBy = ['id', 'pop_id', 'name', 'message'];
-    $orderByColumn = $request->order[0]['column'];
-    $orderDirectection = $request->order[0]['dir'];
+    {
+        $pop_id = $request->pop_id;
+        $area_id = $request->area_id;
+        $search = $request->search['value'];
+        $columnsForOrderBy = ['id', 'pop_id', 'name', 'message'];
+        $orderByColumn = $request->order[0]['column'];
+        $orderDirectection = $request->order[0]['dir'];
 
-    /*Check if branch user value is empty*/
-    $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
+        /*Check if branch user value is empty*/
+        $branch_user_id = Auth::guard('admin')->user()->pop_id ?? null;
 
-    $query = Send_message::with(['pop', 'area', 'customer', 'customer.package']);
+        $query = Send_message::with(['pop', 'area', 'customer', 'customer.package']);
 
-    if ($search) {
-        $query->where(function ($q) use ($search) {
-            $q->where('message', 'like', "%$search%")
-              ->orWhereHas('pop', function ($q) use ($search) {
-                  $q->where('name', 'like', "%$search%");
-              })
-              ->orWhereHas('customer', function ($q) use ($search) {
-                  $q->where('fullname', 'like', "%$search%")
-                    ->orWhere('username', 'like', "%$search%");
-              });
-        });
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('message', 'like', "%$search%")
+                ->orWhereHas('pop', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                })
+                ->orWhereHas('customer', function ($q) use ($search) {
+                    $q->where('fullname', 'like', "%$search%")
+                        ->orWhere('username', 'like', "%$search%");
+                });
+            });
+        }
+
+        if ($pop_id) {
+            $query->where('pop_id', $pop_id);
+        }
+
+        if ($branch_user_id) {
+            $query->where('pop_id', $branch_user_id);
+        }
+
+        // Filter by area
+        if ($area_id) {
+            $query->where('area_id', $area_id);
+        }
+        if ($request->from_date) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+
+        if ($request->to_date) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        $total = $query->count();
+
+        $items = $query->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection)
+                    ->skip($request->start)
+                    ->take($request->length)
+                    ->get();
+
+        return response()->json([
+            'draw' => $request->draw,
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total,
+            'data' => $items,
+        ]);
     }
-
-    if ($pop_id) {
-        $query->where('pop_id', $pop_id);
-    }
-
-    if ($branch_user_id) {
-        $query->where('pop_id', $branch_user_id);
-    }
-
-    // Filter by area
-    if ($area_id) {
-        $query->where('area_id', $area_id);
-    }
-     if ($request->from_date) {
-        $query->whereDate('created_at', '>=', $request->from_date);
-    }
-
-    if ($request->to_date) {
-        $query->whereDate('created_at', '<=', $request->to_date);
-    }
-
-    $total = $query->count();
-
-    $items = $query->orderBy($columnsForOrderBy[$orderByColumn], $orderDirectection)
-                   ->skip($request->start)
-                   ->take($request->length)
-                   ->get();
-
-    return response()->json([
-        'draw' => $request->draw,
-        'recordsTotal' => $total,
-        'recordsFiltered' => $total,
-        'data' => $items,
-    ]);
-}
 
     /*********************** SMS Report   ******************************/
     public function sms_report(){
-          return view('Backend.Pages.Sms.Report');
+        return view('Backend.Pages.Sms.Report');
+    }
+    /*********************** Send Auto SMS   ******************************/
+    public function send_auto_message_template_store(Request $req)
+    {
+        $req->validate([
+            'key' => 'required|in:recharge_success,pop_recharge,bill_due_reminder',
+            'body'=> 'required|string'
+        ]);
+
+        Auto_message::updateOrCreate(
+            ['key'=>$req->key],
+            [
+                'name'=>ucwords(str_replace('_',' ',$req->key)),
+                'body'=>$req->body,
+                'is_active'=>$req->has('is_active')
+            ]
+        );
+
+        return response()->json(['success'=>true, 'message'=>'Template saved.']);
     }
 
+    public function send_test_message(Request $request)
+    {
+
+        $data = $request->validate([
+            'key'    => 'required|string|exists:auto_messages,key',
+            'mobile' => 'required|string',
+            'vars'   => 'array'
+        ]);
+
+        $tpl = Auto_message::where('key', $data['key'])->first();
+        if (!$tpl || !$tpl->is_active) {
+            return response()->json(['success'=>false,'message' => 'Template not found or inactive'], 422);
+        }
+
+        $vars    = $data['vars'] ?? [];
+        $message = $this->renderTemplate($tpl->body, $vars);
+
+        $cc     = optional(Sms_configuration::first())->default_country_code ?: '+88';
+        $number = $this->normalizeMsisdn($data['mobile'], $cc);
+
+        try {
+            if (!function_exists('send_message')) {
+                Log::error('send_message() helper not found.');
+                return response()->json(['success'=>false,'message' => 'SMS helper not configured']);
+            }
+
+            $ok = (bool) send_message($number, $message);
+
+        } catch (\Throwable $e) {
+            Log::error('Test SMS error: '.$e->getMessage(), ['mobile' => $number]);
+            $ok = false;
+        }
+
+        return response()->json([
+            'success' => (bool) $ok,
+            'message' => $ok ? 'Test SMS sent successfully' : 'Failed to send SMS',
+            'preview' => [
+                'to'     => $number,
+                'text'   => $message,
+                'length' => mb_strlen((string) $message, 'UTF-8'),
+            ],
+        ], $ok ? 200 : 422);
+
+    }
+
+    private function renderTemplate(string $body, array $vars = []): string
+    {
+        return preg_replace_callback('/\{(\w+)\}/u', function ($m) use ($vars) {
+            $k = $m[1];
+            return array_key_exists($k, $vars) ? (string) $vars[$k] : '';
+        }, $body);
+    }
+    private function normalizeMsisdn(string $msisdn, string $cc = '+88'): string
+    {
+        $msisdn = trim($msisdn);
+        if (Str::startsWith($msisdn, '+')) {
+            return $msisdn;
+        }
+        $digits = preg_replace('/\D+/', '', $msisdn) ?? '';
+        $digits = ltrim($digits, '0');
+        $cc = $cc ?: '+88';
+        return $cc . $digits;
+    }
 }

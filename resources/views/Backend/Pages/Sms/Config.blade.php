@@ -138,7 +138,7 @@
           {{-- ===== TAB: SMS Templates ===== --}}
           <div class="tab-pane fade" id="templates" role="tabpanel" aria-labelledby="templates-tab">
             {{-- ---------- Template: Recharge Success ---------- --}}
-            <form action="" method="POST" id="tplRechargeForm" class="mb-4">
+            <form action="{{route('admin.sms.auto.template.store')}}" method="POST" id="tplRechargeForm" class="mb-4">
               @csrf
               <input type="hidden" name="key" value="recharge_success">
 
@@ -200,7 +200,7 @@
             </form>
 
             {{-- ---------- Template: POP / Reseller Recharge ---------- --}}
-            <form action="" method="POST" id="tplPopForm" class="mb-4">
+            <form action="{{route('admin.sms.auto.template.store')}}" method="POST" id="tplPopForm" class="mb-4">
               @csrf
               <input type="hidden" name="key" value="pop_recharge">
 
@@ -262,7 +262,7 @@
             </form>
 
             {{-- ---------- Template: Bill Due Reminder ---------- --}}
-            <form action="" method="POST" id="tplDueForm">
+            <form action="{{route('admin.sms.auto.template.store')}}" method="POST" id="tplDueForm">
               @csrf
               <input type="hidden" name="key" value="bill_due_reminder">
 
@@ -427,7 +427,7 @@ function collectScopeVars(scope){
 }
 function sendTest(key,inputSel,scopeKey){
   const mobile=$(inputSel).val(); if(!mobile) return alert('Enter a test mobile number');
-  $.post("",{
+  $.post("{{route('admin.sms.send_test_message')}}",{
     _token:"{{ csrf_token() }}", key, mobile, vars: collectScopeVars(scopeKey)
   }).done(res=>alert(res.message||'Sent'))
     .fail(xhr=>alert(xhr.responseJSON?.message||'Failed'));

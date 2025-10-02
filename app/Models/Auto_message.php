@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Auto_message extends Model
 {
     use HasFactory;
+    protected $fillable = ['key', 'name', 'body', 'is_active'];
 }

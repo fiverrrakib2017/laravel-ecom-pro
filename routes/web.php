@@ -536,6 +536,13 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/update', 'sms_template_update')->name('admin.sms.template_update');
             });
         });
+        /* Auto SMS Template Route */
+        Route::prefix('/auto/message/template')->group(function () {
+            Route::controller(SmsController::class)->group(function () {
+                Route::post('/store', 'send_auto_message_template_store')->name('admin.sms.auto.template.store');
+                Route::post('/send/test/message', 'send_test_message')->name('admin.sms.send_test_message');
+            });
+        });
         /* Send SMS Template Route */
         Route::prefix('send_message')->group(function () {
             Route::controller(SmsController::class)->group(function () {

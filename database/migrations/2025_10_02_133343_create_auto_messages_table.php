@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('auto_messages', function (Blueprint $table) {
             $table->id();
+            $table->string('key')->unique();
+            $table->string('name');
+            $table->text('body');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
