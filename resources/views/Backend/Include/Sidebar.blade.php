@@ -86,7 +86,7 @@
                 <li class="nav-item">
                     <a href="{{route('admin.hotspot.user.dashbaord')}}" class="nav-link  {{ Str::startsWith($currentRoute, 'admin.hotspot.user.dashbaord') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Hotspot Dashboard</p>
+                        <p>{{ __('menu.hotspot_dashboard') }}</p>
                     </a>
                 </li>
 
@@ -96,21 +96,21 @@
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-layer-group"></i>
-                        <p>Profiles<i class="right fas fa-angle-left"></i></p>
+                           <p>{{ __('menu.hotspot_profiles') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <li class="nav-item">
                             <a href="{{route('admin.hotspot.profile.index')}}"
                                 class="nav-link {{ $route == 'admin.hotspot.profile.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Profiles</p>
+                                <p>{{ __('menu.all_profiles') }}</p>
                             </a>
                         </li>
                         {{-- was: route('admin.hotspot.profiles.create') --}}
                         <li class="nav-item">
                             <a href="{{route('admin.hotspot.profile.create')}}" class="nav-link {{ $route == 'admin.hotspot.profile.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Create Profile</p>
+                                <p>{{__('menu.create_profile')}}</p>
                             </a>
                         </li>
                     </ul>
@@ -130,43 +130,52 @@
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
-                        <p>Users<i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.users') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
-                    <ul class="nav nav-treeview " style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+
+                    <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Active Sessions</p>
-                                <span class="right badge badge-danger">57</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route('admin.hotspot.user.index')}}" class="nav-link {{ $route == 'admin.hotspot.user.index' || $route=='admin.hotspot.user.edit' ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>All Users</p>
+                                <p>{{ __('menu.active_sessions') }}</p>
+                                <span class="right badge badge-danger">{{ $activeSessionsCount ?? 57 }}</span>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{route('admin.hotspot.user.create')}}" class="nav-link {{ $route == 'admin.hotspot.user.create' ? 'active' : '' }}">
+                            <a href="{{ route('admin.hotspot.user.index') }}"
+                            class="nav-link {{ in_array($route, ['admin.hotspot.user.index','admin.hotspot.user.edit']) ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Single User Create</p>
+                                <p>{{ __('menu.all_users') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a href="{{route('admin.hotspot.user.bulk.create')}}" class="nav-link {{ $route == 'admin.hotspot.user.bulk.create' ? 'active' : '' }}">
+                            <a href="{{ route('admin.hotspot.user.create') }}"
+                            class="nav-link {{ $route == 'admin.hotspot.user.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Bulk User Create</p>
+                                <p>{{ __('menu.create_single_user') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
-                            <a href="{{route('admin.hotspot.user.bulk.import')}}" class="nav-link {{ $route == 'admin.hotspot.user.bulk.import' ? 'active' : '' }}">
+                            <a href="{{ route('admin.hotspot.user.bulk.create') }}"
+                            class="nav-link {{ $route == 'admin.hotspot.user.bulk.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Bulk Import (CSV)</p>
+                                <p>{{ __('menu.create_bulk_user') }}</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.hotspot.user.bulk.import') }}"
+                            class="nav-link {{ $route == 'admin.hotspot.user.bulk.import' ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>{{ __('menu.import_bulk_user') }}</p>
                             </a>
                         </li>
                     </ul>
                 </li>
+
                  @php
                     $active_prefix = [
 
@@ -181,22 +190,25 @@
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-ticket-alt"></i>
-                        <p>Vouchers<i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.vouchers') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
+
                     <ul class="nav nav-treeview" style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
                         <li class="nav-item">
-                            <a href="{{route('admin.hotspot.vouchers.batch.create')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.create' ? 'active' : '' }}">
+                            <a href="{{ route('admin.hotspot.vouchers.batch.create') }}"
+                            class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.create' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Generate Batch</p>
+                                <p>{{ __('menu.generate_batch') }}</p>
                             </a>
                         </li>
+
                         <li class="nav-item">
                             <a href="{{ route('admin.hotspot.vouchers.batch.index') }}"
                             class="nav-link {{ $route == 'admin.hotspot.vouchers.batch.index' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>All Batches</p>
+                                <p>{{ __('menu.all_batches') }}</p>
                                 <span class="right badge badge-success">
-                                   @php
+                                    @php
                                         $count = \Schema::hasTable('voucher_batches')
                                             ? \App\Models\Voucher_batch::count()
                                             : 0;
@@ -206,43 +218,55 @@
                             </a>
                         </li>
 
-
                         <li class="nav-item">
-                            <a href="{{route('admin.hotspot.vouchers.sales')}}" class="nav-link {{ $route == 'admin.hotspot.vouchers.sales' ? 'active' : '' }}">
+                            <a href="{{ route('admin.hotspot.vouchers.sales') }}"
+                            class="nav-link {{ $route == 'admin.hotspot.vouchers.sales' ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Sold / Activated</p>
+                                <p>{{ __('menu.sold_activated') }}</p>
                             </a>
                         </li>
                     </ul>
                 </li>
 
+
                 {{-- Reports --}}
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>Reports<i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.reports') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         {{-- was: route('admin.hotspot.reports.logins') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Daily Logins</p>
-                            </a></li>
+                                <p>{{ __('menu.daily_logins') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.reports.usage') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Usage by Profile</p>
-                            </a></li>
+                                <p>{{ __('menu.usage_by_profile') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.reports.top') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Top Users</p>
-                            </a></li>
+                                <p>{{ __('menu.top_users') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.reports.sales') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Voucher Sales</p>
-                            </a></li>
+                                <p>{{ __('menu.voucher_sales') }}</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -250,29 +274,40 @@
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-tools"></i>
-                        <p>Tools<i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.tools') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         {{-- was: route('admin.hotspot.tools.sync') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Sync Sessions</p>
-                            </a></li>
+                                <p>{{ __('menu.sync_sessions') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.tools.push') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Push Batch to Router</p>
-                            </a></li>
+                                <p>{{ __('menu.push_batch_router') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.tools.kick') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Kick User</p>
-                            </a></li>
+                                <p>{{ __('menu.kick_user') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.tools.cleanup') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Cleanup Expired</p>
-                            </a></li>
+                                <p>{{ __('menu.cleanup_expired') }}</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -280,24 +315,32 @@
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
-                        <p>Settings<i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.settings') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         {{-- was: route('admin.hotspot.settings.portal') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Portal Branding</p>
-                            </a></li>
+                                <p>{{ __('menu.portal_branding') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.settings.packages') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Packages & Pricing</p>
-                            </a></li>
+                                <p>{{ __('menu.packages_pricing') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.settings.radius') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>RADIUS</p>
-                            </a></li>
+                                <p>{{ __('menu.radius') }}</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -305,21 +348,27 @@
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-clipboard-list"></i>
-                        <p>Logs & Audit<i class="right fas fa-angle-left"></i></p>
+                        <p>{{ __('menu.logs_audit') }}<i class="right fas fa-angle-left"></i></p>
                     </a>
                     <ul class="nav nav-treeview">
                         {{-- was: route('admin.hotspot.logs.api') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>API Logs</p>
-                            </a></li>
+                                <p>{{ __('menu.api_logs') }}</p>
+                            </a>
+                        </li>
+
                         {{-- was: route('admin.hotspot.logs.events') --}}
-                        <li class="nav-item"><a href="#" class="nav-link">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>System Events</p>
-                            </a></li>
+                                <p>{{ __('menu.system_events') }}</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
+
                 {{-- ================= HOTSPOT MENU END ================= --}}
                  <div class="section-divider">
                     <span>Customers</span>
@@ -448,7 +497,7 @@
                 @if (auth()->guard('admin')->user()->can('menu.access.billing_payments'))
                     <li class="nav-item has-treeview">
                         <a href="#"
-                            class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                        class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
                             <i class="nav-icon fas fa-money-bill-wave"></i>
                             <p>
                                 {{ __('menu.billing_payments') }}
@@ -462,33 +511,37 @@
                             @if (auth()->guard('admin')->user()->can('payment.upcoming.expiry.view'))
                                 <li class="nav-item">
                                     <a href="{{ route('admin.customer.customer_comming_expire') }}"
-                                        class="nav-link {{ $route == 'admin.customer.customer_comming_expire' ? 'active' : '' }}">
+                                    class="nav-link {{ $route == 'admin.customer.customer_comming_expire' ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Upcoming Expired <span class="right badge badge-danger">New</span></p>
+                                        <p>{{ __('menu.upcoming_expired') }}
+                                            <span class="right badge badge-danger">{{ __('menu.badge_new') }}</span>
+                                        </p>
                                     </a>
                                 </li>
                             @endif
+
                             <li class="nav-item">
                                 <a href="{{ route('admin.customer.bill.generate') }}"
-                                    class="nav-link {{ $route == 'admin.customer.bill.generate' ? 'active' : '' }}">
+                                class="nav-link {{ $route == 'admin.customer.bill.generate' ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Bill Generate </p>
+                                    <p>{{ __('menu.bill_generate') }}</p>
                                 </a>
                             </li>
 
                             @if (auth()->guard('admin')->user()->can('payment.bulk.recharge'))
                                 <li class="nav-item">
                                     <a href="{{ route('admin.customer.bulk.recharge') }}"
-                                        class="nav-link {{ $route == 'admin.customer.bulk.recharge' ? 'active' : '' }}">
+                                    class="nav-link {{ $route == 'admin.customer.bulk.recharge' ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Bulk/Grace Recharge</p>
+                                        <p>{{ __('menu.bulk_grace_recharge') }}</p>
                                     </a>
                                 </li>
+
                                 <li class="nav-item">
                                     <a href="{{ route('admin.customer.grace_recharge.logs') }}"
-                                        class="nav-link {{ $route == 'admin.customer.grace_recharge.logs' ? 'active' : '' }}">
+                                    class="nav-link {{ $route == 'admin.customer.grace_recharge.logs' ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Grace Recharge Logs</p>
+                                        <p>{{ __('menu.grace_recharge_logs') }}</p>
                                     </a>
                                 </li>
                             @endif
@@ -496,7 +549,7 @@
                             @if (auth()->guard('admin')->user()->can('payment.history.view'))
                                 <li class="nav-item">
                                     <a href="{{ route('admin.customer.payment.history') }}"
-                                        class="nav-link {{ $route == 'admin.customer.payment.history' ? 'active' : '' }}">
+                                    class="nav-link {{ $route == 'admin.customer.payment.history' ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>{{ __('menu.payment_history') }}</p>
                                     </a>
@@ -506,15 +559,15 @@
                             @if (auth()->guard('admin')->user()->can('payment.credit.recharge.list'))
                                 <li class="nav-item">
                                     <a href="{{ route('admin.customer.customer_credit_recharge_list') }}"
-                                        class="nav-link {{ $route == 'admin.customer.customer_credit_recharge_list' ? 'active' : '' }}">
+                                    class="nav-link {{ $route == 'admin.customer.customer_credit_recharge_list' ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>{{ __('menu.credit_recharge_list') }}</p>
                                     </a>
                                 </li>
                             @endif
-
                         </ul>
                     </li>
+
 
                 @endif
 
