@@ -49,7 +49,7 @@
           <img src="{{asset('Backend/images/avatar.png')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">{{ $data->name ?? 'Guest' }}</a>
+          <a href="{{ route('admin.dashboard') }}" class="d-block">{{ $data->name ?? 'Guest' }}</a>
         </div>
       </div>
 

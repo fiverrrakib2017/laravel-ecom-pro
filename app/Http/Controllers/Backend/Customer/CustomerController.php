@@ -457,9 +457,14 @@ class CustomerController extends Controller
     }
     public function customer_search(Request $request){
         $query = $request->input('query');
-        $customers = Customer::where('username', 'like', "%$query%")->get();
+        $customers = Customer::where('username', 'like', "%$query%")
+        ->orWhere('id', 'like', "%$query%")
+        ->orWhere('fullname', 'like', "%$query%")
+        ->orWhere('phone', 'like', "%$query%")
+        ->get();
 
         return response()->json([
+            'success'=>true,
             'data' => $customers
         ]);
     }

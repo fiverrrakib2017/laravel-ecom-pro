@@ -65,7 +65,7 @@
                                             <span style="display:flex;flex-direction:column;line-height:1.1;">
                                                 <span style="font-size:16px;font-weight:bold;">${user.fullname}</span>
                                                 ${last_seen}
-                                                <small>ID: ${user.id}</small> <small>Phone: ${user.phone}</small>
+                                                <small>User ID: ${user.id}</small> <small>Phone: ${user.phone}</small>
                                             </span>
                                         </a>
                                     </li>

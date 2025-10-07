@@ -6,7 +6,7 @@
       </li>
     </ul>
     <!-- Responsive Customer Search -->
-     <ul class="navbar-nav ml-2 flex-grow-1">
+     {{-- <ul class="navbar-nav ml-2 flex-grow-1">
         <li class="nav-item w-100">
             <form class="form-inline w-100">
                <select class="form-control" name="sidebar_customer_id" id="sidebar_customer_id" style="width: 100%; font-size: 13px; visibility: hidden;">
@@ -28,7 +28,7 @@
                     </script>
             </form>
         </li>
-    </ul>
+    </ul> --}}
     <ul class="navbar-nav ml-auto">
        <!-- Notifications Dropdown Menu -->
        <li class="nav-item dropdown">
@@ -52,7 +52,7 @@
             <a class="nav-link d-flex align-items-center" data-toggle="dropdown" aria-expanded="true" href="javascript:void(0)">
                 <img src="{{asset('Backend/images/avatar.png')}}" alt="User Image" class="user-img border" style="width: 40px; height: 40px; object-fit: cover; border-radius:50%; margin-right: 10px;">
                 <span>
-                    <b>{{ Auth::guard('admin')->user()->name }}</b>
+                    <b>{{ Auth::guard('admin')->user()->name ?? 'Guest' }}</b>
                 </span>
                 <i class="fa fa-angle-down ml-2"></i>
             </a>
@@ -71,8 +71,7 @@
             </div>
         </li>
         <!-- Language Select Dropdown -->
-        <!-- Language Selector -->
-        {{-- <li class="nav-item dropdown">
+        <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 🌐 {{ strtoupper(app()->getLocale()) }}
                 <i class="fa fa-angle-down ml-1"></i>
@@ -80,9 +79,8 @@
             <div class="dropdown-menu dropdown-menu-right">
                 <a href="{{ url('lang/en') }}" class="dropdown-item">English</a>
                 <a href="{{ url('lang/bn') }}" class="dropdown-item">বাংলা</a>
-                <a href="{{ url('lang/es') }}" class="dropdown-item">Español</a>
             </div>
-        </li> --}}
+        </li>
 
     </ul>
   </nav>
