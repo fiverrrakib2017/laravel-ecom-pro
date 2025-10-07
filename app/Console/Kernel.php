@@ -24,7 +24,8 @@ class Kernel extends ConsoleKernel
                     $this->__set_tenant_connection($tenant);
                     \Artisan::call('app:check_expire');
                 })
-                ->dailyAt('10:00');
+                ->dailyAt('10:00')
+                ->withoutOverlapping();
 
             $schedule
                 ->call(function () use ($tenant) {
@@ -44,7 +45,8 @@ class Kernel extends ConsoleKernel
                     $this->__set_tenant_connection($tenant);
                     \Artisan::call('app:send_auto_message');
                 })
-                ->dailyAt('10:00');
+                ->dailyAt('10:20')
+                ->withoutOverlapping();
         }
     }
 

@@ -455,6 +455,14 @@ class CustomerController extends Controller
             'available' => !$exists
         ]);
     }
+    public function customer_search(Request $request){
+        $query = $request->input('query');
+        $customers = Customer::where('username', 'like', "%$query%")->get();
+
+        return response()->json([
+            'data' => $customers
+        ]);
+    }
     public function store(Request $request)
     {
         /* Validate the form data */
