@@ -6,32 +6,10 @@
       </li>
     </ul>
     <!-- Responsive Customer Search -->
-     {{-- <ul class="navbar-nav ml-2 flex-grow-1">
-        <li class="nav-item w-100">
-            <form class="form-inline w-100">
-               <select class="form-control" name="sidebar_customer_id" id="sidebar_customer_id" style="width: 100%; font-size: 13px; visibility: hidden;">
-                        @include('Backend.Component.Common.Customer')
-                    </select>
-                    <script src="{{ asset('Backend/plugins/jquery/jquery.min.js') }}"></script>
-                    <script src="{{ asset('Backend/plugins/select2/js/select2.full.min.js') }}"></script>
-                    <script>
-                        $(document).ready(function() {
-                            $('select').select2();
-                            $("select[name='sidebar_customer_id']").change(function() {
-                                var customer_id = $(this).val();
-                                if (customer_id) {
-                                    window.location.href = "{{ route('admin.customer.view', ':id') }}".replace(':id',
-                                        customer_id);
-                                }
-                            });
-                        });
-                    </script>
-            </form>
-        </li>
-    </ul> --}}
     <ul class="navbar-nav ml-auto">
+
        <!-- Notifications Dropdown Menu -->
-       <li class="nav-item dropdown">
+       {{-- <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#">
           <i class="far fa-bell"></i>
           <span class="badge badge-danger navbar-badge">1</span>
@@ -44,7 +22,7 @@
             <span class="float-right text-muted text-sm">3 mins</span>
           </a>
         </div>
-      </li>
+      </li> --}}
 
 
         <!-- User Profile Dropdown -->
