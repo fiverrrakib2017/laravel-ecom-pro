@@ -349,6 +349,9 @@
         @include('Backend.Component.Chart.Customer_yearly_static')
         @include('Backend.Component.Chart.Online_offline_chart')
     </div>
+    <div class="row mt-4">
+        @include('Backend.Component.Chart.Daily_usages_chart')
+    </div>
 
 
     <div class="row mt-4">
