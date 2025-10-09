@@ -66,6 +66,7 @@
 <script src="{{ asset('Backend/dist/js/counter.min.js') }}?v={{ filemtime(public_path('Backend/dist/js/counter.min.js')) }}"></script>
 <script>
     $(document).ready(function () {
+        $('select').select2();
         $('.counter-value').counterUp({
             delay: 10,
             time: 1000

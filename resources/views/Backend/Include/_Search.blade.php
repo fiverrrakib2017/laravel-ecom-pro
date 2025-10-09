@@ -22,7 +22,7 @@
         $('#search_input').on('input', function() {
             var search_term = $(this).val();
 
-            if (search_term.length >= 2) {
+            if (search_term.length > 0) {
                 $.ajax({
                     url: "{{ route('admin.customer.search') }}",
                     method: 'GET',
