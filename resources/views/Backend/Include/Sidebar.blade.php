@@ -483,6 +483,89 @@
                     </li>
                 @endif
 
+               {{-- CRM Management Start --}}
+                @php
+                    $active_prefix = [
+                        'leads',
+                        'customers',
+                        'deals',
+                        'activities',
+                        'tickets',
+                        'invoices',
+                        'payments',
+                        'notes',
+                        'attachments',
+                        'tags',
+                        'users',
+                        'reports',
+                        'settings',
+                    ];
+                @endphp
+                <li class="nav-item has-treeview">
+                    <a href="#"
+                    class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users-cog"></i> {{-- Updated CRM icon --}}
+                        <p>
+                            CRM Management
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview"
+                        style="{{ Str::startsWith($currentRoute, $active_prefix) ? 'display: block;' : 'display: none;' }}">
+
+                        <!-- Leads -->
+                        <li class="nav-item">
+                            <a href="#"
+                            class="nav-link">
+                                <i class="fas fa-user-plus nav-icon"></i>
+                                <p>Leads</p>
+                            </a>
+                        </li>
+
+                        <!-- Client -->
+                        <li class="nav-item">
+                            <a href="#"
+                            class="nav-link">
+                                <i class="fas fa-users nav-icon"></i>
+                                <p>Client</p>
+                            </a>
+                        </li>
+
+                        <!-- Deals -->
+                        <li class="nav-item">
+                            <a href="#"
+                            class="nav-link">
+                                <i class="fas fa-handshake nav-icon"></i>
+                                <p>Deals</p>
+                            </a>
+                        </li>
+
+                        <!-- Activities -->
+                        <li class="nav-item">
+                            <a href="#"
+                            class="nav-link">
+                                <i class="fas fa-tasks nav-icon"></i>
+                                <p>Activities</p>
+                            </a>
+                        </li>
+                        <!-- Reports -->
+                        <li class="nav-item">
+                            <a href="#"
+                            class="nav-link">
+                                <i class="fas fa-chart-line nav-icon"></i>
+                                <p>Reports / Analytics</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+                {{-- CRM Management End --}}
+
+
+
+
+
                 {{-- Customer Billings And Payment --}}
                 @php
                     $active_prefix = [
