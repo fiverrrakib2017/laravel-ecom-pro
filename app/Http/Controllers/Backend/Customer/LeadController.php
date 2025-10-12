@@ -21,9 +21,27 @@ class LeadController extends Controller
         $this->leadService = $leadService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-       return view('Backend.Pages.Customer.Lead.index');
+        $query = $this->leadService->getAll();
+
+        /*-------------- Filter by status if selected------------*/
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        /*------------Search functionality----------*/
+        if ($request->has('q') && $request->q !== '') {
+            $query->where(function ($subQuery) use ($request) {
+                $subQuery->where('full_name', 'like', '%' . $request->q . '%')
+                    ->orWhere('phone', 'like', '%' . $request->q . '%')
+                    ->orWhere('email', 'like', '%' . $request->q . '%');
+            });
+        }
+
+        /*-----Paginate results-------*/
+        $leads = $query->paginate(10);
+        return view('Backend.Pages.Customer.Lead.index', compact('leads'));
     }
     public function create()
     {

@@ -7,7 +7,7 @@ class LeadRepository implements LeadRepositoryInterface
 {
     public function getAll()
     {
-        return Lead::latest()->get();
+        return Lead::query();
     }
 
     public function store(array $data)

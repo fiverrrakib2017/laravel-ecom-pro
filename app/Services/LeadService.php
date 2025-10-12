@@ -13,10 +13,14 @@ class LeadService
         $this->leadRepository = $leadRepository;
     }
 
+    public function getAll()
+    {
+        return $this->leadRepository->getAll();
+    }
     public function createLead(array $data)
     {
         return $this->leadRepository->store($data);
     }
 
-    
+
 }

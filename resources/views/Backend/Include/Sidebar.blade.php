@@ -515,7 +515,7 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.customer.lead.index')}}"
                             class="nav-link {{ $route == 'admin.customer.lead.index' ? 'active' : '' }}">
-                                <i class="fas fa-user-plus nav-icon"></i>
+                                <i class="fas fa-tasks nav-icon"></i>
                                 <p>Manage Leads</p>
                             </a>
                         </li>
