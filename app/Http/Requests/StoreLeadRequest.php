@@ -26,6 +26,11 @@ class StoreLeadRequest extends FormRequest
             'feedback' => 'nullable|string',
             'user_id' => 'nullable|integer',
             'estimated_close_date' => 'nullable|date',
+            'first_contacted_at' => 'nullable|date',
+            'last_contacted_at' => 'nullable|date',
+            'campaign_source' => 'nullable|string|max:100',
+            'follow_up_count' => 'nullable|integer',
+            'internal_notes' => 'nullable|string',
         ];
     }
 }

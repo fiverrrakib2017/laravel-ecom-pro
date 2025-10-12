@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 use App\Services\LeadService;
+use App\Http\Requests\StoreLeadRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,8 +32,11 @@ class LeadController extends Controller
 
     public function store(StoreLeadRequest $request)
     {
-        $this->leadService->createLead($request->validated());
-
-        return redirect()->back()->with('success', 'Lead created successfully!');
+        $validatedData = $request->validated();
+        $this->leadService->createLead($validatedData);
+        return response()->json([
+            'success'=>true,
+            'message' => 'Lead created successfully!',
+        ]);
     }
 }
