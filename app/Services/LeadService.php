@@ -25,6 +25,10 @@ class LeadService
     {
         return $this->leadRepository->delete($id);
     }
+    public function find($id)
+    {
+        return $this->leadRepository->find($id);
+    }
 
 
 }

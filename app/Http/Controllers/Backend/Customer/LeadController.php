@@ -65,4 +65,19 @@ class LeadController extends Controller
             'message' => 'Delete successfully!',
         ]);
     }
+    public function view($id){
+        $lead=$this->leadService->find($id);
+        if ($lead) {
+            return response()->json([
+                'success' => true,
+                'data' => $lead
+            ]);
+        }
+
+        /*------If lead not found------*/
+        return response()->json([
+            'success' => false,
+            'message' => 'Lead not found'
+        ]);
+    }
 }

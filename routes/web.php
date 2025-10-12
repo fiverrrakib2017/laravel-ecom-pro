@@ -224,6 +224,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/store', 'store')->name('admin.customer.lead.store');
 
                 Route::get('/edit/{id}', 'edit')->name('admin.customer.lead.edit');
+                Route::get('/view/{id}', 'view')->name('admin.customer.lead.view');
                 Route::post('/update/{id}', 'update')->name('admin.customer.lead.update');
             });
         });

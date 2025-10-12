@@ -174,7 +174,7 @@
                                             class="btn btn-xs btn-success btn-show"
                                             data-id="{{ $p->id }}"
                                             data-name="{{ $p->full_name }}"
-                                            data-url="{{ route('admin.hotspot.profile.destroy', $p->id) }}"
+                                            data-url="{{ route('admin.customer.lead.view', $p->id) }}"
                                             title="Show Details">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -228,6 +228,26 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for showing lead details -->
+<div class="modal fade" id="leadDetailModal" tabindex="-1" role="dialog" aria-labelledby="leadDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="leadDetailModalLabel">Lead Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Dynamic Content Will Be Loaded Here -->
+                <div id="lead-details">
+                    <!-- Content will be loaded via AJAX -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('script')
@@ -261,28 +281,78 @@
             }
         });
 
-    function doDelete(url, id){
-        let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        $.ajax({
-            url: url,
-            type: 'POST',
-            dataType: 'json',
-            data: { _token: csrf , id:id},
-            success: function(res){
-                if(res && res.success){
-                    toastr.success(res.message || 'Deleted Successfully');
-                    /*------remove row or reload-----*/
-                    const $row = $('#row-'+id);
-                    if($row.length){ $row.remove(); } else { location.reload(); }
-                } else {
-                    toastr.warning('Unexpected response.');
+        function doDelete(url, id){
+            let csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'json',
+                data: { _token: csrf , id:id},
+                success: function(res){
+                    if(res && res.success){
+                        toastr.success(res.message || 'Deleted Successfully');
+                        /*------remove row or reload-----*/
+                        const $row = $('#row-'+id);
+                        if($row.length){ $row.remove(); } else { location.reload(); }
+                    } else {
+                        toastr.warning('Unexpected response.');
+                    }
+                },
+                error: function(xhr){
+                    toastr.error('Could not delete. Please try again.');
                 }
-            },
-            error: function(xhr){
-                toastr.error('Could not delete. Please try again.');
-            }
+            });
+        }
+
+        $(document).on('click', '.btn-show', function() {
+            var leadId = $(this).data('id');
+            var leadName = $(this).data('name');
+            var url = $(this).data('url');
+
+            $('#lead-details').html('');
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(response) {
+                    if(response.success) {
+                        var details = `
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> ${response.data.full_name}</p>
+                                    <p><strong>Phone:</strong> ${response.data.phone}</p>
+                                    <p><strong>Email:</strong> ${response.data.email}</p>
+                                    <p><strong>Status:</strong> ${response.data.status}</p>
+                                    <p><strong>Priority:</strong> ${response.data.priority}</p>
+                                    <p><strong>Interest Level:</strong> ${response.data.interest_level}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Service Interest:</strong> ${response.data.service_interest}</p>
+                                    <p><strong>Feedback:</strong> ${response.data.feedback}</p>
+                                    <p><strong>Lead Score:</strong> ${response.data.lead_score}</p>
+                                    <p><strong>Follow-Up Required:</strong> ${response.data.follow_up_required ? 'Yes' : 'No'}</p>
+                                    <p><strong>Follow-Up Count:</strong> ${response.data.follow_up_count}</p>
+                                </div>
+                            </div>
+                            <p><strong>Internal Notes:</strong> ${response.data.internal_notes}</p>
+                            <p><strong>First Contacted At:</strong> ${response.data.first_contacted_at}</p>
+                            <p><strong>Last Contacted At:</strong> ${response.data.last_contacted_at}</p>
+                            <p><strong>Campaign Source:</strong> ${response.data.campaign_source}</p>
+                            <p><strong>Estimated Close Date:</strong> ${response.data.estimated_close_date}</p>
+                        `;
+                        $('#lead-details').html(details);
+                        $('#leadDetailModal').modal('show');
+                    } else {
+                        $('#lead-details').html('<p>No details found for this lead.</p>');
+                        $('#leadDetailModal').modal('show');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#lead-details').html('<p>Error loading lead details. Please try again.</p>');
+                    $('#leadDetailModal').modal('show');
+                }
+            });
         });
-    }
 
     });
 </script>
