@@ -57,4 +57,12 @@ class LeadController extends Controller
             'message' => 'Lead created successfully!',
         ]);
     }
+    public function delete(Request $request)
+    {
+        $this->leadService->delete($request->id);
+        return response()->json([
+            'success'=>true,
+            'message' => 'Delete successfully!',
+        ]);
+    }
 }
