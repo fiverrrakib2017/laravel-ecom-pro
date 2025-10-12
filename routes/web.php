@@ -211,6 +211,23 @@ Route::group(['middleware' => 'admin'], function () {
             });
         });
     });
+    /** CRM Route **/
+    Route::prefix('admin/customer-relationship-management')->group(function () {
+        /*Lead Route */
+        Route::prefix('lead')->group(function () {
+            Route::controller(App\Http\Controllers\Backend\Customer\LeadController::class)->group(function () {
+                Route::get('/list', 'index')->name('admin.customer.lead.index');
+                Route::get('/all-data', 'get_all_data')->name('admin.customer.lead.get_all_data');
+
+                Route::get('/create', 'create')->name('admin.customer.lead.create');
+                Route::post('/delete', 'delete')->name('admin.customer.lead.delete');
+                Route::post('/store', 'store')->name('admin.customer.lead.store');
+
+                Route::get('/edit/{id}', 'edit')->name('admin.customer.lead.edit');
+                Route::post('/update/{id}', 'update')->name('admin.customer.lead.update');
+            });
+        });
+    });
     /** Hotspot Route **/
     Route::prefix('admin/hotspot')->group(function () {
         Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotController::class)->group(function () {

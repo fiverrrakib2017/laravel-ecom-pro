@@ -71,6 +71,12 @@
             delay: 10,
             time: 1000
         });
+        var activeMenu = $('.nav-item.active');
+        var windowHeight = $(window).height();
+        var menuHeight = activeMenu.outerHeight();
+        var scrollPosition = activeMenu.offset().top - (windowHeight / 2) + (menuHeight / 2);
+
+        $('.nav-treeview').scrollTop(scrollPosition);
     });
 </script>
 @yield('script')

@@ -486,25 +486,14 @@
                {{-- CRM Management Start --}}
                 @php
                     $active_prefix = [
-                        'leads',
-                        'customers',
-                        'deals',
-                        'activities',
-                        'tickets',
-                        'invoices',
-                        'payments',
-                        'notes',
-                        'attachments',
-                        'tags',
-                        'users',
-                        'reports',
-                        'settings',
+                        'admin.customer.lead.index',
+                        'admin.customer.lead.create',
                     ];
                 @endphp
                 <li class="nav-item has-treeview">
                     <a href="#"
                     class="nav-link {{ Str::startsWith($currentRoute, $active_prefix) ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users-cog"></i> {{-- Updated CRM icon --}}
+                        <i class="nav-icon fas fa-users-cog"></i>
                         <p>
                             CRM Management
                             <i class="right fas fa-angle-left"></i>
@@ -516,17 +505,25 @@
 
                         <!-- Leads -->
                         <li class="nav-item">
-                            <a href="#"
-                            class="nav-link">
+                            <a href="{{ route('admin.customer.lead.create')}}"
+                            class="nav-link {{ $route == 'admin.customer.lead.create' ? 'active' : '' }}">
                                 <i class="fas fa-user-plus nav-icon"></i>
-                                <p>Leads</p>
+                                <p>Create Leads</p>
+                            </a>
+                        </li>
+                        <!--Manage Leads -->
+                        <li class="nav-item">
+                            <a href="{{ route('admin.customer.lead.index')}}"
+                            class="nav-link {{ $route == 'admin.customer.lead.index' ? 'active' : '' }}">
+                                <i class="fas fa-user-plus nav-icon"></i>
+                                <p>Manage Leads</p>
                             </a>
                         </li>
 
                         <!-- Client -->
                         <li class="nav-item">
-                            <a href="#"
-                            class="nav-link">
+                            <a href=""
+                            class="nav-link {{ $route == '' ? 'active' : '' }}">
                                 <i class="fas fa-users nav-icon"></i>
                                 <p>Client</p>
                             </a>
