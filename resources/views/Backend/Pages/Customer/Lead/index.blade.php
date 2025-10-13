@@ -179,7 +179,7 @@
                                         <i class="fas fa-eye"></i>
                                     </button>
 
-                                    <a href="{{ route('admin.hotspot.profile.edit', $p->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
+                                    <a href="{{ route('admin.customer.lead.edit', $p->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
 

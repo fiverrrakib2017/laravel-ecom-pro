@@ -47,6 +47,11 @@ class LeadController extends Controller
     {
         return view('Backend.Pages.Customer.Lead.create');
     }
+    public function edit($id)
+    {
+        $lead=$this->leadService->find($id);
+        return view('Backend.Pages.Customer.Lead.edit',compact('lead'));
+    }
 
     public function store(StoreLeadRequest $request)
     {
