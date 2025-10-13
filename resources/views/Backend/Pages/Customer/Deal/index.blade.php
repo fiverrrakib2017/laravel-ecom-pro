@@ -1,5 +1,5 @@
 @extends('Backend.Layout.App')
-@section('title', 'Lead List | Dashboard | Admin Panel')
+@section('title', 'Deals List | Dashboard | Admin Panel')
 
 @section('content')
 
@@ -71,7 +71,8 @@
 
                                     <td class="text-right">{{ number_format((float) $deal->amount, 2) }}</td>
 
-                                    <td>{{ optional($deal->expected_close_date)->format('Y-m-d') ?? '—' }}</td>
+                                    <td>{{ optional($deal->expected_close_date)->format('d M Y') ?? '—' }}</td>
+
 
                                     <td>{{ optional($deal->lead)->full_name ?? '—' }}</td>
 
@@ -79,10 +80,20 @@
 
                                     <td>{{ optional($deal->user)->name ?? '—' }}</td>
 
-                                    <td>{{ $deal->created_at?->format('Y-m-d H:i') }}</td>
+                                    <td>{{ $deal->created_at?->format('d M Y H:i') }}</td>
 
                                     <td class="text-right">
+                                    <a href="{{ route('admin.customer.deals.edit', $deal->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
+                                    <button type="button"
+                                            class="btn btn-xs btn-danger btn-delete"
+                                            data-id="{{ $deal->id }}"
+                                            data-url="{{ route('admin.customer.deals.delete', $deal->id) }}"
+                                            title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                     </td>
                                 </tr>
                             @empty
@@ -101,26 +112,6 @@
         </div>
     </div>
 
-    <!-- Modal for showing lead details -->
-    <div class="modal fade" id="leadDetailModal" tabindex="-1" role="dialog" aria-labelledby="leadDetailModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="leadDetailModalLabel">Lead Details</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <!-- Dynamic Content Will Be Loaded Here -->
-                    <div id="lead-details">
-                        <!-- Content will be loaded via AJAX -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('script')

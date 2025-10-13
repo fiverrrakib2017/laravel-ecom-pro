@@ -33,15 +33,15 @@ class DealController extends Controller
     }
     public function edit($id)
     {
-        $deals=$this->dealService->find($id);
-        return view('Backend.Pages.Customer.Deal.edit',compact('deals'));
+        $deal=$this->dealService->find($id);
+        return view('Backend.Pages.Customer.Deal.edit',compact('deal'));
     }
     public function update(deal_request $request , $id){
         $validatedData = $request->validated();
         $this->dealService->update($id , $validatedData);
          return response()->json([
             'success'=>true,
-            'message' => 'Lead Update successfully!',
+            'message' => 'Deal Update successfully!',
         ]);
     }
 
@@ -62,19 +62,5 @@ class DealController extends Controller
             'message' => 'Delete successfully!',
         ]);
     }
-    public function view($id){
-        $lead=$this->dealService->find($id);
-        if ($lead) {
-            return response()->json([
-                'success' => true,
-                'data' => $lead
-            ]);
-        }
 
-        /*------If lead not found------*/
-        return response()->json([
-            'success' => false,
-            'message' => 'Lead not found'
-        ]);
-    }
 }

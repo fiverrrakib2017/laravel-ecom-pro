@@ -41,7 +41,7 @@ class DealRepository implements DealRepositoryInterface
         $deal->stage_id            = $data['stage_id'];
         $deal->amount              = $data['amount'];
         $deal->expected_close_date = $data['expected_close_date'];
-        $deal->user_id             = auth()->grud('admin')->user()->id ?? NULL;
+        $deal->user_id             = auth()->guard('admin')->user()->id ?? null;
 
 
         $deal->update();

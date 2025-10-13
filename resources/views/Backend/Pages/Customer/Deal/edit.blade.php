@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <form action="{{ route('admin.customer.deals.update',$deal->id ?? '') }}" id="dealForm" method="POST">
                         @csrf
-                        @include ('Backend.Pages.Customer.Deal._form')
+                        @include ('Backend.Pages.Customer.Deal._form',['deal' => $deal, 'mode' => 'edit'])
 
                     </form>
                 </div>
