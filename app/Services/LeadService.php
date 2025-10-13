@@ -29,6 +29,9 @@ class LeadService
     {
         return $this->leadRepository->find($id);
     }
+    public function update( $id , array $data){
+        return $this->leadRepository->update($id ,  $data);
+    }
 
 
 }

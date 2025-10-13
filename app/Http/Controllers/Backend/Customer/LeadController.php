@@ -52,6 +52,14 @@ class LeadController extends Controller
         $lead=$this->leadService->find($id);
         return view('Backend.Pages.Customer.Lead.edit',compact('lead'));
     }
+    public function update(StoreLeadRequest $request , $id){
+        $validatedData = $request->validated();
+        $this->leadService->update($id , $validatedData);
+         return response()->json([
+            'success'=>true,
+            'message' => 'Lead Update successfully!',
+        ]);
+    }
 
     public function store(StoreLeadRequest $request)
     {
