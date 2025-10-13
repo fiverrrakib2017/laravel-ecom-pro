@@ -228,6 +228,7 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/update/{id}', 'update')->name('admin.customer.lead.update');
             });
         });
+        Route::get('/list',[ClientController::class, 'index'])->name('admin.customer.lead.client.index');
     });
     /** Hotspot Route **/
     Route::prefix('admin/hotspot')->group(function () {

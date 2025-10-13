@@ -488,6 +488,7 @@
                     $active_prefix = [
                         'admin.customer.lead.index',
                         'admin.customer.lead.create',
+                        'admin.customer.lead.client.index',
                     ];
                 @endphp
                 <li class="nav-item has-treeview">
@@ -522,8 +523,8 @@
 
                         <!-- Client -->
                         <li class="nav-item">
-                            <a href=""
-                            class="nav-link {{ $route == '' ? 'active' : '' }}">
+                            <a href="{{route('admin.customer.lead.client.index')}}"
+                            class="nav-link {{ $route == 'admin.customer.lead.client.index' ? 'active' : '' }}">
                                 <i class="fas fa-users nav-icon"></i>
                                 <p>Client</p>
                             </a>
