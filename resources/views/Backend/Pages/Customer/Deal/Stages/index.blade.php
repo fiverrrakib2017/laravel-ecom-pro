@@ -55,14 +55,14 @@
                                     </td>
                                     <td class="text-right">
 
-                                    <a href="{{ route('admin.customer.lead.edit', $stage->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
+                                    <a href="{{ route('admin.customer.deal_stages.edit', $stage->id) }}" class="btn btn-xs btn-primary" data-toggle="tooltip" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
 
                                     <button type="button"
                                             class="btn btn-xs btn-danger btn-delete"
                                             data-id="{{ $stage->id }}"
-                                            data-url="{{ route('admin.customer.lead.delete', $stage->id) }}"
+                                            data-url="{{ route('admin.customer.deal_stages.delete', $stage->id) }}"
                                             title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>

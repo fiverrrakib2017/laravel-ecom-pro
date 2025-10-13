@@ -2,7 +2,7 @@
 namespace App\Repositories;
 use App\Interfaces\Deal_stage_repository_Interface;
 use App\Models\Deal_stage;
-
+use Illuminate\Support\Arr;
 class Deal_stageRepository implements Deal_stage_repository_Interface
 {
     public function getAll()
@@ -12,28 +12,19 @@ class Deal_stageRepository implements Deal_stage_repository_Interface
 
     public function store(array $data)
     {
-        $lead = new Deal_stage();
+        $object = new Deal_stage();
 
-        $lead->full_name          = $data['full_name'] ?? null;
-        $lead->phone              = $data['phone'] ?? null;
-        $lead->email              = $data['email'] ?? null;
-        $lead->address            = $data['address'] ?? null;
-        $lead->source             = $data['source'] ?? 'other';
-        $lead->status             = $data['status'] ?? 'new';
-        $lead->priority           = $data['priority'] ?? 'medium';
-        $lead->interest_level     = $data['interest_level'] ?? 'medium';
-        $lead->service_interest   = $data['service_interest'] ?? null;
-        $lead->feedback           = $data['feedback'] ?? null;
-        $lead->lead_score         = $data['lead_score'] ?? 0;
-        $lead->user_id            = auth()->guard('admin')->user()->id ?? NULL;
-        $lead->estimated_close_date = $data['estimated_close_date'] ?? null;
-        $lead->follow_up_required = $data['follow_up_required'] ?? false;
-        $lead->first_contacted_at = $data['first_contacted_at'] ?? null;
-        $lead->last_contacted_at  = $data['last_contacted_at'] ?? null;
-        $lead->campaign_source    = $data['campaign_source'] ?? null;
-        $lead->follow_up_count    = $data['follow_up_count'] ?? 0;
-        $lead->internal_notes     = $data['internal_notes'] ?? null;
-        return $lead->save();
+        $name   = trim((string) Arr::get($data, 'name'));
+        $isWon  = filter_var(Arr::get($data, 'is_won', false), FILTER_VALIDATE_BOOLEAN);
+        $isLost = filter_var(Arr::get($data, 'is_lost', false), FILTER_VALIDATE_BOOLEAN);
+
+        $object->name    = $name;
+        $object->is_won  = $isWon;
+        $object->is_lost = $isLost;
+
+        $object->save();
+
+        return $object;
     }
 
 

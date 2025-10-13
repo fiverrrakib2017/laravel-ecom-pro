@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 use App\Services\Deal_stageService;
-use App\Http\Requests\Store_deal_stage_request;
+use App\Http\Requests\deal_stage_request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -50,10 +50,10 @@ class Deal_stageController extends Controller
     }
     public function edit($id)
     {
-        $deal_stages=$this->deal_stage_service->find($id);
-        return view('Backend.Pages.Customer.Deal.Stages.edit',compact('deal_stages'));
+        $stage=$this->deal_stage_service->find($id);
+        return view('Backend.Pages.Customer.Deal.Stages.edit',compact('stage'));
     }
-    public function update(Store_deal_stage_request $request , $id){
+    public function update(deal_stage_request $request , $id){
         $validatedData = $request->validated();
         $this->deal_stage_service->update($id , $validatedData);
          return response()->json([
@@ -62,10 +62,10 @@ class Deal_stageController extends Controller
         ]);
     }
 
-    public function store(Store_deal_stage_request $request)
+    public function store(deal_stage_request $request)
     {
         $validatedData = $request->validated();
-        $this->leadService->createLead($validatedData);
+        $this->deal_stage_service->create($validatedData);
         return response()->json([
             'success'=>true,
             'message' => 'Deal Stage Created',
