@@ -15,7 +15,7 @@
         <form method="POST"
               action="{{ route('admin.customer.deal_stages.update', $stage->id) }}"
               id="formEdit"
-              novalidate>
+              >
           @include('Backend.Pages.Customer.Deal.Stages._form', ['stage' => $stage, 'mode' => 'edit'])
         </form>
       </div>

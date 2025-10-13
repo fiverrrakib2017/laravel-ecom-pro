@@ -58,7 +58,7 @@ class Deal_stageController extends Controller
         $this->deal_stage_service->update($id , $validatedData);
          return response()->json([
             'success'=>true,
-            'message' => 'Lead Update successfully!',
+            'message' => 'Deal Stage Update successfully!',
         ]);
     }
 

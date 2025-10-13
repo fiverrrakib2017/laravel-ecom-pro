@@ -5,7 +5,7 @@
 
 @csrf
 @if($mode === 'edit')
-  @method('PUT')
+  @method('POST')
 @endif
 
 {{-- Name --}}
