@@ -491,6 +491,8 @@
                         'admin.customer.lead.client.index',
                         'admin.customer.deal_stages.index',
                         'admin.customer.deal_stages.create',
+                        'admin.customer.deals.index',
+                        'admin.customer.deals.create',
                     ];
                 @endphp
                 <li class="nav-item has-treeview">
@@ -534,8 +536,8 @@
 
                         <!-- Deals -->
                         <li class="nav-item">
-                            <a href="#"
-                            class="nav-link">
+                            <a href="{{route('admin.customer.deals.index')}}"
+                            class="nav-link {{ $route == 'admin.customer.deals.index' || $route=='admin.customer.deals.create' ? 'active' : '' }}">
                                 <i class="fas fa-handshake nav-icon"></i>
                                 <p>Deals</p>
                             </a>

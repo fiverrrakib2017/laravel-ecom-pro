@@ -17,7 +17,7 @@ class DealService
     {
         return $this->dealRepository->getAll();
     }
-    public function createLead(array $data)
+    public function create(array $data)
     {
         return $this->dealRepository->store($data);
     }

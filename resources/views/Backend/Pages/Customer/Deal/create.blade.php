@@ -1,20 +1,19 @@
 @extends('Backend.Layout.App')
-@section('title', 'Lead Create | Dashboard | Admin Panel')
+@section('title', 'Lead Deal | Dashboard | Admin Panel')
 @section('content')
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 @include('Backend.Component.Common.card-header', [
-                    'title' => 'Create New Lead',
+                    'title' => 'Create New Deal',
                     'description' => 'Add and manage potential customer information.',
                     'icon' => '<i class="fas fa-user-plus"></i>',
                 ])
                 <div class="card-body">
-                    <form action="{{ route('admin.customer.lead.store') }}" id="leadForm" method="POST">
+                    <form action="{{ route('admin.customer.deals.store') }}" id="dealForm" method="POST">
                         @csrf
-                        @include ('Backend.Pages.Customer.Lead._form')
-                        <button type="submit" class="btn btn-success">Save Lead</button>
-                        <button type="button" class="btn btn-danger" onclick="history.back();">Back</button>
+                        @include ('Backend.Pages.Customer.Deal._form')
+
                     </form>
                 </div>
             </div>
@@ -25,6 +24,6 @@
 @section('script')
     <script src="{{ asset('Backend/assets/js/__handle_submit.js') }}"></script>
     <script type="text/javascript">
-        handle_submit_form("#leadForm");
+        handle_submit_form("#dealForm");
     </script>
 @endsection

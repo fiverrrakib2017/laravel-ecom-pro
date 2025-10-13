@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 use App\Services\DealService;
-use App\Http\Requests\StoreDealRequest;
+use App\Http\Requests\deal_request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -23,24 +23,8 @@ class DealController extends Controller
 
     public function index(Request $request)
     {
-        $query = $this->dealService->getAll();
-
-        /*-------------- Filter by status if selected------------*/
-        if ($request->has('status') && $request->status !== '') {
-            $query->where('status', $request->status);
-        }
-
-        /*------------Search functionality----------*/
-        if ($request->has('q') && $request->q !== '') {
-            $query->where(function ($subQuery) use ($request) {
-                $subQuery->where('full_name', 'like', '%' . $request->q . '%')
-                    ->orWhere('phone', 'like', '%' . $request->q . '%')
-                    ->orWhere('email', 'like', '%' . $request->q . '%');
-            });
-        }
-
-        /*-----Paginate results-------*/
-        $deals = $query->paginate(10);
+       $deals = $this->dealService->getAll()
+                ->with(['lead', 'client', 'stage', 'user'])->get();
         return view('Backend.Pages.Customer.Deal.index', compact('deals'));
     }
     public function create()
@@ -52,7 +36,7 @@ class DealController extends Controller
         $deals=$this->dealService->find($id);
         return view('Backend.Pages.Customer.Deal.edit',compact('deals'));
     }
-    public function update(StoreDealRequest $request , $id){
+    public function update(deal_request $request , $id){
         $validatedData = $request->validated();
         $this->dealService->update($id , $validatedData);
          return response()->json([
@@ -61,25 +45,25 @@ class DealController extends Controller
         ]);
     }
 
-    public function store(StoreDealRequest $request)
+    public function store(deal_request $request)
     {
         $validatedData = $request->validated();
-        $this->leadService->createLead($validatedData);
+        $this->dealService->create($validatedData);
         return response()->json([
             'success'=>true,
-            'message' => 'Lead created successfully!',
+            'message' => 'Deal created successfully!',
         ]);
     }
     public function delete(Request $request)
     {
-        $this->leadService->delete($request->id);
+        $this->dealService->delete($request->id);
         return response()->json([
             'success'=>true,
             'message' => 'Delete successfully!',
         ]);
     }
     public function view($id){
-        $lead=$this->leadService->find($id);
+        $lead=$this->dealService->find($id);
         if ($lead) {
             return response()->json([
                 'success' => true,
