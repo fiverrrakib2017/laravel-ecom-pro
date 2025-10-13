@@ -7,23 +7,23 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
-use App\Services\LeadService;
-use App\Http\Requests\lead_request;
+use App\Services\DealService;
+use App\Http\Requests\StoreDealRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class LeadController extends Controller
+class DealController extends Controller
 {
- protected $leadService;
+ protected $dealService;
 
-    public function __construct(LeadService $leadService)
+    public function __construct(DealService $dealService)
     {
-        $this->leadService = $leadService;
+        $this->dealService = $dealService;
     }
 
     public function index(Request $request)
     {
-        $query = $this->leadService->getAll();
+        $query = $this->dealService->getAll();
 
         /*-------------- Filter by status if selected------------*/
         if ($request->has('status') && $request->status !== '') {
@@ -40,28 +40,28 @@ class LeadController extends Controller
         }
 
         /*-----Paginate results-------*/
-        $leads = $query->paginate(10);
-        return view('Backend.Pages.Customer.Lead.index', compact('leads'));
+        $deals = $query->paginate(10);
+        return view('Backend.Pages.Customer.Deal.index', compact('deals'));
     }
     public function create()
     {
-        return view('Backend.Pages.Customer.Lead.create');
+        return view('Backend.Pages.Customer.Deal.create');
     }
     public function edit($id)
     {
-        $lead=$this->leadService->find($id);
-        return view('Backend.Pages.Customer.Lead.edit',compact('lead'));
+        $deals=$this->dealService->find($id);
+        return view('Backend.Pages.Customer.Deal.edit',compact('deals'));
     }
-    public function update(lead_request $request , $id){
+    public function update(StoreDealRequest $request , $id){
         $validatedData = $request->validated();
-        $this->leadService->update($id , $validatedData);
+        $this->dealService->update($id , $validatedData);
          return response()->json([
             'success'=>true,
             'message' => 'Lead Update successfully!',
         ]);
     }
 
-    public function store(lead_request $request)
+    public function store(StoreDealRequest $request)
     {
         $validatedData = $request->validated();
         $this->leadService->createLead($validatedData);

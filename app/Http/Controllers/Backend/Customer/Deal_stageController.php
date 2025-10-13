@@ -7,23 +7,23 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
-use App\Services\LeadService;
-use App\Http\Requests\lead_request;
+use App\Services\Deal_stageService;
+use App\Http\Requests\Store_deal_stage_request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class LeadController extends Controller
+class Deal_stageController extends Controller
 {
- protected $leadService;
+ protected $deal_stage_service;
 
-    public function __construct(LeadService $leadService)
+    public function __construct(Deal_stageService $deal_stage_service)
     {
-        $this->leadService = $leadService;
+        $this->deal_stage_service = $deal_stage_service;
     }
 
     public function index(Request $request)
     {
-        $query = $this->leadService->getAll();
+        $query = $this->deal_stage_service->getAll();
 
         /*-------------- Filter by status if selected------------*/
         if ($request->has('status') && $request->status !== '') {
@@ -40,57 +40,43 @@ class LeadController extends Controller
         }
 
         /*-----Paginate results-------*/
-        $leads = $query->paginate(10);
-        return view('Backend.Pages.Customer.Lead.index', compact('leads'));
+        $deal_stages = $query->paginate(10);
+        return view('Backend.Pages.Customer.Deal.Stages.index', compact('deal_stages'));
     }
     public function create()
     {
-        return view('Backend.Pages.Customer.Lead.create');
+        $stage=null;
+        return view('Backend.Pages.Customer.Deal.Stages.create',compact('stage'));
     }
     public function edit($id)
     {
-        $lead=$this->leadService->find($id);
-        return view('Backend.Pages.Customer.Lead.edit',compact('lead'));
+        $deal_stages=$this->deal_stage_service->find($id);
+        return view('Backend.Pages.Customer.Deal.Stages.edit',compact('deal_stages'));
     }
-    public function update(lead_request $request , $id){
+    public function update(Store_deal_stage_request $request , $id){
         $validatedData = $request->validated();
-        $this->leadService->update($id , $validatedData);
+        $this->deal_stage_service->update($id , $validatedData);
          return response()->json([
             'success'=>true,
             'message' => 'Lead Update successfully!',
         ]);
     }
 
-    public function store(lead_request $request)
+    public function store(Store_deal_stage_request $request)
     {
         $validatedData = $request->validated();
         $this->leadService->createLead($validatedData);
         return response()->json([
             'success'=>true,
-            'message' => 'Lead created successfully!',
+            'message' => 'Deal Stage Created',
         ]);
     }
     public function delete(Request $request)
     {
-        $this->leadService->delete($request->id);
+        $this->deal_stage_service->delete($request->id);
         return response()->json([
             'success'=>true,
             'message' => 'Delete successfully!',
-        ]);
-    }
-    public function view($id){
-        $lead=$this->leadService->find($id);
-        if ($lead) {
-            return response()->json([
-                'success' => true,
-                'data' => $lead
-            ]);
-        }
-
-        /*------If lead not found------*/
-        return response()->json([
-            'success' => false,
-            'message' => 'Lead not found'
         ]);
     }
 }

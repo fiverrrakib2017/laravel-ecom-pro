@@ -217,7 +217,6 @@ Route::group(['middleware' => 'admin'], function () {
         Route::prefix('lead')->group(function () {
             Route::controller(App\Http\Controllers\Backend\Customer\LeadController::class)->group(function () {
                 Route::get('/list', 'index')->name('admin.customer.lead.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.customer.lead.get_all_data');
 
                 Route::get('/create', 'create')->name('admin.customer.lead.create');
                 Route::post('/delete', 'delete')->name('admin.customer.lead.delete');
@@ -228,6 +227,34 @@ Route::group(['middleware' => 'admin'], function () {
                 Route::post('/update/{id}', 'update')->name('admin.customer.lead.update');
             });
         });
+        /*Deal Stage Route */
+        Route::prefix('deal-stages')->group(function () {
+            Route::controller(App\Http\Controllers\Backend\Customer\Deal_stageController::class)->group(function () {
+                Route::get('/list', 'index')->name('admin.customer.deal_stages.index');
+
+                Route::get('/create', 'create')->name('admin.customer.deal_stages.create');
+                Route::post('/delete', 'delete')->name('admin.customer.deal_stages.delete');
+                Route::post('/store', 'store')->name('admin.customer.deal_stages.store');
+
+                Route::get('/edit/{id}', 'edit')->name('admin.customer.deal_stages.edit');
+                Route::post('/update/{id}', 'update')->name('admin.customer.deal_stages.update');
+            });
+        });
+        /*Deal Route */
+        Route::prefix('deals')->group(function () {
+            Route::controller(App\Http\Controllers\Backend\Customer\DealController::class)->group(function () {
+                Route::get('/list', 'index')->name('admin.customer.deals.index');
+
+                Route::get('/create', 'create')->name('admin.customer.deals.create');
+                Route::post('/delete', 'delete')->name('admin.customer.deals.delete');
+                Route::post('/store', 'store')->name('admin.customer.deals.store');
+
+                Route::get('/edit/{id}', 'edit')->name('admin.customer.deals.edit');
+                Route::get('/view/{id}', 'view')->name('admin.customer.deals.view');
+                Route::post('/update/{id}', 'update')->name('admin.customer.deals.update');
+            });
+        });
+        /*Client Route */
         Route::get('/list',[ClientController::class, 'index'])->name('admin.customer.lead.client.index');
     });
     /** Hotspot Route **/
