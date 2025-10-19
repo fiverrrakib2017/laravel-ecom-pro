@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Backend\Admin;
-
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Customer_Invoice;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Supplier;
 use App\Models\Customer_recharge;
 use App\Models\Ticket;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -190,11 +191,6 @@ class AdminController extends Controller
 
            $monthly_bill = Customer::where('pop_id', $branch_user_id)->sum('amount');
 
-            // $paid_bill = Customer_recharge::where('transaction_type', '!=', 'credit')
-            //             ->where('pop_id',$branch_user_id)
-            //             ->whereMonth('created_at', Carbon::now()->month)
-            //             ->whereYear('created_at', Carbon::now()->year)
-            //             ->sum('amount') ?? 0;
         }
         if(empty($branch_user_id)){
             $total_area=Pop_area::latest()->count();
@@ -280,7 +276,46 @@ class AdminController extends Controller
         ]);
     }
 
+    public function api_login(Request $request)
+    {
+        // return response()->json([
+        //     'method' => $request->method(),
+        //     'data'   => $request->all(),
+        //     'headers' => $request->headers->all(),
+        // ]);
+        $request->validate([
+            'login'    => 'required|string', // username or email
+            'password' => 'required|string',
+        ]);
 
+        $login = $request->input('login');
+        $password = $request->input('password');
+
+        $admin = Admin::where('email', $login)
+                    ->orWhere('username', $login)
+                    ->first();
+
+        if (! $admin || ! Hash::check($password, $admin->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        // Create token for API access
+        $token = $admin->createToken('admin-api-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'admin' => $admin,
+            'token' => $token
+        ]);
+    }
+    public function api_logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logout successful',
+        ]);
+    }
     public function logout(){
         Auth::guard('admin')->logout();
         return redirect()->route('admin.login');
