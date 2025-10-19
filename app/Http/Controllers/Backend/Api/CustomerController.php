@@ -648,6 +648,97 @@ class CustomerController extends Controller
             ]);
         }
     }
+    /**
+ * @OA\Post(
+ *     path="http://isperp.xyz/v1/admin/customer/change-expire-date",
+ *     operationId="customerChangeExpireDate",
+ *     tags={"Customer"},
+ *     summary="Bulk update customer expire dates",
+ *     description="Updates the expire date of multiple customers in a bulk operation and activates the associated router for each customer",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="customer_ids", type="array",
+ *                 @OA\Items(type="integer", example=1)
+ *             ),
+ *             @OA\Property(property="customer_expire_date", type="string", format="date", example="2025-12-31")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Expire dates updated successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Update Successfully.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation errors",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={
+ *                     "customer_ids": {"The customer ids field is required."},
+ *                     "customer_expire_date": {"The customer expire date field is required."}
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Something went wrong during bulk recharge."),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+    public function customer_change_expire_date(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+            'customer_expire_date'  => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                /*update Customer Expire Date*/
+                $customer = Customer::find($customer_id);
+                if ($customer && $customer->expire_date) {
+                    $customer->expire_date = $request->customer_expire_date;
+                    $customer->update();
+                }
+                /*Activate rouater customer*/
+                router_activation($customer_id);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update Successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong during bulk recharge.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
     private function validateForm($request)
     {
         /*Validate the form data*/

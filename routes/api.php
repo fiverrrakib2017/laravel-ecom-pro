@@ -22,7 +22,7 @@ Route::prefix('v1')->group(function () {
 
             Route::post('/store', 'store');
             Route::post('/update/{id}', 'update')->name('admin.customer.update');
-            Route::post('/change_expire_date', 'customer_change_expire_date')->name('admin.customer.expire_date.update');
+            Route::post('/change_expire_date', 'customer_change_expire_date');
             Route::post('/change_package', 'customer_change_pacakge')->name('admin.customer.bulk.package.update');
             Route::post('/bulk-re-connect', 'bulk_customer_re_connect')->name('admin.customer.bulk.re.connect');
             Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');
