@@ -25,7 +25,6 @@ use function App\Helpers\router_activation;
 use function App\Helpers\delete_mikrotik_user;
 use function App\Helpers\add_mikrotik_user;
 
-use phpseclib3\Net\SSH2;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RouterOS\Client;
@@ -445,6 +444,207 @@ class CustomerController extends Controller
                 'success' => false,
                 'message' => 'Something went wrong while creating the customer. Please try again!',
                 'error' => $e->getMessage(),
+            ]);
+        }
+    }
+    /**
+ * @OA\Post(
+ *     path="http://isperp.xyz/v1/admin/customer/update/{id}",
+ *     operationId="updateCustomer",
+ *     tags={"Customer"},
+ *     summary="Update an existing customer",
+ *     description="Updates the details of an existing customer including personal information, package, status, and devices",
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         description="ID of the customer to update",
+ *         required=true,
+ *         @OA\Schema(type="integer", example=1)
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             @OA\Property(property="fullname", type="string", example="John Doe"),
+ *             @OA\Property(property="phone", type="string", example="01712345678"),
+ *             @OA\Property(property="nid", type="string", example="1234567890"),
+ *             @OA\Property(property="address", type="string", example="Dhaka"),
+ *             @OA\Property(property="con_charge", type="number", example=0),
+ *             @OA\Property(property="amount", type="number", example=500),
+ *             @OA\Property(property="username", type="string", example="john_doe"),
+ *             @OA\Property(property="password", type="string", example="123456"),
+ *             @OA\Property(property="package_id", type="integer", example=3),
+ *             @OA\Property(property="pop_id", type="integer", example=1),
+ *             @OA\Property(property="area_id", type="integer", example=2),
+ *             @OA\Property(property="router_id", type="integer", example=1),
+ *             @OA\Property(property="status", type="string", example="active", enum={"active", "online", "offline", "blocked", "expired", "disabled"}),
+ *             @OA\Property(property="expire_date", type="string", format="date", example="2025-12-31"),
+ *             @OA\Property(property="remarks", type="string", example="Customer Update"),
+ *             @OA\Property(property="connection_type", type="string", example="pppoe", enum={"pppoe", "radius", "hotspot"}),
+ *             @OA\Property(property="liabilities", type="string", example="NO", enum={"YES", "NO"}),
+ *             @OA\Property(
+ *                 property="device_type",
+ *                 type="array",
+ *                 @OA\Items(type="string", example="Router")
+ *             ),
+ *             @OA\Property(
+ *                 property="device_name",
+ *                 type="array",
+ *                 @OA\Items(type="string", example="TP-Link")
+ *             ),
+ *             @OA\Property(
+ *                 property="serial_no",
+ *                 type="array",
+ *                 @OA\Items(type="string", example="12345XYZ")
+ *             ),
+ *             @OA\Property(
+ *                 property="assign_date",
+ *                 type="array",
+ *                 @OA\Items(type="string", format="date", example="2025-10-19")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Customer updated successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Customer Updated Successfully!")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation errors",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={
+ *                     "phone": {"The phone has already been taken."},
+ *                     "username": {"The username has already been taken."}
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Something went wrong while updating the customer. Please try again!"),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+    public function update(Request $request, $id)
+    {
+        /* Validate the form data*/
+        $this->validateForm($request);
+
+        DB::beginTransaction();
+
+        try {
+            /* update Customer */
+            $customer = Customer::findOrFail($id);
+            $customer->fullname = $request->fullname;
+            $customer->phone = $request->phone;
+            $customer->nid = $request->nid;
+            $customer->address = $request->address;
+            $customer->con_charge = $request->con_charge ?? 0;
+            $customer->amount = $request->amount ?? 0;
+            $customer->username = $request->username;
+            $customer->password = $request->password;
+            $customer->package_id = $request->package_id;
+            $customer->expire_date = $request->expire_date;
+            $customer->pop_id = $request->pop_id;
+            $customer->area_id = $request->area_id;
+            $customer->router_id = $request->router_id;
+            $customer->status = $request->status;
+            $customer->remarks = $request->remarks;
+            $customer->liabilities = $request->liabilities;
+
+            /*********** Mikrotik Info ***************/
+            $router = Mikrotik_router::where('status', 'active')->where('id', $request->router_id)->first();
+
+            if (!$router) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Router not found or inactive.',
+                ]);
+            }
+
+            $client = new Client([
+                'host' => $router->ip_address,
+                'user' => $router->username,
+                'pass' => $router->password,
+                'port' => (int) $router->port ?? 8728,
+            ]);
+
+            /*Load MikroTik profile list*/
+            $profileQuery = new Query('/ppp/profile/print');
+            $profiles = $client->query($profileQuery)->read();
+
+            /*Get profile name from selected package*/
+            $profileName = Branch_package::find($request->package_id)->name;
+
+            /*Check if profile exists in MikroTik*/
+            $profileExists = collect($profiles)->pluck('name')->contains($profileName);
+
+            if (!$profileExists) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "MikroTik profile '{$profileName}' does not exist. Please check your package setup.",
+                ]);
+            }
+
+            /*Find user in MikroTik*/
+            $check_Query = new Query('/ppp/secret/print');
+            $check_Query->where('name', $request->username);
+            $check_customer = $client->query($check_Query)->read();
+
+            if (empty($check_customer)) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Customer '{$request->username}' not found in MikroTik router.",
+                ]);
+            }
+
+            /*Update the MikroTik user's profile*/
+            $secretId = $check_customer[0]['.id'];
+            $updateQuery = new Query('/ppp/secret/set');
+            $updateQuery->equal('.id', $secretId);
+            $updateQuery->equal('profile', $profileName);
+            $client->query($updateQuery)->read();
+
+            // Optional: Update password too
+            $updateQuery->equal('password', $request->password ?? '12345');
+
+            /* Save to database */
+            $customer->save();
+
+            DB::commit();
+
+            Cache::forget('sidebar_customers');
+
+            // Log
+            customer_log($customer->id, 'edit', auth()->guard('admin')->user()->id, 'Customer updated successfully!');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update successfully!',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed: ' . $e->getMessage(),
             ]);
         }
     }
