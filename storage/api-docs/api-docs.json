@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "ISPERP API",
+        "title": "ISPERP Multi-Tenant API",
         "description": "API Documentation for Admin & Multi-Tenant",
         "contact": {
             "email": "support@isperp.xyz"

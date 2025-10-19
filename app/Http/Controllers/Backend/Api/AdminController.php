@@ -26,7 +26,7 @@ class AdminController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="https://dg.isperp.xyz/api/v1/auth/login",
+     *     path="https://isperp.xyz/api/v1/auth/login",
      *     summary="Admin Login",
      *     tags={"Authentication"},
      *     @OA\RequestBody(
