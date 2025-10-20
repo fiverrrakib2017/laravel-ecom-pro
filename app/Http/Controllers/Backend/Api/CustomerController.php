@@ -739,6 +739,108 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+    /**
+ * @OA\Post(
+ *     path="http://isperp.xyz/v1/admin/customer/change-package",
+ *     operationId="customerChangePackage",
+ *     tags={"Customer"},
+ *     summary="Bulk change customer package (and POP/Area)",
+ *     description="Updates pop_id, area_id, and package_id for multiple customers in bulk and activates each customer on the router.",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"customer_ids","pop_id","area_id","customer_package_id"},
+ *             @OA\Property(
+ *                 property="customer_ids",
+ *                 type="array",
+ *                 @OA\Items(type="integer", example=1)
+ *             ),
+ *             @OA\Property(property="pop_id", type="integer", example=5),
+ *             @OA\Property(property="area_id", type="integer", example=12),
+ *             @OA\Property(property="customer_package_id", type="integer", example=3)
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Packages updated successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Update Successfully.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation errors",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={
+ *                     "customer_ids": {"The customer ids field is required."},
+ *                     "pop_id": {"The pop id field is required."},
+ *                     "area_id": {"The area id field is required."},
+ *                     "customer_package_id": {"The customer package id field is required."}
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Something went wrong during bulk recharge."),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+    public function customer_change_pacakge(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+            'pop_id'  => 'required',
+            'area_id'  => 'required',
+            'customer_package_id'  => 'required',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                /*update Customer Expire Date*/
+                $customer = Customer::find($customer_id);
+                if ($customer && $customer->pop_id && $customer->area_id && $customer->customer_package_id) {
+                    $customer->pop_id = $request->pop_id;
+                    $customer->area_id = $request->area_id;
+                    $customer->package_id = $request->customer_package_id;
+                    $customer->update();
+                }
+                /*Activate rouater customer*/
+                router_activation($customer_id);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Update Successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong during bulk recharge.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
     private function validateForm($request)
     {
         /*Validate the form data*/
