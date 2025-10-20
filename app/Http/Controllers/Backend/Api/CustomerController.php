@@ -33,7 +33,7 @@ class CustomerController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="https://isperp.xyz/admin/customer/all-data",
+     *     path="https://isperp.xyz/api/v1/admin/customer/",
      *     summary="Get all customers with filters",
      *     tags={"Customer"},
      *     security={{"sanctum":{}}},
@@ -148,7 +148,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Get(
- *     path="https://isperp.xyz/v1/admin/customer/search",
+ *     path="https://isperp.xyz/api/v1/admin/customer/search",
  *     operationId="customerSearch",
  *     tags={"Customer"},
  *     summary="Search customers by username, id, fullname or phone",
@@ -213,7 +213,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Post(
- *     path="http://isperp.xyz/v1/admin/customer/store",
+ *     path="http://isperp.xyz/api/v1/admin/customer/store",
  *     operationId="storeCustomer",
  *     tags={"Customer"},
  *     summary="Create a new customer",
@@ -338,7 +338,7 @@ class CustomerController extends Controller
                 }
                 /* Store recharge data */
                 $object = new Customer_recharge();
-                $object->user_id = auth()->guard('admin')->user()->id;
+                $object->user_id = auth()->guard('sanctum')->user()->id;
                 $object->customer_id = $customer->id;
                 $object->pop_id = $request->pop_id;
                 $object->area_id = $request->area_id;
@@ -355,7 +355,7 @@ class CustomerController extends Controller
             }
             /* Send Message to the Customer*/
             if ($request->send_message == '1') {
-                $user = auth()->guard('admin')->user();
+                $user = auth()->guard('sanctum')->user();
                 $data = \App\Models\Website_information::where('pop_id', $user->pop_id)->latest()->first();
                 if ($user->pop_id === null) {
                     $data = \App\Models\Website_information::whereNull('pop_id')->latest()->first();
@@ -383,7 +383,7 @@ class CustomerController extends Controller
                     }
                     $customer_device = new Customer_device();
                     $customer_device->customer_id = $customer->id;
-                    $customer_device->user_id = auth()->guard('admin')->user()->id;
+                    $customer_device->user_id = auth()->guard('sanctum')->user()->id;
                     $customer_device->device_type = $type;
                     $customer_device->device_name = $request->device_name[$index] ?? null;
                     $customer_device->serial_number = $request->serial_no[$index] ?? null;
@@ -395,7 +395,7 @@ class CustomerController extends Controller
             }
 
             /* Create Customer Log */
-            customer_log($customer->id, 'add', auth()->guard('admin')->user()->id, 'Customer Created Successfully!');
+            customer_log($customer->id, 'add', auth()->guard('sanctum')->user()->id, 'Customer Created Successfully!');
             /*Check Customer Connection Type*/
             if (!empty($request->connection_type) && isset($request->connection_type)) {
                 /*********** Radius Customer Store ****************/
@@ -449,7 +449,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Post(
- *     path="http://isperp.xyz/v1/admin/customer/update/{id}",
+ *     path="http://isperp.xyz/api/v1/admin/customer/update/{id}",
  *     operationId="updateCustomer",
  *     tags={"Customer"},
  *     summary="Update an existing customer",
@@ -633,7 +633,7 @@ class CustomerController extends Controller
             Cache::forget('sidebar_customers');
 
             // Log
-            customer_log($customer->id, 'edit', auth()->guard('admin')->user()->id, 'Customer updated successfully!');
+            customer_log($customer->id, 'edit', auth()->guard('sanctum')->user()->id, 'Customer updated successfully!');
 
             return response()->json([
                 'success' => true,
@@ -650,7 +650,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Post(
- *     path="http://isperp.xyz/v1/admin/customer/change-expire-date",
+ *     path="http://isperp.xyz/api/v1/admin/customer/change-expire-date",
  *     operationId="customerChangeExpireDate",
  *     tags={"Customer"},
  *     summary="Bulk update customer expire dates",
@@ -741,7 +741,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Post(
- *     path="http://isperp.xyz/v1/admin/customer/change-package",
+ *     path="http://isperp.xyz/api/v1/admin/customer/change-package",
  *     operationId="customerChangePackage",
  *     tags={"Customer"},
  *     summary="Bulk change customer package (and POP/Area)",
@@ -843,7 +843,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Post(
- *     path="http://isperp.xyz/v1/admin/customer/bulk-reconnect",
+ *     path="http://isperp.xyz/api/v1/admin/customer/bulk-reconnect",
  *     operationId="customerBulkReconnect",
  *     tags={"Customer"},
  *     summary="Bulk reconnect customers (router activation)",
@@ -1043,6 +1043,358 @@ class CustomerController extends Controller
         }
 
         return response(['success' => true, 'message' => 'Successfully Completed']);
+    }
+    /**
+ * @OA\Post(
+ *     path="http://isperp.xyz/v1/admin/customer/recharge",
+ *     operationId="customerRecharge",
+ *     tags={"Customer"},
+ *     summary="Recharge a customer or record due payment",
+ *     description="Handles normal recharges (cash/credit/bkash/etc.) and due payments. Validates months (YYYY-MM), updates paid_until & customer expire_date, optionally sends SMS, and triggers router activation.",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"customer_id","pop_id","area_id","payable_amount","recharge_month","transaction_type"},
+ *             @OA\Property(property="customer_id", type="integer", example=101),
+ *             @OA\Property(property="pop_id", type="integer", example=5),
+ *             @OA\Property(property="area_id", type="integer", example=12),
+ *             @OA\Property(property="payable_amount", type="number", format="float", example=800.00),
+ *             @OA\Property(
+ *                 property="recharge_month",
+ *                 type="array",
+ *                 description="Month(s) to recharge in YYYY-MM format",
+ *                 @OA\Items(type="string", pattern="^\d{4}-(0[1-9]|1[0-2])$", example="2025-05")
+ *             ),
+ *             @OA\Property(
+ *                 property="transaction_type",
+ *                 type="string",
+ *                 description="Recharge type; use 'due_paid' to pay outstanding credit",
+ *                 example="cash",
+ *                 enum={"cash","credit","bkash","nagad","rocket","bank","due_paid"}
+ *             ),
+ *             @OA\Property(property="voucher_no", type="string", nullable=true, example="VCH-2025-0001"),
+ *             @OA\Property(property="note", type="string", nullable=true, example="Monthly recharge"),
+ *             @OA\Property(
+ *                 property="send_message",
+ *                 type="boolean",
+ *                 description="If true, sends a confirmation SMS to the customer",
+ *                 example=true
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Recharge or due payment processed",
+ *         @OA\JsonContent(
+ *             oneOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=true),
+ *                     @OA\Property(property="message", type="string", example="Recharge successfully.")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=true),
+ *                     @OA\Property(property="message", type="string", example="Due paid successfully.")
+ *                 )
+ *             }
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation errors",
+ *         @OA\JsonContent(
+ *             oneOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(
+ *                         property="errors",
+ *                         type="object",
+ *                         example={
+ *                             "customer_id": {"The customer id field is required."},
+ *                             "pop_id": {"The pop id field is required."},
+ *                             "area_id": {"The area id field is required."},
+ *                             "payable_amount": {"The payable amount must be a number."},
+ *                             "recharge_month": {"The recharge month field is required."},
+ *                             "transaction_type": {"The transaction type field is required."}
+ *                         }
+ *                     )
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Invalid month format: 2025-13. Valid format is YYYY-MM (e.g. 2025-05)")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Please select at least one month for recharge.")
+ *                 )
+ *             }
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=409,
+ *         description="Business rule conflict (duplicate month, insufficient balance, invalid due amount, etc.)",
+ *         @OA\JsonContent(
+ *             oneOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Recharge for month October 2025 already exists.")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Pop balance is not enough")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="No due found for this customer.")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Invalid due paid amount.")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Due already paid for October 2025.")
+ *                 )
+ *             }
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Server error occurred during recharge."),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+    public function customer_recharge(Request $request)
+    {
+        $rules = [
+            'customer_id'       => 'required',
+            'pop_id'            => 'required',
+            'area_id'           => 'required',
+            'payable_amount'    => 'required|numeric',
+            'recharge_month'    => 'required|array',
+            'transaction_type'  => 'required',
+            'voucher_no'        => 'nullable',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    'success'   => false,
+                    'errors'    => $validator->errors(),
+                ],
+                422,
+            );
+        }
+        /*Check if Recharge Month is empty*/
+        if (empty($request->recharge_month)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please select at least one month for recharge.',
+            ]);
+        }
+        /* Check if Recharge Month is valid */
+        $validMonths = [];
+
+        foreach ($request->recharge_month as $monthYear) {
+            if (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $monthYear)) {
+                $validMonths[] = $monthYear;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Invalid month format: $monthYear. Valid format is YYYY-MM (e.g. 2025-05)",
+                ]);
+            }
+        }
+        /*When Credit Recharge Will BE Paid*/
+        if($request->transaction_type === 'due_paid'){
+            if (empty($validMonths)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please select at least one month for due payment.',
+                ]);
+            }
+
+            /* Check if already paid for current month Year*/
+            foreach ($request->recharge_month as $monthYear) {
+                $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
+                    ->where('pop_id', $request->pop_id)
+                    ->where('area_id', $request->area_id)
+                    ->where('transaction_type', 'due_paid')
+                     ->where('recharge_month', $monthYear)
+                    ->first();
+
+                if ($existingRecharge) {
+                    $formattedMonth = Carbon::parse($monthYear)->translatedFormat('F Y');
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Due already paid for $formattedMonth .",
+                    ]);
+                }
+            }
+
+            /* Get total due (credit)*/
+            $totalDue = Customer_recharge::where('customer_id', $request->customer_id)
+                ->where('pop_id', $request->pop_id)
+                ->where('area_id', $request->area_id)
+                ->where('transaction_type', 'credit')
+                ->sum('amount');
+
+            if ($totalDue <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No due found for this customer.',
+                ]);
+            }
+
+            if ($request->payable_amount <= 0 || $request->payable_amount > $totalDue) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid due paid amount.',
+                ]);
+            }
+
+            /*Store due paid data*/
+            $due_paid                     = new Customer_recharge();
+            $due_paid->user_id            = auth()->guard('sanctum')->user()->id;
+            $due_paid->customer_id        = $request->customer_id;
+            $due_paid->pop_id             = $request->pop_id;
+            $due_paid->area_id            = $request->area_id;
+            $due_paid->recharge_month     = implode(',', $validMonths);
+            $due_paid->transaction_type   = 'due_paid';
+            $due_paid->amount             = $request->payable_amount;
+            $due_paid->paid_until         = null;
+            $due_paid->note               = $request->note ?? 'Due Paid';
+            $due_paid->save();
+
+
+            customer_log($request->customer_id, 'recharge', auth()->guard('sanctum')->user()->id, 'Due Paid Successfully');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Due paid successfully.',
+            ]);
+            exit;
+        }
+
+        if ($request->transaction_type !== 'due_paid'){
+            DB::beginTransaction();
+            /*Check POP/Branch Balance*/
+            $pop_balance = check_pop_balance($request->pop_id);
+
+            if ($pop_balance < $request->payable_amount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pop balance is not enough',
+                ]);
+                exit();
+            }
+            $object                     = new Customer_recharge();
+            $object->user_id            = auth()->guard('sanctum')->user()->id;
+            $object->customer_id        = $request->customer_id;
+            $object->pop_id             = $request->pop_id;
+            $object->area_id            = $request->area_id;
+            $object->recharge_month     = implode(',', $request->recharge_month);
+            $object->transaction_type   = $request->transaction_type;
+            $object->amount             = $request->payable_amount;
+            $object->note               = $request->note;
+            $object->voucher_no         = $request->voucher_no;
+
+            $customer = Customer::find($request->customer_id);
+
+            foreach ($request->recharge_month as $monthYear) {
+                $existingRecharge = Customer_recharge::where('customer_id', $request->customer_id)
+                    ->where('pop_id', $request->pop_id)
+                    ->where('area_id', $request->area_id)
+                    ->where('recharge_month', $monthYear)
+                    ->exists();
+
+                if ($existingRecharge) {
+                     $formattedMonth = Carbon::parse($monthYear)->translatedFormat('F Y');
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Recharge for month $formattedMonth already exists.",
+                    ]);
+                }
+            }
+
+            $months_count           = count($request->recharge_month);
+            $base_date              = strtotime($customer->expire_date) > time() ? $customer->expire_date : date('Y-m-d');
+            $new_expire_date        = date('Y-m-d', strtotime("+$months_count months", strtotime($base_date)));
+            $customer->expire_date  = $new_expire_date;
+            $object->paid_until     = $new_expire_date;
+
+            $customer->update();
+            /*-----------Customer Grace Recharge Start----------------*/
+            $get_grace_recharge = Grace_recharge::where('customer_id', $customer->id)->first();
+            if ($get_grace_recharge) {
+                $customer_data = Customer::find($customer->id);
+                /*Remove Grace Recharge Days*/
+                if ($customer_data->expire_date) {
+                    $customer_data->expire_date = \Carbon\Carbon::parse($customer_data->expire_date)->subDays($get_grace_recharge->days);
+                    $object->paid_until     =  $customer_data->expire_date;
+                    $customer_data->save();
+                }
+                /*Delete Grace Rechage**/
+                $get_grace_recharge->delete();
+                customer_log($object->customer_id, 'recharge', auth()->guard('sanctum')->user()->id, 'Customer Grace Recharge Remove!');
+            }
+            /*--------Send Message For Customer --------------*/
+            if($request->send_message=='1'){
+                $package = \App\Models\Branch_package::find($customer->package_id);
+                $packageName = $package ? $package->name : '';
+
+                $user = auth()->guard('sanctum')->user();
+                $data = \App\Models\Website_information::where('pop_id', $user->pop_id)->latest()->first();
+                if ($user->pop_id === null) {
+                    $data = \App\Models\Website_information::whereNull('pop_id')->latest()->first();
+                }
+                $message = "($data->name)\n\n"
+                        . "USER: {$customer->username}\n"
+                        . "ID: {$customer->id}\n"
+                        . "NAME: {$customer->fullname}\n"
+                        . "BILL: Tk {$request->payable_amount}\n\n"
+                        . "Thanks for your payment";
+
+
+                /* Create a new Instance*/
+                $send_message =new Send_message();
+                $send_message->pop_id = $customer->pop_id;
+                $send_message->area_id = $customer->area_id;
+                $send_message->customer_id = $customer->id;
+                $send_message->message =$message;
+                $send_message->sent_at = Carbon::now();
+                /*Call Send Message Function */
+                send_message($customer->phone, $message);
+                /* Save to the database table*/
+                $send_message->save();
+            }
+            if ($object->save()) {
+                customer_log($object->customer_id, 'recharge', auth()->guard('sanctum')->user()->id, 'Customer Recharge Completed!');
+
+                /*Call Router activation Function*/
+                router_activation($object->customer_id);
+
+
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Recharge successfully.',
+                ]);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Recharge failed. Please try again.',
+                ]);
+            }
+        }
     }
     private function validateForm($request)
     {

@@ -24,10 +24,10 @@ Route::prefix('v1')->group(function () {
             Route::post('/update/{id}', 'update');
             Route::post('/change_expire_date', 'customer_change_expire_date');
             Route::post('/change_package', 'customer_change_pacakge');
-            Route::post('/bulk-re-connect', 'bulk_customer_re_connect');
+            Route::post('/bulk-reconnect', 'bulk_customer_re_connect');
 
             /***** Customer Discountinue *******/
-            Route::get('/discountinue/{customer_id}', 'customer_discountinue')->name('admin.customer.discountinue');
+            Route::get('/discountinue/{customer_id}', 'customer_discountinue');
             /***** Customer Recharge *******/
             Route::post('/recharge/store', 'customer_recharge')->name('admin.customer.recharge.store');
             Route::get('/recharge/undo/{id}', 'customer_recharge_undo')->name('admin.customer.recharge.undo');

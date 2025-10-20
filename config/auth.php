@@ -22,7 +22,7 @@ return [
             'driver' => 'session',
             'provider' => 'customers',
         ],
-        'api' => [
+        'sanctum' => [
             'driver' => 'sanctum',
             'provider' => 'admins',
         ],
