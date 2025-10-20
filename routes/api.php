@@ -29,8 +29,8 @@ Route::prefix('v1')->group(function () {
             /***** Customer Discountinue *******/
             Route::get('/discountinue/{customer_id}', 'customer_discountinue');
             /***** Customer Recharge *******/
-            Route::post('/recharge/store', 'customer_recharge')->name('admin.customer.recharge.store');
-            Route::get('/recharge/undo/{id}', 'customer_recharge_undo')->name('admin.customer.recharge.undo');
+            Route::post('/recharge/store', 'customer_recharge');
+            Route::get('/recharge/undo/{id}', 'customer_recharge_undo');
             Route::get('/recharge/print/{id}', 'customer_recharge_print')->name('admin.customer.recharge.print');
             Route::get('/recharge/bulk-recharge', 'customer_bulk_recharge')->name('admin.customer.bulk.recharge');
             Route::post('/recharge/bulk-recharge-store', 'customer_bulk_recharge_store')->name('admin.customer.bulk.recharge.store');

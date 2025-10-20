@@ -929,7 +929,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Get(
- *     path="http://isperp.xyz/v1/admin/customer/discountinue/{customer_id}",
+ *     path="http://isperp.xyz/api/v1/admin/customer/discountinue/{customer_id}",
  *     operationId="customerDiscountinue",
  *     tags={"Customer"},
  *     summary="Discontinue a customer account",
@@ -1046,7 +1046,7 @@ class CustomerController extends Controller
     }
     /**
  * @OA\Post(
- *     path="http://isperp.xyz/v1/admin/customer/recharge",
+ *     path="http://isperp.xyz/api/v1/admin/customer/recharge",
  *     operationId="customerRecharge",
  *     tags={"Customer"},
  *     summary="Recharge a customer or record due payment",
@@ -1394,6 +1394,82 @@ class CustomerController extends Controller
                     'message' => 'Recharge failed. Please try again.',
                 ]);
             }
+        }
+    }
+    /**
+ * @OA\Get(
+ *     path="http://isperp.xyz/api/v1/admin/customer/recharge-undo/{id}",
+ *     operationId="customerRechargeUndo",
+ *     tags={"Customer"},
+ *     summary="Undo a customer recharge",
+ *     description="Deletes a specific recharge record. If the record is not a 'due_paid' transaction, the customer's expire_date is rolled back by the number of months contained in that recharge record. Also writes a customer log entry.",
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the recharge record to undo",
+ *         @OA\Schema(type="integer", example=1234)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Undo completed (or not found/error states returned as success=false)",
+ *         @OA\JsonContent(
+ *             oneOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=true),
+ *                     @OA\Property(property="message", type="string", example="Successfully!")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Not found.")
+ *                 ),
+ *                 @OA\Schema(
+ *                     @OA\Property(property="success", type="boolean", example=false),
+ *                     @OA\Property(property="message", type="string", example="Something went wrong.")
+ *                 )
+ *             }
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Something went wrong."),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+
+    public function customer_recharge_undo($id)
+    {
+        $object = Customer_recharge::find($id);
+
+        if (empty($object)) {
+            return response()->json(['success' => false, 'message' => 'Not found.']);
+            exit();
+        }
+
+        if ($object->transaction_type !== 'due_paid') {
+            /*Update Customer Table Expire date*/
+            $recharge_months = explode(',', $object->recharge_month);
+            $months_count = count($recharge_months);
+            //$new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime($object->paid_until)));
+            $new_paid_until = date('Y-m-d', strtotime("-$months_count months", strtotime(Customer::find($object->customer_id)->expire_date)));
+            $customer = Customer::find($object->customer_id);
+            $customer->expire_date = $new_paid_until;
+            $customer->update();
+        }
+        if ($object) {
+            $object->delete();
+            customer_log($object->customer_id, 'recharge', auth()->guard('admin')->user()->id, 'Customer Recharge Undo!');
+            return response()->json(['success' => true, 'message' => 'Successfully!']);
+            exit();
+        } else {
+            return response()->json(['success' => false, 'message' => 'Something went wrong.']);
         }
     }
     private function validateForm($request)
