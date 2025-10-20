@@ -21,15 +21,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/search', 'customer_search');
 
             Route::post('/store', 'store');
-            Route::post('/update/{id}', 'update')->name('admin.customer.update');
+            Route::post('/update/{id}', 'update');
             Route::post('/change_expire_date', 'customer_change_expire_date');
             Route::post('/change_package', 'customer_change_pacakge');
             Route::post('/bulk-re-connect', 'bulk_customer_re_connect');
-            Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');
-
-            /*Customer Onu List*/
-            Route::get('/get_customer_onu_list', 'onu_list')->name('admin.customer.onu_list');
-            Route::get('/get_customer_onu_list_data', 'get_customer_onu_list_data')->name('admin.customer.get_customer_onu_list_data');
 
             /***** Customer Discountinue *******/
             Route::get('/discountinue/{customer_id}', 'customer_discountinue')->name('admin.customer.discountinue');
@@ -76,10 +71,6 @@ Route::prefix('v1')->group(function () {
             Route::get('/mikrotik/reconnect/{customer_id}', 'customer_mikrotik_reconnect')->name('admin.customer.mikrotik.reconnect');
             /***** Customer Change Status *******/
             Route::post('/change/status', 'customer_change_status')->name('admin.customer.change_status');
-            /***** Customer Live Bandwith With Her Profile *******/
-            // Route::get('/live-bandwith-update/{customer_id}', 'customer_live_bandwith_update')->name('admin.customer.live_bandwith_update');
-             /***** Onu Information *******/
-             Route::post('/get-onu-information', 'get_onu_info')->name('admin.customer.get_onu_info');
              /*****Get Router name *******/
              Route::post('/get_router_name', 'get_router_name')->name('admin.customer.router.vendor');
         });

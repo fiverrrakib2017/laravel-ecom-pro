@@ -841,6 +841,209 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+    /**
+ * @OA\Post(
+ *     path="http://isperp.xyz/v1/admin/customer/bulk-reconnect",
+ *     operationId="customerBulkReconnect",
+ *     tags={"Customer"},
+ *     summary="Bulk reconnect customers (router activation)",
+ *     description="Activates the router for each customer provided in the list of customer IDs.",
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"customer_ids"},
+ *             @OA\Property(
+ *                 property="customer_ids",
+ *                 type="array",
+ *                 @OA\Items(type="integer", example=1)
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Reconnection completed successfully",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Successfully Completed.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation errors",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={
+ *                     "customer_ids": {"The customer ids field is required."},
+ *                     "customer_ids.0": {"The selected customer_ids.0 is invalid."}
+ *                 }
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Something went."),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+    public function bulk_customer_re_connect(Request $request)
+    {
+        $request->validate([
+            'customer_ids' => 'required|array|min:1',
+            'customer_ids.*' => 'exists:customers,id',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->customer_ids as $customer_id) {
+                /*Activate rouater customer*/
+                router_activation($customer_id);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Successfully Completed.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went.',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
+    /**
+ * @OA\Get(
+ *     path="http://isperp.xyz/v1/admin/customer/discountinue/{customer_id}",
+ *     operationId="customerDiscountinue",
+ *     tags={"Customer"},
+ *     summary="Discontinue a customer account",
+ *     description="Marks the customer as 'discontinue'. For PPPoE, removes active and secret entries from MikroTik. For RADIUS, sets status to 'discontinue' only if no active session is found.",
+ *     @OA\Parameter(
+ *         name="customer_id",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the customer to discontinue",
+ *         @OA\Schema(type="integer", example=123)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Operation completed",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=true),
+ *             @OA\Property(property="message", type="string", example="Successfully Completed")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="success", type="boolean", example=false),
+ *             @OA\Property(property="message", type="string", example="Internal server error"),
+ *             @OA\Property(property="error", type="string", example="Detailed error message")
+ *         )
+ *     ),
+ *     security={{"sanctum":{}}}
+ * )
+ */
+
+    public function customer_discountinue($customer_id)
+    {
+        $customers = Customer::where('is_delete', '0')
+            ->where('id', $customer_id)
+            ->where('status', '!=', 'discontinue')
+            ->get();
+
+        foreach ($customers as $customer) {
+
+            // PPPoE Customer
+          if ($customer->connection_type == 'pppoe') {
+                $router = Mikrotik_router::where('status', 'active')
+                    ->where('id', $customer->router_id)
+                    ->first();
+
+                if (!$router) {
+                    $this->error("Router not found for customer {$customer->username}");
+                    continue;
+                }
+
+                try {
+                    $client = new Client([
+                        'host' => $router->ip_address,
+                        'user' => $router->username,
+                        'pass' => $router->password,
+                        'port' => (int) $router->port,
+                        'timeout' => 3,
+                        'attempts' => 1,
+                    ]);
+
+                    /*Remove from PPP Active*/
+                    $activeQuery = new Query('/ppp/active/print');
+                    $activeQuery->where('name', $customer->username);
+                    $activeUsers = $client->query($activeQuery)->read();
+
+                    if (!empty($activeUsers)) {
+                        foreach ($activeUsers as $activeUser) {
+                            if (isset($activeUser['.id'])) {
+                                $removeActive = new Query('/ppp/active/remove');
+                                $removeActive->equal('.id', $activeUser['.id']);
+                                $client->query($removeActive)->read();
+                            }
+                        }
+                    }
+                    $secretQuery = new Query('/ppp/secret/print');
+                    $secretQuery->where('name', $customer->username);
+                    $secretUsers = $client->query($secretQuery)->read();
+
+                    if (!empty($secretUsers)) {
+                        foreach ($secretUsers as $secretUser) {
+                            if (isset($secretUser['.id'])) {
+                                $removeSecret = new Query('/ppp/secret/remove');
+                                $removeSecret->equal('.id', $secretUser['.id']);
+                                $client->query($removeSecret)->read();
+                            }
+                        }
+                    }
+                    $customer->update(['status' => 'discontinue']);
+                } catch (\Exception $e) {
+                    $this->error("Connection error for router {$router->ip_address}: " . $e->getMessage());
+                }
+            }
+            /*Radius Customer*/
+            elseif ($customer->connection_type == 'radius') {
+                $activeSession = \App\Models\Radius\Radacct::where('username', $customer->username)
+                    ->whereNull('acctstoptime')
+                    ->latest('acctstarttime')
+                    ->first();
+
+                if (empty($activeSession)) {
+                    $customer->update(['status' => 'discontinue']);
+                    $this->info("RADIUS Customer {$customer->username} marked as DISCONTINUE (no active session)");
+                } else {
+                    $this->info("RADIUS Customer {$customer->username} is still ONLINE (active session found)");
+                }
+            }
+            elseif ($customer->connection_type == 'hotspot') {
+            }
+        }
+
+        return response(['success' => true, 'message' => 'Successfully Completed']);
+    }
     private function validateForm($request)
     {
         /*Validate the form data*/
