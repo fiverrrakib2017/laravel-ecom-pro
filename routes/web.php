@@ -1,913 +1,452 @@
 <?php
 
-use App\Http\Controllers\Backend\Accounts\Account_controller;
-use App\Http\Controllers\Backend\Accounts\Balance_sheet_controller;
-use App\Http\Controllers\Backend\Accounts\Income_controller;
-use App\Http\Controllers\Backend\Accounts\Ledger_controller;
-use App\Http\Controllers\Backend\Accounts\Transaction_controller;
-use App\Http\Controllers\Backend\Accounts\Trial_balance_controller;
-use App\Http\Controllers\Backend\Admin\AdminController;
-use App\Http\Controllers\Backend\Client\Client_invoiceController;
-use App\Http\Controllers\Backend\Customer\CustomerController;
-use App\Http\Controllers\Backend\Supplier\Supplier_invoiceController;
-use App\Http\Controllers\Backend\Supplier\Supplier_returnController;
-use App\Http\Controllers\Backend\Customer\InvoiceController;
-use App\Http\Controllers\Backend\Customer\PackageController;
-use App\Http\Controllers\Backend\Customer\PoolController;
-use App\Http\Controllers\Backend\Customer\TicketController;
-use App\Http\Controllers\Backend\Pop\PopController;
-use App\Http\Controllers\Backend\Pop\Area\AreaController;
-use App\Http\Controllers\Backend\Product\BrandController;
-use App\Http\Controllers\Backend\Product\CategoryController;
-use App\Http\Controllers\Backend\Product\SubCateogryController;
-use App\Http\Controllers\Backend\Product\ColorController;
-use App\Http\Controllers\Backend\Product\ProductController;
-use App\Http\Controllers\Backend\Product\TempImageController;
-use App\Http\Controllers\Backend\Product\ChildCategoryController;
-use App\Http\Controllers\Backend\Product\SizeController;
-use App\Http\Controllers\Backend\Product\StockController;
-use App\Http\Controllers\Backend\Product\StoreController;
-use App\Http\Controllers\Backend\Product\UnitController;
-use App\Http\Controllers\Backend\Router\RouterController;
-use App\Http\Controllers\Backend\Settings\Others\SettingsController;
-use App\Http\Controllers\Backend\Sms\SmsController;
-use App\Http\Controllers\Backend\Client\ClientController;
-use App\Http\Controllers\Backend\Hrm\Attendance_controller;
-use App\Http\Controllers\Backend\Hrm\Department_controller;
-use App\Http\Controllers\Backend\Hrm\Designation_controller;
-use App\Http\Controllers\Backend\Hrm\Employee_controller;
-use App\Http\Controllers\Backend\Hrm\Leave_controller;
-use App\Http\Controllers\Backend\Hrm\Loan_controller;
-use App\Http\Controllers\Backend\Hrm\Payroll_controller;
-use App\Http\Controllers\Backend\Hrm\Salary_controller;
-use App\Http\Controllers\Backend\Supplier\SupplierController;
-use App\Http\Controllers\Backend\Tickets\Assign_controller;
-use App\Http\Controllers\Backend\Tickets\Complain_typeController;
-use App\Http\Controllers\Backend\Hrm\Shift_controller;
-use App\Http\Controllers\Backend\Olt\Olt_controller;
-use App\Http\Controllers\Backend\Onu\Onu_controller;
-use App\Http\Controllers\Backend\Tickets\Ticket_controller;
-use App\Http\Controllers\Backend\Admin\UserController;
-use App\Http\Controllers\Backend\Role\RoleController;
-use App\Models\Product_Category;
-use App\Models\Router;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
-use RouterOS\Client;
-use RouterOS\Query;
-use function App\Helpers\formate_uptime;
-/*Backend Route*/
-Route::get('/admin/login', [AdminController::class, 'login_form'])->name('admin.login');
-Route::post('login-functionality', [AdminController::class, 'login_functionality'])->name('login.functionality');
-Route::group(['middleware' => 'admin'], function () {
-    Route::get('/', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
-    Route::post('/admin/get_dashboard_data', [AdminController::class, 'get_data'])->name('admin.dashboard_get_all_data');
-    Route::get('/server-information', [AdminController::class, 'server_info'])->name('admin.server_info');
 
-    /** Tickets  Route **/
-    Route::prefix('admin/ticket')->group(function () {
-        /*Complain Type */
-        Route::prefix('complain_type')->group(function () {
-            Route::controller(Complain_typeController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.tickets.complain_type.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.tickets.complain_type.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.tickets.complain_type.edit');
-                Route::post('/delete', 'delete')->name('admin.tickets.complain_type.delete');
-                Route::post('/store', 'store')->name('admin.tickets.complain_type.store');
-                Route::post('/update/{id}', 'update')->name('admin.tickets.complain_type.update');
-            });
-        });
-        /*Assign To */
-        Route::prefix('assign')->group(function () {
-            Route::controller(Assign_controller::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.tickets.assign.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.tickets.assign.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.tickets.assign.edit');
-                Route::post('/delete', 'delete')->name('admin.tickets.assign.delete');
-                Route::post('/store', 'store')->name('admin.tickets.assign.store');
-                Route::post('/update/{id}', 'update')->name('admin.tickets.assign.update');
-            });
-        });
-        /*Ticket Route To */
-        Route::controller(Ticket_controller::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.tickets.index');
-            Route::get('/all-data', 'get_all_data')->name('admin.tickets.get_all_data');
-            Route::get('/edit/{id}', 'edit')->name('admin.tickets.edit');
-            Route::get('/view/{id}', 'view')->name('admin.tickets.view');
-            Route::post('/delete', 'delete')->name('admin.tickets.delete');
-            Route::post('/store', 'store')->name('admin.tickets.store');
-            Route::post('/update/{id}', 'update')->name('admin.tickets.update');
-            Route::post('/change_status/{id}', 'change_status')->name('admin.tickets.change_status');
-            Route::get('/get_tickets/{id}', 'get_customer_tickets')->name('admin.tickets.get_customer_tickets');
-            Route::post('/add_ticekts_activity', 'add_ticekts_activity')->name('admin.tickets.add_ticekts_activity');
-        });
-    });
+use App\Http\Controllers\Frontend\FrontendController;
+use App\Http\Controllers\Frontend\ShoppingController;
+use App\Http\Controllers\Frontend\CustomerController;
+use App\Http\Controllers\Frontend\BkashController;
+use App\Http\Controllers\Frontend\ShurjopayControllers;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubcategoryController;
+use App\Http\Controllers\Admin\ChildcategoryController;
+use App\Http\Controllers\Admin\OrderStatusController;
+use App\Http\Controllers\Admin\PixelsController;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ApiIntegrationController;
+use App\Http\Controllers\Admin\GeneralSettingController;
+use App\Http\Controllers\Admin\SocialMediaController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\BannerCategoryController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CreatePageController;
+use App\Http\Controllers\Admin\CampaignController;
+use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Admin\CustomerManageController;
+use App\Http\Controllers\Admin\ShippingChargeController;
+use App\Http\Controllers\Admin\ColorController;
+use App\Http\Controllers\Admin\SizeController;
+use App\Http\Controllers\Admin\TagManagerController;
 
+Auth::routes();
 
-    /** Customer Route **/
-    Route::prefix('admin/customer')->group(function () {
-        Route::controller(CustomerController::class)->group(function () {
-            Route::get('/create', 'create')->name('admin.customer.create');
-            Route::get('/list', 'index')->name('admin.customer.index');
-            Route::get('/all-data', 'get_all_data')->name('admin.customer.get_all_data');
-            Route::get('/operation', 'customer_operation')->name('admin.customer.customer_operation');
-            Route::get('/edit/{id}', 'edit')->name('admin.customer.edit');
-            Route::get('/view/{id}', 'view')->name('admin.customer.view');
-            Route::post('/delete', 'delete')->name('admin.customer.delete');
-            Route::post('/bulk/delete', 'bulk_customer_delete')->name('admin.customer.bulk.delete');
-            Route::post('/forge_delete', 'forge_delete')->name('admin.customer.forge_delete');
-            Route::post('/check-username', 'check_customer_user')->name('admin.customer.check.username');
-            Route::get('/search', 'customer_search')->name('admin.customer.search');
-
-            Route::post('/store', 'store')->name('admin.customer.store');
-            Route::post('/update/{id}', 'update')->name('admin.customer.update');
-            Route::post('/change_expire_date', 'customer_change_expire_date')->name('admin.customer.expire_date.update');
-            Route::post('/change_package', 'customer_change_pacakge')->name('admin.customer.bulk.package.update');
-            Route::post('/bulk-re-connect', 'bulk_customer_re_connect')->name('admin.customer.bulk.re.connect');
-            Route::post('/get_customer_info', 'get_customer_info')->name('admin.customer.get_customer_info');
-
-            /*Customer Onu List*/
-            Route::get('/get_customer_onu_list', 'onu_list')->name('admin.customer.onu_list');
-            Route::get('/get_customer_onu_list_data', 'get_customer_onu_list_data')->name('admin.customer.get_customer_onu_list_data');
-
-            /***** Customer Discountinue *******/
-            Route::get('/discountinue/{customer_id}', 'customer_discountinue')->name('admin.customer.discountinue');
-            /***** Customer Recharge *******/
-            Route::post('/recharge/store', 'customer_recharge')->name('admin.customer.recharge.store');
-            Route::get('/recharge/undo/{id}', 'customer_recharge_undo')->name('admin.customer.recharge.undo');
-            Route::get('/recharge/print/{id}', 'customer_recharge_print')->name('admin.customer.recharge.print');
-            Route::get('/recharge/bulk-recharge', 'customer_bulk_recharge')->name('admin.customer.bulk.recharge');
-            Route::post('/recharge/bulk-recharge-store', 'customer_bulk_recharge_store')->name('admin.customer.bulk.recharge.store');
-            Route::post('/recharge/grace-recharge-store', 'customer_grace_recharge_store')->name('admin.customer.grace.recharge.store');
-            Route::get('/recharge/grace-recharge/remove/{customer_id}', 'customer_grace_recharge_remove')->name('admin.customer.grace.recharge.remove');
-
-            /***** Customer comming expire *******/
-            Route::get('/comming-expire', 'customer_comming_expire')->name('admin.customer.customer_comming_expire');
-
-            /***** Customer Device expire *******/
-            Route::get('/device/return/{id}', 'customer_device_return')->name('admin.customer.device.return');
-
-            /***** Customer Payment History *******/
-            Route::get('/payment/history', 'customer_payment_history')->name('admin.customer.payment.history');
-            Route::get('/payment/history/get_all_data', 'customer_payment_history_get_all_data')->name('admin.customer.payment.history.get_all_data');
-            Route::get('/bill/generate', 'customer_bill_generate')->name('admin.customer.bill.generate');
-            /***** Customer Grace Recharge Logs *******/
-            Route::get('/grace-recharge/logs', 'customer_grace_recharge_logs')->name('admin.customer.grace_recharge.logs');
-            Route::get('/grace-recharge/logs/get_all_data', 'customer_grace_recharge_logs_get_all_data')->name('admin.customer.grace_recharge.logs.get_all_data');
-            /***** Customer Log *******/
-            Route::get('/customer/log', 'customer_log')->name('admin.customer.log.index');
-            Route::get('/customer/log/get_all_data', 'customer_log_get_all_data')->name('admin.customer.log.get_all_data');
-            /***** Customer Credit Recharge List *******/
-            Route::get('/credit/recharge/list', 'customer_credit_recharge_list')->name('admin.customer.customer_credit_recharge_list');
-            Route::get('/credit/recharge/get_all_data', 'show_credit_recharge_list_data')->name('admin.customer.show_credit_recharge_list_data');
-            /***** Customer Backup *******/
-            Route::get('/customer/restore', 'customer_restore')->name('admin.customer.restore.index');
-            Route::get('/customer/restore/get_all_data', 'customer_restore_get_all_data')->name('admin.customer.restore.get_all_data');
-            Route::post('/customer/restore/back', 'customer_restore_back')->name('admin.customer.restore.back');
-            /***** Customer Import *******/
-            Route::get('/import/index', 'customer_import')->name('admin.customer.customer_import');
-            Route::post('/import/store', 'customer_csv_file_import')->name('admin.customer.customer_csv_file_import');
-            Route::get('/delete-csv-file/{file}', [CustomerController::class, 'delete_csv_file'])->name('admin.customer.delete_csv_file');
-            Route::get('/upload/csv-file', [CustomerController::class, 'upload_csv_file'])->name('admin.customer.upload_csv_file');
-            Route::get('/import/mikrotik', 'customer_import_from_mikrotik')->name('admin.customer.import.mikrotik');
-            Route::post('/import/mikrotik/store', 'customer_import_from_mikrotik_store')->name('admin.customer.import.mikrotik.store');
-            /***** Customer Mikrotik Re-connect *******/
-            Route::get('/mikrotik/reconnect/{customer_id}', 'customer_mikrotik_reconnect')->name('admin.customer.mikrotik.reconnect');
-            /***** Customer Change Status *******/
-            Route::post('/change/status', 'customer_change_status')->name('admin.customer.change_status');
-            /***** Customer Live Bandwith With Her Profile *******/
-            // Route::get('/live-bandwith-update/{customer_id}', 'customer_live_bandwith_update')->name('admin.customer.live_bandwith_update');
-             /***** Onu Information *******/
-             Route::post('/get-onu-information', 'get_onu_info')->name('admin.customer.get_onu_info');
-             /*****Get Router name *******/
-             Route::post('/get_router_name', 'get_router_name')->name('admin.customer.router.vendor');
-        });
-        /* IP POOL Route */
-        Route::prefix('ip-pool')->group(function () {
-            Route::controller(PoolController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.customer.ip_pool.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.customer.ip_pool.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.customer.ip_pool.edit');
-                Route::get('/view/{id}', 'pop_view')->name('admin.customer.ip_pool.view');
-                Route::post('/delete', 'delete')->name('admin.customer.ip_pool.delete');
-                Route::post('/store', 'store')->name('admin.customer.ip_pool.store');
-                Route::post('/update/{id}', 'update')->name('admin.customer.ip_pool.update');
-            });
-        });
-        /* Package Route */
-        Route::prefix('package')->group(function () {
-            Route::controller(PackageController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.customer.package.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.customer.package.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.customer.package.edit');
-                Route::get('/view/{id}', 'pop_view')->name('admin.customer.package.view');
-                Route::post('/delete', 'delete')->name('admin.customer.package.delete');
-                Route::post('/store', 'store')->name('admin.customer.package.store');
-                Route::post('/update/{id}', 'update')->name('admin.customer.package.update');
-            });
-        });
-    });
-    /** CRM Route **/
-    Route::prefix('admin/customer-relationship-management')->group(function () {
-        /*Lead Route */
-        Route::prefix('lead')->group(function () {
-            Route::controller(App\Http\Controllers\Backend\Customer\LeadController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.customer.lead.index');
-
-                Route::get('/create', 'create')->name('admin.customer.lead.create');
-                Route::post('/delete', 'delete')->name('admin.customer.lead.delete');
-                Route::post('/store', 'store')->name('admin.customer.lead.store');
-
-                Route::get('/edit/{id}', 'edit')->name('admin.customer.lead.edit');
-                Route::get('/view/{id}', 'view')->name('admin.customer.lead.view');
-                Route::post('/update/{id}', 'update')->name('admin.customer.lead.update');
-            });
-        });
-        /*Deal Stage Route */
-        Route::prefix('deal-stages')->group(function () {
-            Route::controller(App\Http\Controllers\Backend\Customer\Deal_stageController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.customer.deal_stages.index');
-
-                Route::get('/create', 'create')->name('admin.customer.deal_stages.create');
-                Route::post('/delete', 'delete')->name('admin.customer.deal_stages.delete');
-                Route::post('/store', 'store')->name('admin.customer.deal_stages.store');
-
-                Route::get('/edit/{id}', 'edit')->name('admin.customer.deal_stages.edit');
-                Route::post('/update/{id}', 'update')->name('admin.customer.deal_stages.update');
-            });
-        });
-        /*Deal Route */
-        Route::prefix('deals')->group(function () {
-            Route::controller(App\Http\Controllers\Backend\Customer\DealController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.customer.deals.index');
-
-                Route::get('/create', 'create')->name('admin.customer.deals.create');
-                Route::post('/delete', 'delete')->name('admin.customer.deals.delete');
-                Route::post('/store', 'store')->name('admin.customer.deals.store');
-
-                Route::get('/edit/{id}', 'edit')->name('admin.customer.deals.edit');
-                Route::get('/view/{id}', 'view')->name('admin.customer.deals.view');
-                Route::post('/update/{id}', 'update')->name('admin.customer.deals.update');
-            });
-        });
-        /*Client Route */
-        Route::get('/list',[ClientController::class, 'index'])->name('admin.customer.lead.client.index');
-    });
-    /** Hotspot Route **/
-    Route::prefix('admin/hotspot')->group(function () {
-        Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotController::class)->group(function () {
-            /*--------Hotspot Profile Route-----------**/
-            Route::get('/dashbaord', 'hotspot_dashbaord')->name('admin.hotspot.user.dashbaord');
-            Route::get('/profile/create', 'hotspot_profile_create')->name('admin.hotspot.profile.create');
-            Route::post('/profile/store', 'hotspot_profile_store')->name('admin.hotspot.profile.store');
-            Route::get('/profile/edit/{id}', 'hotspot_profile_edit')->name('admin.hotspot.profile.edit');
-            Route::put('/profiles/{id}', 'hotspot_profile_update')->name('admin.hotspot.profile.update');
-            Route::delete('profiles/{id}', 'hotspot_profile_destroy')->name('admin.hotspot.profile.destroy');
-            Route::get('/profile/list', 'hotspot_profile_index')->name('admin.hotspot.profile.index');
-            Route::get('/profile/{id}', 'profilesByRouter')->name('admin.hotspot.profile.get_profile');
-            /*--------Hotspot Users Route-----------**/
-            Route::controller(App\Http\Controllers\Backend\Hotspot\HotspotUserController::class)->group(function () {
-                Route::get('/user/index', 'hotspot_user_index')->name('admin.hotspot.user.index');
-                Route::get('/user/create', 'hotspot_user_create')->name('admin.hotspot.user.create');
-                Route::post('/user/store', 'hotspot_user_store')->name('admin.hotspot.user.store');
-
-                Route::get('/user/edit/{id}', 'hotspot_user_edit')->name('admin.hotspot.user.edit');
-                Route::put('/user/{id}', 'hotspot_user_update')->name('admin.hotspot.user.update');
-                Route::delete('user/{id}', 'hotspot_user_destroy')->name('admin.hotspot.user.destroy');
-
-                /*------Bulk User Create-------*/
-                Route::get('/user/bulk/create', 'hotspot_user_bulk_create')->name('admin.hotspot.user.bulk.create');
-                Route::post('/user/bulk/store', 'hotspot_user_bulk_store')->name('admin.hotspot.user.bulk.store');
-                /*------Bulk import-------*/
-                Route::get('/user/bulk/import', 'hotspot_user_bulk_import')->name('admin.hotspot.user.bulk.import');
-                Route::post('/user/bulk/import/store', 'hotspot_user_bulk_import_store')->name('admin.hotspot.user.bulk.import.store');
-            });
-
-            /*--------Hotspot Batch Route-----------**/
-            Route::controller(App\Http\Controllers\Backend\Hotspot\BatchController::class)->group(function () {
-                Route::get('/voucher/batches', 'index')->name('admin.hotspot.vouchers.batch.index');
-                Route::get('/voucher/batches/create', 'create')->name('admin.hotspot.vouchers.batch.create');
-                Route::post('/voucher/batches', 'store')->name('admin.hotspot.vouchers.batch.store');
-            });
-            /*--------Hotspot Voucher Route-----------**/
-            Route::controller(App\Http\Controllers\Backend\Hotspot\VoucherController::class)->group(function () {
-                // Print
-                Route::get('/vouchers/print', 'print')->name('admin.hotspot.vouchers.print');
-                // Sales
-                Route::get('/vouchers/sales', 'sales')->name('admin.hotspot.vouchers.sales');
-                // Export CSV
-                Route::post('/vouchers/export', 'export')->name('admin.hotspot.vouchers.export');
-            });
-
-        });
-    });
-
-    /** Supplier Route **/
-    Route::prefix('admin/supplier')->group(function () {
-        Route::controller(SupplierController::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.supplier.index');
-            Route::get('/all-data', 'get_all_data')->name('admin.supplier.get_all_data');
-            Route::get('/create', 'create')->name('admin.supplier.create');
-            Route::get('/edit/{id}', 'edit')->name('admin.supplier.edit');
-            Route::get('/view/{id}', 'view')->name('admin.supplier.view');
-            Route::post('/delete', 'delete')->name('admin.supplier.delete');
-            Route::post('/store', 'store')->name('admin.supplier.store');
-            Route::post('/update/{id}', 'update')->name('admin.supplier.update');
-        });
-        /** Supplier Invoice Route **/
-        Route::prefix('invoice')
-            ->controller(Supplier_invoiceController::class)
-            ->group(function () {
-                Route::get('/create', 'create_invoice')->name('admin.supplier.invoice.create_invoice');
-                Route::get('/get_all_data', 'show_invoice_data')->name('admin.supplier.invoice.show_invoice_data');
-                Route::post('/search_data', 'search_product_data')->name('admin.supplier.invoice.search_product_data');
-                Route::get('/show', 'show_invoice')->name('admin.supplier.invoice.show_invoice');
-                Route::post('/pay', 'pay_due_amount')->name('admin.supplier.invoice.pay_due_amount');
-                Route::post('/store', 'store_invoice')->name('admin.supplier.invoice.store_invoice');
-                Route::get('/view/{id}', 'view_invoice')->name('admin.supplier.invoice.view_invoice');
-                Route::get('/edit/{id}', 'edit_invoice')->name('admin.supplier.invoice.edit_invoice');
-                Route::post('/update', 'update_invoice')->name('admin.supplier.invoice.update_invoice');
-                Route::post('/delete', 'delete_invoice')->name('admin.supplier.invoice.delete_invoice');
-            });
-    });
-    /** Client Route **/
-    Route::prefix('admin/client')->group(function () {
-        Route::controller(ClientController::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.client.index');
-            Route::get('/all-data', 'get_all_data')->name('admin.client.get_all_data');
-            Route::get('/create', 'create')->name('admin.client.create');
-            Route::get('/edit/{id}', 'edit')->name('admin.client.edit');
-            Route::get('/view/{id}', 'view')->name('admin.client.view');
-            Route::post('/delete', 'delete')->name('admin.client.delete');
-            Route::post('/store', 'store')->name('admin.client.store');
-            Route::post('/update/{id}', 'update')->name('admin.client.update');
-        });
-        /** Client Invoice Route **/
-        Route::prefix('invoice')
-            ->controller(Client_invoiceController::class)
-            ->group(function () {
-                Route::get('/create', 'create_invoice')->name('admin.client.invoice.create_invoice');
-                Route::get('/get_all_data', 'show_invoice_data')->name('admin.client.invoice.show_invoice_data');
-                Route::post('/search_data', 'search_product_data')->name('admin.client.invoice.search_product_data');
-                Route::get('/show', 'show_invoice')->name('admin.client.invoice.show_invoice');
-                Route::post('/pay', 'pay_due_amount')->name('admin.client.invoice.pay_due_amount');
-                Route::post('/store', 'store_invoice')->name('admin.client.invoice.store_invoice');
-                Route::get('/view/{id}', 'view_invoice')->name('admin.client.invoice.view_invoice');
-                Route::get('/edit/{id}', 'edit_invoice')->name('admin.client.invoice.edit_invoice');
-                Route::post('/update', 'update_invoice')->name('admin.client.invoice.update_invoice');
-                Route::post('/delete', 'delete_invoice')->name('admin.client.invoice.delete_invoice');
-            });
-    });
-
-    /* Product Route */
-    Route::prefix('admin/product')->group(function () {
-        /* Sub Category Route */
-        Route::prefix('sub-category')
-            ->controller(SubCateogryController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('admin.subcategory.index');
-                Route::post('/store', 'store')->name('admin.subcategory.store');
-                Route::get('/edit/{id}', 'edit')->name('admin.subcategory.edit');
-                Route::post('/delete', 'delete')->name('admin.subcategory.delete');
-                Route::post('/update/{id}', 'update')->name('admin.subcategory.update');
-                Route::get('/get-sub_category/{id}', 'get_sub_category');
-            });
-
-        /* Child Category Route */
-        Route::prefix('child-category')
-            ->controller(ChildCategoryController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('admin.childcategory.index');
-                Route::post('/store', 'store')->name('admin.childcategory.store');
-                Route::get('/edit/{id}', 'edit')->name('admin.childcategory.edit');
-                Route::post('/delete', 'delete')->name('admin.childcategory.delete');
-                Route::post('/update/{id}', 'update')->name('admin.childcategory.update');
-                Route::get('/get-child_category/{id}', 'get_child_category');
-            });
-
-        /** Product Color Management Route **/
-        Route::prefix('color')
-            ->controller(ColorController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('admin.product.color.index');
-                Route::get('/get_all_data', 'get_all_data')->name('admin.product.color.all_data');
-                Route::post('/store', 'store')->name('admin.product.color.store');
-                Route::get('/edit/{id}', 'edit')->name('admin.product.color.edit');
-                Route::post('/update', 'update')->name('admin.product.color.update');
-                Route::post('/delete', 'delete')->name('admin.product.color.delete');
-            });
-
-        /** Product Size Management Route **/
-        Route::prefix('size')
-            ->controller(SizeController::class)
-            ->group(function () {
-                Route::get('/', 'index')->name('admin.product.size.index');
-                Route::get('/get_all_data', 'get_all_data')->name('admin.product.size.all_data');
-                Route::post('/store', 'store')->name('admin.product.size.store');
-                Route::get('/edit/{id}', 'edit')->name('admin.product.size.edit');
-                Route::post('/update', 'update')->name('admin.product.size.update');
-                Route::post('/delete', 'delete')->name('admin.product.size.delete');
-            });
-        /** Product Unit Management Route **/
-        Route::prefix('unit')
-            ->controller(UnitController::class)
-            ->group(function () {
-                Route::get('/list', 'index')->name('admin.unit.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.unit.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.unit.edit');
-                Route::post('/delete', 'delete')->name('admin.unit.delete');
-                Route::post('/store', 'store')->name('admin.unit.store');
-                Route::post('/update/{id}', 'update')->name('admin.unit.update');
-            });
-        /** Product Category Management Route **/
-        Route::prefix('category')
-            ->controller(CategoryController::class)
-            ->group(function () {
-                Route::get('/list', 'index')->name('admin.category.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.category.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.category.edit');
-                Route::post('/delete', 'delete')->name('admin.category.delete');
-                Route::post('/store', 'store')->name('admin.category.store');
-                Route::post('/update/{id}', 'update')->name('admin.category.update');
-            });
-        /** Product Brand Management Route **/
-        Route::prefix('brand')
-            ->controller(BrandController::class)
-            ->group(function () {
-                Route::get('/list', 'index')->name('admin.brand.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.brand.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.brand.edit');
-                Route::post('/delete', 'delete')->name('admin.brand.delete');
-                Route::post('/store', 'store')->name('admin.brand.store');
-                Route::post('/update/{id}', 'update')->name('admin.brand.update');
-            });
-        /** Product Store Management Route **/
-        Route::prefix('store')
-            ->controller(StoreController::class)
-            ->group(function () {
-                Route::get('/list', 'index')->name('admin.store.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.store.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.store.edit');
-                Route::post('/delete', 'delete')->name('admin.store.delete');
-                Route::post('/store', 'store')->name('admin.store.store');
-                Route::post('/update/{id}', 'update')->name('admin.store.update');
-            });
-
-        /* Product Route */
-        Route::controller(ProductController::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.product.index');
-            Route::get('/all-data', 'get_all_data')->name('admin.product.get_all_data');
-            Route::get('/edit/{id}', 'edit')->name('admin.product.edit');
-            Route::get('/view/{id}', 'product_view')->name('admin.product.view');
-            Route::post('/delete', 'delete')->name('admin.product.delete');
-            Route::post('/store', 'store')->name('admin.product.store');
-            Route::post('/update/{id}', 'update')->name('admin.product.update');
-            Route::post('/check_product_qty', 'check_product_qty')->name('admin.product.check_product_qty');
-        });
-
-        /* Product Image */
-        Route::prefix('photo')
-            ->controller(ProductController::class)
-            ->group(function () {
-                Route::post('/upload-temp-image', [TempImageController::class, 'create'])->name('tempimage.create');
-                Route::post('/update', 'photo_update')->name('admin.product.photo.update');
-                Route::post('/delete', 'delete_photo')->name('admin.product.delete.photo');
-            });
-
-        /* Stock Route */
-        Route::get('/stock', [StockController::class, 'index'])->name('admin.product.stock.index');
-    });
-    /*  POP/Branch Route */
-    Route::prefix('admin/pop-branch')->group(function () {
-        /* POP/BRANCH Route */
-        Route::controller(PopController::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.pop.index');
-            Route::get('/all-data', 'get_all_data')->name('admin.pop.get_all_data');
-            Route::get('/edit/{id}', 'edit')->name('admin.pop.edit');
-            Route::get('/view/{id}', 'view')->name('admin.pop.view');
-            Route::post('/delete', 'delete')->name('admin.pop.delete');
-            Route::post('/store', 'store')->name('admin.pop.store');
-            Route::post('/update', 'update')->name('admin.pop.update');
-
-            Route::post('/change/status/{id}', 'pop_change_status')->name('admin.pop.change_status');
-
-            /*****Branch Package *******/
-            Route::post('/package/store', 'branch_package_store')->name('admin.pop.brnach.package.store');
-            Route::get('/package/view/{id}', 'branch_package_edit')->name('admin.pop.branch.package.edit');
-            Route::post('/package/update/{id}', 'branch_package_update')->name('admin.pop.branch.package.update');
-            Route::post('/package/delete', 'branch_package_delete')->name('admin.pop.branch_package_delete');
-            /*GET POP/BRANCH Area */
-            Route::get('/package/{id}', 'get_pop_wise_package')->name('admin.pop.branch.get_pop_wise_package');
-            Route::get('/package/price/{id}', 'get_pop_wise_package_price')->name('admin.pop.branch.get_pop_wise_package_price');
-
-            /*****Branch Recharge *******/
-            Route::post('/recharge/store', 'branch_recharge_store')->name('admin.pop.brnach.recharge.store');
-            Route::get('/recharge/undo/{id}', 'branch_recharge_undo')->name('admin.pop.brnach.recharge.undo');
-            /*****Branch Auto Login  *******/
-            Route::get('/branch/login/{pop_id}', [PopController::class, 'auto_login'])->name('admin.pop.branch.auto_login');
-
-
-        });
-
-        /* POP/Area Route */
-        Route::prefix('area')->group(function () {
-            Route::controller(AreaController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.pop.area.index');
-                Route::get('/all-data', 'get_all_data')->name('admin.pop.area.get_all_data');
-                Route::get('/edit/{id}', 'edit')->name('admin.pop.area.edit');
-                Route::get('/view/{id}', 'view')->name('admin.pop.area.view');
-                Route::post('/delete', 'delete')->name('admin.pop.area.delete');
-                Route::post('/store', 'store')->name('admin.pop.area.store');
-                Route::post('/update/{id}', 'update')->name('admin.pop.area.update');
-
-                /*GET POP/BRANCH Area */
-                Route::get('/pop-brnach/{id}', 'get_pop_wise_area')->name('admin.pop.area.get_pop_wise_area');
-                /* Change Area Status */
-                Route::post('/change/status/{id}', 'area_change_status')->name('admin.pop.area.change_status');
-            });
-        });
-    });
-    /* OLT Management Route */
-    Route::prefix('admin/olt-management')->group(function () {
-        /* OLT Device  Route */
-        Route::controller(Olt_controller::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.olt.index');
-            Route::get('/create', 'create')->name('admin.olt.create');
-
-            Route::get('/edit/{id}', 'edit')->name('admin.olt.edit');
-            Route::get('/update', 'update')->name('admin.olt.update');
-
-            Route::post('/delete', 'delete')->name('admin.olt.delete');
-
-            Route::post('/store', 'store')->name('admin.olt.store');
-        });
-        /* ONT Device  Route */
-        Route::controller(Onu_controller::class)->group(function () {
-            Route::get('/onu-list', 'index')->name('admin.onu.index');
-        });
-    });
-    /* SMS Management Route */
-    Route::prefix('admin/sms')->group(function () {
-        /* SMS Configration Route */
-        Route::prefix('configration')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::get('/config', 'config')->name('admin.sms.config');
-                Route::post('/config_store', 'config_store')->name('admin.sms.config.store');
-            });
-        });
-        /*SMS Logs*/
-         Route::prefix('logs')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::get('/index', 'sms_logs')->name('admin.sms.logs');
-                Route::get('/get_all_sms_logs_data', 'get_all_sms_logs_data')->name('admin.sms.get_all_sms_logs_data');
-            });
-        });
-        /*SMS Report*/
-         Route::prefix('report')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::get('/index', 'sms_report')->name('admin.sms.report');
-            });
-        });
-        /* SMS Template Route */
-        Route::prefix('template')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::get('/list', 'sms_template_list')->name('admin.sms.template_list');
-                Route::get('/get_all_data', 'sms_template_get_all_data')->name('admin.sms.template_get_all_data');
-                Route::post('/Store', 'sms_template_Store')->name('admin.sms.template_Store');
-                Route::post('/delete', 'sms_template_delete')->name('admin.sms.template_delete');
-                Route::get('/get/{id}', 'sms_template_get')->name('admin.sms.template_get');
-                Route::post('/update', 'sms_template_update')->name('admin.sms.template_update');
-            });
-        });
-        /* Auto SMS Template Route */
-        Route::prefix('/auto/message/template')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::post('/store', 'send_auto_message_template_store')->name('admin.sms.auto.template.store');
-                Route::post('/send/test/message', 'send_test_message')->name('admin.sms.send_test_message');
-            });
-        });
-        /* Send SMS Template Route */
-        Route::prefix('send_message')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::get('/list', 'message_send_list')->name('admin.sms.message_send_list');
-                Route::get('/get_all_data', 'send_message_get_all_data')->name('admin.sms.send_message_get_all_data');
-                Route::post('/store', 'send_message_store')->name('admin.sms.send_message_store');
-                Route::post('/delete', 'send_message_delete')->name('admin.sms.send_message_delete');
-            });
-        });
-        /* Send Bulk SMS Template Route */
-        Route::prefix('bulk-message')->group(function () {
-            Route::controller(SmsController::class)->group(function () {
-                Route::get('/list', 'bulk_message_send_list')->name('admin.sms.bulk.message_send_list');
-                Route::get('/get_all_data', 'bulk_message_get_all_data')->name('admin.sms.bulk.send_message_get_all_data');
-                Route::post('/Store', 'bulk_message_store')->name('admin.sms.bulk.send_message_store');
-                Route::post('/delete', 'bulk_message_delete')->name('admin.sms.bulk.send_message_delete');
-            });
-        });
-    });
-    /* HR & Admin Management Route */
-    Route::prefix('admin/hr-management')->group(function () {
-        /* Shift Route */
-        Route::prefix('shift')->group(function(){
-            Route::controller(Shift_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.shift.index');
-                 Route::get('/all_data','all_data')->name('admin.hr.shift.all_data');
-                 Route::post('/store','store')->name('admin.hr.shift.store');
-                 Route::post('/update','update')->name('admin.hr.shift.update');
-                 Route::post('/delete','delete')->name('admin.hr.shift.delete');
-                 Route::get('/get_shift/{id}','get_shift')->name('admin.hr.shift.get_shift');
-            });
-        });
-        /* Department Route */
-        Route::prefix('department')->group(function(){
-            Route::controller(Department_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.department.index');
-                 Route::get('/all_data','all_data')->name('admin.hr.department.all_data');
-                 Route::post('/store','store')->name('admin.hr.department.store');
-                 Route::post('/update','update')->name('admin.hr.department.update');
-                 Route::post('/delete','delete')->name('admin.hr.department.delete');
-                 Route::get('/get_department/{id}','get_department')->name('admin.hr.department.get_department');
-            });
-        });
-        /* Designation Route */
-        Route::prefix('designation')->group(function(){
-            Route::controller(Designation_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.designation.index');
-                Route::get('/all_data','all_data')->name('admin.hr.designation.all_data');
-                Route::post('/store','store')->name('admin.hr.designation.store');
-                Route::post('/update','update')->name('admin.hr.designation.update');
-                Route::post('/delete','delete')->name('admin.hr.designation.delete');
-                Route::get('/get_designation/{id}','get_designation')->name('admin.hr.designation.get_designation');
-            });
-        });
-        /* Employee Route */
-        Route::prefix('employee')->group(function(){
-            Route::controller(Employee_controller::class)->group(function(){
-                Route::get('/create','create')->name('admin.hr.employee.create');
-                Route::get('/index','index')->name('admin.hr.employee.index');
-                Route::get('/all_data','all_data')->name('admin.hr.employee.all_data');
-                Route::post('/store','store')->name('admin.hr.employee.store');
-                Route::post('/update','update')->name('admin.hr.employee.update');
-                Route::post('/delete','delete')->name('admin.hr.employee.delete');
-                Route::get('/edit/{id}','edit')->name('admin.hr.employee.edit');
-                Route::get('/view/{id}','view')->name('admin.hr.employee.view');
-                Route::get('/get_employee/{id}','get_employee')->name('admin.hr.employee.get_employee');
-                Route::get('/id_card-print/{employee_ids?}','id_card_print')->name('admin.hr.employee.card.print');
-
-            });
-        });
-        /*Employee Leave */
-        Route::prefix('leave')->group(function(){
-            Route::controller(Leave_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.employee.leave.index');
-                Route::get('/all_data','all_data')->name('admin.hr.employee.leave.all_data');
-                Route::post('/store','store')->name('admin.hr.employee.leave.store');
-                Route::post('/update','update')->name('admin.hr.employee.leave.update');
-                Route::post('/delete','delete')->name('admin.hr.employee.leave.delete');
-                Route::get('/get_leave/{id}','get_leave')->name('admin.hr.employee.leave.get_leave');
-            });
-        });
-        /*Employee Attendence */
-        Route::prefix('attendence')->group(function(){
-            Route::controller(Attendance_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.student.attendence.index');
-                Route::post('/store','store')->name('admin.student.attendence.store');
-                Route::post('/update','update')->name('admin.student.attendence.update');
-                Route::post('/delete','delete')->name('admin.student.attendence.delete');
-                Route::get('/get_attendance/{id}','get_attendance')->name('admin.student.attendence.get_attendance');
-                Route::get('/log','attendance_log')->name('admin.student.attendence.log');
-                Route::post('/report','attendance_report')->name('admin.student.attendence.report');
-            });
-        });
-        /*Employee Attendence */
-        Route::prefix('employee-salary')->group(function(){
-            Route::controller(Salary_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.employee.salary.index');
-                Route::get('/all_data','all_data')->name('admin.hr.employee.salary.all_data');
-                Route::post('/get-salary', 'get_employee_salary')->name('admin.hr.employee.salary.get_employee_salary');
-            });
-        });
-        /*Employee Advance Salary */
-        Route::prefix('employee-salary-advance')->group(function(){
-            Route::controller(Salary_controller::class)->group(function(){
-                Route::get('/advance_salary','advance_salary')->name('admin.hr.employee.salary.advance.index');
-                Route::get('/advance_salary_all_data','advance_salary_all_data')->name('admin.hr.employee.advance.salary.all_data');
-                Route::post('/store','advance_salary_store')->name('admin.hr.employee.salary.advance.store');
-                Route::get('/get_advance_salary/{id}','get_advance_salary')->name('admin.hr.employee.advance.get_advance_salary');
-
-                Route::post('/update','update_advance_salary')->name('admin.hr.employee.advance.advance_salary');
-                Route::post('/delete','delete')->name('admin.hr.employee.advance.delete');
-
-                //Advance Salary Report
-                Route::get('/report','advance_salary_report')->name('admin.hr.employee.salary.advance.report');
-                Route::post('/fetch_report','fetch_advance_salary_report_data')->name('admin.hr.employee.salary.advance.fetch.report');
-                Route::post('/get_advance_salary_by_month','get_advance_salary_by_month')->name('admin.hr.employee.advance.get_advance_salary_by_month');
-            });
-        });
-        /*Employee Payroll Management */
-        Route::prefix('employee-payroll-management')->group(function(){
-            Route::controller(Payroll_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.employee.payroll.index');
-                Route::get('/all_data','all_data')->name('admin.hr.employee.payroll.all_data');
-                Route::get('/create','create')->name('admin.hr.employee.payroll.create');
-                Route::post('/store','store')->name('admin.hr.employee.payroll.store');
-                Route::post('/delete','delete')->name('admin.hr.employee.payroll.delete');
-            });
-        });
-        /*Employee Loan Management */
-        Route::prefix('employee-loan-management')->group(function(){
-            Route::controller(Loan_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.hr.employee.loan.index');
-                Route::get('/all_data','all_data')->name('admin.hr.employee.loan.all_data');
-                Route::get('/create','create')->name('admin.hr.employee.loan.create');
-                Route::post('/store','store')->name('admin.hr.employee.loan.store');
-
-                Route::get('/edit/{loan_id}','edit')->name('admin.hr.employee.loan.edit');
-                Route::post('/update','update')->name('admin.hr.employee.loan.update');
-
-                Route::post('/delete','delete')->name('admin.hr.employee.loan.delete');
-            });
-        });
-    });
-    /** Accounts Management  Route **/
-    Route::prefix('admin/accounts')->group(function () {
-        /* Account list Route */
-        Route::prefix('account-list')->group(function(){
-            Route::controller(Account_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.account.index');
-                Route::get('/all_data','all_data')->name('admin.account.all_data');
-                Route::post('/store','store')->name('admin.account.store');
-                Route::get('/edit/{id}', 'get_account')->name('admin.account.edit');
-                Route::post('/update','update')->name('admin.account.update');
-                Route::post('/delete','delete')->name('admin.account.delete');
-            });
-        });
-        /* Account Transaction Route */
-        Route::prefix('account-transaction')->group(function(){
-            Route::controller(Transaction_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.account.transaction.index');
-                Route::get('/all_data','all_data')->name('admin.account.transaction.all_data');
-                Route::post('/store','store')->name('admin.account.transaction.store');
-                Route::get('/edit/{id}', 'get_account_transaction')->name('admin.account.transaction.edit');
-                Route::post('/update','update')->name('admin.account.transaction.update');
-                Route::post('/delete','delete')->name('admin.account.transaction.delete');
-            });
-        });
-        /* Ledger Report Route */
-        Route::prefix('accounts/ledger-report')->group(function(){
-            Route::controller(Ledger_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.account.ledger.index');
-                Route::post('/report','report')->name('admin.account.ledger.report');
-            });
-        });
-        /* Ledger Report Route */
-        Route::prefix('accounts/trial-balance')->group(function(){
-            Route::controller(Trial_balance_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.account.trial_balance.index');
-                Route::post('/report','report')->name('admin.account.trial_balance.report');
-            });
-        });
-        /* Income Statment Route */
-        Route::prefix('accounts/income-statment')->group(function(){
-            Route::controller(Income_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.account.income_statment.index');
-                Route::post('/report','report')->name('admin.account.income_statment.report');
-            });
-        });
-        /* Balannce Sheet Route */
-        Route::prefix('accounts/balance-sheet')->group(function(){
-            Route::controller(Balance_sheet_controller::class)->group(function(){
-                Route::get('/index','index')->name('admin.account.balance_sheet.index');
-                Route::post('/report','report')->name('admin.account.balance_sheet.report');
-            });
-        });
-    });
-
-    /** Settings Management  Route **/
-    Route::prefix('admin/settings/')->group(function () {
-        Route::controller(SettingsController::class)->group(function () {
-            /**Information Route **/
-            Route::get('/information', 'index')->name('admin.settings.information.index');
-            Route::post('/store', 'store')->name('admin.settings.information.store');
-            /** Password Change  Route **/
-            Route::get('/passowrd/change', 'password_change_index')->name('admin.settings.passowrd.change.index');
-            Route::post('/passowrd/change/store', 'password_change_store')->name('admin.settings.passowrd.change.store');
-            /** Payment Method Route **/
-            Route::get('/payment-method/create', 'payment_method_create')->name('admin.settings.payment.method.index');
-            Route::post('/payment-method/store','payment_method_store')->name('admin.settings.payment.method.store');
-        });
-    });
-    /* Mikrotik Router Management Route */
-    Route::prefix('admin/mikrotik')->group(function () {
-        /* mikrotik Route */
-        Route::prefix('router')->group(function () {
-            Route::controller(RouterController::class)->group(function () {
-                Route::get('/list', 'index')->name('admin.router.index');
-                Route::get('/edit/{id}', 'edit')->name('admin.router.edit');
-                Route::post('/update/{id}', 'update')->name('admin.router.update');
-                Route::post('/delete', 'delete')->name('admin.router.delete');
-                Route::post('/store', 'store')->name('admin.router.store');
-                Route::get('/get_router_with_pop/{pop_id}', 'get_router_with_pop')->name('admin.router.get_router_with_pop');
-                /**Mikrotik SYNC**/
-                Route::get('/sync', 'router_sync')->name('admin.router.sync');
-                Route::get('/get_mikrotik_user/{mikrotik_id}', 'get_mikrotik_user')->name('admin.mikrotik.get_user');
-                Route::post('/sync/store', 'mikrotik_sync')->name('admin.mikrotik.sync.store');
-                /* mikrotik Log */
-                Route::get('/log', 'router_log')->name('admin.router.log.index');
-                Route::get('/user-list/{router_id}', 'router_user_list')->name('admin.router.ppp.users.index');
-                /* nas server */
-                Route::get('/nas/server','show_nas_server')->name('admin.router.nas.show_nas_server');
-            });
-        });
-    });
-
-    /** User Management  Route **/
-    Route::prefix('admin/user')->group(function () {
-        Route::controller(UserController::class)->group(function () {
-            Route::get('/list', 'index')->name('admin.user.index');
-            Route::get('/get_user/{id}', 'get_user')->name('admin.user.get_user');
-            Route::post('/store', 'store')->name('admin.user.store');
-            Route::post('/update', 'update')->name('admin.user.update');
-            Route::post('/delete', 'delete')->name('admin.user.delete');
-        });
-        /*Roles and Permission*/
-        Route::controller(RoleController::class)->group(function(){
-            Route::get('/role', 'index')->name('admin.user.role.index');
-            Route::post('/role/store', 'role_store')->name('admin.user.role.store');
-            Route::post('/role/delete', 'role_delete')->name('admin.role.delete');
-            Route::get('/permission', 'permission')->name('admin.user.permission');
-        });
-    });
-    /* Network Diagram Router Management Route */
-    // Route::prefix('admin/network')->group(function() {
-
-    //     Route::prefix('diagram')->group(function() {
-    //         Route::controller(RouterController::class)->group(function() {
-    //             Route::get('/list', 'index')->name('admin.router.index');
-    //             Route::get('/edit/{id}', 'edit')->name('admin.router.edit');
-    //             Route::post('/update/{id}', 'update')->name('admin.router.update');
-    //             Route::post('/delete', 'delete')->name('admin.router.delete');
-    //             Route::post('/store', 'store')->name('admin.router.store');
-    //         });
-    //     });
-    // });
-
-    Route::get('/migrate', function () {
-        Artisan::call('migrate');
-        return 'migrate  Completed';
-    });
-    Route::get('/lang/{locale}', function ($locale) {
-        if (in_array($locale, ['en', 'bn'])) {
-            Session::put('locale', $locale);
-        }
-        return redirect()->back();
-    });
-    Route::get('/admin/network/diagram', function () {
-        return view('Backend.Pages.Network.diagram');
-    })->name('admin.network.diagram');
-
-    Route::get('/admin/test', function () {
-        $router = \App\Models\Router::where('status', 'active')->find(1);
-            if ($router) {
-                $client = new Client([
-                    'host' => $router->ip_address,
-                    'user' => $router->username,
-                    'pass' => $router->password,
-                    'port' => (int) $router->port ?? 8728,
-                ]);
-                 $activeList = collect($client->query(new Query('/ppp/secret/print'))->read());
-                 return $activeList;
-            }
-    });
-});
-Route::get('/optimize', function () {
-    Artisan::call('optimize:clear');
-    return 'Optimize Clear Completed';
+Route::get('/cc', function() {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    return "Cleared!";
 });
 
-/*---- Route without middleware ---------*/
-Route::get('admin/customer/live-bandwith-update/{customer_id}', [CustomerController::class,'customer_live_bandwith_update'])->name('admin.customer.live_bandwith_update');
+Route::get('/controller', function() {
+    Artisan::call('make:controller Admin/TagManagerController');
+    return "Controller Done!";
+});
+
+Route::group(['namespace'=>'Frontend', 'middleware' => ['ipcheck','check_refer']], function() {
+    Route::get('/', [FrontendController::class, 'index'])->name('home');
+    Route::get('category/{category}', [FrontendController::class, 'category'])->name('category');
+
+    Route::get('subcategory/{subcategory}', [FrontendController::class, 'subcategory'])->name('subcategory');
+
+    Route::get('products/{slug}', [FrontendController::class, 'products'])->name('products');
+
+    Route::get('hot-deals', [FrontendController::class, 'hotdeals'])->name('hotdeals');
+    Route::get('livesearch', [FrontendController::class, 'livesearch'])->name('livesearch');
+    Route::get('search', [FrontendController::class, 'search'])->name('search');
+    Route::get('product/{id}', [FrontendController::class, 'details'])->name('product');
+    Route::get('quick-view', [FrontendController::class, 'quickview'])->name('quickview');
+    Route::get('/shipping-charge', [FrontendController::class, 'shipping_charge'])->name('shipping.charge');
+    Route::get('site/contact-us', [FrontendController::class, 'contact'])->name('contact');
+    Route::get('/page/{slug}', [FrontendController::class, 'page'])->name('page');
+    Route::get('districts', [FrontendController::class, 'districts'])->name('districts');
+    Route::get('/campaign/{slug}', [FrontendController::class, 'campaign'])->name('campaign');
+    Route::get('/offer', [FrontendController::class, 'offers'])->name('offers');
+     Route::get('/payment-success', [FrontEndController::class, 'payment_success'])->name('payment_success');
+    Route::get('/payment-cancel', [FrontEndController::class, 'payment_cancel'])->name('payment_cancel');
+
+    // cart route
+    Route::post('cart/store', [ShoppingController::class, 'cart_store'])->name('cart.store');
+
+    Route::get('/add-to-cart/{id}/{qty}', [ShoppingController::class, 'addTocartGet']);
+
+    Route::get('shop/cart', [ShoppingController::class, 'cart_show'])->name('cart.show');
+    Route::get('cart/remove', [ShoppingController::class, 'cart_remove'])->name('cart.remove');
+    Route::get('cart/count', [ShoppingController::class, 'cart_count'])->name('cart.count');
+    Route::get('mobilecart/count', [ShoppingController::class, 'mobilecart_qty'])->name('mobile.cart.count');
+    Route::get('cart/decrement', [ShoppingController::class, 'cart_decrement'])->name('cart.decrement');
+
+    Route::get('cart/increment', [ShoppingController::class, 'cart_increment'])->name('cart.increment');
+
+});
+
+Route::group(['prefix'=>'customer','namespace'=>'Frontend', 'middleware' => ['ipcheck','check_refer']], function() {
+    Route::get('/login', [CustomerController::class, 'login'])->name('customer.login');
+    Route::post('/signin', [CustomerController::class, 'signin'])->name('customer.signin');
+    Route::get('/register', [CustomerController::class, 'register'])->name('customer.register');
+    Route::post('/store', [CustomerController::class, 'store'])->name('customer.store');
+    Route::get('/verify', [CustomerController::class, 'verify'])->name('customer.verify');
+    Route::post('/verify-account', [CustomerController::class, 'account_verify'])->name('customer.account.verify');
+    Route::post('/resend-otp', [CustomerController::class, 'resendotp'])->name('customer.resendotp');
+    Route::post('/logout', [CustomerController::class, 'logout'])->name('customer.logout');
+    Route::post('/post/review', [CustomerController::class, 'review'])->name('customer.review');
+    Route::get('/forgot-password', [CustomerController::class, 'forgot_password'])->name('customer.forgot.password');
+    Route::post('/forgot-verify', [CustomerController::class, 'forgot_verify'])->name('customer.forgot.verify');
+    Route::get('/forgot-password/reset', [CustomerController::class, 'forgot_reset'])->name('customer.forgot.reset');
+    Route::post('/forgot-password/store', [CustomerController::class, 'forgot_store'])->name('customer.forgot.store');
+    Route::post('/forgot-password/resendotp', [CustomerController::class, 'forgot_resend'])->name('customer.forgot.resendotp');
+    Route::get('/checkout', [CustomerController::class, 'checkout'])->name('customer.checkout');
+    Route::post('/order-save', [CustomerController::class, 'order_save'])->name('customer.ordersave');
+    Route::get('/order-success/{id}', [CustomerController::class, 'order_success'])->name('customer.order_success');
+
+   Route::get('/order-track', [CustomerController::class, 'order_track'])->name('customer.order_track');
+    Route::get('/order-track/result', [CustomerController::class, 'order_track_result'])->name('customer.order_track_result');
 
 
+});
+// customer auth
+Route::group(['prefix'=>'customer','namespace'=>'Frontend','middleware' => ['customer','ipcheck','check_refer']], function() {
+
+    Route::get('/account', [CustomerController::class, 'account'])->name('customer.account');
+
+    Route::get('/orders', [CustomerController::class, 'orders'])->name('customer.orders');
+    Route::get('/invoice', [CustomerController::class, 'invoice'])->name('customer.invoice');
+    Route::get('/invoice/order-note', [CustomerController::class, 'order_note'])->name('customer.order_note');
+    Route::get('/profile-edit', [CustomerController::class, 'profile_edit'])->name('customer.profile_edit');
+    Route::post('/profile-update', [CustomerController::class, 'profile_update'])->name('customer.profile_update');
+    Route::get('/change-password', [CustomerController::class, 'change_pass'])->name('customer.change_pass');
+    Route::post('/password-update', [CustomerController::class, 'password_update'])->name('customer.password_update');
+
+});
+
+Route::group(['namespace'=>'Frontend', 'middleware' => ['ipcheck','check_refer']], function() {
+
+    Route::get('bkash/checkout-url/pay',[BkashController::class,'pay'])->name('url-pay');
+Route::any('bkash/checkout-url/create',[BkashController::class,'create'])->name('url-create');
+Route::get('bkash/checkout-url/callback',[BkashController::class,'callback'])->name('url-callback');
+    Route::get('/payment-success', [ShurjopayControllers::class, 'payment_success'])->name('payment_success');
+    Route::get('/payment-cancel', [ShurjopayControllers::class, 'payment_cancel'])->name('payment_cancel');
+
+});
+
+// unathenticate admin route
+Route::group(['namespace'=>'Admin','prefix'=>'admin','middleware' => ['customer','ipcheck','check_refer']], function() {
+    Route::get('locked', [DashboardController::class, 'locked'])->name('locked');
+    Route::post('unlocked', [DashboardController::class, 'unlocked'])->name('unlocked');
+});
+
+// ajax route
+Route::get('/ajax-product-subcategory', [ProductController::class, 'getSubcategory']);
+Route::get('/down', function() {Artisan::call('down');return "now Down!";});
+Route::get('/ajax-product-childcategory', [ProductController::class, 'getChildcategory']);
+
+// auth route
+Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer'],'prefix'=>'admin'], function() {
+    Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('change-password', [DashboardController::class, 'changepassword'])->name('change_password');
+    Route::post('new-password', [DashboardController::class, 'newpassword'])->name('new_password');
+
+    // users route
+    Route::get('users/manage', [UserController::class,'index'])->name('users.index');
+    Route::get('users/create', [UserController::class,'create'])->name('users.create');
+    Route::post('users/save', [UserController::class,'store'])->name('users.store');
+    Route::get('users/{id}/edit', [UserController::class,'edit'])->name('users.edit');
+    Route::post('users/update', [UserController::class,'update'])->name('users.update');
+    Route::post('users/inactive', [UserController::class,'inactive'])->name('users.inactive');
+    Route::post('users/active', [UserController::class,'active'])->name('users.active');
+    Route::post('users/destroy', [UserController::class,'destroy'])->name('users.destroy');
+
+    // roles
+    Route::get('roles/manage', [RoleController::class,'index'])->name('roles.index');
+    Route::get('roles/{id}/show', [RoleController::class,'show'])->name('roles.show');
+    Route::get('roles/create', [RoleController::class,'create'])->name('roles.create');
+    Route::post('roles/save', [RoleController::class,'store'])->name('roles.store');
+    Route::get('roles/{id}/edit', [RoleController::class,'edit'])->name('roles.edit');
+    Route::post('roles/update', [RoleController::class,'update'])->name('roles.update');
+    Route::post('roles/destroy', [RoleController::class,'destroy'])->name('roles.destroy');
+
+    // permissions
+    Route::get('permissions/manage', [PermissionController::class,'index'])->name('permissions.index');
+    Route::get('permissions/{id}/show', [PermissionController::class,'show'])->name('permissions.show');
+    Route::get('permissions/create', [PermissionController::class,'create'])->name('permissions.create');
+    Route::post('permissions/save', [PermissionController::class,'store'])->name('permissions.store');
+    Route::get('permissions/{id}/edit', [PermissionController::class,'edit'])->name('permissions.edit');
+    Route::post('permissions/update', [PermissionController::class,'update'])->name('permissions.update');
+    Route::post('permissions/destroy', [PermissionController::class,'destroy'])->name('permissions.destroy');
+
+    // categories
+    Route::get('categories/manage', [CategoryController::class,'index'])->name('categories.index');
+    Route::get('categories/{id}/show', [CategoryController::class,'show'])->name('categories.show');
+    Route::get('categories/create', [CategoryController::class,'create'])->name('categories.create');
+    Route::post('categories/save', [CategoryController::class,'store'])->name('categories.store');
+    Route::get('categories/{id}/edit', [CategoryController::class,'edit'])->name('categories.edit');
+    Route::post('categories/update', [CategoryController::class,'update'])->name('categories.update');
+    Route::post('categories/inactive', [CategoryController::class,'inactive'])->name('categories.inactive');
+    Route::post('categories/active', [CategoryController::class,'active'])->name('categories.active');
+    Route::post('categories/destroy', [CategoryController::class,'destroy'])->name('categories.destroy');
+
+    // Subcategories
+    Route::get('subcategories/manage', [SubcategoryController::class,'index'])->name('subcategories.index');
+    Route::get('subcategories/{id}/show', [SubcategoryController::class,'show'])->name('subcategories.show');
+    Route::get('subcategories/create', [SubcategoryController::class,'create'])->name('subcategories.create');
+    Route::post('subcategories/save', [SubcategoryController::class,'store'])->name('subcategories.store');
+    Route::get('subcategories/{id}/edit', [SubcategoryController::class,'edit'])->name('subcategories.edit');
+    Route::post('subcategories/update', [SubcategoryController::class,'update'])->name('subcategories.update');
+    Route::post('subcategories/inactive', [SubcategoryController::class,'inactive'])->name('subcategories.inactive');
+    Route::post('subcategories/active', [SubcategoryController::class,'active'])->name('subcategories.active');
+    Route::post('subcategories/destroy', [SubcategoryController::class,'destroy'])->name('subcategories.destroy');
+
+    // Childcategories
+    Route::get('childcategories/manage', [ChildcategoryController::class,'index'])->name('childcategories.index');
+    Route::get('childcategories/{id}/show', [ChildcategoryController::class,'show'])->name('childcategories.show');
+    Route::get('childcategories/create', [ChildcategoryController::class,'create'])->name('childcategories.create');
+    Route::post('childcategories/save', [ChildcategoryController::class,'store'])->name('childcategories.store');
+    Route::get('childcategories/{id}/edit', [ChildcategoryController::class,'edit'])->name('childcategories.edit');
+    Route::post('childcategories/update', [ChildcategoryController::class,'update'])->name('childcategories.update');
+    Route::post('childcategories/inactive', [ChildcategoryController::class,'inactive'])->name('childcategories.inactive');
+    Route::post('childcategories/active', [ChildcategoryController::class,'active'])->name('childcategories.active');
+    Route::post('childcategories/destroy', [ChildcategoryController::class,'destroy'])->name('childcategories.destroy');
+
+     // paymentgeteway
+    Route::get('paymentgeteway/manage', [ApiIntegrationController::class,'pay_manage'])->name('paymentgeteway.manage');
+    Route::post('paymentgeteway/save', [ApiIntegrationController::class,'pay_update'])->name('paymentgeteway.update');
+
+     // smsgeteway
+    Route::get('smsgeteway/manage', [ApiIntegrationController::class,'sms_manage'])->name('smsgeteway.manage');
+    Route::post('smsgeteway/save', [ApiIntegrationController::class,'sms_update'])->name('smsgeteway.update');
+
+    // courierapi
+    Route::get('courierapi/manage', [ApiIntegrationController::class,'courier_manage'])->name('courierapi.manage');
+    Route::post('courierapi/save', [ApiIntegrationController::class,'courier_update'])->name('courierapi.update');
+
+    // attribute
+    Route::get('orderstatus/manage', [OrderStatusController::class,'index'])->name('orderstatus.index');
+    Route::get('orderstatus/{id}/show', [OrderStatusController::class,'show'])->name('orderstatus.show');
+    Route::get('orderstatus/create', [OrderStatusController::class,'create'])->name('orderstatus.create');
+    Route::post('orderstatus/save', [OrderStatusController::class,'store'])->name('orderstatus.store');
+    Route::get('orderstatus/{id}/edit', [OrderStatusController::class,'edit'])->name('orderstatus.edit');
+    Route::post('orderstatus/update', [OrderStatusController::class,'update'])->name('orderstatus.update');
+    Route::post('orderstatus/inactive', [OrderStatusController::class,'inactive'])->name('orderstatus.inactive');
+    Route::post('orderstatus/active', [OrderStatusController::class,'active'])->name('orderstatus.active');
+    Route::post('orderstatus/destroy', [OrderStatusController::class,'destroy'])->name('orderstatus.destroy');
+
+    // pixels
+    Route::get('pixels/manage', [PixelsController::class,'index'])->name('pixels.index');
+    Route::get('pixels/{id}/show', [PixelsController::class,'show'])->name('pixels.show');
+    Route::get('pixels/create', [PixelsController::class,'create'])->name('pixels.create');
+    Route::post('pixels/save', [PixelsController::class,'store'])->name('pixels.store');
+    Route::get('pixels/{id}/edit', [PixelsController::class,'edit'])->name('pixels.edit');
+    Route::post('pixels/update', [PixelsController::class,'update'])->name('pixels.update');
+    Route::post('pixels/inactive', [PixelsController::class,'inactive'])->name('pixels.inactive');
+    Route::post('pixels/active', [PixelsController::class,'active'])->name('pixels.active');
+    Route::post('pixels/destroy', [PixelsController::class,'destroy'])->name('pixels.destroy');
+
+     // tag manager
+    Route::get('tag-manager/manage', [TagManagerController::class,'index'])->name('tagmanagers.index');
+    Route::get('tag-manager/{id}/show', [TagManagerController::class,'show'])->name('tagmanagers.show');
+    Route::get('tag-manager/create', [TagManagerController::class,'create'])->name('tagmanagers.create');
+    Route::post('tag-manager/save', [TagManagerController::class,'store'])->name('tagmanagers.store');
+    Route::get('tag-manager/{id}/edit', [TagManagerController::class,'edit'])->name('tagmanagers.edit');
+    Route::post('tag-manager/update', [TagManagerController::class,'update'])->name('tagmanagers.update');
+    Route::post('tag-manager/inactive', [TagManagerController::class,'inactive'])->name('tagmanagers.inactive');
+    Route::post('tag-manager/active', [TagManagerController::class,'active'])->name('tagmanagers.active');
+    Route::post('tag-manager/destroy', [TagManagerController::class,'destroy'])->name('tagmanagers.destroy');
+
+    // attribute
+    Route::get('brands/manage', [BrandController::class,'index'])->name('brands.index');
+    Route::get('brands/{id}/show', [BrandController::class,'show'])->name('brands.show');
+    Route::get('brands/create', [BrandController::class,'create'])->name('brands.create');
+    Route::post('brands/save', [BrandController::class,'store'])->name('brands.store');
+    Route::get('brands/{id}/edit', [BrandController::class,'edit'])->name('brands.edit');
+    Route::post('brands/update', [BrandController::class,'update'])->name('brands.update');
+    Route::post('brands/inactive', [BrandController::class,'inactive'])->name('brands.inactive');
+    Route::post('brands/active', [BrandController::class,'active'])->name('brands.active');
+    Route::post('brands/destroy', [BrandController::class,'destroy'])->name('brands.destroy');
+
+     // color
+    Route::get('color/manage', [ColorController::class,'index'])->name('colors.index');
+    Route::get('color/{id}/show', [ColorController::class,'show'])->name('colors.show');
+    Route::get('color/create', [ColorController::class,'create'])->name('colors.create');
+    Route::post('color/save', [ColorController::class,'store'])->name('colors.store');
+    Route::get('color/{id}/edit', [ColorController::class,'edit'])->name('colors.edit');
+    Route::post('color/update', [ColorController::class,'update'])->name('colors.update');
+    Route::post('color/inactive', [ColorController::class,'inactive'])->name('colors.inactive');
+    Route::post('color/active', [ColorController::class,'active'])->name('colors.active');
+    Route::post('color/destroy', [ColorController::class,'destroy'])->name('colors.destroy');
+
+    // size
+    Route::get('size/manage', [SizeController::class,'index'])->name('sizes.index');
+    Route::get('size/{id}/show', [SizeController::class,'show'])->name('sizes.show');
+    Route::get('size/create', [SizeController::class,'create'])->name('sizes.create');
+    Route::post('size/save', [SizeController::class,'store'])->name('sizes.store');
+    Route::get('size/{id}/edit', [SizeController::class,'edit'])->name('sizes.edit');
+    Route::post('size/update', [SizeController::class,'update'])->name('sizes.update');
+    Route::post('size/inactive', [SizeController::class,'inactive'])->name('sizes.inactive');
+    Route::post('size/active', [SizeController::class,'active'])->name('sizes.active');
+    Route::post('size/destroy', [SizeController::class,'destroy'])->name('sizes.destroy');
 
 
+    // product
+    Route::get('products/manage', [ProductController::class,'index'])->name('products.index');
+    Route::get('products/{id}/show', [ProductController::class,'show'])->name('products.show');
+    Route::get('products/create', [ProductController::class,'create'])->name('products.create');
+    Route::post('products/save', [ProductController::class,'store'])->name('products.store');
+    Route::get('products/{id}/edit', [ProductController::class,'edit'])->name('products.edit');
+    Route::post('products/update', [ProductController::class,'update'])->name('products.update');
+    Route::post('products/inactive', [ProductController::class,'inactive'])->name('products.inactive');
+    Route::post('products/active', [ProductController::class,'active'])->name('products.active');
+    Route::post('products/destroy', [ProductController::class,'destroy'])->name('products.destroy');
+    Route::get('products/image/destroy', [ProductController::class,'imgdestroy'])->name('products.image.destroy');
+    Route::get('products/price/destroy', [ProductController::class,'pricedestroy'])->name('products.price.destroy');
+    Route::get('products/update-deals', [ProductController::class,'update_deals'])->name('products.update_deals');
+    Route::get('products/update-feature', [ProductController::class,'update_feature'])->name('products.update_feature');
+    Route::get('products/update-status', [ProductController::class,'update_status'])->name('products.update_status');
+    Route::get('products/price-edit', [ProductController::class,'price_edit'])->name('products.price_edit');
+    Route::post('products/price-update', [ProductController::class,'price_update'])->name('products.price_update');
 
+    // campaign
+    Route::get('campaign/manage', [CampaignController::class,'index'])->name('campaign.index');
+    Route::get('campaign/{id}/show', [CampaignController::class,'show'])->name('campaign.show');
+    Route::get('campaign/create', [CampaignController::class,'create'])->name('campaign.create');
+    Route::post('campaign/save', [CampaignController::class,'store'])->name('campaign.store');
+    Route::get('campaign/{id}/edit', [CampaignController::class,'edit'])->name('campaign.edit');
+    Route::post('campaign/update', [CampaignController::class,'update'])->name('campaign.update');
+    Route::post('campaign/inactive', [CampaignController::class,'inactive'])->name('campaign.inactive');
+    Route::post('campaign/active', [CampaignController::class,'active'])->name('campaign.active');
+    Route::post('campaign/destroy', [CampaignController::class,'destroy'])->name('campaign.destroy');
+    Route::get('campaign/image/destroy', [CampaignController::class,'imgdestroy'])->name('campaign.image.destroy');
 
-/*----Customer Portal Route ---------*/
-Route::group(['middleware'=>'customer'],function(){
-    Route::get('/customer/portal', function () {
-        return view('Portal.Dashboard');
-    })->name('customer.portal');
+    // settings route
+    Route::get('settings/manage', [GeneralSettingController::class,'index'])->name('settings.index');
+    Route::get('settings/create', [GeneralSettingController::class,'create'])->name('settings.create');
+    Route::post('settings/save', [GeneralSettingController::class,'store'])->name('settings.store');
+    Route::get('settings/{id}/edit', [GeneralSettingController::class,'edit'])->name('settings.edit');
+    Route::post('settings/update', [GeneralSettingController::class,'update'])->name('settings.update');
+    Route::post('settings/inactive', [GeneralSettingController::class,'inactive'])->name('settings.inactive');
+    Route::post('settings/active', [GeneralSettingController::class,'active'])->name('settings.active');
+    Route::post('settings/destroy', [GeneralSettingController::class,'destroy'])->name('settings.destroy');
 
-    Route::post('/customer/logout', function (Request $request) {
-        Auth::guard('customer')->logout();
-        return redirect()->route('admin.login');
-    })->name('customer.logout');
+     // settings route
+    Route::get('social-media/manage', [SocialMediaController::class,'index'])->name('socialmedias.index');
+    Route::get('social-media/create', [SocialMediaController::class,'create'])->name('socialmedias.create');
+    Route::post('social-media/save', [SocialMediaController::class,'store'])->name('socialmedias.store');
+    Route::get('social-media/{id}/edit', [SocialMediaController::class,'edit'])->name('socialmedias.edit');
+    Route::post('social-media/update', [SocialMediaController::class,'update'])->name('socialmedias.update');
+    Route::post('social-media/inactive', [SocialMediaController::class,'inactive'])->name('socialmedias.inactive');
+    Route::post('social-media/active', [SocialMediaController::class,'active'])->name('socialmedias.active');
+    Route::post('social-media/destroy', [SocialMediaController::class,'destroy'])->name('socialmedias.destroy');
 
-    /*-------Customer Recharge From Portal*/
-    Route::post('/customer/portal/recharge',[App\Http\Controllers\Frontend\Customer\Recharge_controller::class,'customer_recharge'])->name('customer.portal.recharge');
+     // contact route
+    Route::get('contact/manage', [ContactController::class,'index'])->name('contact.index');
+    Route::get('contact/create', [ContactController::class,'create'])->name('contact.create');
+    Route::post('contact/save', [ContactController::class,'store'])->name('contact.store');
+    Route::get('contact/{id}/edit', [ContactController::class,'edit'])->name('contact.edit');
+    Route::post('contact/update', [ContactController::class,'update'])->name('contact.update');
+    Route::post('contact/inactive', [ContactController::class,'inactive'])->name('contact.inactive');
+    Route::post('contact/active', [ContactController::class,'active'])->name('contact.active');
+    Route::post('contact/destroy', [ContactController::class,'destroy'])->name('contact.destroy');
+
+     // banner category route
+    Route::get('banner-category/manage', [BannerCategoryController::class,'index'])->name('banner_category.index');
+    Route::get('banner-category/create', [BannerCategoryController::class,'create'])->name('banner_category.create');
+    Route::post('banner-category/save', [BannerCategoryController::class,'store'])->name('banner_category.store');
+    Route::get('banner-category/{id}/edit', [BannerCategoryController::class,'edit'])->name('banner_category.edit');
+    Route::post('banner-category/update', [BannerCategoryController::class,'update'])->name('banner_category.update');
+    Route::post('banner-category/inactive', [BannerCategoryController::class,'inactive'])->name('banner_category.inactive');
+    Route::post('banner-category/active', [BannerCategoryController::class,'active'])->name('banner_category.active');
+    Route::post('banner-category/destroy', [BannerCategoryController::class,'destroy'])->name('banner_category.destroy');
+
+    // banner  route
+    Route::get('banner/manage', [BannerController::class,'index'])->name('banners.index');
+    Route::get('banner/create', [BannerController::class,'create'])->name('banners.create');
+    Route::post('banner/save', [BannerController::class,'store'])->name('banners.store');
+    Route::get('banner/{id}/edit', [BannerController::class,'edit'])->name('banners.edit');
+    Route::post('banner/update', [BannerController::class,'update'])->name('banners.update');
+    Route::post('banner/inactive', [BannerController::class,'inactive'])->name('banners.inactive');
+    Route::post('banner/active', [BannerController::class,'active'])->name('banners.active');
+    Route::post('banner/destroy', [BannerController::class,'destroy'])->name('banners.destroy');
+
+    // contact route
+    Route::get('page/manage', [CreatePageController::class,'index'])->name('pages.index');
+    Route::get('page/create', [CreatePageController::class,'create'])->name('pages.create');
+    Route::post('page/save', [CreatePageController::class,'store'])->name('pages.store');
+    Route::get('page/{id}/edit', [CreatePageController::class,'edit'])->name('pages.edit');
+    Route::post('page/update', [CreatePageController::class,'update'])->name('pages.update');
+    Route::post('page/inactive', [CreatePageController::class,'inactive'])->name('pages.inactive');
+    Route::post('page/active', [CreatePageController::class,'active'])->name('pages.active');
+    Route::post('page/destroy', [CreatePageController::class,'destroy'])->name('pages.destroy');
+
+    // Pos route
+    Route::get('order/create', [OrderController::class,'order_create'])->name('admin.order.create');
+    Route::post('order/store', [OrderController::class,'order_store'])->name('admin.order.store');
+    Route::get('order/cart-add', [OrderController::class,'cart_add'])->name('admin.order.cart_add');
+    Route::get('order/cart-content', [OrderController::class,'cart_content'])->name('admin.order.cart_content');
+    Route::get('order/cart-increment', [OrderController::class,'cart_increment'])->name('admin.order.cart_increment');
+    Route::get('order/cart-decrement', [OrderController::class,'cart_decrement'])->name('admin.order.cart_decrement');
+    Route::get('order/cart-remove', [OrderController::class,'cart_remove'])->name('admin.order.cart_remove');
+    Route::get('order/cart-product-discount', [OrderController::class,'product_discount'])->name('admin.order.product_discount');
+    Route::get('order/cart-details', [OrderController::class,'cart_details'])->name('admin.order.cart_details');
+    Route::get('order/cart-shipping', [OrderController::class,'cart_shipping'])->name('admin.order.cart_shipping');
+    Route::get('order/cart-clear', [OrderController::class,'cart_clear'])->name('admin.order.cart_clear');
+
+    // Order route
+    Route::get('order/{slug}', [OrderController::class,'index'])->name('admin.orders');
+    Route::get('order/edit/{invoice_id}', [OrderController::class,'order_edit'])->name('admin.order.edit');
+    Route::post('order/update', [OrderController::class,'order_update'])->name('admin.order.update');
+    Route::get('order/invoice/{invoice_id}', [OrderController::class,'invoice'])->name('admin.order.invoice');
+    Route::get('order/process/{invoice_id}', [OrderController::class,'process'])->name('admin.order.process');
+    Route::post('order/change', [OrderController::class,'order_process'])->name('admin.order_change');
+    Route::post('order/destroy', [OrderController::class,'destroy'])->name('admin.order.destroy');
+    Route::get('order-assign', [OrderController::class,'order_assign'])->name('admin.order.assign');
+    Route::get('order-status', [OrderController::class,'order_status'])->name('admin.order.status');
+    Route::get('order-bulk-destroy', [OrderController::class,'bulk_destroy'])->name('admin.order.bulk_destroy');
+    Route::get('order-print', [OrderController::class,'order_print'])->name('admin.order.order_print');
+    Route::get('bulk-courier/{slug}', [OrderController::class,'bulk_courier'])->name('admin.bulk_courier');
+    Route::get('stock-report', [OrderController::class,'stock_report'])->name('admin.stock_report');
+    Route::get('order-report', [OrderController::class,'order_report'])->name('admin.order_report');
+    Route::get('order-pathao', [OrderController::class,'order_pathao'])->name('admin.order.pathao');
+    Route::get('/pathao-city', [OrderController::class, 'pathaocity'])->name('pathaocity');
+    Route::get('/pathao-zone', [OrderController::class, 'pathaozone'])->name('pathaozone');
+
+    // Order route
+    Route::get('reviews', [ReviewController::class,'index'])->name('reviews.index');
+    Route::get('review/pending', [ReviewController::class,'pending'])->name('reviews.pending');
+     Route::post('review/inactive', [ReviewController::class,'inactive'])->name('reviews.inactive');
+    Route::post('review/active', [ReviewController::class,'active'])->name('reviews.active');
+     Route::get('review/create', [ReviewController::class,'create'])->name('reviews.create');
+    Route::post('review/save', [ReviewController::class,'store'])->name('reviews.store');
+    Route::get('review/{id}/edit', [ReviewController::class,'edit'])->name('reviews.edit');
+    Route::post('review/update', [ReviewController::class,'update'])->name('reviews.update');
+    Route::post('review/destroy', [ReviewController::class,'destroy'])->name('reviews.destroy');
+
+    // flavor  route
+    Route::get('shipping-charge/manage', [ShippingChargeController::class,'index'])->name('shippingcharges.index');
+    Route::get('shipping-charge/create', [ShippingChargeController::class,'create'])->name('shippingcharges.create');
+    Route::post('shipping-charge/save', [ShippingChargeController::class,'store'])->name('shippingcharges.store');
+    Route::get('shipping-charge/{id}/edit', [ShippingChargeController::class,'edit'])->name('shippingcharges.edit');
+    Route::post('shipping-charge/update', [ShippingChargeController::class,'update'])->name('shippingcharges.update');
+    Route::post('shipping-charge/inactive', [ShippingChargeController::class,'inactive'])->name('shippingcharges.inactive');
+    Route::post('shipping-charge/active', [ShippingChargeController::class,'active'])->name('shippingcharges.active');
+    Route::post('shipping-charge/destroy', [ShippingChargeController::class,'destroy'])->name('shippingcharges.destroy');
+
+    // backend customer route
+    //Route::get('customer', [CustomerManageController::class,'index'])->name('customers.index');
+    Route::get('customer/manage', [CustomerManageController::class,'index'])->name('customers.index');
+    Route::get('customer/{id}/edit', [CustomerManageController::class,'edit'])->name('customers.edit');
+    Route::post('customer/update', [CustomerManageController::class,'update'])->name('customers.update');
+    Route::post('customer/inactive', [CustomerManageController::class,'inactive'])->name('customers.inactive');
+    Route::post('customer/active', [CustomerManageController::class,'active'])->name('customers.active');
+    Route::get('customer/profile', [CustomerManageController::class,'profile'])->name('customers.profile');
+    Route::post('customer/adminlog', [CustomerManageController::class,'adminlog'])->name('customers.adminlog');
+    Route::get('customer/ip-block', [CustomerManageController::class,'ip_block'])->name('customers.ip_block');
+    Route::post('customer/ip-store', [CustomerManageController::class,'ipblock_store'])->name('customers.ipblock.store');
+    Route::post('customer/ip-update', [CustomerManageController::class,'ipblock_update'])->name('customers.ipblock.update');
+    Route::post('customer/ip-destroy', [CustomerManageController::class,'ipblock_destroy'])->name('customers.ipblock.destroy');
+
 });

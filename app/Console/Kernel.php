@@ -7,69 +7,25 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    protected function schedule(Schedule $schedule): void
+    /**
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    protected function schedule(Schedule $schedule)
     {
-        $tenants = \DB::connection('mysql')->table('tenants')->get();
-
-        foreach ($tenants as $tenant) {
-            $schedule
-                ->call(function () use ($tenant) {
-                    $this->__set_tenant_connection($tenant);
-                    \Artisan::call('app:check_status');
-                })
-                ->everyMinute();
-
-            $schedule
-                ->call(function () use ($tenant) {
-                    $this->__set_tenant_connection($tenant);
-                    \Artisan::call('app:check_expire');
-                })
-                ->dailyAt('10:00');
-
-            $schedule
-                ->call(function () use ($tenant) {
-                    $this->__set_tenant_connection($tenant);
-                    \Artisan::call('app:customer_usage');
-                })
-                ->everyFiveMinutes();
-
-            $schedule
-                ->call(function () use ($tenant) {
-                    $this->__set_tenant_connection($tenant);
-                    \Artisan::call('app:clean_daily_usages');
-                })
-                ->monthlyOn(1, '01:00');
-            $schedule
-                ->call(function () use ($tenant) {
-                    $this->__set_tenant_connection($tenant);
-                    \Artisan::call('app:send_auto_message');
-                })
-                ->dailyAt('10:20');
-        }
-    }
-
-    private function __set_tenant_connection($tenant)
-    {
-        \Config::set('database.connections.tenant', [
-            'driver'   => 'mysql',
-            'host'     => env('DB_HOST', '127.0.0.1'),
-            'port'     => env('DB_PORT', '3306'),
-            'database' => $tenant->db_name,
-            'username' => $tenant->db_user,
-            'password' => $tenant->db_pass,
-        ]);
-
-        \DB::purge('tenant');
-        \DB::reconnect('tenant');
-        \DB::setDefaultConnection('tenant');
+        // $schedule->command('inspire')->hourly();
     }
 
     /**
      * Register the commands for the application.
+     *
+     * @return void
      */
-    protected function commands(): void
+    protected function commands()
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');
     }
