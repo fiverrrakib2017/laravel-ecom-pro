@@ -81,7 +81,7 @@
         @endforeach
     </head>
     <body class="gotop">
-        @php $subtotal = Cart::instance('shopping')->subtotal(); @endphp
+        @php $getSubTotal = Cart::session('shopping')->getSubTotal(); @endphp
         <div class="mobile-menu">
                 <div class="mobile-menu-logo">
                     <div class="logo-image">
@@ -143,7 +143,7 @@
                     <div class="menu-bag">
                         <p class="margin-shopping">
                             <i class="fa-solid fa-cart-shopping"></i>
-                            <span class="mobilecart-qty">{{Cart::instance('shopping')->count()}}</span>
+                            <span class="mobilecart-qty">{{Cart::session('shopping')->getTotalQuantity()}}</span>
                         </p>
                     </div>
                 </div>
@@ -208,12 +208,12 @@
                                                 <a href="{{route('customer.checkout')}}">
                                                     <p class="margin-shopping">
                                                         <i class="fa-solid fa-cart-shopping"></i>
-                                                        <span>{{Cart::instance('shopping')->count()}}</span>
+                                                        <span>{{Cart::session('shopping')->getTotalQuantity()}}</span>
                                                     </p>
                                                 </a>
                                                 <div class="cshort-summary">
                                                     <ul>
-                                                        @foreach(Cart::instance('shopping')->content() as $key=>$value)
+                                                        @foreach(Cart::session('shopping')->getContent() as $key=>$value)
                                                         <li>
                                                             <a href=""><img src="{{asset($value->options->image)}}" alt="" /></a>
                                                         </li>
@@ -225,7 +225,7 @@
                                                         </li>
                                                         @endforeach
                                                     </ul>
-                                                    <p><strong>সর্বমোট : ৳{{$subtotal}}</strong></p>
+                                                    <p><strong>সর্বমোট : ৳{{$getSubTotal}}</strong></p>
                                                     <a href="{{route('customer.checkout')}}" class="go_cart"> অর্ডার করুন </a>
                                                 </div>
                                             </li>
@@ -408,7 +408,7 @@
                         <span>
                             <i class="fa-solid fa-cart-shopping"></i>
                         </span>
-                        <span>Cart (<b class="mobilecart-qty">{{Cart::instance('shopping')->count()}}</b>)</span>
+                        <span>Cart (<b class="mobilecart-qty">{{Cart::session('shopping')->getTotalQuantity()}}</b>)</span>
                     </a>
                 </li>
                 @if(Auth::guard('customer')->user())

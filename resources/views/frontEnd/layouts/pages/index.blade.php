@@ -1,3 +1,7 @@
+
+
+
+
 @extends('frontEnd.layouts.master') @section('title', 'Home') @push('seo')
 <meta name="app-url" content="{{ URL::to('/') }}" />
 <meta name="robots" content="index, follow" />
@@ -18,7 +22,7 @@
 <section class="slider-section">
     <div class="container">
         <div class="row">
-            {{-- 
+            {{--
             <div class="col-sm-3 hidetosm">
                 <div class="sidebar-menu">
                     <ul class="hideshow">
@@ -159,8 +163,8 @@
                                              <del>৳ {{ $value->old_price }}</del>
                                             @endif
 
-                                            ৳ {{ $value->new_price }} 
-                                           
+                                            ৳ {{ $value->new_price }}
+
                                         </p>
                                     </div>
                                 </div>
@@ -168,7 +172,7 @@
 
                             @if (!$value->prosizes->isEmpty() || !$value->procolors->isEmpty())
                                 <div class="pro_btn">
-                                   
+
                                     <div class="cart_btn order_button">
                                         <a href="{{ route('product', $value->slug) }}"
                                             class="addcartbutton">অর্ডার করুন </a>
@@ -176,7 +180,7 @@
                                 </div>
                             @else
                                 <div class="pro_btn">
-                                    
+
                                     <form action="{{ route('cart.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="id" value="{{ $value->id }}" />
@@ -190,7 +194,7 @@
                 </div>
             </div>
             <div class="col-sm-12 d-flex justify-content-center align-items-center">
-               <a href="{{ route('hotdeals') }}" class="view_more_btn">View More</a> 
+               <a href="{{ route('hotdeals') }}" class="view_more_btn">View More</a>
             </div>
         </div>
     </div>
@@ -204,7 +208,7 @@
                     <div class="sec_title">
                         <h3 class="section-title-header">
                             <span class="section-title-name">{{ $homecat->name }}</span>
-                            
+
                         </h3>
                     </div>
                 </div>
@@ -241,8 +245,8 @@
                                              <del>৳ {{ $value->old_price }}</del>
                                             @endif
 
-                                            ৳ {{ $value->new_price }} 
-                                           
+                                            ৳ {{ $value->new_price }}
+
                                         </p>
                                     </div>
                                 </div>
@@ -250,7 +254,7 @@
 
                             @if (!$value->prosizes->isEmpty() || !$value->procolors->isEmpty())
                                 <div class="pro_btn">
-                                   
+
                                     <div class="cart_btn order_button">
                                         <a href="{{ route('product', $value->slug) }}"
                                             class="addcartbutton">অর্ডার করুন </a>
@@ -258,7 +262,7 @@
                                 </div>
                             @else
                                 <div class="pro_btn">
-                                    
+
                                     <form action="{{ route('cart.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="id" value="{{ $value->id }}" />

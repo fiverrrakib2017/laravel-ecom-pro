@@ -10,18 +10,18 @@
     <link rel="shortcut icon" href="{{asset($generalsetting->favicon)}}" />
 
     <!-- Bootstrap css -->
-    <link href="{{asset('public/backEnd/')}}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backEnd/')}}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <!-- App css -->
-    <link href="{{asset('public/backEnd/')}}/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backEnd/')}}/assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <!-- icons -->
-    <link href="{{asset('public/backEnd/')}}/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backEnd/')}}/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <!-- toastr css -->
-    <link rel="stylesheet" href="{{asset('public/backEnd/')}}/assets/css/toastr.min.css" />
+    <link rel="stylesheet" href="{{asset('backEnd/')}}/assets/css/toastr.min.css" />
     <!-- custom css -->
-    <link href="{{asset('public/backEnd/')}}/assets/css/custom.css" rel="stylesheet" type="text/css" />
+    <link href="{{asset('backEnd/')}}/assets/css/custom.css" rel="stylesheet" type="text/css" />
     <!-- Head js -->
     @yield('css')
-    <script src="{{asset('public/backEnd/')}}/assets/js/head.js"></script>
+    <script src="{{asset('backEnd/')}}/assets/js/head.js"></script>
   </head>
 
   <!-- body start -->
@@ -240,7 +240,7 @@
           <div id="sidebar-menu">
             <ul id="side-menu">
               <li>
-                <a href="{{url('admin/dashboard')}}"><i class="fe-home font-22 avatar-title"></i> 
+                <a href="{{url('admin/dashboard')}}"><i class="fe-home font-22 avatar-title"></i>
                 <span> Dashboard </span>
                 </a>
               </li>
@@ -294,11 +294,11 @@
                     <li>
                       <a href="{{route('sizes.index')}}"><i data-feather="file-plus"></i> Sizes</a>
                     </li>
-                    
+
                     <li>
                       <a href="{{route('products.price_edit')}}"><i data-feather="file-plus"></i> Price Edit</a>
                     </li>
-                    
+
                   </ul>
                 </div>
               </li>
@@ -313,7 +313,7 @@
                   <span class="menu-arrow"></span>
                 </a>
                 <div class="collapse" id="sidebar-product-review">
-                  <ul class="nav-second-level">                   
+                  <ul class="nav-second-level">
                     <li>
                       <a href="{{route('reviews.pending')}}"><i data-feather="file-plus"></i> Pending Reviews ({{ $pending_reviews }})</a>
                     </li>
@@ -334,8 +334,8 @@
                   <span class="menu-arrow"></span>
                 </a>
                 <div class="collapse" id="sidebar-landing-page">
-                  <ul class="nav-second-level">                   
-                    
+                  <ul class="nav-second-level">
+
                     <li>
                       <a href="{{route('campaign.create')}}"><i data-feather="file-plus"></i> Create</a>
                     </li>
@@ -346,7 +346,7 @@
                 </div>
               </li>
               <!-- nav items end -->
-              
+
               <li>
                 <a href="#sidebar-users" data-bs-toggle="collapse">
                   <i data-feather="user"></i>
@@ -408,7 +408,7 @@
                   <span class="menu-arrow"></span>
                 </a>
                 <div class="collapse" id="sidebar-api-integration">
-                  <ul class="nav-second-level">                   
+                  <ul class="nav-second-level">
                     <li>
                       <a href="{{route('paymentgeteway.manage')}}"><i data-feather="file-plus"></i> Payment Gateway</a>
                     </li>
@@ -429,7 +429,7 @@
                   <span class="menu-arrow"></span>
                 </a>
                 <div class="collapse" id="sidebar-pixel-gtm">
-                  <ul class="nav-second-level">                   
+                  <ul class="nav-second-level">
                     <li>
                       <a href="{{route('tagmanagers.index')}}"><i data-feather="file-plus"></i> Tag Manager</a>
                     </li>
@@ -665,13 +665,13 @@
     <div class="rightbar-overlay"></div>
 
     <!-- Vendor js -->
-    <script src="{{asset('public/backEnd/')}}/assets/js/vendor.min.js"></script>
+    <script src="{{asset('backEnd/')}}/assets/js/vendor.min.js"></script>
 
     <!-- App js -->
-    <script src="{{asset('public/backEnd/')}}/assets/js/app.min.js"></script>
-    <script src="{{asset('public/backEnd/')}}/assets/js/toastr.min.js"></script>
+    <script src="{{asset('backEnd/')}}/assets/js/app.min.js"></script>
+    <script src="{{asset('backEnd/')}}/assets/js/toastr.min.js"></script>
     {!! Toastr::message() !!}
-    <script src="{{asset('public/backEnd/')}}/assets/js/sweetalert.min.js"></script>
+    <script src="{{asset('backEnd/')}}/assets/js/sweetalert.min.js"></script>
     <script type="text/javascript">
       $(".delete-confirm").click(function (event) {
         var form = $(this).closest("form");
@@ -733,7 +733,7 @@
             });
         });
     </script>
-    <script type="text/javascript"> 
+    <script type="text/javascript">
         $(document).ready(function() {
             $('.pathaozone').change(function() {
                 var id = $(this).val();

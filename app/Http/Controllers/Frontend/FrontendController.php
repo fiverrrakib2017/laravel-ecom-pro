@@ -30,7 +30,6 @@ class FrontendController extends Controller
 {
     public function index()
     {
-        // return "Welcome to Kenakatar.com";
         $frontcategory = Category::where(['status' => 1])
             ->select('id', 'name', 'image', 'slug', 'status')
             ->get();
@@ -149,7 +148,7 @@ class FrontendController extends Controller
         } else {
             $products = $products->latest();
         }
-        
+
         $min_price = $products->min('new_price');
         $max_price = $products->max('new_price');
         if($request->min_price && $request->max_price){
@@ -199,7 +198,7 @@ class FrontendController extends Controller
         } else {
             $products = $products->latest();
         }
-        
+
         $min_price = $products->min('new_price');
         $max_price = $products->max('new_price');
         if($request->min_price && $request->max_price){
@@ -313,10 +312,10 @@ class FrontendController extends Controller
             ->where('status', 1)
             ->with('image')
             ->first();
-        Cart::instance('shopping')->destroy();
-        $cart_count = Cart::instance('shopping')->count();
+        Cart::session('shopping')->destroy();
+        $cart_count = Cart::session('shopping')->count();
         if ($cart_count == 0) {
-            Cart::instance('shopping')->add([
+            Cart::session('shopping')->add([
                 'id' => $product->id,
                 'name' => $product->name,
                 'qty' => 1,
@@ -374,7 +373,7 @@ class FrontendController extends Controller
             $payment->payment_status = 'paid';
             $payment->save();
             // order details data save
-            foreach (Cart::instance('shopping')->content() as $cart) {
+            foreach (Cart::session('shopping')->content() as $cart) {
                 $order_details = new OrderDetails();
                 $order_details->order_id = $order->id;
                 $order_details->product_id = $cart->id;
@@ -385,7 +384,7 @@ class FrontendController extends Controller
                 $order_details->save();
             }
 
-            Cart::instance('shopping')->destroy();
+            Cart::session('shopping')->destroy();
             Toastr::error('Thanks, Your payment send successfully', 'Success!');
             return redirect()->route('home');
         }

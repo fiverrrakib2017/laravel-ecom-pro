@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -28,13 +28,13 @@ class PixelsController extends Controller
         Toastr::success('Success','Data insert successfully');
         return redirect()->route('pixels.index');
     }
-    
+
     public function edit($id)
     {
         $edit_data =EcomPixel::find($id);
         return view('backEnd.pixels.edit',compact('edit_data'));
     }
-    
+
     public function update(Request $request)
     {
         $this->validate($request, [
@@ -48,7 +48,7 @@ class PixelsController extends Controller
         Toastr::success('Success','Data update successfully');
         return redirect()->route('pixels.index');
     }
- 
+
     public function inactive(Request $request)
     {
         $inactive =EcomPixel::find($request->hidden_id);
