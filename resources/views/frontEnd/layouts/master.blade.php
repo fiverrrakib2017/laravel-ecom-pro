@@ -40,8 +40,6 @@
             }
         </style>
 
-        <meta name="facebook-domain-verification" content="38f1w8335btoklo88dyfl63ba3st2e" />
-
         @foreach($pixels as $pixel)
         <!-- Facebook Pixel Code -->
         <script>
@@ -355,7 +353,7 @@
                                 <div class="d_app">
                                     <h2>Download App</h2>
                                     <a href="{{$generalsetting->play_store}}">
-                                        <img src="{{asset('public/frontEnd/images/app-download.png')}}" alt="" />
+                                        <img src="{{asset('frontEnd/images/app-download.png')}}" alt="" />
                                     </a>
                                 </div>
                             </div>
@@ -436,7 +434,7 @@
             <div class="whatapp" style="position: fixed; bottom: 80px; right: 32px;">
                 <a href="https://wa.me/88{{$contact->hotline}}">
                     <i class="fa-brands fa-whatsapp" style="font-size:48px;color:green"></i>
-                <a />
+                </a>
             </div>
 
 
