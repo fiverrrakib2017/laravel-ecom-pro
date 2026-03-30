@@ -131,7 +131,7 @@
                   class="dropdown-item notify-item"
                 >
                   <i class="fe-log-out me-1"></i>
-                  <span>Logout</span>
+                  <span>Logouts</span>
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                   @csrf
