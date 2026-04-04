@@ -35,10 +35,10 @@
     <link href="{{ asset('backEnd/admira/assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css">
 
     <!-- Toastr Css -->
-    <link rel="stylesheet" href="{{ asset('backEnd/admira/js/toastr/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backEnd/admira/assets/css/toastr/toastr.min.css') }}">
 
     <!-- Delete Modal Css -->
-    <link rel="stylesheet" href="{{ asset('backEnd/admira/js/deleteModal.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('backEnd/admira/js/deleteModal.css') }}"> --}}
 
     <!-- Chartist Chart -->
     <link href="{{ asset('backEnd/admira/assets/libs/chartist/chartist.min.css') }}" rel="stylesheet" type="text/css">
@@ -369,8 +369,8 @@
     <script src="{{ asset('backEnd/admira/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
 
     <!-- Toastr -->
-    {{-- <script src="{{ asset('backEnd/admira/js/toastr/toastr.min.js') }}"></script>
-    <script src="{{ asset('backEnd/admira/js/toastr/toastr.init.js') }}"></script> --}}
+    <script src="{{ asset('backEnd/admira/assets/js/toastr/toastr.min.js') }}"></script>
+    <script src="{{ asset('backEnd/admira/assets/js/toastr/toastr.init.js') }}"></script>
 
     <!-- Datatable init js -->
     <script src="{{ asset('backEnd/admira/assets/js/pages/datatables.init.js') }}"></script>

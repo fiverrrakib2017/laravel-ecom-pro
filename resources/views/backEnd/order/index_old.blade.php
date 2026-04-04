@@ -1,159 +1,103 @@
 @extends('backEnd.layouts.master')
 @section('title',$order_status->name.' Order')
 @section('content')
- <!-- start page title -->
-   <div class="row">
-    <div class="col-12">
-        <div class="page-title-box d-flex justify-content-between align-items-center flex-wrap">
-
-            <!-- Title -->
-            <h4 class="page-title mb-0">
-                {{$order_status->name}} Order 
-                <span class="badge bg-primary ms-2">
-                    {{$order_status->orders_count}}
-                </span>
-            </h4>
-
-            <!-- Button -->
-            <a href="{{route('admin.order.create')}}" class="btn btn-primary mt-2 mt-sm-0">
-                <i class="fe-shopping-cart me-1"></i> Add New
-            </a>
-
+<div class="container-fluid">
+    
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <a href="{{route('admin.order.create')}}" class="btn btn-danger rounded-pill"><i class="fe-shopping-cart"></i> Add New</a>
+                </div>
+                <h4 class="page-title">{{$order_status->name}} Order ({{$order_status->orders_count}})</h4>
+            </div>
         </div>
-    </div>
-</div>
-<div class="row order_page">
+    </div>       
+    <!-- end page title --> 
+   <div class="row order_page">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-
-                <!-- Top Actions -->
-                <div class="d-flex justify-content-between flex-wrap mb-3">
-
-                    <div class="d-flex flex-wrap gap-2">
-                        <a data-bs-toggle="modal" data-bs-target="#asignUser" class="btn btn-success">
-                            <i class="fas fa-plus"></i> Assign User
-                        </a>
-
-                        <a data-bs-toggle="modal" data-bs-target="#changeStatus" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Change Status
-                        </a>
-
-                        <a href="{{route('admin.order.bulk_destroy')}}" class="btn btn-danger order_delete">
-                           <i class="fas fa-trash"></i> Delete All
-                        </a>
-
-                        <a href="{{route('admin.order.order_print')}}" class="btn btn-info multi_order_print">
-                            <i class="fas fa-print"></i> Print
-                        </a>
-
-                        @if($steadfast)
-                        <a href="{{route('admin.bulk_courier', 'steadfast')}}" class="btn btn-warning multi_order_courier">
-                            <i class="fas fa-truck"></i> Steadfast
-                        </a>
-                        @endif
-
-                        <a data-bs-toggle="modal" data-bs-target="#pathao" class="btn btn-secondary">
-                            <i class="fas fa-truck"></i> Pathao
-                        </a>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <ul class="action2-btn">
+                            <li><a data-bs-toggle="modal" data-bs-target="#asignUser" class="btn rounded-pill btn-success"><i class="fe-plus"></i> Assign User</a></li>
+                            <li><a data-bs-toggle="modal" data-bs-target="#changeStatus" class="btn rounded-pill btn-primary"><i class="fe-plus"></i> Change Status</a></li>
+                            <li><a href="{{route('admin.order.bulk_destroy')}}" class="btn rounded-pill btn-danger order_delete"><i class="fe-plus"></i> Delete All</a></li>
+                            <li><a href="{{route('admin.order.order_print')}}" class="btn rounded-pill btn-info multi_order_print"><i class="fe-printer"></i> Print</a></li>
+                            @if($steadfast)
+                            <li class=""><a href="{{route('admin.bulk_courier', 'steadfast')}}" class="btn rounded-pill btn-warning multi_order_courier"><i class="fe-truck"></i> Steadfirst</a></li>
+                            @endif
+                            <li class=""><a data-bs-toggle="modal" data-bs-target="#pathao" class="btn rounded-pill btn-info"><i class="fe-truck"></i> pathao</a></li>
+                           
+						</ul>
                     </div>
-
-                    {{-- <!-- Search -->
-                    <form class="d-flex">
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="Search">
-                        <button class="btn btn-primary">Search</button>
-                    </form> --}}
-
+                    <div class="col-sm-4">
+                        <form class="custom_form">
+                            <div class="form-group">
+                                <input type="text" name="keyword" placeholder="Search">
+                                <button class="btn  rounded-pill btn-info">Search</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-                <!-- Table -->
-                <div class="table-responsive">
-                    <table id="datatable-buttons" class="table table-bordered table-hover">
-
-                        <thead class="table-light">
-                            <tr>
-                                <th width="2%">
-                                    <input type="checkbox" class="checkall">
-                                </th>
-                                <th width="3%">SL</th>
-                                <th>Action</th>
-                                <th>Invoice</th>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Phone</th>
-                                <th>Assign</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach($show_data as $key=>$value)
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="checkbox" value="{{$value->id}}">
-                                </td>
-
-                                <td>{{$loop->iteration}}</td>
-
-                                <td>
-                                    <div class="d-flex gap-2">
-
-                                        <a href="{{route('admin.order.invoice',['invoice_id'=>$value->invoice_id])}}" class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-
-                                        <a href="{{route('admin.order.process',['invoice_id'=>$value->invoice_id])}}" class="btn btn-sm btn-warning">
-                                            <i class="mdi mdi-cog-outline"></i>
-                                        </a>
-
-                                        <a href="{{route('admin.order.edit',['invoice_id'=>$value->invoice_id])}}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-
-                                        <form method="post" action="{{route('admin.order.destroy')}}">
-                                            @csrf
-                                            <input type="hidden" value="{{$value->id}}" name="id">
-                                            <button type="submit" class="btn btn-sm btn-danger delete-confirm">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-
-                                    </div>
-                                </td>
-
-                                <td>{{$value->invoice_id}}</td>
-
-                                <td>
-                                    {{date('d-m-Y', strtotime($value->updated_at))}} <br>
-                                    <small>{{date('h:i:s a', strtotime($value->updated_at))}}</small>
-                                </td>
-
-                                <td>
-                                    <strong>{{$value->shipping->name ?? ''}}</strong>
-                                    <p class="mb-0">{{$value->shipping->address ?? ''}}</p>
-                                </td>
-
-                                <td>{{$value->shipping->phone ?? ''}}</td>
-                                <td>{{$value->user->name ?? ''}}</td>
-                                <td>৳{{$value->amount}}</td>
-                                <td>{{$value->status->name ?? ''}}</td>
-
-                            </tr>
-                            @endforeach
-                        </tbody>
-
-                    </table>
+                <div class="table-responsive ">
+                <table id="datatable-buttons" class="table table-striped   w-100">
+                    <thead>
+                        <tr>
+                            <th style="width:2%"><div class="form-check"><label class="form-check-label"><input type="checkbox" class="form-check-input checkall" value=""></label>
+                            <th style="width:2%">SL</th>
+                                    </div></th>
+                            <th style="width:8%">Action</th>
+                            <th style="width:8%">Invoice</th>
+                            <th style="width:10%">Date</th>
+                            <th style="width:10%">Name</th>
+                            <th style="width:10%">Phone</th>
+                            <th style="width:10%">Assign</th>
+                            <th style="width:10%">Amount</th>
+                            <th style="width:10%">Status</th>
+                        </tr>
+                    </thead>
+                
+                
+                    <tbody>
+                        @foreach($show_data as $key=>$value)
+                        <tr>
+                            <td><input type="checkbox" class="checkbox" value="{{$value->id}}"></td>
+                            <td>{{$loop->iteration}}</td>
+                            <td>
+                                <div class="button-list custom-btn-list">   
+                                    <a href="{{route('admin.order.invoice',['invoice_id'=>$value->invoice_id])}}" title="Invoice"><i class="fe-eye"></i></a>
+                                    <a href="{{route('admin.order.process',['invoice_id'=>$value->invoice_id])}}" title="Process"><i class="fe-settings"></i></a>
+                                    <a href="{{route('admin.order.edit',['invoice_id'=>$value->invoice_id])}}" title="Edit"><i class="fe-edit"></i></a>
+                                    <form method="post" action="{{route('admin.order.destroy')}}" class="d-inline">        
+                                        @csrf
+                                    <input type="hidden" value="{{$value->id}}" name="id">
+                                    <button type="submit" title="Delete" class="delete-confirm"><i class="fe-trash-2"></i></button></form>
+                                </div>
+                            </td>
+                            <td>{{$value->invoice_id}}</td>
+                            <td>{{date('d-m-Y', strtotime($value->updated_at))}}<br> {{date('h:i:s a', strtotime($value->updated_at))}}</td>
+                            <td><strong>{{$value->shipping?$value->shipping->name:''}}</strong><p>{{$value->shipping?$value->shipping->address:''}}</p></td>
+                            <td>{{$value->shipping?$value->shipping->phone:''}}</td>
+                            <td>{{$value->user?$value->user->name:''}}</td>
+                            <td>৳{{$value->amount}}</td>
+                            <td>{{$value->status?$value->status->name:''}}</td>
+                            
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
                 </div>
-
-                <!-- Pagination -->
-                <div class="mt-3">
+                <div class="custom-paginate">
                     {{$show_data->links('pagination::bootstrap-4')}}
                 </div>
-
-            </div>
-        </div>
-    </div>
+            </div> <!-- end card body-->
+           
+        </div> <!-- end card -->
+    </div><!-- end col-->
+   </div>
 </div>
 <!-- Assign User End -->
 <div class="modal fade" id="asignUser" tabindex="-1">
