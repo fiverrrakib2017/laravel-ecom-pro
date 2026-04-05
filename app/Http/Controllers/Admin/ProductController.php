@@ -36,8 +36,8 @@ class ProductController extends Controller
         ->pluck('childcategoryName', 'id');
         return response()->json($childcategory);
     }
-    
-    
+
+
     function __construct()
     {
          $this->middleware('permission:product-list|product-create|product-edit|product-delete', ['only' => ['index','show']]);
@@ -45,8 +45,8 @@ class ProductController extends Controller
          $this->middleware('permission:product-edit', ['only' => ['edit','update']]);
          $this->middleware('permission:product-delete', ['only' => ['destroy']]);
     }
-    
-    
+
+
     public function index(Request $request)
     {
         if($request->keyword){
@@ -88,14 +88,14 @@ class ProductController extends Controller
         $save_data = Product::create($input);
         $save_data->sizes()->attach($request->proSize);
         $save_data->colors()->attach($request->proColor);
-        
-        // image with intervention 
+
+        // image with intervention
         $images = $request->file('image');
         if($images){
             foreach ($images as $key => $image) {
                 $name =  time().'-'.$image->getClientOriginalName();
                 $name = strtolower(preg_replace('/\s+/', '-', $name));
-            	$uploadPath = 'public/uploads/product/';
+            	$uploadPath = 'uploads/product/';
             	$image->move($uploadPath,$name);
             	$imageUrl =$uploadPath.$name;
 
@@ -104,12 +104,12 @@ class ProductController extends Controller
                 $pimage->image      = $imageUrl;
                 $pimage->save();
             }
-            
+
         }
         Toastr::success('Success','Data insert successfully');
         return redirect()->route('products.index');
     }
-    
+
     public function edit($id)
     {
         $edit_data = Product::with('images')->find($id);
@@ -150,7 +150,7 @@ class ProductController extends Controller
     Toastr::success('Success','Price update successfully');
     return redirect()->back();
 }
-    
+
     public function update(Request $request)
     {
        $this->validate($request, [
@@ -162,7 +162,7 @@ class ProductController extends Controller
             'category_id' => 'required',
             'description' => 'required',
         ]);
-          
+
         $update_data = Product::find($request->id);
         $input = $request->except(['image','files','proSize','proColor']);
         $last_id = Product::orderBy('id', 'desc')->select('id')->first();
@@ -174,13 +174,13 @@ class ProductController extends Controller
         $update_data->sizes()->sync($request->proSize);
         $update_data->colors()->sync($request->proColor);
 
-        // image with intervention 
+        // image with intervention
         $images = $request->file('image');
         if($images){
             foreach ($images as $key => $image) {
                 $name =  time().'-'.$image->getClientOriginalName();
                 $name = strtolower(preg_replace('/\s+/', '-', $name));
-            	$uploadPath = 'public/uploads/product/';
+            	$uploadPath = 'uploads/product/';
             	$image->move($uploadPath,$name);
             	$imageUrl =$uploadPath.$name;
 
@@ -190,12 +190,12 @@ class ProductController extends Controller
                 $pimage->save();
             }
         }
-        
+
 
         Toastr::success('Success','Data update successfully');
         return redirect()->route('products.index');
     }
- 
+
     public function inactive(Request $request)
     {
         $inactive = Product::find($request->hidden_id);
@@ -220,15 +220,15 @@ class ProductController extends Controller
         return redirect()->back();
     }
     public function imgdestroy(Request $request)
-    { 
+    {
         $delete_data = Productimage::find($request->id);
         File::delete($delete_data->image);
         $delete_data->delete();
         Toastr::success('Success','Data delete successfully');
         return redirect()->back();
-    } 
+    }
     public function pricedestroy(Request $request)
-    { 
+    {
         $delete_data = Productprice::find($request->id);
         $delete_data->delete();
         Toastr::success('Success','Product price delete successfully');

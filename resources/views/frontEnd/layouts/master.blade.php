@@ -367,7 +367,7 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="copyright">
-                                <p>Copyright © {{ date('Y') }} {{$generalsetting->name}}. All rights reserved | <span style="color: white;">Website Designed by: <a href="https://www.elitedesign.com.bd"><span style="color: white;">Elite Design</span></a></span></p>
+                                <p>Copyright © {{ date('Y') }} {{$generalsetting->name}}. All rights reserved | <span style="color: white;">Website Designed by: <a href="#"><span style="color: white;">Rakib Mahmud</span></a></span></p>
                             </div>
                         </div>
                     </div>

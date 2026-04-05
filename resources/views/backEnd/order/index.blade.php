@@ -1,24 +1,53 @@
 @extends('backEnd.layouts.master')
 @section('title',$order_status->name.' Order')
 @section('content')
- <!-- start page title -->
-   <div class="row">
+ <div class="row">
     <div class="col-12">
-        <div class="page-title-box d-flex justify-content-between align-items-center flex-wrap">
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
 
-            <!-- Title -->
-            <h4 class="page-title mb-0">
-                {{$order_status->name}} Order
-                <span class="badge bg-primary ms-2">
-                    {{$order_status->orders_count}}
-                </span>
-            </h4>
+                <!-- Left: Title + Info -->
+                <div class="d-flex align-items-center gap-3">
 
-            <!-- Button -->
-            <a href="{{route('admin.order.create')}}" class="btn btn-primary mt-2 mt-sm-0">
-                <i class="fe-shopping-cart me-1"></i> Add New
-            </a>
+                    <!-- Icon -->
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                        <i class="fas fa-shopping-bag fs-4"></i>
+                    </div>
 
+                    <!-- Text -->
+                    <div>
+                        <h4 class="mb-0 ">
+                            {{ $order_status->name }} Orders
+                        </h4>
+
+                        <small class="text-muted">
+                            Manage all {{ strtolower($order_status->name) }} orders
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Right: Count + Button -->
+                <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+
+                    <!-- Count Badge -->
+                    <div class="text-center">
+                        <h5 class="mb-0 fw-bold text-primary">
+                            {{ $order_status->orders_count }}
+                        </h5>
+                        <small class="text-muted">Total Orders</small>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="vr d-none d-sm-block"></div>
+
+                    <!-- Button -->
+                    <a href="{{ route('admin.order.create') }}" class="btn btn-primary">
+                        <i class="fe-shopping-cart me-1"></i> Add Order
+                    </a>
+
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
