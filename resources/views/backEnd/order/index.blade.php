@@ -8,7 +8,7 @@
 
             <!-- Title -->
             <h4 class="page-title mb-0">
-                {{$order_status->name}} Order 
+                {{$order_status->name}} Order
                 <span class="badge bg-primary ms-2">
                     {{$order_status->orders_count}}
                 </span>
@@ -58,17 +58,17 @@
                         </a>
                     </div>
 
-                    {{-- <!-- Search -->
+                    <!-- Search -->
                     <form class="d-flex">
                         <input type="text" name="keyword" class="form-control me-2" placeholder="Search">
                         <button class="btn btn-primary">Search</button>
-                    </form> --}}
+                    </form>
 
                 </div>
 
                 <!-- Table -->
                 <div class="table-responsive">
-                    <table id="datatable-buttons" class="table table-bordered table-hover">
+                    <table  class="table table-bordered table-hover">
 
                         <thead class="table-light">
                             <tr>
@@ -166,8 +166,8 @@
       <form action="{{route('admin.order.assign')}}" id="order_assign">
       <div class="modal-body">
         <div class="form-group">
-            <select name="user_id" id="user_id" class="form-control">
-                <option value="">Select..</option>
+            <select name="user_id" id="user_id" class="form-select">
+                <option value="">---Select---</option>
                 @foreach($users as $key=>$value)
                 <option value="{{$value->id}}">{{$value->name}}</option>
                 @endforeach
@@ -184,19 +184,18 @@
 </div>
 <!-- Assign User End-->
 
-<!-- Assign User End -->
 <div class="modal fade" id="changeStatus" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Assign User</h5>
+        <h5 class="modal-title">Order Status</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form action="{{route('admin.order.status')}}" id="order_status_form">
       <div class="modal-body">
         <div class="form-group">
-            <select name="order_status" id="order_status" class="form-control">
-                <option value="">Select..</option>
+            <select name="order_status" id="order_status" class="form-select">
+                <option value="">---Select---</option>
                 @foreach($orderstatus as $key=>$value)
                 <option value="{{$value->id}}">{{$value->name}}</option>
                 @endforeach
@@ -211,7 +210,6 @@
     </div>
   </div>
 </div>
-<!-- Assign User End-->
 <!-- pathao coureir start -->
 <div class="modal fade" id="pathao" tabindex="-1">
   <div class="modal-dialog">
@@ -225,13 +223,13 @@
       <div class="modal-body">
         <div class="form-group">
             <label for="pathaostore" class="form-label">Store</label>
-           <select name="pathaostore" id="pathaostore" class="pathaostore form-control" >
+           <select name="pathaostore" id="pathaostore" class="pathaostore form-select" >
              <option value="">Select Store...</option>
              @if(isset($pathaostore['data']['data']))
-             @foreach($pathaostore['data']['data'] as $key=>$store)
-             <option value="{{$store['store_id']}}">{{$store['store_name']}}</option>
-             @endforeach
-             @else
+                @foreach($pathaostore['data']['data'] as $key=>$store)
+                <option value="{{$store['store_id']}}">{{$store['store_name']}}</option>
+                @endforeach
+                @else
              @endif
            </select>
             @if ($errors->has('pathaostore'))
@@ -243,7 +241,7 @@
         <!-- form group end -->
         <div class="form-group mt-3">
           <label for="pathaocity" class="form-label">City</label>
-           <select name="pathaocity" id="pathaocity" class="chosen-select pathaocity form-control" style="width:100%" >
+           <select name="pathaocity" id="pathaocity" class="chosen-select pathaocity form-select" style="width:100%" >
              <option value="">Select City...</option>
              @if(isset($pathaocities['data']['data']))
              @foreach($pathaocities['data']['data'] as $key=>$city)
@@ -299,71 +297,112 @@ $(document).ready(function(){
     });
 
     // order assign
-    $(document).on('submit', 'form#order_assign', function(e){
+    $(document).on('submit', '#order_assign', function (e) {
         e.preventDefault();
-        var url = $(this).attr('action');
-        var method = $(this).attr('method');
-        let user_id=$(document).find('select#user_id').val();
-    
-        var order = $('input.checkbox:checked').map(function(){
-          return $(this).val();
-        });
-        var order_ids=order.get();
-        
-        if(order_ids.length ==0){
-            toastr.error('Please Select An Order First !');
-            return ;
+
+        let $form = $(this);
+        let url = $form.attr('action');
+        let method = $form.attr('method');
+
+        let user_id = $form.find('#user_id').val();
+
+        let order_ids = $('input.checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
+
+        /*--------Validation----------*/
+        if (!user_id) {
+            toastr.error('Please select a user!');
+            return;
         }
-        
+
+        if (order_ids.length === 0) {
+            toastr.error('Please select at least one order!');
+            return;
+        }
+
+        let $submitBtn = $form.find('button[type="submit"]');
+        $submitBtn.prop('disabled', true).text('Processing...');
+
         $.ajax({
-           type:'GET',
-           url:url,
-           data:{user_id,order_ids},
-           success:function(res){
-               if(res.status=='success'){
-                toastr.success(res.message);
-                window.location.reload();
-                
-            }else{
-                toastr.error('Failed something wrong');
+            type: method,
+            url: url,
+            data: {
+                user_id: user_id,
+                order_ids: order_ids,
+            },
+            success: function (res) {
+                if (res.status === 'success') {
+                    $("#asignUser").modal('hide');
+                    toastr.success(res.message);
+                    location.reload();
+                } else {
+                    toastr.error(res.message || 'Something went wrong!');
+                }
+            },
+            error: function (xhr) {
+                toastr.error('Server error! Please try again.');
+                console.error(xhr.responseText);
+            },
+            complete: function () {
+                $submitBtn.prop('disabled', false).text('Submit');
             }
-           }
         });
-    
     });
 
-    // order status change 
-    $(document).on('submit', 'form#order_status_form', function(e){
+    /*--------order status change----------*/
+    $(document).on('submit', '#order_status_form', function (e) {
         e.preventDefault();
-        var url = $(this).attr('action');
-        var method = $(this).attr('method');
-        let order_status=$(document).find('select#order_status').val();
-    
-        var order = $('input.checkbox:checked').map(function(){
-          return $(this).val();
-        });
-        var order_ids=order.get();
-        
-        if(order_ids.length ==0){
-            toastr.error('Please Select An Order First !');
-            return ;
+
+        let $form = $(this);
+        let url = $form.attr('action');
+        let method = $form.attr('method');
+
+        let order_status = $form.find('#order_status').val();
+
+        let order_ids = $('input.checkbox:checked').map(function () {
+            return $(this).val();
+        }).get();
+
+        /* -------- Validation -------- */
+        if (!order_status) {
+            toastr.error('Please select status!');
+            return;
         }
-        
+
+        if (order_ids.length === 0) {
+            toastr.error('Please select at least one order!');
+            return;
+        }
+
+        let $submitBtn = $form.find('button[type="submit"]');
+        $submitBtn.prop('disabled', true).text('Processing...');
+
         $.ajax({
-           type:'GET',
-           url:url,
-           data:{order_status,order_ids},
-           success:function(res){
-               if(res.status=='success'){
-                toastr.success(res.message);
-                window.location.reload();
-                
-            }else{
-                toastr.error('Failed something wrong');
+            type: method,
+            url: url,
+            data: {
+                order_status: order_status,
+                order_ids: order_ids,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (res) {
+                if (res.status === 'success') {
+                    $('#changeStatus').modal('hide');
+                    toastr.success(res.message);
+                    location.reload();
+                } else {
+                    toastr.error(res.message || 'Something went wrong!');
+                }
+            },
+            error: function (xhr) {
+                toastr.error('Server error! Please try again.');
+                console.error(xhr.responseText);
+            },
+            complete: function () {
+                $submitBtn.prop('disabled', false).text('Submit');
             }
-           }
         });
-    
     });
     // order delete
     $(document).on('click', '.order_delete', function(e){
@@ -373,12 +412,12 @@ $(document).ready(function(){
           return $(this).val();
         });
         var order_ids=order.get();
-        
+
         if(order_ids.length ==0){
             toastr.error('Please Select An Order First !');
             return ;
         }
-        
+
         $.ajax({
            type:'GET',
            url:url,
@@ -387,15 +426,15 @@ $(document).ready(function(){
                if(res.status=='success'){
                 toastr.success(res.message);
                 window.location.reload();
-                
+
             }else{
                 toastr.error('Failed something wrong');
             }
            }
         });
-    
+
     });
-    
+
     // multiple print
     $(document).on('click', '.multi_order_print', function(e){
         e.preventDefault();
@@ -404,7 +443,7 @@ $(document).ready(function(){
           return $(this).val();
         });
         var order_ids=order.get();
-        
+
         if(order_ids.length ==0){
             toastr.error('Please Select Atleast One Order!');
             return ;
@@ -415,8 +454,8 @@ $(document).ready(function(){
            data:{order_ids},
            success:function(res){
                if(res.status=='success'){
-                   console.log(res.items, res.info);                          
-                   var myWindow = window.open("", "_blank");                   
+                   console.log(res.items, res.info);
+                   var myWindow = window.open("", "_blank");
                    myWindow.document.write(res.view);
             }else{
                 toastr.error('Failed something wrong');
@@ -432,12 +471,12 @@ $(document).ready(function(){
           return $(this).val();
         });
         var order_ids=order.get();
-        
+
         if(order_ids.length ==0){
             toastr.error('Please Select An Order First !');
             return ;
         }
-        
+
         $.ajax({
            type:'GET',
            url:url,
@@ -446,13 +485,13 @@ $(document).ready(function(){
                if(res.status=='success'){
                 toastr.success(res.message);
                 window.location.reload();
-                
+
             }else{
                 toastr.error('Failed something wrong');
             }
            }
         });
-    
+
     });
 })
 </script>
