@@ -88,59 +88,86 @@
                         </thead>
 
                         <tbody>
-                            @foreach($show_data as $key=>$value)
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="checkbox" value="{{$value->id}}">
-                                </td>
+                            @forelse($show_data as $key => $value)
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="checkbox" value="{{ $value->id }}">
+                                    </td>
 
-                                <td>{{$loop->iteration}}</td>
+                                    <td>{{ $loop->iteration }}</td>
 
-                                <td>
-                                    <div class="d-flex gap-2">
+                                    <td>
+                                        <div class="d-flex gap-2">
 
-                                        <a href="{{route('admin.order.invoice',['invoice_id'=>$value->invoice_id])}}" class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                            <a href="{{ route('admin.order.invoice',['invoice_id'=>$value->invoice_id]) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
 
-                                        <a href="{{route('admin.order.process',['invoice_id'=>$value->invoice_id])}}" class="btn btn-sm btn-warning">
-                                            <i class="mdi mdi-cog-outline"></i>
-                                        </a>
+                                            <a href="{{ route('admin.order.process',['invoice_id'=>$value->invoice_id]) }}" class="btn btn-sm btn-warning">
+                                                <i class="mdi mdi-cog-outline"></i>
+                                            </a>
 
-                                        <a href="{{route('admin.order.edit',['invoice_id'=>$value->invoice_id])}}" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
+                                            <a href="{{ route('admin.order.edit',['invoice_id'=>$value->invoice_id]) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
 
-                                        <form method="post" action="{{route('admin.order.destroy')}}">
-                                            @csrf
-                                            <input type="hidden" value="{{$value->id}}" name="id">
-                                            <button type="submit" class="btn btn-sm btn-danger delete-confirm">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                            <form method="post" action="{{ route('admin.order.destroy') }}">
+                                                @csrf
+                                                <input type="hidden" value="{{ $value->id }}" name="id">
+                                                <button type="submit" class="btn btn-sm btn-danger delete-confirm">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
 
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
 
-                                <td>{{$value->invoice_id}}</td>
+                                    <td>{{ $value->invoice_id }}</td>
 
-                                <td>
-                                    {{date('d-m-Y', strtotime($value->updated_at))}} <br>
-                                    <small>{{date('h:i:s a', strtotime($value->updated_at))}}</small>
-                                </td>
+                                    <td>
+                                        {{ date('d-m-Y', strtotime($value->updated_at)) }} <br>
+                                        <small>{{ date('h:i:s a', strtotime($value->updated_at)) }}</small>
+                                    </td>
 
-                                <td>
-                                    <strong>{{$value->shipping->name ?? ''}}</strong>
-                                    <p class="mb-0">{{$value->shipping->address ?? ''}}</p>
-                                </td>
+                                    <td>
+                                        <strong>{{ $value->shipping->name ?? '' }}</strong>
+                                        <p class="mb-0">{{ $value->shipping->address ?? '' }}</p>
+                                    </td>
 
-                                <td>{{$value->shipping->phone ?? ''}}</td>
-                                <td>{{$value->user->name ?? ''}}</td>
-                                <td>৳{{$value->amount}}</td>
-                                <td>{{$value->status->name ?? ''}}</td>
+                                    <td>{{ $value->shipping->phone ?? '' }}</td>
+                                    <td>{{ $value->user->name ?? '---' }}</td>
+                                    <td>৳{{ $value->amount }}</td>
+                                 <td>
+                                        @php
+                                            $status = $value->status->slug ?? '';
 
-                            </tr>
-                            @endforeach
+                                            $config = [
+                                                'pending' => ['class' => 'warning', 'icon' => 'fas fa-clock'],
+                                                'processing' => ['class' => 'info', 'icon' => 'fas fa-cogs'],
+                                                'on-the-way' => ['class' => 'primary', 'icon' => 'fas fa-shipping-fast'],
+                                                'on-hold' => ['class' => 'dark', 'icon' => 'fas fa-pause-circle'],
+                                                'in-courier' => ['class' => 'secondary', 'icon' => 'fas fa-truck'],
+                                                'completed' => ['class' => 'success', 'icon' => 'fas fa-check-circle'],
+                                                'cancelled' => ['class' => 'danger', 'icon' => 'fas fa-times-circle'],
+                                            ];
+
+                                            $badge = $config[$status] ?? ['class' => 'secondary', 'icon' => 'fas fa-question-circle'];
+                                        @endphp
+
+                                        <span class="badge bg-{{ $badge['class'] }}">
+                                            <i class="{{ $badge['icon'] }} me-1"></i>
+                                            {{ $value->status->name ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                            @empty
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted">
+                                        No Data Found
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
 
                     </table>
