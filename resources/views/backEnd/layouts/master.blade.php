@@ -64,7 +64,7 @@
     <!-- Begin page -->
     <div id="layout-wrapper">
 
-       
+
         <header id="page-topbar">
             <div class="navbar-header">
                 <div class="d-flex">
@@ -95,7 +95,7 @@
                     </button>
 
                     <div class="d-none d-sm-block ms-2">
-                        <h4 class="page-title"> 
+                        <h4 class="page-title">
                             {{-- Welcome To Dashboard --}}
                         </h4>
                     </div>
@@ -112,7 +112,7 @@
                         <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="font-size-16">
                                 {{Auth::user()->name}}
-                                
+
                             </span>
                         </button>
                     </div>
@@ -123,12 +123,12 @@
                             <img class="rounded-circle header-profile-user" src="http://103.146.16.154/profileImages/avatar.png" alt="Header Avatar">
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
-                            
+
                             <a class="dropdown-item text-danger" href="{{ route('logout') }}"><i class="mdi mdi-power"></i> Logout</a>
                         </div>
                     </div>
 
-                 
+
 
                 </div>
             </div>

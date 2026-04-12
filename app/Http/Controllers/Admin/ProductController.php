@@ -52,7 +52,7 @@ class ProductController extends Controller
         if($request->keyword){
             $data = Product::orderBy('id','DESC')->where('name', 'LIKE', '%' . $request->keyword . "%")->with('image','category')->paginate(50);
         }else{
-            $data = Product::orderBy('id','DESC')->with('image','category')->paginate(50);
+            $data = Product::orderBy('id','DESC')->with('image','category')->paginate(10);
         }
         return view('backEnd.product.index',compact('data'));
     }
