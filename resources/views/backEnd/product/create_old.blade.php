@@ -1,5 +1,5 @@
 @extends('backEnd.layouts.master')
-@section('title','Product Manage')
+@section('title','Product Create')
 @section('css')
 <style>
   .increment_btn,
@@ -7,127 +7,35 @@
     margin-top: -17px;
     margin-bottom: 10px;
   }
-
-  /* FIX summernote UI */
-  .note-editor.note-frame {
-      border-radius: 8px;
-  }
-
-  .note-editable {
-      min-height: 150px !important;
-      max-height: 300px;
-      overflow-y: auto;
-      word-break: break-word;
-  }
-  /* SWITCH BASE */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 52px;
-  height: 26px;
-}
-
-/* Hide default checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-/* Slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #dee2e6;
-  transition: all 0.3s ease;
-  border-radius: 50px;
-}
-
-/* Circle */
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  background-color: #fff;
-  transition: 0.3s;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-/* ON state */
-.switch input:checked + .slider {
-  background: linear-gradient(45deg, #198754, #20c997);
-}
-
-/* Move circle */
-.switch input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-/* Hover effect */
-.switch:hover .slider {
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
-}
-
-/* Optional label spacing */
-.form-group label {
-  font-weight: 500;
-  margin-bottom: 5px;
-}
 </style>
-
-<link href="{{asset('backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet"/>
+<link href="{{asset('public/backEnd')}}/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+<link href="{{asset('public/backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet" type="text/css" />
 @endsection
+
 @section('content')
- <div class="row">
+<div class="container-fluid">
+  <!-- start page title -->
+  <div class="row">
     <div class="col-12">
-        <div class="card shadow-sm border-0 mb-3">
-            <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-
-                <!-- Left -->
-                <div class="d-flex align-items-center gap-3">
-                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
-                         style="width:50px; height:50px;">
-                        <i class="fas fa-plus fs-4"></i>
-                    </div>
-
-                    <div>
-                        <h4 class="mb-0">Product Create</h4>
-                        <small class="text-muted">Add new product easily</small>
-                    </div>
-                </div>
-
-                <!-- Right -->
-                <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
-                    <div class="vr d-none d-sm-block"></div>
-
-                    <a href="{{ route('products.index') }}" class="btn btn-primary">
-                        <i class="fe-shopping-cart me-1"></i> Product List
-                    </a>
-                </div>
-
-            </div>
+      <div class="page-title-box">
+        <div class="page-title-right">
+          <a href="{{route('products.index')}}" class="btn btn-primary rounded-pill">Manage</a>
         </div>
+        <h4 class="page-title">Product Create</h4>
+      </div>
     </div>
-</div>
-
-<div class="row order_page">
-    <div class="col-12">
-        <div class="card">
-             <div class="card-body">
+  </div>
+  <!-- end page title -->
+  <div class="row justify-content-center">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-body">
           <form action="{{route('products.store')}}" method="POST" class="row" data-parsley-validate="" enctype="multipart/form-data">
             @csrf
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
-                <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" placeholder="Enter Product Name" id="name" required="" />
+                <label for="name" class="form-label">Product Name *</label>
+                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" id="name" required="" />
                 @error('name')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
@@ -136,9 +44,9 @@
               </div>
             </div>
             <!-- col-end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
-                <label for="category_id" class="form-label">Categories <span class="text-danger">*</span></label>
+                <label for="category_id" class="form-label">Categories *</label>
                 <select class="form-control select2 @error('category_id') is-invalid @enderror" name="category_id" value="{{ old('category_id') }}" id="category_id" required>
                   <option value="">Select..</option>
                   @foreach($categories as $category)
@@ -153,7 +61,7 @@
               </div>
             </div>
             <!-- col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
                 <label for="subcategory_id" class="form-label">SubCategories (Optional)</label>
                 <select class="form-control select2 @error('subcategory_id') is-invalid @enderror" id="subcategory_id" name="subcategory_id" data-placeholder="Choose ...">
@@ -169,7 +77,7 @@
               </div>
             </div>
             <!-- col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
                 <label for="childcategory_id" class="form-label">Child Categories (Optional)</label>
                 <select class="form-control select2 @error('childcategory_id') is-invalid @enderror" id="childcategory_id" name="childcategory_id" data-placeholder="Choose ...">
@@ -186,7 +94,7 @@
             </div>
             <!-- col end -->
 
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-4">
               <div class="form-group mb-3">
                 <label for="category_id" class="form-label">Brands</label>
                 <select class="form-control select2 @error('brand_id') is-invalid @enderror" value="{{ old('brand_id') }}" name="brand_id">
@@ -203,10 +111,10 @@
               </div>
             </div>
             <!-- col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-4">
               <div class="form-group mb-3">
-                <label for="purchase_price" class="form-label">Purchase Price <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('purchase_price') is-invalid @enderror" name="purchase_price" placeholder="Enter Purchase Price" value="{{ old('purchase_price') }}" id="purchase_price" required />
+                <label for="purchase_price" class="form-label">Purchase Price *</label>
+                <input type="text" class="form-control @error('purchase_price') is-invalid @enderror" name="purchase_price" value="{{ old('purchase_price') }}" id="purchase_price" required />
                 @error('purchase_price')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
@@ -216,10 +124,10 @@
             </div>
             <!-- col-end -->
             <!-- col-end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-4">
               <div class="form-group mb-3">
-                <label for="old_price" class="form-label">Old Price <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('old_price') is-invalid @enderror" name="old_price" placeholder="Enter Old Price"  value="{{ old('old_price') }}" id="old_price" />
+                <label for="old_price" class="form-label">Old Price *</label>
+                <input type="text" class="form-control @error('old_price') is-invalid @enderror" name="old_price" value="{{ old('old_price') }}" id="old_price" />
                 @error('old_price')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
@@ -228,10 +136,10 @@
               </div>
             </div>
             <!-- col-end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-4">
               <div class="form-group mb-3">
-                <label for="new_price" class="form-label">New Price <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('new_price') is-invalid @enderror" name="new_price"  placeholder="Enter New Price"  value="{{ old('new_price') }}" id="new_price" required />
+                <label for="new_price" class="form-label">New Price *</label>
+                <input type="text" class="form-control @error('new_price') is-invalid @enderror" name="new_price" value="{{ old('new_price') }}" id="new_price" required />
                 @error('new_price')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
@@ -240,10 +148,10 @@
               </div>
             </div>
             <!-- col-end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-4">
               <div class="form-group mb-3">
-                <label for="stock" class="form-label">Stock <span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('stock') is-invalid @enderror" name="stock"  placeholder="Enter Stock"  value="{{ old('stock') }}" id="stock" />
+                <label for="stock" class="form-label">Stock *</label>
+                <input type="text" class="form-control @error('stock') is-invalid @enderror" name="stock" value="{{ old('stock') }}" id="stock" />
                 @error('stock')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
@@ -253,7 +161,7 @@
             </div>
             <!-- col-end -->
 
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-4 mb-3">
               <label for="image">Image *</label>
               <div class="clone hide" style="display: none;">
                 <div class="control-group input-group">
@@ -276,10 +184,10 @@
               </div>
             </div>
             <!-- col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
                 <label for="pro_unit" class="form-label">Product Unit (Optional)</label>
-                <input type="text" class="form-control @error('pro_unit') is-invalid @enderror" name="pro_unit"  placeholder="Enter Product Unit"  value="{{ old('pro_unit') }}" id="pro_unit" />
+                <input type="text" class="form-control @error('pro_unit') is-invalid @enderror" name="pro_unit" value="{{ old('pro_unit') }}" id="pro_unit" />
                 @error('pro_unit')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
@@ -287,7 +195,7 @@
                 @enderror
               </div>
             </div>
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
                 <label for="pro_video" class="form-label">Product Video (Optional)</label>
                 <input type="text" class="form-control @error('pro_video') is-invalid @enderror" name="pro_unit" value="{{ old('pro_video') }}" id="pro_video" />
@@ -299,7 +207,7 @@
               </div>
             </div>
 
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
                 <label for="roles" class="form-label">Size (Option)</label>
                 <select class="form-control select2" name="proSize[]" multiple="multiple">
@@ -316,7 +224,7 @@
               </div>
             </div>
              <!--col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-6">
               <div class="form-group mb-3">
                 <label for="color" class="form-label">Color (Optional)</label>
                 <select class="form-control select2" name="proColor[]" multiple="multiple">
@@ -335,7 +243,7 @@
              <!--col end -->
             <div class="col-sm-12 mb-3">
               <div class="form-group">
-                <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                <label for="description" class="form-label">Description *</label>
                 <textarea name="description" rows="6" class="summernote form-control @error('description') is-invalid @enderror" required></textarea>
                 @error('description')
                 <span class="invalid-feedback" role="alert">
@@ -347,7 +255,7 @@
             <!-- col end -->
 
             <!-- col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-3 mb-3">
               <div class="form-group">
                 <label for="status" class="d-block">Status</label>
                 <label class="switch">
@@ -362,7 +270,7 @@
               </div>
             </div>
             <!-- col end -->
-            <div class="col-md-4 mb-2">
+            <div class="col-sm-3 mb-3">
               <div class="form-group">
                 <label for="topsale" class="d-block">Hot Deals</label>
                 <label class="switch">
@@ -383,30 +291,27 @@
             </div>
           </form>
         </div>
-        </div>
+        <!-- end card-body-->
+      </div>
+      <!-- end card-->
     </div>
+    <!-- end col-->
+  </div>
 </div>
-<!-- Assign User End-->
-@endsection
-@section('script')
-<script src="{{asset('backEnd/')}}/assets/libs/parsleyjs/parsley.min.js"></script>
-<script src="{{asset('backEnd/')}}/assets/js/pages/form-validation.init.js"></script>
-<script src="{{asset('backEnd/')}}/assets/libs/select2/js/select2.min.js"></script>
-<script src="{{asset('backEnd/')}}/assets/js/pages/form-advanced.init.js"></script>
+@endsection @section('script')
+<script src="{{asset('public/backEnd/')}}/assets/libs/parsleyjs/parsley.min.js"></script>
+<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-validation.init.js"></script>
+<script src="{{asset('public/backEnd/')}}/assets/libs/select2/js/select2.min.js"></script>
+<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-advanced.init.js"></script>
 <!-- Plugins js -->
-<script src="{{asset('backEnd/')}}/assets/libs/summernote/summernote-lite.min.js"></script>
+<script src="{{asset('public/backEnd/')}}/assets/libs//summernote/summernote-lite.min.js"></script>
+<script>
+  $(".summernote").summernote({
+    placeholder: "Enter Your Text Here",
+  });
+</script>
 <script type="text/javascript">
   $(document).ready(function () {
-     $('.summernote').summernote({
-        placeholder: "Enter Your Text Here",
-        height: 200,
-        // toolbar: [
-        //     ['style', ['bold', 'italic', 'underline']],
-        //     ['para', ['ul', 'ol', 'paragraph']],
-        //     ['insert', ['link']],
-        //     ['view', ['codeview']]
-        // ]
-    });
     $(".btn-increment").click(function () {
       var html = $(".clone").html();
       $(".increment").after(html);
@@ -414,6 +319,10 @@
     $("body").on("click", ".btn-danger", function () {
       $(this).parents(".control-group").remove();
     });
+  });
+</script>
+<script type="text/javascript">
+  $(document).ready(function () {
     $(".increment_btn").click(function () {
       var html = $(".clone_price").html();
       $(".increment_price").after(html);
@@ -474,4 +383,3 @@
   });
 </script>
 @endsection
-
