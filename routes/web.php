@@ -189,7 +189,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('categories/update', [CategoryController::class,'update'])->name('categories.update');
     Route::post('categories/inactive', [CategoryController::class,'inactive'])->name('categories.inactive');
     Route::post('categories/active', [CategoryController::class,'active'])->name('categories.active');
-    Route::post('categories/destroy', [CategoryController::class,'destroy'])->name('categories.destroy');
+    Route::delete('categories/destroy', [CategoryController::class,'destroy'])->name('categories.destroy');
 
     // Subcategories
     Route::get('subcategories/manage', [SubcategoryController::class,'index'])->name('subcategories.index');

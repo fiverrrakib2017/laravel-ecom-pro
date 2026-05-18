@@ -135,6 +135,15 @@
                                         title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <form method="post" action="{{ route('categories.destroy') }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <input type="hidden" value="{{ $value->id }}" name="hidden_id">
+
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
 
                                     </div>
                                 </td>
@@ -149,9 +158,9 @@
    </div>
 @endsection
 
-
 @section('script')
  <script type="text/javascript">
     $('#category_datatable').DataTable();
  </script>
+ {!! Toastr::message() !!}
 @endsection
