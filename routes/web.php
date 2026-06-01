@@ -267,7 +267,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('brands/update', [BrandController::class,'update'])->name('brands.update');
     Route::post('brands/inactive', [BrandController::class,'inactive'])->name('brands.inactive');
     Route::post('brands/active', [BrandController::class,'active'])->name('brands.active');
-    Route::post('brands/destroy', [BrandController::class,'destroy'])->name('brands.destroy');
+    Route::delete('brands/destroy', [BrandController::class,'destroy'])->name('brands.destroy');
 
      // color
     Route::get('color/manage', [ColorController::class,'index'])->name('colors.index');

@@ -1,23 +1,47 @@
 @extends('backEnd.layouts.master')
 @section('title','Brand Edit')
 @section('css')
-<link href="{{asset('public/backEnd')}}/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
+<style>
+
+</style>
+<link href="{{asset('backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet"/>
+
 @endsection
 @section('content')
 <div class="container-fluid">
-    
     <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <a href="{{route('brands.index')}}" class="btn btn-primary rounded-pill">Manage</a>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+
+                    <!-- Left -->
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                            style="width:50px; height:50px;">
+                            <i class="mdi mdi-shape-outline fs-4"></i>
+                        </div>
+
+                        <div>
+                            <h4 class="mb-0">Brand Edit</h4>
+                            <small class="text-muted"> Product Brand Edit easily</small>
+                        </div>
+                    </div>
+
+                    <!-- Right -->
+                    <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+                        <div class="vr d-none d-sm-block"></div>
+
+                        <a href="{{ route('brands.index') }}" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-1"></i> Brand List
+                        </a>
+                    </div>
+
                 </div>
-                <h4 class="page-title">Brand Edit</h4>
             </div>
         </div>
-    </div>       
-    <!-- end page title --> 
+    </div>
+    <!-- end page title -->
    <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card">
@@ -37,9 +61,10 @@
                         </div>
                     </div>
                     <!-- col-end -->
+
                     <div class="col-sm-12 mb-3">
                         <div class="form-group">
-                            <label for="image" class="form-label">Image</label>
+                            <label for="image" class="form-label">Image *</label>
                             <input type="file" class="form-control @error('image') is-invalid @enderror" name="image" value="{{ $edit_data->image }}"  id="image" >
                             <img src="{{asset($edit_data->image)}}" alt="" class="edit-image">
                             @error('image')
@@ -49,8 +74,11 @@
                             @enderror
                         </div>
                     </div>
-                    <!-- col end -->
-                    <div class="col-sm-12 mb-3">
+
+
+
+                    <!-- col-end -->
+                    <div class="col mb-3">
                         <div class="form-group">
                             <label for="status" class="d-block">Status</label>
                             <label class="switch">
@@ -66,7 +94,8 @@
                     </div>
                     <!-- col end -->
                     <div>
-                        <input type="submit" class="btn btn-success" value="Submit">
+                        <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
+                        <button type="submit" class="btn btn-success">Submit</button>
                     </div>
 
                 </form>
@@ -78,10 +107,4 @@
 </div>
 @endsection
 
-
 @section('script')
-<script src="{{asset('public/backEnd/')}}/assets/libs/parsleyjs/parsley.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-validation.init.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/libs/select2/js/select2.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-advanced.init.js"></script>
-@endsection
