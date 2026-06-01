@@ -19,7 +19,7 @@ class ChildcategoryController extends Controller
         ->where("subcategorytype", $request->childcategorytype)
         ->pluck('subcategoryName', 'id');
         return response()->json($category);
-    }        
+    }
 
     function __construct()
     {
@@ -32,6 +32,7 @@ class ChildcategoryController extends Controller
     public function index(Request $request)
     {
         $data = Childcategory::orderBy('id','DESC')->with('subcategory')->get();
+      
         return view('backEnd.childcategory.index', compact('data'));
     }
     public function create()
@@ -45,26 +46,26 @@ class ChildcategoryController extends Controller
             'childcategoryName' => 'required',
             'status' => 'required',
         ]);
-        // image with intervention 
-        
-        
+        // image with intervention
+
+
         $input = $request->all();
 
         $input['slug'] = strtolower(preg_replace('/\s+/', '-', $request->childcategoryName));
         $input['slug'] = str_replace('/', '', $input['slug']);
-        
+
         Childcategory::create($input);
         Toastr::success('Success','Data insert successfully');
         return redirect()->route('childcategories.index');
     }
-    
+
     public function edit($id)
     {
         $edit_data = Childcategory::find($id);
         $categories = Subcategory::select('id','subcategoryName')->get();
         return view('backEnd.childcategory.edit',compact('edit_data','categories'));
     }
-    
+
     public function update(Request $request)
     {
         $this->validate($request, [
@@ -74,18 +75,18 @@ class ChildcategoryController extends Controller
         ]);
         $update_data = Childcategory::find($request->id);
         $input = $request->all();
-        
-       
+
+
         $input['slug'] = strtolower(preg_replace('/\s+/', '-', $request->childcategoryName));
         $input['slug'] = str_replace('/', '', $input['slug']);
         $input['status'] = $request->status?1:0;
-        
+
         $update_data->update($input);
 
         Toastr::success('Success','Data update successfully');
         return redirect()->route('childcategories.index');
     }
- 
+
     public function inactive(Request $request)
     {
         $inactive = Childcategory::find($request->hidden_id);
