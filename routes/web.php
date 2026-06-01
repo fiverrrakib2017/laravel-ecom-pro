@@ -200,7 +200,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('subcategories/update', [SubcategoryController::class,'update'])->name('subcategories.update');
     Route::post('subcategories/inactive', [SubcategoryController::class,'inactive'])->name('subcategories.inactive');
     Route::post('subcategories/active', [SubcategoryController::class,'active'])->name('subcategories.active');
-    Route::post('subcategories/destroy', [SubcategoryController::class,'destroy'])->name('subcategories.destroy');
+    Route::delete('subcategories/destroy', [SubcategoryController::class,'destroy'])->name('subcategories.destroy');
 
     // Childcategories
     Route::get('childcategories/manage', [ChildcategoryController::class,'index'])->name('childcategories.index');

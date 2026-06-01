@@ -20,7 +20,7 @@
                     </div>
 
                     <div>
-                        <h4 class="mb-0">Subcategory Manage</h4>
+                        <h4 class="mb-0">Sub Category Manage</h4>
                         <small class="text-muted"> Product Sub-Category Manage easily</small>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                                         title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form method="post" action="{{ route('categories.destroy') }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                        <form method="post" action="{{ route('subcategories.destroy') }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
                                             @csrf
                                             @method('DELETE')
                                             <input type="hidden" value="{{ $value->id }}" name="hidden_id">
