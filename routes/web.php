@@ -289,7 +289,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('size/update', [SizeController::class,'update'])->name('sizes.update');
     Route::post('size/inactive', [SizeController::class,'inactive'])->name('sizes.inactive');
     Route::post('size/active', [SizeController::class,'active'])->name('sizes.active');
-    Route::post('size/destroy', [SizeController::class,'destroy'])->name('sizes.destroy');
+    Route::delete('size/destroy', [SizeController::class,'destroy'])->name('sizes.destroy');
 
 
     // product
