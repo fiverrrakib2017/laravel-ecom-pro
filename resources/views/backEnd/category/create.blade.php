@@ -149,6 +149,7 @@
                     <!-- col end -->
 
                     <div>
+                         <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
                         <input type="submit" class="btn btn-success" value="Submit">
                     </div>
 
@@ -165,8 +166,8 @@
 <!-- Plugins js -->
 <script src="{{asset('backEnd/')}}/assets/libs/summernote/summernote-lite.min.js"></script>
  <script type="text/javascript">
-    $('#category_datatable').DataTable();
     $(document).ready(function () {
+
         $('.summernote').summernote({
             placeholder: "Enter Your Text Here",
             height: 200,

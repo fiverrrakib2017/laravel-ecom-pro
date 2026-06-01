@@ -1,31 +1,51 @@
 @extends('backEnd.layouts.master')
-@section('title','Childcategory Create')
+@section('title','Child-Category Create')
 @section('css')
-<link href="{{asset('public/backEnd')}}/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-<link href="{{asset('public/backEnd')}}/assets/css/switchery.min.css" rel="stylesheet" type="text/css" />
-<link href="{{asset('public/backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet" type="text/css" />
+<style>
+
+</style>
+<link href="{{asset('backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet"/>
+
 @endsection
 @section('content')
-<div class="container-fluid">
-    
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <a href="{{route('childcategories.index')}}" class="btn btn-primary rounded-pill">Manage</a>
+ <div class="row">
+    <div class="col-9 m-auto">
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+
+                <!-- Left -->
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:50px; height:50px;">
+                        <i class="mdi mdi-shape-outline fs-4"></i>
+                    </div>
+
+                    <div>
+                        <h4 class="mb-0">Child-Category Add</h4>
+                        <small class="text-muted"> Product Child-Category Add easily</small>
+                    </div>
                 </div>
-                <h4 class="page-title">Childcategory Create</h4>
+
+                <!-- Right -->
+                <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+                    <div class="vr d-none d-sm-block"></div>
+
+                    <a href="{{ route('childcategories.index') }}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart me-1"></i>Child-Category List
+                    </a>
+                </div>
+
             </div>
         </div>
-    </div>       
-    <!-- end page title --> 
-   <div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-9 m-auto">
+        <div class="card shadow-sm border-0 rounded-3">
             <div class="card-body">
-                <form action="{{route('childcategories.store')}}" method="POST" class=row data-parsley-validate=""  enctype="multipart/form-data">
-                    @csrf                   
+                 <form action="{{route('childcategories.store')}}" method="POST" class=row data-parsley-validate=""  enctype="multipart/form-data">
+                    @csrf
 
                     <div class="col-sm-12">
                         <div class="form-group mb-3">
@@ -37,7 +57,7 @@
                                     <option value="">== == == {{ $category->name }} == == ==</option>
                                         @foreach ($category->subcategories as $subcat)
                                             <option value="{{ $subcat->id }}"  >{{ $subcat->subcategoryName }}</option>
-                                            
+
                                         @endforeach
                                     @endforeach
                                 </optgroup>
@@ -75,7 +95,7 @@
                             @enderror
                         </div>
                     </div>
-                   
+
                     <div class="col-sm-12">
                         <div class="form-group mb-3">
                             <label for="meta_description" class="form-label">Meta Description*</label>
@@ -87,8 +107,8 @@
                             @enderror
                         </div>
                     </div>
-                    
-                  
+
+
                     <div class="col mb-3">
                         <div class="form-group">
                             <label for="status" class="d-block">Status</label>
@@ -104,41 +124,33 @@
                         </div>
                     </div>
                     <!-- col end -->
-                    
-                    
+
+
                     <div>
+                         <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
                         <input type="submit" class="btn btn-success" value="Submit">
                     </div>
 
                 </form>
 
-            </div> <!-- end card-body-->
-        </div> <!-- end card-->
-    </div> <!-- end col-->
+            </div>
+        </div>
+    </div>
    </div>
-</div>
 @endsection
 
 
 @section('script')
-<script src="{{asset('public/backEnd/')}}/assets/libs/parsleyjs/parsley.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-validation.init.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/libs/select2/js/select2.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-advanced.init.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/switchery.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/libs//summernote/summernote-lite.min.js"></script>
-<script>
-    $(document).ready(function(){
-        var elem = document.querySelector('.js-switch');
-        var init = new Switchery(elem);
+<!-- Plugins js -->
+<script src="{{asset('backEnd/')}}/assets/libs/summernote/summernote-lite.min.js"></script>
+ <script type="text/javascript">
+      $('#subcategory_id').select2();
+    $(document).ready(function () {
+        $('.summernote').summernote({
+            placeholder: "Enter Your Text Here",
+            height: 200,
+        });
     });
-</script>
-<script>
-    $(".summernote").summernote({
-        placeholder: "Enter Your Text Here",    
-    });
-</script>
-
-
-
+ </script>
+  {!! Toastr::message() !!}
 @endsection

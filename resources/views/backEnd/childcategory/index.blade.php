@@ -69,18 +69,13 @@
                                         {{ $value->subcategory->subcategoryName ?? '---' }}
                                     </span>
                                 </td>
-
                                 <td>
-                                    @if ($value->front_view == 1)
-                                        <span class="badge bg-dark px-3 py-2 rounded-pill">
-                                            {{ $value->name }}
-                                        </span>
-                                    @else
-                                        <span class="fw-medium">
-                                            {{ $value->name }}
-                                        </span>
-                                    @endif
+                                    <span class="fw-semibold text-muted">
+                                        {{ $value->childcategoryName ?? '---' }}
+                                    </span>
                                 </td>
+
+
 
 
 

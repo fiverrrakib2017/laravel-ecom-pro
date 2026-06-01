@@ -148,7 +148,6 @@
 <!-- Plugins js -->
 <script src="{{asset('backEnd/')}}/assets/libs/summernote/summernote-lite.min.js"></script>
  <script type="text/javascript">
-    $('#category_datatable').DataTable();
     $(document).ready(function () {
         $('.summernote').summernote({
             placeholder: "Enter Your Text Here",
