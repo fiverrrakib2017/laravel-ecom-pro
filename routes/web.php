@@ -278,7 +278,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('color/update', [ColorController::class,'update'])->name('colors.update');
     Route::post('color/inactive', [ColorController::class,'inactive'])->name('colors.inactive');
     Route::post('color/active', [ColorController::class,'active'])->name('colors.active');
-    Route::post('color/destroy', [ColorController::class,'destroy'])->name('colors.destroy');
+    Route::delete('color/destroy', [ColorController::class,'destroy'])->name('colors.destroy');
 
     // size
     Route::get('size/manage', [SizeController::class,'index'])->name('sizes.index');
