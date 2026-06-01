@@ -1,33 +1,55 @@
 @extends('backEnd.layouts.master')
 @section('title','Color Create')
 @section('css')
-<link href="{{asset('public/backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet" type="text/css" />
+<style>
+
+</style>
+<link href="{{asset('backEnd')}}/assets/libs/summernote/summernote-lite.min.css" rel="stylesheet"/>
+
 @endsection
 @section('content')
-<div class="container-fluid">
-    
-    <!-- start Color title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <a href="{{route('colors.index')}}" class="btn btn-primary rounded-pill">Manage</a>
+ <div class="row">
+    <div class="col-9 m-auto">
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+
+                <!-- Left -->
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:50px; height:50px;">
+                        <i class="mdi mdi-shape-outline fs-4"></i>
+                    </div>
+
+                    <div>
+                        <h4 class="mb-0">Color Add</h4>
+                        <small class="text-muted"> Product Color Add easily</small>
+                    </div>
                 </div>
-                <h4 class="page-title">Color Create</h4>
+
+                <!-- Right -->
+                <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+                    <div class="vr d-none d-sm-block"></div>
+
+                    <a href="{{ route('colors.index') }}" class="btn btn-primary">
+                        <i class="fas fa-shopping-cart me-1"></i> Color List
+                    </a>
+                </div>
+
             </div>
         </div>
-    </div>       
-    <!-- end Color title --> 
-   <div class="row">
-    <div class="col-lg-12">
-        <div class="card">
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-9 m-auto">
+        <div class="card shadow-sm border-0 rounded-3">
             <div class="card-body">
-                <form action="{{route('colors.store')}}" method="POST" class=row data-parsley-validate=""  enctype="multipart/form-data">
+                  <form action="{{route('colors.store')}}" method="POST" class=row data-parsley-validate=""  enctype="multipart/form-data">
                     @csrf
                     <div class="col-sm-6">
                         <div class="form-group mb-3">
                             <label for="colorName" class="form-label">Color Name *</label>
-                            <input type="text" class="form-control @error('colorName') is-invalid @enderror" name="colorName" value="{{ old('colorName') }}"  id="colorName" required="">
+                            <input type="text" class="form-control @error('colorName') is-invalid @enderror" name="colorName" value="{{ old('colorName') }}"  id="colorName" placeholder="Enter Color Name" required="">
                             @error('colorName')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -46,7 +68,7 @@
                                 </span>
                             @enderror
                         </div>
-                    </div>                    
+                    </div>
                     <!-- col-end -->
                     <div class="col-sm-6 mb-3">
                         <div class="form-group">
@@ -64,30 +86,31 @@
                     </div>
                     <!-- col end -->
                     <div>
+                        <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
+
                         <input type="submit" class="btn btn-success" value="Submit">
                     </div>
 
                 </form>
 
-            </div> <!-- end card-body-->
-        </div> <!-- end card-->
-    </div> <!-- end col-->
+            </div>
+        </div>
+    </div>
    </div>
-</div>
 @endsection
 
 
-
 @section('script')
-<script src="{{asset('public/backEnd/')}}/assets/libs/parsleyjs/parsley.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-validation.init.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-advanced.init.js"></script>
 <!-- Plugins js -->
-<script src="{{asset('public/backEnd/')}}/assets/libs//summernote/summernote-lite.min.js"></script>
-<script>
-  $(".summernote").summernote({
-    placeholder: "Enter Your Text Here",
-    
-  });
-</script>
+<script src="{{asset('backEnd/')}}/assets/libs/summernote/summernote-lite.min.js"></script>
+ <script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.summernote').summernote({
+            placeholder: "Enter Your Text Here",
+            height: 200,
+        });
+    });
+ </script>
+  {!! Toastr::message() !!}
 @endsection
