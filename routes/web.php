@@ -211,7 +211,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('childcategories/update', [ChildcategoryController::class,'update'])->name('childcategories.update');
     Route::post('childcategories/inactive', [ChildcategoryController::class,'inactive'])->name('childcategories.inactive');
     Route::post('childcategories/active', [ChildcategoryController::class,'active'])->name('childcategories.active');
-    Route::post('childcategories/destroy', [ChildcategoryController::class,'destroy'])->name('childcategories.destroy');
+    Route::delete('childcategories/destroy', [ChildcategoryController::class,'destroy'])->name('childcategories.destroy');
 
      // paymentgeteway
     Route::get('paymentgeteway/manage', [ApiIntegrationController::class,'pay_manage'])->name('paymentgeteway.manage');
