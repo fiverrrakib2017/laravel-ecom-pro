@@ -2,19 +2,49 @@
 @section('title','Product Price Manage')
 @section('content')
 <div class="container-fluid">
-    
+
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <a href="{{route('products.create')}}" class="btn btn-danger rounded-pill"><i class="fe-shopping-cart"></i> Add Product</a>
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+
+                    <!-- Left: Title + Info -->
+                    <div class="d-flex align-items-center gap-3">
+
+                        <!-- Icon -->
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:50px; height:50px;">
+                            <i class="fas fa-shopping-bag fs-4"></i>
+                        </div>
+
+                        <!-- Text -->
+                        <div>
+                            <h4 class="mb-0 "> Product Price Edit</h4>
+
+                            <small class="text-muted">Manage all your products efficiently</small>
+                        </div>
+                    </div>
+
+                    <!-- Right: Count + Button -->
+                    <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
+
+
+
+                        <!-- Divider -->
+                        <div class="vr d-none d-sm-block"></div>
+
+                        <!-- Button -->
+                        <a href="{{ route('products.create') }}" class="btn btn-primary">
+                            <i class="fe-shopping-cart me-1"></i> Add Product
+                        </a>
+
+                    </div>
+
                 </div>
-                <h4 class="page-title">Product Price Manage</h4>
             </div>
         </div>
-    </div>       
-    <!-- end page title --> 
+    </div>
+    <!-- end page title -->
    <div class="row">
     <div class="col-12">
         <div class="card">
@@ -22,7 +52,7 @@
                 @csrf
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table nowrap w-100">
+                    <table class="table nowrap w-100" id="price_edit_datatable">
                     <thead>
                         <tr>
                             <th style="width:5%">SL</th>
@@ -32,28 +62,33 @@
                             <th style="width:15%">New Price</th>
                             <th style="width:15%">Stock</th></th>
                         </tr>
-                    </thead>               
-                
+                    </thead>
+
                     <tbody>
                         @foreach($products as $key=>$value)
                         <tr>
                             <td>{{$loop->iteration}}</td>
                             <input type="hidden" value="{{$value->id}}" name="ids[]">
                             <td>{{$value->name}}</td>
-                            <td><input value="{{$value->old_price}}" name="old_price[]"></td>
-                            <td><input value="{{$value->new_price}}" name="new_price[]"></td>
-                            <td><input value="{{$value->stock}}" name="stock[]"></td>
+                            <td><input value="{{$value->old_price}}" name="old_price[]" class="form-control"></td>
+                            <td><input value="{{$value->new_price}}" name="new_price[]" class="form-control"></td>
+                            <td><input value="{{$value->stock}}" name="stock[]" class="form-control"></td>
                         </tr>
                         @endforeach
                      </tbody>
-                     <tfoot>
-                         <tr>
-                             <td colspan="4"></td>
-                             <td>
-                                 <button class="btn btn-success">Update Price</button>
-                             </td>
-                         </tr>
-                     </tfoot>
+                        <tfoot>
+                            <tr>
+                                <td colspan="5" class="text-end">
+                                    <button type="button" onclick="history.back();" class="btn btn-danger me-2">
+                                        Back
+                                    </button>
+
+                                    <button type="submit" class="btn btn-success">
+                                        Update Price
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div> <!-- end card body-->
@@ -63,91 +98,12 @@
    </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function(){
-    $(".checkall").on('change',function(){
-      $(".checkbox").prop('checked',$(this).is(":checked"));
-    });
-    
-    $(document).on('click', '.hotdeal_update', function(e){
-        e.preventDefault();
-        var url = $(this).attr('href');
-        console.log('url',url);
-        var product = $('input.checkbox:checked').map(function(){
-          return $(this).val();
-        });
-        var product_ids=product.get();
-        if(product_ids.length ==0){
-            toastr.error('Please Select A Product First !');
-            return ;
-        }
-        $.ajax({
-           type:'GET',
-           url:url,
-           data:{product_ids},
-           success:function(res){
-               if(res.status=='success'){
-                toastr.success(res.message);
-                window.location.reload();
-            }else{
-                toastr.error('Failed something wrong');
-            }
-           }
-        });
-    });
-    $(document).on('click', '.update_status', function(e){
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var product = $('input.checkbox:checked').map(function(){
-          return $(this).val();
-        });
-        var product_ids=product.get();
-        if(product_ids.length ==0){
-            toastr.error('Please Select A Product First !');
-            return ;
-        }
-        $.ajax({
-           type:'GET',
-           url:url,
-           data:{product_ids},
-           success:function(res){
-               if(res.status=='success'){
-                toastr.success(res.message);
-                window.location.reload();
-            }else{
-                toastr.error('Failed something wrong');
-            }
-           }
-        });
-    });
-    $(document).on('click', '.update_status', function(e){
-        e.preventDefault();
-        var url = $(this).attr('href');
-        var product = $('input.checkbox:checked').map(function(){
-          return $(this).val();
-        });
-        var product_ids=product.get();
-        if(product_ids.length ==0){
-            toastr.error('Please Select A Product First !');
-            return ;
-        }
-        $.ajax({
-           type:'GET',
-           url:url,
-           data:{product_ids},
-           success:function(res){
-               if(res.status=='success'){
-                toastr.success(res.message);
-                window.location.reload();
-            }else{
-                toastr.error('Failed something wrong');
-            }
-           }
-        });
-    });
-    
-    
-})
+
+@endsection
+
+@section('script')
+<script type="text/javascript">
+$('#price_edit_datatable').DataTable();
 </script>
+{!! Toastr::message() !!}
 @endsection

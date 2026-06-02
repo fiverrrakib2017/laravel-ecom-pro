@@ -131,25 +131,25 @@ class ProductController extends Controller
         return view('backEnd.product.price_edit',compact('products'));
     }
     public function price_update(Request $request)
-{
-    $ids = $request->ids;
-    $oldPrices = $request->old_price;
-    $newPrices = $request->new_price;
-    $stocks = $request->stock;
-    foreach ($ids as $key => $id) {
-        $product = Product::select('id','name','status','old_price','new_price','stock')->find($id);
+    {
+        $ids = $request->ids;
+        $oldPrices = $request->old_price;
+        $newPrices = $request->new_price;
+        $stocks = $request->stock;
+        foreach ($ids as $key => $id) {
+            $product = Product::select('id','name','status','old_price','new_price','stock')->find($id);
 
-        if ($product) {
-            $product->update([
-                'old_price' => $oldPrices[$key],
-                'new_price' => $newPrices[$key],
-                'stock' => $stocks[$key],
-            ]);
+            if ($product) {
+                $product->update([
+                    'old_price' => $oldPrices[$key],
+                    'new_price' => $newPrices[$key],
+                    'stock' => $stocks[$key],
+                ]);
+            }
         }
+        Toastr::success('Success','Price update successfully');
+        return redirect()->back();
     }
-    Toastr::success('Success','Price update successfully');
-    return redirect()->back();
-}
 
     public function update(Request $request)
     {
@@ -159,7 +159,6 @@ class ProductController extends Controller
             'new_price' => 'required',
             'purchase_price' => 'required',
             'stock' => 'required',
-            'category_id' => 'required',
             'description' => 'required',
         ]);
 

@@ -222,9 +222,10 @@
     </div>
 </div>
 <!-- Assign User End-->
+@endsection
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+@section('script')
+<script type="text/javascript">
 $(document).ready(function(){
     $(".checkall").on('change',function(){
       $(".checkbox").prop('checked',$(this).is(":checked"));
@@ -281,6 +282,8 @@ $(document).ready(function(){
         });
     });
 });
+
 </script>
+ {!! Toastr::message() !!}
 @endsection
 

@@ -123,7 +123,7 @@
         <div class="card">
              <div class="card-body">
                 <form action="{{route('products.update')}}" method="POST" class="row" data-parsley-validate="" enctype="multipart/form-data" name="editForm">
-
+                    <input type="hidden" name="id" value="{{ $edit_data->id }}">
                     @csrf
                     <div class="col-md-4 mb-2">
                     <div class="form-group mb-3">
@@ -451,7 +451,8 @@
                     <!-- col end -->
 
                     <div>
-                    <input type="submit" class="btn btn-success" value="Submit" />
+                        <button type="button" onclick="history.back();" class="btn btn-danger">Back</button>
+                       <button type="submit" class="btn btn-success">Submit</button>
                     </div>
                 </form>
             </div>

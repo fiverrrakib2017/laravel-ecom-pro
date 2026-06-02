@@ -184,7 +184,7 @@
                             <ul class="sub-menu">
                                 <li><a href="{{ route('products.index') }}"><i class="mdi mdi-cube-outline"></i> Product Manage</a></li>
                                 <li><a href="{{ route('categories.index') }}"><i class="mdi mdi-shape-outline"></i> Categories</a></li>
-                                <li><a href="{{ route('subcategories.index') }}"><i class="mdi mdi-shape-plus-outline"></i> Subcategories</a></li>
+                                <li><a href="{{ route('subcategories.index') }}"> <i class="mdi mdi-shape-outline"></i> Subcategories</a></li>
                                 <li><a href="{{ route('childcategories.index') }}"><i class="mdi mdi-shape"></i> Childcategories</a></li>
                                 <li><a href="{{ route('brands.index') }}"><i class="mdi mdi-tag-outline"></i> Brands</a></li>
                                 <li><a href="{{ route('colors.index') }}"><i class="mdi mdi-palette-outline"></i> Colors</a></li>
