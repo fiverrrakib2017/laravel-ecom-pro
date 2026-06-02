@@ -18,97 +18,144 @@ class UserController extends Controller
         $data = User::orderBy('id','DESC')->get();
         return view('backEnd.users.index',compact('data'));
     }
-    
+
     public function create()
     {
         $roles = Role::select('name')->get();
         return view('backEnd.users.create',compact('roles'));
     }
-    
+
     public function store(Request $request)
     {
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'image'    => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-        // image with intervention 
         $image = $request->file('image');
-        $name =  time().'-'.$image->getClientOriginalName();
-        $name = preg_replace('"\.(jpg|jpeg|png|webp)$"', '.webp',$name);
-        $name = strtolower(preg_replace('/\s+/', '-', $name));
-        $uploadpath = 'public/uploads/users/';
-        $imageUrl = $uploadpath.$name; 
-        $img=Image::make($image->getRealPath());
-        $img->encode('webp', 90);
-        $width = 100;
-        $height = 100;
-        $img->height() > $img->width() ? $width=null : $height=null;
-        $img->resize($width, $height, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-        $img->save($imageUrl);
+        if ($image) {
+            $name = time().'-'.$image->getClientOriginalName();
+            $name = preg_replace('"\.(jpg|jpeg|png|webp)$"', '.webp', $name);
+            $name = strtolower(preg_replace('/\s+/', '-', $name));
+
+            $folderPath = 'uploads/users/';
+
+            $uploadPath = public_path($folderPath);
+
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $imageUrl = $folderPath . $name;
+            $savePath = $uploadPath . $name;
+
+            $img = Image::make($image->getRealPath());
+            $img->encode('webp', 90);
+
+            $targetSize = 300;
+
+            if ($img->height() > $img->width()) {
+                $width = null;
+                $height = $targetSize;
+            } else {
+                $width = $targetSize;
+                $height = null;
+            }
+
+            $img->resize($width, $height, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+
+            $img->save($savePath);
+        } else {
+            $imageUrl = null;
+        }
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
         $input['image'] = $imageUrl;
-        
+
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
         Toastr::success('Success','Data insert successfully');
         return redirect()->route('users.index');
     }
-    
+
     public function edit($id)
     {
         $edit_data = User::find($id);
         $roles = Role::get();
         return view('backEnd.users.edit',compact('edit_data','roles'));
     }
-    
+
     public function update(Request $request)
     {
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$request->hidden_id,
             'password' => 'same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
         ]);
-        
+
         $update_data = User::find($request->hidden_id);
 
         // new password
         $input = $request->all();
-        if(!empty($input['password'])){ 
+        if(!empty($input['password'])){
             $input['password'] = Hash::make($input['password']);
         }else{
-            $input = Arr::except($input,array('password'));    
+            $input = Arr::except($input,array('password'));
         }
 
         // new image
         $image = $request->file('image');
         if($image){
-            // image with intervention 
-            $name =  time().'-'.$image->getClientOriginalName();
-            $name = preg_replace('"\.(jpg|jpeg|png|webp)$"', '.webp',$name);
+            $name = time().'-'.$image->getClientOriginalName();
+            $name = preg_replace('"\.(jpg|jpeg|png|webp)$"', '.webp', $name);
             $name = strtolower(preg_replace('/\s+/', '-', $name));
-            $uploadpath = 'public/uploads/users/';
-            $imageUrl = $uploadpath.$name; 
-            $img=Image::make($image->getRealPath());
+
+            $folderPath = 'uploads/users/';
+            $uploadPath = public_path($folderPath);
+
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $imageUrl = $folderPath . $name;
+            $savePath = $uploadPath . $name;
+
+            $img = Image::make($image->getRealPath());
             $img->encode('webp', 90);
-            $width = 100;
-            $height = 100;
-            $img->height() > $img->width() ? $width=null : $height=null;
+
+            $targetSize = 300;
+
+            if ($img->height() > $img->width()) {
+                $width = null;
+                $height = $targetSize;
+            } else {
+                $width = $targetSize;
+                $height = null;
+            }
+
             $img->resize($width, $height, function ($constraint) {
                 $constraint->aspectRatio();
+                $constraint->upsize();
             });
-            $img->save($imageUrl);
+
+            $img->save($savePath);
             $input['image'] = $imageUrl;
-            File::delete($update_data->image);
+
+            if ($update_data->image && file_exists(public_path($update_data->image))) {
+                unlink(public_path($update_data->image));
+            }
         }else{
             $input['image'] = $update_data->image;
         }
+
         $input['status'] = $request->status?1:0;
         $update_data->update($input);
 
@@ -118,7 +165,7 @@ class UserController extends Controller
         Toastr::success('Success','Data update successfully');
         return redirect()->route('users.index');
     }
- 
+
     public function inactive(Request $request)
     {
         $inactive = User::find($request->hidden_id);
