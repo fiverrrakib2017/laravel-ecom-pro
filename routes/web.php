@@ -44,10 +44,10 @@ Route::get('/cc', function() {
     return "Cleared!";
 });
 
-Route::get('/controller', function() {
-    Artisan::call('make:controller Admin/TagManagerController');
-    return "Controller Done!";
-});
+// Route::get('/controller', function() {
+//     Artisan::call('make:controller Admin/TagManagerController');
+//     return "Controller Done!";
+// });
 
 Route::group(['namespace'=>'Frontend', 'middleware' => ['ipcheck','check_refer']], function() {
     Route::get('/', [FrontendController::class, 'index'])->name('home');
@@ -160,7 +160,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('users/update', [UserController::class,'update'])->name('users.update');
     Route::post('users/inactive', [UserController::class,'inactive'])->name('users.inactive');
     Route::post('users/active', [UserController::class,'active'])->name('users.active');
-    Route::post('users/destroy', [UserController::class,'destroy'])->name('users.destroy');
+    Route::delete('users/destroy', [UserController::class,'destroy'])->name('users.destroy');
 
     // roles
     Route::get('roles/manage', [RoleController::class,'index'])->name('roles.index');
@@ -178,7 +178,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('permissions/save', [PermissionController::class,'store'])->name('permissions.store');
     Route::get('permissions/{id}/edit', [PermissionController::class,'edit'])->name('permissions.edit');
     Route::post('permissions/update', [PermissionController::class,'update'])->name('permissions.update');
-    Route::post('permissions/destroy', [PermissionController::class,'destroy'])->name('permissions.destroy');
+    Route::delete('permissions/destroy', [PermissionController::class,'destroy'])->name('permissions.destroy');
 
     // categories
     Route::get('categories/manage', [CategoryController::class,'index'])->name('categories.index');
@@ -234,7 +234,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('orderstatus/update', [OrderStatusController::class,'update'])->name('orderstatus.update');
     Route::post('orderstatus/inactive', [OrderStatusController::class,'inactive'])->name('orderstatus.inactive');
     Route::post('orderstatus/active', [OrderStatusController::class,'active'])->name('orderstatus.active');
-    Route::post('orderstatus/destroy', [OrderStatusController::class,'destroy'])->name('orderstatus.destroy');
+    Route::delete('orderstatus/destroy', [OrderStatusController::class,'destroy'])->name('orderstatus.destroy');
 
     // pixels
     Route::get('pixels/manage', [PixelsController::class,'index'])->name('pixels.index');
@@ -245,7 +245,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('pixels/update', [PixelsController::class,'update'])->name('pixels.update');
     Route::post('pixels/inactive', [PixelsController::class,'inactive'])->name('pixels.inactive');
     Route::post('pixels/active', [PixelsController::class,'active'])->name('pixels.active');
-    Route::post('pixels/destroy', [PixelsController::class,'destroy'])->name('pixels.destroy');
+    Route::delete('pixels/destroy', [PixelsController::class,'destroy'])->name('pixels.destroy');
 
      // tag manager
     Route::get('tag-manager/manage', [TagManagerController::class,'index'])->name('tagmanagers.index');
@@ -256,7 +256,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('tag-manager/update', [TagManagerController::class,'update'])->name('tagmanagers.update');
     Route::post('tag-manager/inactive', [TagManagerController::class,'inactive'])->name('tagmanagers.inactive');
     Route::post('tag-manager/active', [TagManagerController::class,'active'])->name('tagmanagers.active');
-    Route::post('tag-manager/destroy', [TagManagerController::class,'destroy'])->name('tagmanagers.destroy');
+    Route::delete('tag-manager/destroy', [TagManagerController::class,'destroy'])->name('tagmanagers.destroy');
 
     // attribute
     Route::get('brands/manage', [BrandController::class,'index'])->name('brands.index');
