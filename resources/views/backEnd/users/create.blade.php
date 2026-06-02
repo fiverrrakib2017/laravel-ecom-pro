@@ -168,7 +168,7 @@ input:checked + .slider:before {
                         </div>
                     </div>
                     <!-- col end -->
-                   <div class="col-sm-6 mb-3">
+                    <div class="col-sm-6 mb-3">
                         <div class="card border-0 shadow-sm">
                             <div class="card-body py-3">
 
