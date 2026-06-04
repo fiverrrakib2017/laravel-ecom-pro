@@ -18,7 +18,7 @@
 
                     <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3"
                          style="width:60px;height:60px;">
-                        <i class="mdi mdi-account-group fs-2"></i>
+                        <i class="mdi mdi-account-group fs-2 text-white"></i>
                     </div>
 
                     <div>
@@ -87,9 +87,9 @@
 
                                  <td class="text-center">
                                     <div class="d-flex justify-content-center gap-1">
-                                        <a href="{{route('roles.show',$value->id)}}" class="btn btn-info btn-sm">
+                                        {{-- <a href="{{route('roles.show',$value->id)}}" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
-                                        </a>
+                                        </a> --}}
 
                                         <a href="{{route('roles.edit',$value->id)}}" class="btn btn-primary btn-sm">
                                             <i class="fas fa-edit"></i>

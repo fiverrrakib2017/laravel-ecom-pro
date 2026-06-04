@@ -15,7 +15,7 @@
 
                         <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3"
                              style="width:60px;height:60px;">
-                            <i class="mdi mdi-account-group fs-2" style="font-size:28px;"></i>
+                            <i class="mdi mdi-account-group fs-2 text-white" style="font-size:28px;"></i>
                         </div>
 
                         <div>
