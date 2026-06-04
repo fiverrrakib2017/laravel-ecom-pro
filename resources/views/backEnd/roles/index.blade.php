@@ -86,25 +86,25 @@
 
 
                                  <td class="text-center">
-    <div class="d-flex justify-content-center gap-1">
-        <a href="{{route('roles.show',$value->id)}}" class="btn btn-info btn-sm">
-            <i class="fas fa-eye"></i>
-        </a>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="{{route('roles.show',$value->id)}}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
 
-        <a href="{{route('roles.edit',$value->id)}}" class="btn btn-primary btn-sm">
-            <i class="fas fa-edit"></i>
-        </a>
+                                        <a href="{{route('roles.edit',$value->id)}}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
 
-        <form method="POST" action="{{route('roles.destroy')}}">
-            @csrf
-            <input type="hidden" value="{{$value->id}}" name="hidden_id">
+                                        <form method="POST" action="{{route('roles.destroy')}}">
+                                            @csrf
+                                            <input type="hidden" value="{{$value->id}}" name="hidden_id">
 
-            <button type="submit" class="btn btn-danger btn-sm delete-confirm">
-                <i class="fas fa-trash"></i>
-            </button>
-        </form>
-    </div>
-</td>
+                                            <button type="submit" class="btn btn-danger btn-sm delete-confirm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
