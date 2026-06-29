@@ -21,7 +21,7 @@ class CustomerManageController extends Controller
         }else{
              $show_data = Customer::paginate(20);
         }
-       
+
         return view('backEnd.customer.index',compact('show_data'));
     }
 
@@ -29,55 +29,74 @@ class CustomerManageController extends Controller
         $edit_data = Customer::find($id);
         return view('backEnd.customer.edit',compact('edit_data'));
     }
-    
-    public function update(Request $request){
-        $this->validate($request, [
-            'name' => 'required',
-            'phone' => 'required',
-            'email' => 'required',
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|email|unique:customers,email,' . $request->hidden_id,
         ]);
 
+        $customer = Customer::findOrFail($request->hidden_id);
+
         $input = $request->except('hidden_id');
-        $update_data = Customer::find($request->hidden_id);
-        // new password
-        
-        
-        if(!empty($input['password'])){ 
-            $input['password'] = Hash::make($input['password']);
-        }else{
-            $input = Arr::except($input,array('password'));    
+
+        // Password
+        if ($request->filled('password')) {
+            $input['password'] = Hash::make($request->password);
+        } else {
+            unset($input['password']);
         }
 
-        // new image
-        $image = $request->file('image');
-        if($image){
-            // image with intervention 
-            $name =  time().'-'.$image->getClientOriginalName();
-            $name = preg_replace('"\.(jpg|jpeg|png|webp)$"', '.webp',$name);
-            $name = strtolower(preg_replace('/\s+/', '-', $name));
-            $uploadpath = 'public/uploads/customer/';
-            $imageUrl = $uploadpath.$name; 
-            $img=Image::make($image->getRealPath());
+        // Image
+        if ($request->hasFile('image')) {
+
+            $image = $request->file('image');
+
+            $name = time() . '-' . strtolower(str_replace(' ', '-', pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME))) . '.webp';
+
+            $path = public_path('uploads/customer/');
+            if (!File::exists($path)) {
+                File::makeDirectory($path, 0755, true);
+            }
+
+            $img = Image::make($image->getRealPath());
+
             $img->encode('webp', 90);
+
             $width = 100;
             $height = 100;
-            $img->height() > $img->width() ? $width=null : $height=null;
+
+            if ($img->height() > $img->width()) {
+                $width = null;
+            } else {
+                $height = null;
+            }
+
             $img->resize($width, $height, function ($constraint) {
                 $constraint->aspectRatio();
             });
-            $img->save($imageUrl);
-            $input['image'] = $imageUrl;
-            File::delete($update_data->image);
-        }else{
-            $input['image'] = $update_data->image;
-        }
-        $input['status'] = $request->status?1:0;
-        $update_data->update($input);
 
-        Toastr::success('Success','Data update successfully');
+            $img->save($path . $name);
+
+            if ($customer->image && File::exists(public_path($customer->image))) {
+                File::delete(public_path($customer->image));
+            }
+
+            $input['image'] = 'uploads/customer/' . $name;
+        }
+
+        $input['status'] = $request->boolean('status');
+        $input['address'] = $request->input('address');
+
+        $customer->update($input);
+
+        Toastr::success('Success', 'Data updated successfully');
+
         return redirect()->route('customers.index');
     }
- 
+
     public function inactive(Request $request){
         $inactive = Customer::find($request->hidden_id);
         $inactive->status = 'inactive';
