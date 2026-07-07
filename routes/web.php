@@ -350,7 +350,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('contact/update', [ContactController::class,'update'])->name('contact.update');
     Route::post('contact/inactive', [ContactController::class,'inactive'])->name('contact.inactive');
     Route::post('contact/active', [ContactController::class,'active'])->name('contact.active');
-    Route::post('contact/destroy', [ContactController::class,'destroy'])->name('contact.destroy');
+    Route::delete('contact/destroy', [ContactController::class,'destroy'])->name('contact.destroy');
 
      // banner category route
     Route::get('banner-category/manage', [BannerCategoryController::class,'index'])->name('banner_category.index');
