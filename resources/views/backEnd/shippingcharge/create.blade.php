@@ -102,17 +102,7 @@ input:checked + .slider:before {
                         </div>
                     </div>
                     <!-- col-end -->
-                    <div class="col-sm-6">
-                        <div class="form-group mb-3">
-                            <label for="id" class="form-label">ID</label>
-                            <input type="number" placeholder="Enter ID" class="form-control @error('id') is-invalid @enderror" name="id" value="{{ old('id') }}" id="id" />
-                            @error('id')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                            @enderror
-                        </div>
-                    </div>
+                    
 
                     <div class="col-sm-6">
                         <div class="form-group mb-3">
