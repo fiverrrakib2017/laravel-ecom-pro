@@ -38,16 +38,16 @@ class ContactController extends Controller
         Toastr::success('Success','Data insert successfully');
         return redirect()->route('contact.index');
     }
-    
+
     public function edit($id)
     {
         $edit_data = Contact::find($id);
         return view('backEnd.contact.edit',compact('edit_data'));
     }
-    
+
     public function update(Request $request)
     {
-        
+
         $this->validate($request, [
             'phone' => 'required',
             'hotmail' => 'required',
@@ -60,7 +60,7 @@ class ContactController extends Controller
         Toastr::success('Success','Data update successfully');
         return redirect()->route('contact.index');
     }
- 
+
     public function inactive(Request $request)
     {
         $inactive = Contact::find($request->hidden_id);
