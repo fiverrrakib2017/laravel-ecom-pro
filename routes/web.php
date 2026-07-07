@@ -380,7 +380,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('page/update', [CreatePageController::class,'update'])->name('pages.update');
     Route::post('page/inactive', [CreatePageController::class,'inactive'])->name('pages.inactive');
     Route::post('page/active', [CreatePageController::class,'active'])->name('pages.active');
-    Route::post('page/destroy', [CreatePageController::class,'destroy'])->name('pages.destroy');
+    Route::delete('page/destroy', [CreatePageController::class,'destroy'])->name('pages.destroy');
 
     // Pos route
     Route::get('order/create', [OrderController::class,'order_create'])->name('admin.order.create');
