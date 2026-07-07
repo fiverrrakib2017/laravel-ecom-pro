@@ -1,5 +1,5 @@
 @extends('backEnd.layouts.master')
-@section('title','Edit Shipping Charge')
+@section('title','Edit Order Status Charge')
 @section('css')
 <style>
 .switch {

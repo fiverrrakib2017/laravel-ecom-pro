@@ -234,7 +234,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::post('orderstatus/update', [OrderStatusController::class,'update'])->name('orderstatus.update');
     Route::post('orderstatus/inactive', [OrderStatusController::class,'inactive'])->name('orderstatus.inactive');
     Route::post('orderstatus/active', [OrderStatusController::class,'active'])->name('orderstatus.active');
-    Route::delete('orderstatus/destroy', [OrderStatusController::class,'destroy'])->name('orderstatus.destroy');
+    Route::post('orderstatus/destroy', [OrderStatusController::class,'destroy'])->name('orderstatus.destroy');
 
     // pixels
     Route::get('pixels/manage', [PixelsController::class,'index'])->name('pixels.index');
