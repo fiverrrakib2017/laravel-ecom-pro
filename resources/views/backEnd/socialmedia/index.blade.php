@@ -117,7 +117,6 @@
                                         </a>
                                          <form method="post" action="{{ route('socialmedias.destroy') }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
                                             @csrf
-                                            @method('DELETE')
                                             <input type="hidden" value="{{ $value->id }}" name="hidden_id">
 
                                             <button type="submit" class="btn btn-sm btn-danger" title="Delete">
