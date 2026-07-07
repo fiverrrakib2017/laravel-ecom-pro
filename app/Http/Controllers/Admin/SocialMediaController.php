@@ -37,13 +37,13 @@ class SocialMediaController extends Controller
         Toastr::success('Success','Data insert successfully');
         return redirect()->route('socialmedias.index');
     }
-    
+
     public function edit($id)
     {
         $edit_data = SocialMedia::find($id);
         return view('backEnd.socialmedia.edit',compact('edit_data'));
     }
-    
+
     public function update(Request $request)
     {
         $this->validate($request, [
@@ -57,7 +57,7 @@ class SocialMediaController extends Controller
         Toastr::success('Success','Data update successfully');
         return redirect()->route('socialmedias.index');
     }
- 
+
     public function inactive(Request $request)
     {
         $inactive = SocialMedia::find($request->hidden_id);

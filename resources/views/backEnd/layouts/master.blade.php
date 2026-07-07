@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
 
-    <title>@yield('title') - {{$generalsetting->name}}</title>
+    <title>@yield('title') - {{$generalsetting->name ?? ''}}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- App favicon -->
-    <link rel="shortcut icon" href="{{asset($generalsetting->favicon)}}" />
+    <link rel="shortcut icon" href="{{asset($generalsetting->favicon ?? '')}}" />
 
     <link href="{{ asset('backEnd/admira/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('backEnd/admira/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css">
