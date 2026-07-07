@@ -24,7 +24,9 @@
                 <!-- Right -->
                 <div class="d-flex align-items-center gap-3 mt-2 mt-sm-0">
                     <div class="vr d-none d-sm-block"></div>
-
+                    {{-- <a href="{{ route('settings.create') }}" class="btn btn-primary">
+                        <i class="mdi mdi-cog "></i> Settings Create
+                    </a> --}}
 
                 </div>
 
