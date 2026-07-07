@@ -122,7 +122,7 @@
     <div class="col-12">
         <div class="card">
              <div class="card-body">
-          <form action="{{route('products.store')}}" method="POST" class="row" data-parsley-validate="" enctype="multipart/form-data">
+          <form action="{{route('campaign.store')}}" method="POST" class="row" data-parsley-validate="" enctype="multipart/form-data">
             @csrf
             <div class="col-sm-12">
                 <div class="form-group mb-3">
@@ -369,7 +369,7 @@
             <div class="col-sm-12">
                 <div class="form-group mb-3">
                     <label for="product_id" class="form-label">Products *</label>
-                        <select class="select2 form-control @error('product_id') is-invalid @enderror" value="{{ old('product_id') }}" name="product_id" data-placeholder="Choose ..." required>
+                        <select class="select2 form-control @error('product_id') is-invalid @enderror" value="{{ old('product_id') }}" name="product_id" data-placeholder="Choose ..." required="">
 
                         <option value="">Select..</option>
                         @foreach($products as $value)
