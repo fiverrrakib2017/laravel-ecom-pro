@@ -1,5 +1,5 @@
 @extends('backEnd.layouts.master')
-@section('title','Category Edit')
+@section('title','User Edit')
 @section('css')
 <style>
 .switch {
