@@ -1,5 +1,5 @@
 @extends('backEnd.layouts.master')
-@section('title','Category Manage')
+@section('title','Banner Manage')
 @section('css')
 <style>
 
@@ -64,9 +64,9 @@
                                     </span>
                                 </td>
 
-                               
+
                                 <td>{{$value->category?$value->category->name:''}}</td>
-                                <td><img src="{{asset($value->image)}}" class="backend-image" alt=""></td>
+                                <td><img style="width: 50px; height: 50px;" src="{{asset($value->image)}}" class="img-fluid" alt=""></td>
 
 
 
@@ -124,7 +124,6 @@
                                         </a>
                                         <form method="post" action="{{ route('banners.destroy') }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
                                             @csrf
-                                            @method('DELETE')
                                             <input type="hidden" value="{{ $value->id }}" name="hidden_id">
 
                                             <button type="submit" class="btn btn-sm btn-danger" title="Delete">
