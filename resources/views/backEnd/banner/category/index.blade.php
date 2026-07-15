@@ -20,7 +20,7 @@
                     </div>
 
                     <div>
-                        <h4 class="mb-0">Category Manage</h4>
+                        <h4 class="mb-0"> Banner Category</h4>
                         <small class="text-muted">Category Manage easily</small>
                     </div>
                 </div>

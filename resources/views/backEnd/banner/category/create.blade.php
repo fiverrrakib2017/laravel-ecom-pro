@@ -110,7 +110,7 @@
 
                         <div class="mb-4">
 
-                            <label class="form-label fw-semibold d-block">
+                            <label class="form-label d-block">
 
                                 Status
 
