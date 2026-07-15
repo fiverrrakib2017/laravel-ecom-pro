@@ -1,118 +1,319 @@
 @extends('backEnd.layouts.master')
-@section('title','Stock Report')
-@section('content')
+@section('title', 'Stock Report')
 @section('css')
-<link href="{{asset('public/backEnd')}}/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-<link href="{{asset('public/backEnd/')}}/assets/libs/flatpickr/flatpickr.min.css" rel="stylesheet" type="text/css" />
-<style>
-    p{
-        margin:0;
-    }
-   @page { 
-        margin: 50px 0px 0px 0px;
-    }
-   @media print {
-    td{
-        font-size: 18px;
-    }
-    p{
-        margin:0;
-    }
-    title {
-        font-size: 25px;
-    }
-    header,footer,.no-print,.left-side-menu,.navbar-custom {
-      display: none !important;
-    }
-  }
-</style>
-@endsection 
-<div class="container-fluid">
-    
-    <!-- start page title -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <h4 class="page-title">Stock Report</h4>
-            </div>
-        </div>
-    </div>       
-    <!-- end page title --> 
-   <div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <form class="no-print">
-                    <div class="row">   
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                               <label for="keyword" class="form-label">Keyword</label>
-                                <input type="text" value="{{request()->get('keyword')}}" class="form-control" name="keyword">
-                            </div>
-                        </div>
-                        <!--col-sm-3-->
-                        <div class="col-sm-3">
-                            <div class="form-group mb-3">
-                                <label for="category_id" class="form-label">Categories </label>
-                                <select class="form-control select2 @error('category_id') is-invalid @enderror" name="category_id" value="{{ old('category_id') }}" >
-                                    <option value="">Select..</option>
-                                    @foreach($categories as $category)
-                                    <option value="{{$category->id}}" @if(request()->get('category_id') == $category->id) selected @endif>{{$category->name}}</option>
-                                    @endforeach
-                                </select>
-                                @error('category_id')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-                        </div>
-                        <!-- col end -->
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                               <label for="start_date" class="form-label">Start Date</label>
-                                <input type="date" value="{{request()->get('start_date')}}"  class="form-control flatdate" name="start_date">
-                            </div>
-                        </div>
-                        <!--col-sm-3--> 
-                        <div class="col-sm-3">
-                            <div class="form-group">
-                               <label for="end_date" class="form-label">End Date</label>
-                                <input type="date" value="{{request()->get('end_date')}}" class="form-control flatdate" name="end_date">
-                            </div>
-                        </div>
-                        <!--col-sm-3-->
-                        <div class="col-sm-12">
-                            <div class="form-group mb-3">
-                                <button class="btn btn-primary">Submit</button>
-                            </div>
-                        </div>
-                        <!-- col end -->
-                    </div>  
-                </form>
-                <div class="row mb-3">
-                    <div class="col-sm-6 no-print">
-                         {{$products->links('pagination::bootstrap-4')}}
+    <style>
+
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    transition: all 0.25s ease;
+    min-height: 115px;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.10);
+}
+
+.stat-card::after {
+    content: "";
+    position: absolute;
+    right: -30px;
+    top: -30px;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    opacity: 0.08;
+    background: currentColor;
+}
+
+.stat-card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card-body {
+    text-align: right;
+    z-index: 1;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+    color: #0f172a;
+}
+
+/* Color themes */
+.stat-primary {
+    color: #2563eb;
+}
+.stat-primary .stat-card-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #fff;
+}
+
+.stat-success {
+    color: #16a34a;
+}
+.stat-success .stat-card-icon {
+    background: linear-gradient(135deg, #22c55e, #15803d);
+    color: #fff;
+}
+
+.stat-info {
+    color: #0891b2;
+}
+.stat-info .stat-card-icon {
+    background: linear-gradient(135deg, #06b6d4, #0e7490);
+    color: #fff;
+}
+
+.stat-warning {
+    color: #d97706;
+}
+.stat-warning .stat-card-icon {
+    background: linear-gradient(135deg, #f59e0b, #b45309);
+    color: #fff;
+}
+
+
+
+
+.custom-card {
+    border: none;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.custom-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 18px 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.custom-header h5 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.view-btn {
+    font-size: 13px;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.view-btn:hover {
+    text-decoration: underline;
+}
+
+.custom-table thead {
+    background: #f8fafc;
+}
+
+.custom-table th {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+    padding: 12px 16px;
+}
+
+.custom-table td {
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.custom-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+/* Avatar */
+.avatar-sm {
+    width: 34px;
+    height: 34px;
+}
+
+.avatar-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+/* Status badge */
+.status-badge {
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.status-badge.success {
+    background: rgba(34,197,94,0.1);
+    color: #16a34a;
+}
+
+.status-badge.info {
+    background: rgba(6,182,212,0.1);
+    color: #0891b2;
+}
+    </style>
+@endsection
+
+@section('content')
+    <div class="container-fluid">
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center"
+                        style="width:60px;height:60px;">
+                        <i class="mdi mdi-chart-box text-white fs-2"></i>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="export-print text-end">
-                            <button onclick="printFunction()"class="no-print btn btn-success"><i class="fa fa-print"></i> Print</button>
-                            <button id="export-excel-button" class="no-print btn btn-info"><i class="fas fa-file-export"></i> Export</button>
-                        </div>
+                    <div class="ms-3">
+                        <h3 class="mb-1">Stock Report</h3>
+                        <p class="text-muted mb-0">View and analyze your current stock inventory.</p>
                     </div>
                 </div>
-                <div id="content-to-export" class="table-responsive">
-                    <table class="table nowrap w-100">
+                <div class="mt-2 mt-md-0">
+                    <button onclick="window.print()" class="btn btn-success"><i class="mdi mdi-printer"></i> Print</button>
+                    <button id="export-excel-button" class="btn btn-info"><i class="mdi mdi-file-excel"></i> Export</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="mdi mdi-filter-outline"></i> Filter</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label>Keyword</label>
+                            <input type="text" class="form-control" placeholder="Enter Keyword" name="keyword" value="{{ request('keyword') }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Category</label>
+                            <select class="form-control select2" name="category_id">
+                                <option value="">Select</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control flatdate" name="start_date"
+                                value="{{ request('start_date') }}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label>End Date</label>
+                            <input type="date" class="form-control flatdate" name="end_date"
+                                value="{{ request('end_date') }}">
+                        </div>
+
+                        <div class="col-12">
+                            <button class="btn btn-primary"><i class="mdi mdi-magnify"></i> Search</button>
+                            <a href="{{ url()->current() }}" class="btn btn-danger">Reset</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3">
+
+            {{-- Total Order --}}
+            <div class="col-md-6 col-xl-4">
+                <div class="stat-card stat-primary">
+                    <div class="stat-card-icon">
+                        <i class="mdi mdi-cart-outline"></i>
+                    </div>
+
+                    <div class="stat-card-body">
+                        <span class="stat-label">Total Products</span>
+                        <h3 class="stat-value mb-0">{{$products->count()}}</h3>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Today Order --}}
+            <div class="col-md-6 col-xl-4">
+                <div class="stat-card stat-success">
+                    <div class="stat-card-icon">
+                        <i class="mdi mdi-shopping-outline"></i>
+                    </div>
+
+                    <div class="stat-card-body">
+                        <span class="stat-label">Total Stock</span>
+                        <h3 class="stat-value mb-0">{{$total_stock}}</h3>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Products --}}
+            <div class="col-md-6 col-xl-4">
+                <div class="stat-card stat-info">
+                    <div class="stat-card-icon">
+                        <i class="mdi mdi-database-outline"></i>
+                    </div>
+
+                    <div class="stat-card-body">
+                        <span class="stat-label">Total Value</span>
+                        <h3 class="stat-value mb-0">{{number_format($total_price)}}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Stock List</h5>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover">
                     <thead>
                         <tr>
-                            <th style="width:5%">SL</th>
-                            <th style="width:30%">Product Name</th>
-                            <th style="width:10%">Price</th>
-                            <th style="width:10%">Stock</th>
-                            <th style="width:10%">Total</th>
+                            <th>SL</th>
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Total</th>
                         </tr>
-                    </thead>               
-                
+                    </thead>
                     <tbody>
                         @php
                             $stock = 0;
@@ -132,55 +333,32 @@
                         @endphp
                         @endforeach
                      </tbody>
-                     <tfoot>
+                   <tfoot>
                              <tr>
                                  <td colspan="3" class="text-end"><strong>Total</strong></td>
                                  <td><strong>{{$stock}} Pcs</strong></td>
                                  <td><strong>{{$total}} Tk</strong></td>
                              </tr>
-                             <tr>
+                             {{-- <tr>
                                  <td colspan="6" class="text-center">
                                      <h5><strong>Total Purchase = {{$total_purchase}}</strong></h5>
                                      <h5><strong>Total Stock = {{$total_stock}} Pcs</strong></h5>
                                      <h5><strong>Total Price = {{$total_price}} Tk</strong></h5>
                                  </td>
-                             </tr>
+                             </tr> --}}
                          </tfoot>
-                    </table>
-                </div>
-            </div> <!-- end card body-->
-        </div> <!-- end card -->
-    </div><!-- end col-->
-   </div>
-</div>
+                </table>
+            </div>
+        </div>
+
+    </div>
 @endsection
+
 @section('script')
-<script src="{{asset('public/backEnd/')}}/assets/libs/select2/js/select2.min.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/js/pages/form-advanced.init.js"></script>
-<script src="{{asset('public/backEnd/')}}/assets/libs/flatpickr/flatpickr.min.js"></script>
-<script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
+
+    <script>
         $('.select2').select2();
-        flatpickr(".flatdate", {});
-    });
-</script>
-<script>
-    function printFunction() {
-        window.print();
-    }
-</script>
-<script>
-    $(document).ready(function() {
-        $('#export-excel-button').on('click', function() {
-            var contentToExport = $('#content-to-export').html();
-            var tempElement = $('<div>');
-            tempElement.html(contentToExport);
-            tempElement.find('.table').table2excel({
-                exclude: ".no-export",
-                name: "Order Report" 
-            });
-        });
-    });
-</script>
+        flatpickr('.flatdate', {});
+    </script>
+    {!! Toastr::message() !!}
 @endsection
