@@ -14,36 +14,36 @@ use DB;
 
 class ApiIntegrationController extends Controller
 {
-    
-     
+
+
     public function pay_manage ()
     {
         $bkash = PaymentGateway::where('type','=','bkash')->first();
         $shurjopay = PaymentGateway::where('type','=','shurjopay')->first();
         return view('backEnd.apiintegration.pay_manage',compact('bkash','shurjopay'));
     }
-    
+
     public function pay_update(Request $request)
     {
-      
+
         $update_data = PaymentGateway::find($request->id);
         $input = $request->all();
         $input['status'] = $request->status?1:0;
         $update_data->update($input);
-        
+
         Toastr::success('Success','Data update successfully');
         return redirect()->back();
     }
-    
+
     public function sms_manage ()
-    {  
+    {
         $sms = SmsGateway::first();
         return view('backEnd.apiintegration.sms_manage',compact('sms'));
     }
-    
+
     public function sms_update(Request $request)
     {
-      
+
         $update_data = SmsGateway::find($request->id);
         $input = $request->all();
         $input['status'] = $request->status?1:0;
@@ -51,27 +51,30 @@ class ApiIntegrationController extends Controller
         $input['forget_pass'] = $request->forget_pass?1:0;
         $input['password_g'] = $request->password_g?1:0;
         $update_data->update($input);
-        
+
         Toastr::success('Success','Data update successfully');
         return redirect()->back();
     }
-    
+
     public function courier_manage ()
     {
         $steadfast = Courierapi::where('type','=','steadfast')->first();
         $pathao = Courierapi::where('type','=','pathao')->first();
         return view('backEnd.apiintegration.courier_manage',compact('steadfast','pathao'));
     }
-    
-    public function courier_update (Request $request)
+
+    public function courier_update(Request $request)
     {
-      
-        $update_data = Courierapi::find($request->id);
-        $input = $request->all();
-        $input['status'] = $request->status?1:0;
+        $update_data = Courierapi::findOrFail($request->id);
+
+        $input = $request->except(['_token', 'id']);
+
+        $input['status'] = $request->has('status') ? 1 : 0;
+
         $update_data->update($input);
-        
-        Toastr::success('Success','Data update successfully');
+
+        Toastr::success('Success', 'Data updated successfully');
+
         return redirect()->back();
     }
 }
