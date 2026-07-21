@@ -312,7 +312,7 @@ class FrontendController extends Controller
             ->where('status', 1)
             ->with('image')
             ->first();
-        Cart::session('shopping')->destroy();
+        Cart::session('shopping')->clear();
         $cart_count = Cart::session('shopping')->count();
         if ($cart_count == 0) {
             Cart::session('shopping')->add([
@@ -373,7 +373,7 @@ class FrontendController extends Controller
             $payment->payment_status = 'paid';
             $payment->save();
             // order details data save
-            foreach (Cart::session('shopping')->content() as $cart) {
+            foreach (Cart::session('shopping')->getContent() as $cart) {
                 $order_details = new OrderDetails();
                 $order_details->order_id = $order->id;
                 $order_details->product_id = $cart->id;
@@ -384,7 +384,7 @@ class FrontendController extends Controller
                 $order_details->save();
             }
 
-            Cart::session('shopping')->destroy();
+            Cart::session('shopping')->clear();
             Toastr::error('Thanks, Your payment send successfully', 'Success!');
             return redirect()->route('home');
         }

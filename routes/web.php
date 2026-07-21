@@ -393,7 +393,7 @@ Route::group(['namespace'=>'Admin','middleware' => ['auth','lock','check_refer']
     Route::get('order/cart-product-discount', [OrderController::class,'product_discount'])->name('admin.order.product_discount');
     Route::get('order/cart-details', [OrderController::class,'cart_details'])->name('admin.order.cart_details');
     Route::get('order/cart-shipping', [OrderController::class,'cart_shipping'])->name('admin.order.cart_shipping');
-    Route::get('order/cart-clear', [OrderController::class,'cart_clear'])->name('admin.order.cart_clear');
+    Route::post('order/cart-clear', [OrderController::class,'cart_clear'])->name('admin.order.cart_clear');
 
     // Order route
     Route::get('order/{slug}', [OrderController::class,'index'])->name('admin.orders');

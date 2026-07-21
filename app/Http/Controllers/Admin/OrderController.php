@@ -342,7 +342,7 @@ class OrderController extends Controller
 
     public function order_create(){
         $products = Product::select('id','name','new_price','product_code')->where(['status'=>1])->get();
-        $cartinfo  = Cart::instance('pos_shopping')->content();
+        $cartinfo  = Cart::session('pos_shopping')->getContent();
         $shippingcharge = ShippingCharge::where('status',1)->get();
         return view('backEnd.order.create',compact('products','cartinfo','shippingcharge'));
     }
@@ -355,12 +355,12 @@ class OrderController extends Controller
             'area'=>'required',
         ]);
 
-        if(Cart::instance('pos_shopping')->count() <= 0) {
+        if(Cart::session('pos_shopping')->getTotalQuantity() <= 0) {
             Toastr::error('Your shopping empty', 'Failed!');
             return redirect()->back();
         }
 
-        $subtotal = Cart::instance('pos_shopping')->subtotal();
+        $subtotal = Cart::session('pos_shopping')->getSubTotal();
         $subtotal = str_replace(',','',$subtotal);
         $subtotal = str_replace('.00', '',$subtotal);
         $discount = Session::get('pos_discount')+Session::get('product_discount');
@@ -413,18 +413,18 @@ class OrderController extends Controller
         $payment->save();
 
        // order details data save
-        foreach(Cart::instance('pos_shopping')->content() as $cart){
+        foreach(Cart::session('pos_shopping')->getContent() as $cart){
             $order_details                   =   new OrderDetails();
             $order_details->order_id         =   $order->id;
             $order_details->product_id       =   $cart->id;
             $order_details->product_name     =   $cart->name;
-            $order_details->purchase_price   =   $cart->options->purchase_price;
-            $order_details->product_discount =   $cart->options->product_discount;
+            $order_details->purchase_price   =   $cart->attributes->purchase_price;
+            $order_details->product_discount =   $cart->attributes->product_discount;
             $order_details->sale_price       =   $cart->price;
             $order_details->qty              =   $cart->qty;
             $order_details->save();
         }
-        Cart::instance('pos_shopping')->destroy();
+        Cart::session('pos_shopping')->clear();
         Session::forget('pos_shipping');
         Session::forget('pos_discount');
         Session::forget('product_discount');
@@ -434,12 +434,12 @@ class OrderController extends Controller
     public function cart_add(Request $request){
         $product = Product::select('id','name','stock','new_price','old_price','purchase_price','slug')->where(['id' => $request->id])->first();
         $qty = 1;
-        $cartinfo = Cart::instance('pos_shopping')->add([
+        $cartinfo = Cart::session('pos_shopping')->add([
             'id' => $product->id,
             'name' => $product->name,
-            'qty' => $qty,
+            'quantity' => $qty,
             'price' => $product->new_price,
-            'options' => [
+            'attributes' => [
                 'slug' => $product->slug,
                 'image' => $product->image->image,
                 'old_price' => $product->old_price,
@@ -450,46 +450,79 @@ class OrderController extends Controller
         return response()->json(compact('cartinfo'));
     }
     public function cart_content(){
-        $cartinfo = Cart::instance('pos_shopping')->content();
+        $cartinfo = Cart::session('pos_shopping')->getContent();
         return view('backEnd.order.cart_content',compact('cartinfo'));
     }
     public function cart_details(){
-        $cartinfo = Cart::instance('pos_shopping')->content();
+        $cartinfo = Cart::session('pos_shopping')->getContent();
         $discount = 0;
         foreach($cartinfo as $cart){
-            $discount += $cart->options->product_discount*$cart->qty;
+            $discount += $cart->attributes->product_discount*$cart->quantity;
         }
         Session::put('product_discount',$discount);
         return view('backEnd.order.cart_details',compact('cartinfo'));
     }
     public function cart_increment(Request $request){
-        $qty = $request->qty + 1;
-        $cartinfo = Cart::instance('pos_shopping')->update($request->id, $qty);
-        return response()->json($cartinfo);
+        // relative => false দিলে সরাসরি নতুন Qty সেট হবে
+        Cart::session('pos_shopping')->update($request->id, [
+            'quantity' => [
+                'relative' => false,
+                'value' => $request->qty + 1
+            ]
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Quantity incremented successfully'
+        ]);
     }
+
     public function cart_decrement(Request $request){
-        $qty = $request->qty - 1;
-        $cartinfo = Cart::instance('pos_shopping')->update($request->id, $qty);
-        return response()->json($cartinfo);
+        $newQty = $request->qty - 1;
+
+        if ($newQty > 0) {
+            Cart::session('pos_shopping')->update($request->id, [
+                'quantity' => [
+                    'relative' => false,
+                    'value' => $newQty
+                ]
+            ]);
+        } else {
+            Cart::session('pos_shopping')->remove($request->id);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Quantity decremented successfully'
+        ]);
     }
     public function cart_remove(Request $request){
-        $remove = Cart::instance('pos_shopping')->remove($request->id);
-        $cartinfo = Cart::instance('pos_shopping')->content();
+        Cart::session('pos_shopping')->remove($request->id);
+        $cartinfo = Cart::session('pos_shopping')->getContent();
         return response()->json($cartinfo);
     }
-    public function product_discount(Request $request){
-        $discount = $request->discount;
-        $cart = Cart::instance('pos_shopping')->content()->where('rowId', $request->id)->first();
-        $cartinfo = Cart::instance('pos_shopping')->update($request->id, [
-            'options' => [
-                'slug' => $cart->options->slug,
-                'image' => $cart->options->image,
-                'old_price' => $cart->options->old_price,
-                'purchase_price' => $cart->options->purchase_price,
-                'product_discount' => $request->discount,
-            ],
-        ]);
-        return response()->json($cartinfo);
+    public function product_discount(Request $request)
+    {
+        $cartItem = Cart::session('pos_shopping')->get($request->id);
+
+        if ($cartItem) {
+            $currentAttributes = $cartItem->attributes->toArray();
+            $currentAttributes['product_discount'] = $request->discount ?? 0;
+
+            Cart::session('pos_shopping')->update($request->id, [
+                'attributes' => $currentAttributes
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product discount updated successfully'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Cart item not found'
+        ], 404);
     }
     public function cart_shipping(Request $request){
          $shipping = ShippingCharge::where(['status'=>1,'id'=>$request->id])->first()->amount;
@@ -498,7 +531,7 @@ class OrderController extends Controller
     }
 
     public function cart_clear(Request $request){
-        $cartinfo = Cart::instance('pos_shopping')->destroy();
+        Cart::session('pos_shopping')->clear();
         Session::forget('pos_shipping');
         Session::forget('pos_discount');
         Session::forget('product_discount');
@@ -508,18 +541,18 @@ class OrderController extends Controller
         $products = Product::select('id','name','new_price','product_code')->where(['status'=>1])->get();
         $shippingcharge = ShippingCharge::where('status',1)->get();
         $order = Order::where('invoice_id',$invoice_id)->first();
-        $cartinfo  = Cart::instance('pos_shopping')->destroy();
+        $cartinfo  = Cart::getContent('pos_shopping')->clear();
         $shippinginfo  = Shipping::where('order_id',$order->id)->first();
         Session::put('product_discount',$order->discount);
         Session::put('pos_shipping',$order->shipping_charge);
         $orderdetails = OrderDetails::where('order_id',$order->id)->get();
         foreach($orderdetails as $ordetails){
-        $cartinfo = Cart::instance('pos_shopping')->add([
+        $cartinfo = Cart::getContent('pos_shopping')->add([
             'id' => $ordetails->product_id,
             'name' => $ordetails->product_name,
             'qty' => $ordetails->qty,
             'price' => $ordetails->sale_price,
-            'options' => [
+            'attributes' => [
                 'image' => $ordetails->image->image,
                 'purchase_price' => $ordetails->purchase_price,
                 'product_discount' => $ordetails->product_discount,
@@ -527,7 +560,7 @@ class OrderController extends Controller
             ],
         ]);
         }
-        $cartinfo  = Cart::instance('pos_shopping')->content();
+        $cartinfo  = Cart::session('pos_shopping')->getContent();
         return view('backEnd.order.edit',compact('products','cartinfo','shippingcharge','shippinginfo','order'));
     }
 
@@ -539,12 +572,12 @@ class OrderController extends Controller
             'area'=>'required',
         ]);
 
-        if(Cart::instance('pos_shopping')->count() <= 0) {
+        if(Cart::session('pos_shopping')->getTotalQuantity() <= 0) {
             Toastr::error('Your shopping empty', 'Failed!');
             return redirect()->back();
         }
 
-        $subtotal = Cart::instance('pos_shopping')->subtotal();
+        $subtotal = Cart::session('pos_shopping')->getSubTotal();
         $subtotal = str_replace(',','',$subtotal);
         $subtotal = str_replace('.00', '',$subtotal);
         $discount = Session::get('pos_discount')+Session::get('product_discount');
@@ -598,11 +631,11 @@ class OrderController extends Controller
         $payment->save();
 
        // order details data save
-        foreach(Cart::instance('pos_shopping')->content() as $cart){
-            $exits = OrderDetails::where('id',$cart->options->details_id)->first();
+        foreach(Cart::session('pos_shopping')->getContent() as $cart){
+            $exits = OrderDetails::where('id',$cart->attributes->details_id)->first();
             if($exits){
                 $order_details                   =   OrderDetails::find($exits->id);
-                $order_details->product_discount =   $cart->options->product_discount;
+                $order_details->product_discount =   $cart->attributes->product_discount;
                 $order_details->sale_price       =   $cart->price;
                 $order_details->qty              =   $cart->qty;
                 $order_details->save();
@@ -611,15 +644,15 @@ class OrderController extends Controller
                 $order_details->order_id         =   $order->id;
                 $order_details->product_id       =   $cart->id;
                 $order_details->product_name     =   $cart->name;
-                $order_details->purchase_price   =   $cart->options->purchase_price;
-                $order_details->product_discount =   $cart->options->product_discount;
+                $order_details->purchase_price   =   $cart->attributes->purchase_price;
+                $order_details->product_discount =   $cart->attributes->product_discount;
                 $order_details->sale_price       =   $cart->price;
                 $order_details->qty              =   $cart->qty;
                 $order_details->save();
             }
 
         }
-        Cart::instance('pos_shopping')->destroy();
+        Cart::session('pos_shopping')->clear();
         Session::forget('pos_shipping');
         Session::forget('pos_discount');
         Session::forget('product_discount');

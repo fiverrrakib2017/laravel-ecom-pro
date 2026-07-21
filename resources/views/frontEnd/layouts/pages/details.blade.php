@@ -1,5 +1,5 @@
 @extends('frontEnd.layouts.master')
-@section('title', $details->name) 
+@section('title', $details->name)
 @push('seo')
 <meta name="app-url" content="{{ route('product', $details->slug) }}" />
 <meta name="robots" content="index, follow" />
@@ -25,7 +25,7 @@
 @endpush
 
 @push('css')
-<link rel="stylesheet" href="{{ asset('public/frontEnd/css/zoomsl.css') }}">
+<link rel="stylesheet" href="{{ asset('frontEnd/css/zoomsl.css') }}">
 @endpush
 
 @section('content')
@@ -103,22 +103,22 @@
                                                 $filledStars = floor($averageRating);
                                                 $emptyStars = 5 - $filledStars;
                                             @endphp
-                                            
+
                                             @if ($averageRating >= 0 && $averageRating <= 5)
                                                 @for ($i = 1; $i <= $filledStars; $i++)
                                                     <i class="fas fa-star"></i>
                                                 @endfor
-                                            
+
                                                 @if ($averageRating == $filledStars)
                                                     {{-- If averageRating is an integer, don't display half star --}}
                                                 @else
                                                     <i class="far fa-star-half-alt"></i>
                                                 @endif
-                                            
+
                                                 @for ($i = 1; $i <= $emptyStars; $i++)
                                                     <i class="far fa-star"></i>
                                                 @endfor
-                                            
+
                                                 <span>{{ number_format($averageRating, 2) }}/5</span>
                                             @else
                                                 <span>Invalid rating range</span>
@@ -374,7 +374,7 @@
                                                                     </label>
                                                                 </div>
                                                             </div>
-                
+
                                                             <div class="form-group">
                                                                 <label for="message-text" class="col-form-label">Message:</label>
                                                                 <textarea required class="form-control radius-lg" name="review" id="message-text"></textarea>
@@ -384,7 +384,7 @@
                                                                 <button class="details-review-button" type="submit">Submit
                                                                     Review</button>
                                                             </div>
-                
+
                                                         </form>
                                                     @else
                                                         <a class="customer-login-redirect" href="{{ route('customer.login') }}">Login
@@ -434,10 +434,10 @@
                                     <div class="sale-badge-inner">
                                         <div class="sale-badge-box">
                                             <span class="sale-badge-text">
-                                                <p>@php 
-                                                $discount=(((($value->old_price)-($value->new_price))*100) / ($value->old_price)) 
-                                                @endphp 
-                                                {{ number_format($discount, 0) }}% ছাড়</p> 
+                                                <p>@php
+                                                $discount=(((($value->old_price)-($value->new_price))*100) / ($value->old_price))
+                                                @endphp
+                                                {{ number_format($discount, 0) }}% ছাড়</p>
                                             </span>
                                         </div>
                                     </div>
@@ -466,7 +466,7 @@
 
                             @if (!$value->prosizes->isEmpty() || !$value->procolors->isEmpty())
                                 <div class="pro_btn">
-                                   
+
                                     <div class="cart_btn order_button">
                                         <a href="{{ route('product', $value->slug) }}"
                                             class="addcartbutton">অর্ডার</a>
@@ -474,7 +474,7 @@
                                 </div>
                             @else
                                 <div class="pro_btn">
-                                  
+
                                     <form action="{{ route('cart.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="id" value="{{ $value->id }}" />
@@ -556,7 +556,7 @@
                 currency: "BDT",
                 value: "1.5",
                 items: [
-                    @foreach (Cart::instance('shopping')->content() as $cartInfo)
+                    @foreach (Cart::session('shopping')->getContent() as $cartInfo)
                         {
                             item_id: "{{$details->id}}",
                             item_name: "{{$details->name}}",
@@ -577,7 +577,7 @@
                 currency: "BDT",
                 value: "1.5",
                 items: [
-                    @foreach (Cart::instance('shopping')->content() as $cartInfo)
+                    @foreach (Cart::session('shopping')->getContent() as $cartInfo)
                         {
                             item_id: "{{$details->id}}",
                             item_name: "{{$details->name}}",

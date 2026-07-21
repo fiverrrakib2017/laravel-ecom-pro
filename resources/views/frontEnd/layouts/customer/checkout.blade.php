@@ -3,10 +3,11 @@
 @endpush @section('content')
 <section class="chheckout-section">
     @php
-        $subtotal = Cart::instance('shopping')->subtotal();
+        $subtotal = Cart::session('shopping')->getSubTotal();
         $subtotal = str_replace(',', '', $subtotal);
         $subtotal = str_replace('.00', '', $subtotal);
         $shipping = Session::get('shipping') ? Session::get('shipping') : 0;
+
     @endphp
     <div class="container">
         <div class="row">
@@ -17,7 +18,7 @@
                         <div class="card">
                            <div class="card-header">
                                 <h6>আপনার অর্ডারটি কনফার্ম করতে তথ্যগুলো পূরণ করে <span style="color:#fe5200;">"অর্ডার করুন"</span> বাটন এ ক্লিক করুন অথবা ফোনে অর্ডার করতে এই নাম্বার <a href="tel:88{{$contact->hotline}}" style="color:#fe5200;">{{$contact->hotline}}</a> এর উপরে ক্লিক করুন।   </h6>
-                                
+
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -95,11 +96,11 @@
                                         <div class="radio_payment">
                                             <label id="payment_method">পেমেন্ট মেথড</label>
                                             <div class="payment_option">
-                                                
+
                                             </div>
                                         </div>
                                         <div class="payment-methods">
-                                            
+
                                             <div class="form-check p_cash">
                                                 <input class="form-check-input" type="radio" name="payment_method"
                                                 id="inlineRadio1" value="Cash On Delivery" checked required />
@@ -116,7 +117,7 @@
                                                 </label>
                                             </div>
                                             @endif
-                                            
+
                                             @if($shurjopay_gateway)
                                             <div class="form-check p_shurjo">
                                                 <input class="form-check-input" type="radio" name="payment_method"
@@ -165,31 +166,32 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach (Cart::instance('shopping')->content() as $value)
+
+                                    @foreach (Cart::session('shopping')->getContent() as $value)
                                         <tr>
                                             <td>
-                                                <a class="cart_remove" data-id="{{ $value->rowId }}"><i
+                                                <a class="cart_remove" data-id="{{ $value->id }}"><i
                                                         class="fas fa-trash text-danger"></i></a>
                                             </td>
                                             <td class="text-left">
-                                                <a href="{{ route('product', $value->options->slug) }}"> <img
-                                                        src="{{ asset($value->options->image) }}" />
+                                                <a href="{{ route('product', $value->attributes->slug) }}"> <img
+                                                        src="{{ asset($value->attributes->image) }}" />
                                                     {{ Str::limit($value->name, 20) }}</a>
-                                                @if ($value->options->product_size)
-                                                    <p>Size: {{ $value->options->product_size }}</p>
+                                                @if ($value->attributes->product_size)
+                                                    <p>Size: {{ $value->attributes->product_size }}</p>
                                                 @endif
-                                                @if ($value->options->product_color)
-                                                    <p>Color: {{ $value->options->product_color }}</p>
+                                                @if ($value->attributes->product_color)
+                                                    <p>Color: {{ $value->attributes->product_color }}</p>
                                                 @endif
                                             </td>
                                             <td class="cart_qty">
                                                 <div class="qty-cart vcart-qty">
                                                     <div class="quantity">
                                                         <button class="minus cart_decrement"
-                                                            data-id="{{ $value->rowId }}">-</button>
-                                                        <input type="text" value="{{ $value->qty }}" readonly />
+                                                            data-id="{{ $value->id }}">-</button>
+                                                        <input type="text" value="{{ $value->quantity  }}" readonly />
                                                         <button class="plus cart_increment"
-                                                            data-id="{{ $value->rowId }}">+</button>
+                                                            data-id="{{ $value->id }}">+</button>
                                                     </div>
                                                 </div>
                                             </td>
@@ -260,14 +262,14 @@
     dataLayer.push({
         event    : "view_cart",
         ecommerce: {
-            items: [@foreach (Cart::instance('shopping')->content() as $cartInfo){
+            items: [@foreach (Cart::session('shopping')->getContent() as $cartInfo){
                 item_name     : "{{$cartInfo->name}}",
                 item_id       : "{{$cartInfo->id}}",
                 price         : "{{$cartInfo->price}}",
-                item_brand    : "{{$cartInfo->options->brand}}",
-                item_category : "{{$cartInfo->options->category}}",
-                item_size     : "{{$cartInfo->options->size}}",
-                item_color     : "{{$cartInfo->options->color}}",
+                item_brand    : "{{$cartInfo->attributes->brand}}",
+                item_category : "{{$cartInfo->attributes->category}}",
+                item_size     : "{{$cartInfo->attributes->size}}",
+                item_color     : "{{$cartInfo->attributes->color}}",
                 currency      : "BDT",
                 quantity      : {{$cartInfo->qty ?? 0}}
             },@endforeach]
@@ -282,15 +284,15 @@
     dataLayer.push({
         event: "begin_checkout",
         ecommerce: {
-            items: [@foreach (Cart::instance('shopping')->content() as $cartInfo)
+            items: [@foreach (Cart::session('shopping')->getContent() as $cartInfo)
                 {
                     item_name: "{{$cartInfo->name}}",
                     item_id: "{{$cartInfo->id}}",
                     price: "{{$cartInfo->price}}",
-                    item_brand: "{{$cartInfo->options->brands}}",
-                    item_category: "{{$cartInfo->options->category}}",
-                    item_size: "{{$cartInfo->options->size}}",
-                    item_color: "{{$cartInfo->options->color}}",
+                    item_brand: "{{$cartInfo->attributes->brands}}",
+                    item_category: "{{$cartInfo->attributes->category}}",
+                    item_size: "{{$cartInfo->attributes->size}}",
+                    item_color: "{{$cartInfo->attributes->color}}",
                     currency: "BDT",
                     quantity: {{$cartInfo->qty ?? 0}}
                 },

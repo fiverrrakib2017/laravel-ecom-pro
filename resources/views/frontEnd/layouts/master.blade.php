@@ -213,7 +213,7 @@
                                                     <ul>
                                                         @foreach(Cart::session('shopping')->getContent() as $key=>$value)
                                                         <li>
-                                                            <a href=""><img src="{{asset($value->options->image)}}" alt="" /></a>
+                                                            <a href=""><img src="{{asset($value->attributes->image)}}" alt="" /></a>
                                                         </li>
                                                         <li><a href="">{{Str::limit($value->name, 30)}}</a></li>
                                                         <li>Qty: {{$value->qty}}</li>
